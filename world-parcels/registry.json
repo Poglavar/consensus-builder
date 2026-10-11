@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-11",
-  "queueSource": "https://population.un.org/wup/",
+  "updatedAt": "2026-10-12",
+  "queueSource": "UN DESA WUP 2025 city identifiers; qualification-admission-2026-10-12.json",
   "sources": [
     {
       "sourceId": "bd-dlrs-bds-sheets",
@@ -623,7 +623,7 @@
       "method": "GET ArcGIS REST query",
       "responseFormat": "Esri JSON",
       "crs": "native EPSG:27700; outSR=4326 returned WGS84",
-      "verificationStatus": "verified_sample_partial_coverage",
+      "verificationStatus": "historical_only",
       "reuseStatus": "item has no licence text; the original HMLR INSPIRE index polygons are described (per search summaries in the London record, not re-read here) as OGL with Crown copyright and database-right attribution; the copy's own terms are unconfirmed",
       "verifiedCityIds": [
         "wup2025:3979"
@@ -648,15 +648,16 @@
         }
       ],
       "liveIntegration": {
-        "status": "enabled",
-        "reason": "Explicit title-index exclusions complete 18 viewport cells and all 898 native INSPIREID round trips without conflicts.",
+        "status": "historical_only",
+        "reason": "Historical runtime integration retained for provenance; current app bindings use gb-hmlr-browser-v1.",
         "evidenceFile": "research/birmingham-live.json",
         "technicalBlockers": [],
         "termsAreInformational": true,
         "cityIds": [
           "birmingham"
         ]
-      }
+      },
+      "historicalForIds": true
     },
     {
       "sourceId": "co-cali-idesc-cat-bas-terrenos",
@@ -2731,7 +2732,7 @@
       "method": "anonymous bulk GML zip download",
       "responseFormat": "GML (WFS 2.0 FeatureCollection)",
       "crs": "EPSG:27700",
-      "verificationStatus": "verified_sample_partial_coverage",
+      "verificationStatus": "historical_only",
       "reuseStatus": "page states OGL conditions of use; zip licence PDF not read",
       "verifiedCityIds": [
         "geonames:2643743",
@@ -2747,7 +2748,8 @@
           "detail": "Distinct City of London and Manchester authority descriptors avoid implying national or Greater London/Manchester coverage. No upstream bbox API exists for this download path.",
           "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json"
         }
-      ]
+      ],
+      "historicalForIds": true
     },
     {
       "sourceId": "in-mh-bhunaksha",
@@ -3042,117 +3044,19 @@
         "wup2025:1261",
         "wup2025:799",
         "wup2025:3443",
-        "wup2025:921"
+        "wup2025:921",
+        "wup2025:1469"
       ],
-      "evidenceFile": "research/paris-live-wfs.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "paris",
-          "lyon",
-          "marseille",
-          "lille",
-          "toulouse",
-          "bordeaux",
-          "grenoble",
-          "rennes",
-          "cannes",
-          "tours",
-          "nancy",
-          "maurepas",
-          "orleans",
-          "dijon",
-          "clermont_ferrand",
-          "reims",
-          "le_havre",
-          "lens",
-          "angers",
-          "caen",
-          "le_mans",
-          "metz",
-          "brest",
-          "nimes",
-          "annecy",
-          "limoges",
-          "amiens",
-          "pau",
-          "troyes",
-          "valenciennes",
-          "bayonne",
-          "poitiers",
-          "le_mee_sur_seine",
-          "dunkirk",
-          "aix_en_provence",
-          "annemasse",
-          "lorient",
-          "poissy",
-          "valence",
-          "avignon",
-          "calais",
-          "boulogne_sur_mer",
-          "chartres",
-          "beziers",
-          "douai",
-          "ajaccio",
-          "arras",
-          "cherbourg_en_cotentin",
-          "saint_brieuc",
-          "bussy_saint_georges",
-          "saint_nazaire"
+          "la_rochelle"
         ],
-        "evidenceFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json",
-        "verifiedAt": "2026-10-11",
-        "adapter": "wfs",
-        "cityEvidenceFiles": {
-          "grenoble": "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
-          "rennes": "world-parcels/research/qualification-2026-10-11-round2/1037/qualification.json",
-          "cannes": "world-parcels/research/qualification-2026-10-11-round2/4760/qualification.json",
-          "tours": "world-parcels/research/qualification-2026-10-11-round2/2162/qualification.json",
-          "nancy": "world-parcels/research/qualification-2026-10-11-round2/4503/qualification.json",
-          "maurepas": "world-parcels/research/qualification-2026-10-11-round2/2809/qualification.json",
-          "orleans": "world-parcels/research/qualification-2026-10-11-round2/2745/qualification.json",
-          "dijon": "world-parcels/research/qualification-2026-10-11-round2/4153/qualification.json",
-          "clermont_ferrand": "world-parcels/research/qualification-2026-10-11-round2/3704/qualification.json",
-          "reims": "world-parcels/research/qualification-2026-10-11-round2/3847/qualification.json",
-          "le_havre": "world-parcels/research/qualification-2026-10-11-round2/1922/qualification.json",
-          "lens": "world-parcels/research/qualification-2026-10-11-round2/3390/qualification.json",
-          "angers": "world-parcels/research/qualification-2026-10-11-round2/1659/qualification.json",
-          "caen": "world-parcels/research/qualification-2026-10-11-round2/1838/qualification.json",
-          "le_mans": "world-parcels/research/qualification-2026-10-11-round2/2005/qualification.json",
-          "metz": "world-parcels/research/qualification-2026-10-11-round2/4429/qualification.json",
-          "brest": "world-parcels/research/qualification-2026-10-11-round2/524/qualification.json",
-          "nimes": "world-parcels/research/qualification-2026-10-11-round2/4025/qualification.json",
-          "annecy": "world-parcels/research/qualification-2026-10-11-round2/4577/qualification.json",
-          "limoges": "world-parcels/research/qualification-2026-10-11-round2/2316/qualification.json",
-          "amiens": "world-parcels/research/qualification-2026-10-11-round2/3112/qualification.json",
-          "pau": "world-parcels/research/qualification-2026-10-11-round2/1749/qualification.json",
-          "troyes": "world-parcels/research/qualification-2026-10-11-round2/3938/qualification.json",
-          "valenciennes": "world-parcels/research/qualification-2026-10-11-round2/3753/qualification.json",
-          "bayonne": "world-parcels/research/qualification-2026-10-11-round2/1367/qualification.json",
-          "poitiers": "world-parcels/research/qualification-2026-10-11-round2/2083/qualification.json",
-          "le_mee_sur_seine": "world-parcels/research/qualification-2026-10-11-round2/3227/qualification.json",
-          "dunkirk": "world-parcels/research/qualification-2026-10-11-round2/3053/qualification.json",
-          "aix_en_provence": "world-parcels/research/qualification-2026-10-11-round2/4314/qualification.json",
-          "annemasse": "world-parcels/research/qualification-2026-10-11-round2/4614/qualification.json",
-          "lorient": "world-parcels/research/qualification-2026-10-11-round2/666/qualification.json",
-          "poissy": "world-parcels/research/qualification-2026-10-11-round2/2934/qualification.json",
-          "valence": "world-parcels/research/qualification-2026-10-11-round2/4195/qualification.json",
-          "avignon": "world-parcels/research/qualification-2026-10-11-round2/4111/qualification.json",
-          "calais": "world-parcels/research/qualification-2026-10-11-round2/2678/qualification.json",
-          "boulogne_sur_mer": "world-parcels/research/qualification-2026-10-11-round2/2541/qualification.json",
-          "chartres": "world-parcels/research/qualification-2026-10-11-round2/2466/qualification.json",
-          "beziers": "world-parcels/research/qualification-2026-10-11-round2/3800/qualification.json",
-          "douai": "world-parcels/research/qualification-2026-10-11-round2/3602/qualification.json",
-          "ajaccio": "world-parcels/research/qualification-2026-10-11-round2/4902/qualification.json",
-          "arras": "world-parcels/research/qualification-2026-10-11-round2/3282/qualification.json",
-          "cherbourg_en_cotentin": "world-parcels/research/qualification-2026-10-11-round2/1261/qualification.json",
-          "saint_brieuc": "world-parcels/research/qualification-2026-10-11-round2/799/qualification.json",
-          "bussy_saint_georges": "world-parcels/research/qualification-2026-10-11-round2/3443/qualification.json",
-          "saint_nazaire": "world-parcels/research/qualification-2026-10-11-round2/921/qualification.json"
-        },
-        "storesParcelGeometryInDb": false,
-        "reuseTerms": "informational_only",
-        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "integrationAttempts": [
         {
@@ -3223,7 +3127,10 @@
         "wup2025:3443": "99 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32631) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "wup2025:921": "273 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32630) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
       },
-      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json"
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
+      "appCityIds": [
+        "la_rochelle"
+      ]
     },
     {
       "sourceId": "au-vic-vicmap-parcel",
@@ -3845,7 +3752,7 @@
       "method": "Anonymous official authority ZIP/GML -> bounded transient-memory index",
       "responseFormat": "GML in ZIP",
       "crs": "EPSG:27700, transformed using a Helmert approximation",
-      "verificationStatus": "verified_sample_partial_coverage",
+      "verificationStatus": "historical_only",
       "reuseStatus": "Source conditions informational; no terms gate. See executable descriptor attribution and caveats.",
       "verifiedCityIds": [
         "geonames:2643743"
@@ -3862,15 +3769,16 @@
         }
       ],
       "liveIntegration": {
-        "status": "enabled",
+        "status": "historical_only",
         "cityIds": [
           "london"
         ],
         "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
-        "reason": "Bounded real parcel geometry, stable native identity and downstream adapter contract verified. See dated evidence for scope and operational failures.",
+        "reason": "Historical runtime integration retained for provenance; current app bindings use gb-hmlr-browser-v1.",
         "technicalBlockers": [],
         "termsAreInformational": true
-      }
+      },
+      "historicalForIds": true
     },
     {
       "sourceId": "gb-hmlr-manchester",
@@ -3882,7 +3790,7 @@
       "method": "Anonymous official authority ZIP/GML -> bounded transient-memory index",
       "responseFormat": "GML in ZIP",
       "crs": "EPSG:27700, transformed using a Helmert approximation",
-      "verificationStatus": "verified_sample_city_scope",
+      "verificationStatus": "historical_only",
       "reuseStatus": "Source conditions informational; no terms gate. See executable descriptor attribution and caveats.",
       "verifiedCityIds": [
         "wup2025:3388"
@@ -3907,15 +3815,16 @@
         }
       ],
       "liveIntegration": {
-        "status": "enabled",
+        "status": "historical_only",
         "cityIds": [
           "manchester"
         ],
         "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
-        "reason": "Bounded real parcel geometry, stable native identity and downstream adapter contract verified. See dated evidence for scope and operational failures.",
+        "reason": "Historical runtime integration retained for provenance; current app bindings use gb-hmlr-browser-v1.",
         "technicalBlockers": [],
         "termsAreInformational": true
-      }
+      },
+      "historicalForIds": true
     },
     {
       "sourceId": "es-dgc-inspire-cp-wfs",
@@ -12835,21 +12744,28 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32611",
       "reuseStatus": "Public official GIS reference data; source conditions informational. Sample does not establish legal title, survey accuracy or municipal completeness.",
-      "evidenceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "verifiedCityIds": [
-        "wup2025:2295"
+        "wup2025:2295",
+        "wup2025:2660"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "sandiego"
+          "encinitas"
         ],
-        "evidenceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json"
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "cityScopes": {
         "wup2025:2295": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN."
-      }
+      },
+      "appCityIds": [
+        "encinitas"
+      ]
     },
     {
       "sourceId": "br-sg-prefeitura-geoserver-lote-cadastro",
@@ -13176,7 +13092,7 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32735",
       "reuseStatus": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified.",
-      "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "verifiedCityIds": [
         "wup2025:4203",
         "wup2025:3714",
@@ -13194,52 +13110,21 @@
         "wup2025:3946",
         "wup2025:4975",
         "wup2025:5476",
-        "wup2025:3126"
+        "wup2025:3126",
+        "wup2025:3855",
+        "wup2025:4800"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "klipgat",
-          "evaton",
-          "madadeni",
-          "rustenburg",
-          "sakhrol",
-          "kwanobuhle",
-          "coalbrook",
-          "mpumalanga",
-          "stellenbosch",
-          "jerusalem_za",
-          "mankweng",
-          "ekangala",
-          "bohlokong",
-          "brits",
-          "ezakheni",
-          "matsulu",
-          "khuma"
+          "lenasia",
+          "vosman"
         ],
-        "evidenceFile": "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json",
-        "verifiedAt": "2026-10-11",
-        "adapter": "arcgis",
-        "storesParcelGeometryInDb": false,
-        "reuseTerms": "informational_only",
-        "cityEvidenceFiles": {
-          "madadeni": "world-parcels/research/qualification-2026-10-11-round2/5074/qualification.json",
-          "rustenburg": "world-parcels/research/qualification-2026-10-11-round2/3294/qualification.json",
-          "sakhrol": "world-parcels/research/qualification-2026-10-11-round2/2761/qualification.json",
-          "kwanobuhle": "world-parcels/research/qualification-2026-10-11-round2/1858/qualification.json",
-          "coalbrook": "world-parcels/research/qualification-2026-10-11-round2/3762/qualification.json",
-          "mpumalanga": "world-parcels/research/qualification-2026-10-11-round2/5167/qualification.json",
-          "stellenbosch": "world-parcels/research/qualification-2026-10-11-round2/1173/qualification.json",
-          "jerusalem_za": "world-parcels/research/qualification-2026-10-11-round2/5395/qualification.json",
-          "mankweng": "world-parcels/research/qualification-2026-10-11-round2/5197/qualification.json",
-          "ekangala": "world-parcels/research/qualification-2026-10-11-round2/4655/qualification.json",
-          "bohlokong": "world-parcels/research/qualification-2026-10-11-round2/4119/qualification.json",
-          "brits": "world-parcels/research/qualification-2026-10-11-round2/3946/qualification.json",
-          "ezakheni": "world-parcels/research/qualification-2026-10-11-round2/4975/qualification.json",
-          "matsulu": "world-parcels/research/qualification-2026-10-11-round2/5476/qualification.json",
-          "khuma": "world-parcels/research/qualification-2026-10-11-round2/3126/qualification.json"
-        }
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "cityScopes": {
         "wup2025:4203": "201 valid, distinct Chief Surveyor-General Erven references verified in thirteen bounded cells around the unchanged ranked Klipgat WUP locator. The official DFFE-hosted service advertises GeoJSON but rejects that format in actual queries; explicit native Esri JSON queries succeed. A strict reader preserves every straight-ring coordinate and assigns native holes/components without repair; native curve representations and unsupported or ambiguous rings remain unavailable. Complete object-ID manifests, forced three-row paging (42 rows over fourteen pages), all 201 fresh native PRCL_KEY reads, explicit absence, footprint and source binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The sampled records all have publisher statuses R/C/E; no guessed lifecycle filter is applied. Citywide completeness, legal title, survey accuracy and broader identity uniqueness remain unverified.",
@@ -13259,7 +13144,11 @@
         "wup2025:4975": "137 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "wup2025:5476": "199 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "wup2025:3126": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
-      }
+      },
+      "appCityIds": [
+        "lenasia",
+        "vosman"
+      ]
     },
     {
       "sourceId": "za-ekurhuleni-stands",
@@ -13503,21 +13392,28 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32650",
       "reuseStatus": "Retain Hong Kong Lands Department attribution and published approximate-boundary and survey notices.",
-      "evidenceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "verifiedCityIds": [
-        "wup2025:11540"
+        "wup2025:11540",
+        "wup2025:11554"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "tuenmun"
+          "tung_chung"
         ],
-        "evidenceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json"
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "cityScopes": {
         "wup2025:11540": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information."
-      }
+      },
+      "appCityIds": [
+        "tung_chung"
+      ]
     },
     {
       "sourceId": "santos-sigsantos-wfs-lotes",
@@ -14155,38 +14051,28 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32735",
       "reuseStatus": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded.",
-      "evidenceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "verifiedCityIds": [
         "wup2025:1774",
         "wup2025:2412",
         "wup2025:1945",
         "wup2025:429",
         "wup2025:1396",
-        "wup2025:838"
+        "wup2025:838",
+        "wup2025:104",
+        "wup2025:2025"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "kitwe",
-          "mansa",
-          "kabwe",
-          "livingstone",
-          "kafue",
-          "mumbwa"
+          "mongu",
+          "luanshya"
         ],
-        "evidenceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
-        "verifiedAt": "2026-10-11",
-        "adapter": "arcgis",
-        "storesParcelGeometryInDb": false,
-        "reuseTerms": "informational_only",
-        "cityEvidenceFiles": {
-          "mansa": "world-parcels/research/qualification-2026-10-11-round2/2412/qualification.json",
-          "kabwe": "world-parcels/research/qualification-2026-10-11-round2/1945/qualification.json",
-          "livingstone": "world-parcels/research/qualification-2026-10-11-round2/429/qualification.json",
-          "kafue": "world-parcels/research/qualification-2026-10-11-round2/1396/qualification.json",
-          "mumbwa": "world-parcels/research/qualification-2026-10-11-round2/838/qualification.json"
-        }
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "cityScopes": {
         "wup2025:1774": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
@@ -14195,7 +14081,11 @@
         "wup2025:429": "109 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "wup2025:1396": "4 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "wup2025:838": "62 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
-      }
+      },
+      "appCityIds": [
+        "mongu",
+        "luanshya"
+      ]
     },
     {
       "sourceId": "it-sicilia-sitr-cadastral-parcels",
@@ -14208,21 +14098,28 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32633",
       "reuseStatus": "Public publisher geometry and attribution verified; provider conditions remain informational. Geometry does not establish legal title, survey accuracy or currentness. Personal fields excluded.",
-      "evidenceFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "verifiedCityIds": [
-        "wup2025:4616"
+        "wup2025:4616",
+        "wup2025:5104"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "palermo"
+          "acireale"
         ],
-        "evidenceFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json"
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "cityScopes": {
         "wup2025:4616": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
-      }
+      },
+      "appCityIds": [
+        "acireale"
+      ]
     },
     {
       "sourceId": "us-tx-el-paso-city-gis-parcels",
@@ -14501,21 +14398,31 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:2236 native bounds; EPSG:4326 output; EPSG:26917 independent metric audit",
       "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested.",
-      "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "verifiedCityIds": [
-        "wup2025:7432"
+        "wup2025:7432",
+        "wup2025:7367",
+        "wup2025:7468"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "orlando"
+          "buenaventura_lakes",
+          "alafaya"
         ],
-        "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
       "cityScopes": {
         "wup2025:7432": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness."
-      }
+      },
+      "appCityIds": [
+        "buenaventura_lakes",
+        "alafaya"
+      ]
     },
     {
       "sourceId": "ie-tailte-hvd-freehold",
@@ -15079,25 +14986,24 @@
       "verificationStatus": "verified_bounded_live_adapter",
       "reuseStatus": "terms_to_review",
       "verifiedCityIds": [
-        "wup2025:8207"
+        "wup2025:8207",
+        "wup2025:8193"
       ],
-      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "buffalo"
+          "lackawanna"
         ],
-        "verifiedAt": "2026-10-11",
-        "adapter": "arcgis",
-        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
-        "cityEvidenceFiles": {
-          "buffalo": "world-parcels/research/qualification-2026-10-11/8207/qualification.json"
-        },
-        "storesParcelGeometryInDb": false,
-        "reuseTerms": "informational_only",
-        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
-      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json"
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
+      "appCityIds": [
+        "lackawanna"
+      ]
     },
     {
       "sourceId": "ca-on-oshawa-assessed-parcels",
@@ -15145,25 +15051,24 @@
       "verificationStatus": "verified_bounded_live_adapter",
       "reuseStatus": "terms_to_review",
       "verifiedCityIds": [
-        "wup2025:6413"
+        "wup2025:6413",
+        "wup2025:6345"
       ],
-      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "arlington"
+          "lindberg"
         ],
-        "verifiedAt": "2026-10-11",
-        "adapter": "arcgis",
-        "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
-        "cityEvidenceFiles": {
-          "arlington": "world-parcels/research/qualification-2026-10-11/6413/qualification.json"
-        },
-        "storesParcelGeometryInDb": false,
-        "reuseTerms": "informational_only",
-        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       },
-      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json"
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
+      "appCityIds": [
+        "lindberg"
+      ]
     },
     {
       "sourceId": "brno-city-gis-katastr-g-parcely",
@@ -15428,6 +15333,93 @@
       },
       "cityScopes": {
         "wup2025:1183": "50 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    },
+    {
+      "sourceId": "gb-hmlr-browser-v1",
+      "name": "HM Land Registry — England and Wales browser ground",
+      "operator": "HM Land Registry — England and Wales browser ground",
+      "countryCode": "GB",
+      "scope": "England and Wales HM Land Registry INSPIRE freehold title-index coverage. Application ground is a deterministic derived surface, not a legal title boundary; qualification evidence is bounded at each listed WUP city locator.",
+      "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "responseFormat": "Source-specific parcel API / bounded qualification evidence",
+      "crs": "EPSG:4326 requested output",
+      "verificationStatus": "verified_bounded_city_scope",
+      "reuseStatus": "terms_informational",
+      "verifiedCityIds": [
+        "wup2025:3388",
+        "wup2025:3979",
+        "wup2025:4536",
+        "wup2025:5278",
+        "wup2025:5938",
+        "wup2025:2001",
+        "wup2025:3110",
+        "wup2025:3890",
+        "wup2025:4108",
+        "wup2025:4425",
+        "wup2025:4647",
+        "wup2025:4684",
+        "wup2025:4792",
+        "wup2025:5220",
+        "wup2025:5250",
+        "wup2025:5388",
+        "wup2025:5469",
+        "wup2025:6034",
+        "wup2025:6053",
+        "wup2025:6431"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "appCityIds": [
+        "manchester",
+        "birmingham",
+        "newcastle",
+        "oxford",
+        "london",
+        "cardiff",
+        "bristol",
+        "stoke_on_trent",
+        "bournemouth",
+        "leeds",
+        "coventry",
+        "southampton",
+        "sheffield",
+        "nottingham",
+        "middlesbrough",
+        "portsmouth",
+        "leicester",
+        "brighton",
+        "hull",
+        "southend_on_sea"
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "manchester",
+          "birmingham",
+          "newcastle",
+          "oxford",
+          "london",
+          "cardiff",
+          "bristol",
+          "stoke_on_trent",
+          "bournemouth",
+          "leeds",
+          "coventry",
+          "southampton",
+          "sheffield",
+          "nottingham",
+          "middlesbrough",
+          "portsmouth",
+          "leicester",
+          "brighton",
+          "hull",
+          "southend_on_sea"
+        ],
+        "evidenceFile": "research/qualification-admission-2026-10-12.json",
+        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
+        "technicalBlockers": [],
+        "termsAreInformational": true
       }
     }
   ],
@@ -16839,14 +16831,16 @@
       ],
       "citySource": "https://www.geonames.org/2643743/london.html",
       "researchOrder": 33,
-      "parcelStatus": "verified_sample_partial_coverage",
-      "sourceIds": [
+      "parcelStatus": "historical_only",
+      "sourceIds": [],
+      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
+      "previousResearchFile": "research/london.json",
+      "retryFile": "research/retry/cities/london.json",
+      "historicalSourceIds": [
         "gb-hmlr-city-of-london",
         "gb-hmlr-inspire-index-polygons"
       ],
-      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
-      "previousResearchFile": "research/london.json",
-      "retryFile": "research/retry/cities/london.json"
+      "historicalOnlyReason": "Superseded for app city london by the canonical WUP 2025 locator and current gb-hmlr-browser-v1 bounded qualification."
     },
     {
       "cityId": "wup2025:11027",
@@ -21394,16 +21388,25 @@
       "country": "United Kingdom",
       "countryCode": "GB",
       "centerLatLon": [
-        52.5046,
-        -1.9604
+        52.5053948519651,
+        -1.95888767064615
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 191,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/birmingham/qualification.json",
+      "historicalSourceIds": [
         "gb-arcgis-geodom-land-registry-inspire-2021"
       ],
-      "researchFile": "research/birmingham.json"
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/birmingham/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/birmingham/metric-report.json",
+      "population2025": 2631757,
+      "population2015": 2458062,
+      "appCityId": "birmingham",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:2178",
@@ -21482,19 +21485,28 @@
       "country": "United Kingdom",
       "countryCode": "GB",
       "centerLatLon": [
-        53.49383,
-        -2.25537
+        53.4932710593779,
+        -2.25653313803415
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 196,
-      "parcelStatus": "verified_sample_city_scope",
+      "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/manchester/qualification.json",
+      "previousResearchFile": "research/manchester.json",
+      "retryFile": "research/retry/cities/manchester.json",
+      "historicalSourceIds": [
         "gb-hmlr-manchester",
         "gb-hmlr-inspire-index-polygons"
       ],
-      "researchFile": "research/batch-seven-live-cities-2026-10-04.json",
-      "previousResearchFile": "research/manchester.json",
-      "retryFile": "research/retry/cities/manchester.json"
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/manchester/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/manchester/metric-report.json",
+      "population2025": 2535427,
+      "population2015": 2374806,
+      "appCityId": "manchester",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:2524",
@@ -42588,14 +42600,14 @@
         53.80098765836,
         -1.64273048308533
       ],
-      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "citySource": "https://population.un.org/wup/",
       "researchOrder": 573,
       "checked": true,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "gb-leeds-hmlr-inspire-index"
+        "gb-hmlr-browser-v1"
       ],
-      "researchFile": "research/overnight-cities-2026-10-08/city-4425-leeds.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-12/leeds/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-4425-leeds.json",
       "aliases": [
         "wup2025:4425",
@@ -42624,7 +42636,16 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-4425-leeds.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "historicalSourceIds": [
+        "gb-leeds-hmlr-inspire-index"
+      ],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/leeds/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/leeds/metric-report.json",
+      "population2025": 1065607,
+      "population2015": 985674,
+      "appCityId": "leeds",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:8550",
@@ -52010,12 +52031,14 @@
         54.9872907396255,
         -1.55381600364981
       ],
-      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "citySource": "https://population.un.org/wup/",
       "researchOrder": 776,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-4536-newcastle-upon-tyne.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/newcastle/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-4536-newcastle-upon-tyne.json",
       "aliases": [
         "wup2025:4536",
@@ -52045,7 +52068,14 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-4536-newcastle-upon-tyne.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "historicalSourceIds": [],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/newcastle/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/newcastle/metric-report.json",
+      "population2025": 760969,
+      "population2015": 727371,
+      "appCityId": "newcastle",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11354",
@@ -56341,12 +56371,14 @@
         52.9581733581744,
         -1.18066491650301
       ],
-      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "citySource": "https://population.un.org/wup/",
       "researchOrder": 868,
       "checked": true,
       "parcelStatus": "verified_sample_partial_coverage",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-5220-nottingham.json",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/nottingham/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-5220-nottingham.json",
       "aliases": [
         "wup2025:5220",
@@ -56375,7 +56407,14 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-5220-nottingham.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "historicalSourceIds": [],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/nottingham/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/nottingham/metric-report.json",
+      "population2025": 649610,
+      "population2015": 611767,
+      "appCityId": "nottingham",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:2753",
@@ -59623,12 +59662,14 @@
         51.4622070766796,
         -2.56948973765957
       ],
-      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "citySource": "https://population.un.org/wup/",
       "researchOrder": 938,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-3110-bristol.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/bristol/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-3110-bristol.json",
       "aliases": [
         "wup2025:3110",
@@ -59658,7 +59699,14 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-3110-bristol.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "historicalSourceIds": [],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/bristol/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/bristol/metric-report.json",
+      "population2025": 615703,
+      "population2015": 560636,
+      "appCityId": "bristol",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7788",
@@ -65894,7 +65942,7 @@
         53.3706060761954,
         -1.45914222195097
       ],
-      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "citySource": "https://population.un.org/wup/",
       "researchOrder": 1068,
       "checked": true,
       "checkedAt": "2026-10-09",
@@ -65904,8 +65952,10 @@
       "verifiedSample": true,
       "publicParcelGeometryFound": true,
       "registryGeometryFound": true,
-      "sourceIds": [],
-      "researchFile": "research/overnight-followon-2026-10-09/city-4792-sheffield.json",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/sheffield/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-4792-sheffield.json",
       "aliases": [
         "wup2025:4792",
@@ -65963,7 +66013,13 @@
           "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
           "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
         }
-      }
+      },
+      "historicalSourceIds": [],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/sheffield/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/sheffield/metric-report.json",
+      "population2015": 531621,
+      "appCityId": "sheffield",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:6010",
@@ -72831,12 +72887,14 @@
       "population2025": 530264,
       "populationPlausibility2025": "High",
       "checked": true,
-      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "citySource": "https://population.un.org/wup/",
       "registryGeometryFound": true,
-      "researchFile": "research/overnight-followon-2026-10-09/city-5469-leicester.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-12/leicester/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-5469-leicester.json",
       "parcelStatus": "verified_sample_partial_coverage",
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "aliases": [
         "wup2025:5469",
         "Leicester"
@@ -72878,7 +72936,13 @@
           "rootReviewedAt": "2026-10-09T06:46:30.956530+00:00",
           "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "historicalSourceIds": [],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/leicester/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/leicester/metric-report.json",
+      "population2015": 491636,
+      "appCityId": "leicester",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:2312",
@@ -76559,12 +76623,14 @@
       "population2025": 488385,
       "populationPlausibility2025": "High",
       "checked": true,
-      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "citySource": "https://population.un.org/wup/",
       "registryGeometryFound": true,
-      "researchFile": "research/overnight-next-2026-10-09/city-5388-portsmouth.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-12/portsmouth/qualification.json",
       "latestAssessmentFile": "research/overnight-next-2026-10-09/city-5388-portsmouth.json",
       "parcelStatus": "verified_sample_partial_coverage",
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "aliases": [
         "wup2025:5388",
         "Portsmouth"
@@ -76608,7 +76674,13 @@
           "rootReviewedAt": "2026-10-09T07:22:58.977081+00:00",
           "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or a cadastral result."
         }
-      }
+      },
+      "historicalSourceIds": [],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/portsmouth/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/portsmouth/metric-report.json",
+      "population2015": 456493,
+      "appCityId": "portsmouth",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10804",
@@ -82252,6 +82324,580 @@
       "appCityId": "saint_nazaire",
       "researchFile": "world-parcels/research/qualification-2026-10-11-round2/921/qualification.json",
       "note": "273 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32630) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+    },
+    {
+      "cityId": "wup2025:5278",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 5278,
+      "name": "Oxford",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        51.7487806598031,
+        -1.2342485885213
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/oxford/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/oxford/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/oxford/metric-report.json",
+      "population2025": 172436,
+      "population2015": 163739,
+      "appCityId": "oxford",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:5938",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 5938,
+      "name": "London",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        51.5097885891913,
+        -0.126303973484058
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/london/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/london/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/london/metric-report.json",
+      "population2025": 10416420,
+      "population2015": 9274623,
+      "appCityId": "london",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:2001",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 2001,
+      "name": "Cardiff",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        51.4941598754672,
+        -3.18365738997209
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/cardiff/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/cardiff/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/cardiff/metric-report.json",
+      "population2025": 390692,
+      "population2015": 368184,
+      "appCityId": "cardiff",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:3890",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 3890,
+      "name": "Stoke-on-Trent",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        53.0159155643046,
+        -2.17437344168429
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/stoke_on_trent/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/stoke_on_trent/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/stoke_on_trent/metric-report.json",
+      "population2025": 332542,
+      "population2015": 317258,
+      "appCityId": "stoke_on_trent",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:4108",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4108,
+      "name": "Bournemouth",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        50.7377349576354,
+        -1.90482883545276
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/bournemouth/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/bournemouth/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/bournemouth/metric-report.json",
+      "population2025": 386557,
+      "population2015": 357083,
+      "appCityId": "bournemouth",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:4647",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4647,
+      "name": "Coventry",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        52.4197855108422,
+        -1.50597012431852
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/coventry/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/coventry/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/coventry/metric-report.json",
+      "population2025": 427678,
+      "population2015": 375694,
+      "appCityId": "coventry",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:4684",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4684,
+      "name": "Southampton",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        50.9183161488384,
+        -1.39571519357
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/southampton/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/southampton/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/southampton/metric-report.json",
+      "population2025": 347446,
+      "population2015": 308732,
+      "appCityId": "southampton",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:5250",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 5250,
+      "name": "Middlesbrough",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        54.560753928282,
+        -1.26260886474088
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/middlesbrough/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/middlesbrough/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/middlesbrough/metric-report.json",
+      "population2025": 349436,
+      "population2015": 327763,
+      "appCityId": "middlesbrough",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:6034",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 6034,
+      "name": "Brighton",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        50.832718747559,
+        -0.232087060115579
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/brighton/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/brighton/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/brighton/metric-report.json",
+      "population2025": 467937,
+      "population2015": 423316,
+      "appCityId": "brighton",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:6053",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 6053,
+      "name": "Hull",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        53.7628896052307,
+        -0.354103477578705
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/hull/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/hull/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/hull/metric-report.json",
+      "population2025": 322100,
+      "population2015": 309317,
+      "appCityId": "hull",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:6431",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 6431,
+      "name": "Southend-on-Sea",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        51.5551240047725,
+        0.668467014701583
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/southend_on_sea/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/southend_on_sea/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/southend_on_sea/metric-report.json",
+      "population2025": 280158,
+      "population2015": 253331,
+      "appCityId": "southend_on_sea",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:104",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 104,
+      "name": "Mongu",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "centerLatLon": [
+        -15.2698331723381,
+        23.1518886178753
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "zm-nsdi-zilmis-lots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/mongu/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/mongu/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/mongu/metric-report.json",
+      "population2025": 123918,
+      "population2015": 113776,
+      "appCityId": "mongu",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:1469",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 1469,
+      "name": "La Rochelle",
+      "country": "France",
+      "countryCode": "FR",
+      "centerLatLon": [
+        46.1625399538636,
+        -1.16258542365523
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "fr-ign-parcellaire-express"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/la_rochelle/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/la_rochelle/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/la_rochelle/metric-report.json",
+      "population2025": 76035,
+      "population2015": 78597,
+      "appCityId": "la_rochelle",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:2025",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 2025,
+      "name": "Luanshya",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "centerLatLon": [
+        -13.1437301508279,
+        28.4228139265333
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "zm-nsdi-zilmis-lots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/luanshya/metric-report.json",
+      "population2025": 100400,
+      "population2015": 90645,
+      "appCityId": "luanshya",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:2660",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 2660,
+      "name": "Encinitas",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        33.0602781384953,
+        -117.267811873962
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us-ca-sangis-parcels-reference"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/encinitas/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/encinitas/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/encinitas/metric-report.json",
+      "population2025": 79460,
+      "population2015": 69052,
+      "appCityId": "encinitas",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:3855",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 3855,
+      "name": "Lenasia",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -26.3478558274038,
+        27.876034282466
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/lenasia/metric-report.json",
+      "population2025": 214770,
+      "population2015": 142970,
+      "appCityId": "lenasia",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:4800",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4800,
+      "name": "Vosman",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.8573418214821,
+        29.1180026432058
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/vosman/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/vosman/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/vosman/metric-report.json",
+      "population2025": 179869,
+      "population2015": 138364,
+      "appCityId": "vosman",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:5104",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 5104,
+      "name": "Acireale",
+      "country": "Italy",
+      "countryCode": "IT",
+      "centerLatLon": [
+        37.6049746892746,
+        15.1470464254041
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "it-sicilia-sitr-cadastral-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/acireale/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/acireale/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/acireale/metric-report.json",
+      "population2025": 73600,
+      "population2015": 74940,
+      "appCityId": "acireale",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:6345",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 6345,
+      "name": "Lindberg",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        32.6471024349277,
+        -97.1431006262883
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "arlington-tax-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/lindberg/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/lindberg/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/lindberg/metric-report.json",
+      "population2025": 210973,
+      "population2015": 157903,
+      "appCityId": "lindberg",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:7367",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 7367,
+      "name": "Buenaventura Lakes",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        28.3522565261019,
+        -81.3782104985266
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "orlando-ocpa-arcgis"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/metric-report.json",
+      "population2025": 158161,
+      "population2015": 121858,
+      "appCityId": "buenaventura_lakes",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:7468",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 7468,
+      "name": "Alafaya",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        28.5645463354798,
+        -81.1884381841486
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "orlando-ocpa-arcgis"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/alafaya/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/alafaya/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/alafaya/metric-report.json",
+      "population2025": 103970,
+      "appCityId": "alafaya",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:8193",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 8193,
+      "name": "Lackawanna",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        42.8429861120278,
+        -78.8135507251543
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us-ny-erie-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/lackawanna/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/lackawanna/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/lackawanna/metric-report.json",
+      "population2025": 52726,
+      "population2015": 54148,
+      "appCityId": "lackawanna",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:11554",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 11554,
+      "name": "Tung Chung",
+      "country": "China, Hong Kong SAR",
+      "countryCode": "HK",
+      "centerLatLon": [
+        22.2862518536,
+        113.942260841835
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "hk-landsd-csdi-lot"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-12/tung_chung/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-12/tung_chung/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-12/tung_chung/metric-report.json",
+      "population2025": 68589,
+      "population2015": 66992,
+      "appCityId": "tung_chung",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     }
   ],
   "countryProbes": [

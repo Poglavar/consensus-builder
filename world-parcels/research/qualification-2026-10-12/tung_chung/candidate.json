@@ -1,0 +1,51 @@
+{
+  "descriptor": {
+    "adapter": "arcgis",
+    "boundsQueryMode": "object-ids",
+    "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+    "countryCode": "HK",
+    "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+    "id": "hk-landsd-csdi-lot",
+    "idField": "LotCSUID",
+    "idPrefix": "HK-LANDSD-CSDI-LOT-CSUID-",
+    "idType": "string",
+    "idsQueryMode": "object-ids",
+    "maxBboxKm2": 1,
+    "maxFeatures": 2000,
+    "name": "Lands Department CSDI Lot polygons",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "LotCSUID",
+      "OBJECTID"
+    ],
+    "pageSize": 5,
+    "scope": "Bounded public Lands Department Lot polygons around the frozen Tung Chung point, using 13 aligned 0.001 degree cells. Lots represent land sold or granted for specified uses in the Land Parcel Framework Spatial Data Theme; they do not represent a complete parcel fabric. Native LotCSUID identities are retained, with OBJECTID used only for transport. Use one native-ID predicate per batch and count/object-ID manifests followed by complete object-ID geometry reads. Citywide completeness, legal title, survey accuracy, currentness and identity continuity across quarterly replacement are unverified.",
+    "idBatchSize": 1,
+    "maxConcurrentQueries": 1,
+    "cityIds": [
+      "11554"
+    ]
+  },
+  "city": {
+    "code": "11554",
+    "name": "Tung Chung",
+    "point": [
+      113.942260841835,
+      22.2862518536
+    ]
+  },
+  "sampleIds": [
+    "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+    "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+  ],
+  "absentId": "HK-LANDSD-CSDI-LOT-CSUID-999999999",
+  "metricEpsg": "EPSG:32649",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "First-party Lands Department DATA.GOV.HK resource identifies this API as part of the Land Parcel Framework Spatial Data Theme and describes ground parcels sold or granted for specified uses: https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+      "Frozen Tung Chung packet records two native LotCSUIDs from a bounded query around the exact city point, plus independent ID reads. The official polygon layer extent contains this point in EPSG:2326. See evidence/first-party-purpose.json and evidence/official-layer-metadata.json."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

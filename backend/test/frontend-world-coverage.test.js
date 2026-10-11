@@ -140,7 +140,7 @@ describe('tierAt', () => {
     it.each([
         ['sydney', 'au-nsw-six-cadastre-lot', -33.8585, 151.0795, 'Sydney', -33.8585, 151.4],
         ['sao_paulo', 'br-sp-geosampa-lote-cidadao', -23.55052, -46.6333, 'São Paulo', -23.55052, -46.3],
-        ['birmingham', 'gb-arcgis-geodom-land-registry-inspire-2021', 52.4975, -1.978, 'Birmingham', 52.4975, -1.6],
+        ['birmingham', 'gb-hmlr-browser-v1', 52.5053948519651, -1.95888767064615, 'Birmingham', 52.4975, -1.6],
         ['lusaka', 'zm-lusaka-mtendere-east-agol-unofficial', -15.40478133, 28.38004999, 'Lusaka', -15.40478133, 28.8],
         ['osaka', 'jp-moj-geospatial-2026', 34.677750586, 135.532507321, 'Osaka', 34.67775, 135.9],
         ['tokyo', 'jp-moj-geospatial-2026', 35.696623934, 139.766899192, 'Tokyo', 35.44, 139.64],

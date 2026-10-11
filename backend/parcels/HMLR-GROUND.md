@@ -39,9 +39,13 @@ library notices. The policy version pins geometry semantics as well as IDs.
 
 ## Routing metadata publication
 
-The adapter is deliberately unbound to cities until a complete release manifest
-has been built, published and qualified. No national import or publication has
-been performed by this change.
+City bindings require a complete, published and qualified release manifest.
+The 2026-10-12 admission binds 20 qualified England/Wales cities to immutable
+release `44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90`
+under `/data/hmlr/` on the production origin. It includes all 318 authorities in
+the routing manifest, but only the individually admitted cities are enabled.
+The release admission records the frozen evidence and manifest hash; later
+qualification results remain separate until their next admission.
 
 ```sh
 node backend/scripts/build-hmlr-browser-manifest.mjs --run \
@@ -73,9 +77,9 @@ a city is supported. Each candidate needs a real parcel probe and the normal
 independent qualification gates before its app binding is enabled. ISO2 `GB`
 alone must never select England/Wales membership or establish UK-wide coverage.
 
-After qualification, change the default provider on existing London, Manchester
-and Birmingham city IDs rather than adding duplicate city entries. New cities,
-such as Newcastle, get separate qualified bindings to the same source. Keep
+London, Manchester and Birmingham retain their existing app city IDs and use
+this shared provider by default. Newly admitted cities, including Oxford and
+Newcastle, have separate qualified bindings to the same source. Keep
 historical source identities resolvable for saved proposals: a native INSPIREID
 match does not prove equivalent geometry under the derived overlap policy, so
 saved references cannot be silently changed to the new prefix. UK country
@@ -134,7 +138,20 @@ The repaired five-city validation runs serially with Node
 WebAssembly runtime reserves substantially more virtual memory than its resident
 memory use. These settings bound resident memory while allowing that reservation.
 Keep per-city failures recorded and continue to the next city; pin the adapter,
-task and manifest hashes for the run, and use a new run identity after code changes.
+task and manifest hashes for the run, and use a new run identity after adapter or
+qualification-rule changes.
+
+For a larger city queue, `scripts/lib/parcel-qualification-pool.mjs` supplies an
+asynchronous city pool and a separate limit for the heavy qualification stage.
+On the 8 GB research host, use two cities in progress with one qualification
+process at a time: the serial run reached about 2.45 GiB for one city. Both city
+workers share the service's 4 GiB memory-high and 5 GiB memory-max limits. Downloads
+and probes can overlap qualification without starting two full audits together.
+Keep one coordinator writing the run status, exclusive run ownership, and separate
+logs for each city attempt. Reuse verified completed results on resume; retain an
+interrupted attempt before starting a new one. A concurrency change can retain the
+run identity when task and adapter hashes match, with the coordinator change
+recorded separately in the run's execution history.
 
 ## Existing stored-data exceptions
 

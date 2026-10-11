@@ -506,7 +506,8 @@
         "cherbourg_en_cotentin",
         "saint_brieuc",
         "bussy_saint_georges",
-        "saint_nazaire"
+        "saint_nazaire",
+        "la_rochelle"
       ],
       "additionalCityEvidence": {
         "marseille": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
@@ -604,7 +605,8 @@
         "cherbourg_en_cotentin": "157 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32630) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "saint_brieuc": "296 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32630) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "bussy_saint_georges": "99 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32631) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
-        "saint_nazaire": "273 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32630) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+        "saint_nazaire": "273 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32630) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "la_rochelle": "Bounded qualification around the UN DESA WUP 2025 settlement locator for La Rochelle. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
       },
       "qualificationEvidence": [
         {
@@ -1011,6 +1013,14 @@
           "fullSafeSha256": "3dd8fa0d6f237d328ca15a9083e4e47f3918edf803de775d841e013ac7e8457d",
           "metricReportSha256": "488ff94f8b222134efc171dede219e1b885ac86c1ed7529c54f82ad5bc89c3fe",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/921/qualification.json"
+        },
+        {
+          "cityCode": "1469",
+          "appCityId": "la_rochelle",
+          "candidateSha256": "3266e9ea32f3a942026c7223dd1e003a1a738f5495a49a8295958b3ddfb46a7b",
+          "qualificationSha256": "29f5ab287a1f1c1bdc13a29d36448500c53a5ffc805535445a021a9da603d712",
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/la_rochelle/qualification.json"
         }
       ],
       "metricSridByCity": {
@@ -1064,8 +1074,14 @@
         "cherbourg_en_cotentin": 32630,
         "saint_brieuc": 32630,
         "bussy_saint_georges": 32631,
-        "saint_nazaire": 32630
-      }
+        "saint_nazaire": 32630,
+        "la_rochelle": 32630
+      },
+      "defaultForCity": true,
+      "version": "2.0.0",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "minRequestIntervalMs": 1500
     },
     {
       "id": "au-vic-vicmap-parcel",
@@ -1711,7 +1727,9 @@
       "licenceNote": "Geodom is an unofficial mirror publisher; host-specific conditions are not documented in the checked metadata. Underlying HMLR title-index and mirror publisher conditions remain informational.",
       "catalogueUrl": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
       "attribution": "HM Land Registry INSPIRE title-index polygons, dated 2021-10-22; public Geodom mirror. Adapted to WGS84.",
-      "evidenceFile": "research/birmingham-live.json"
+      "evidenceFile": "research/birmingham-live.json",
+      "defaultForCity": false,
+      "historicalForIds": true
     },
     {
       "id": "zm-lusaka-mtendere-east-agol-unofficial",
@@ -2109,7 +2127,9 @@
         "Whole official authority ZIP is indexed in transient memory; no upstream bbox API is claimed.",
         "OSGB36 conversion uses a Helmert approximation with approximately 5 m accuracy; no OSTN15 grid.",
         "Cold requests wait for a bounded download; monthly source changes are accepted only after complete parsing."
-      ]
+      ],
+      "defaultForCity": false,
+      "historicalForIds": true
     },
     {
       "idType": "string",
@@ -2144,7 +2164,9 @@
         "Whole official authority ZIP is indexed in transient memory; no upstream bbox API is claimed.",
         "OSGB36 conversion uses a Helmert approximation with approximately 5 m accuracy; no OSTN15 grid.",
         "Cold requests wait for a bounded download; monthly source changes are accepted only after complete parsing."
-      ]
+      ],
+      "defaultForCity": false,
+      "historicalForIds": true
     },
     {
       "idType": "string",
@@ -5911,7 +5933,8 @@
       "metricSrid": 32611,
       "projection": "EPSG:32611",
       "cityIds": [
-        "sandiego"
+        "sandiego",
+        "encinitas"
       ],
       "maxConcurrentQueries": 2,
       "operator": "SanGIS (City and County of San Diego joint-powers GIS agency); public county DPW service",
@@ -5919,7 +5942,26 @@
       "attribution": "SanGIS / County of San Diego · unstacked reference parcel polygons",
       "licenceNote": "Public official GIS reference data; source conditions informational. Sample does not establish legal title, survey accuracy or municipal completeness.",
       "scope": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN.",
-      "evidenceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json"
+      "evidenceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json",
+      "metricSridByCity": {
+        "sandiego": 32611,
+        "encinitas": 32611
+      },
+      "defaultForCity": true,
+      "cityScopes": {
+        "encinitas": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Encinitas. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "qualificationEvidence": [
+        {
+          "cityCode": "2660",
+          "appCityId": "encinitas",
+          "candidateSha256": "341d3d030d22e63639f5fa62e8196b8552a38e6692a382210820c77dea3c9423",
+          "qualificationSha256": "03b13119785c05e68bf2013acdc07ef082c4820b1f524ad77e074ebf5e6db25a",
+          "metricSrid": 32611,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/encinitas/qualification.json"
+        }
+      ],
+      "queryFormat": "esri-json"
     },
     {
       "id": "br-sg-prefeitura-geoserver-lote-cadastro",
@@ -6212,7 +6254,7 @@
       "queryFormat": "esri-json",
       "pageSize": 1000,
       "maxFeatures": 2000,
-      "maxBboxKm2": 1,
+      "maxBboxKm2": 2,
       "boundsQueryMode": "object-ids",
       "idsQueryMode": "object-ids",
       "name": "Chief Surveyor-General public Erven polygons",
@@ -6238,7 +6280,9 @@
         "brits",
         "ezakheni",
         "matsulu",
-        "khuma"
+        "khuma",
+        "lenasia",
+        "vosman"
       ],
       "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
       "scope": "Public Chief Surveyor-General Erven reference polygons hosted by DFFE; separately qualified bounded Klipgat and Evaton settlement views. Complete native PRCL_KEY identity and Esri straight-ring geometry are preserved. Each city retains its own extent and geometry-quality evidence; wider coverage, current legal title and survey accuracy remain unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
@@ -6277,7 +6321,9 @@
         "brits": "268 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "ezakheni": "137 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "matsulu": "199 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
-        "khuma": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+        "khuma": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "lenasia": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lenasia. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "vosman": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Vosman. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
       },
       "metricSridByCity": {
         "klipgat": 32735,
@@ -6296,7 +6342,9 @@
         "brits": 32735,
         "ezakheni": 32735,
         "matsulu": 32736,
-        "khuma": 32735
+        "khuma": 32735,
+        "lenasia": 32735,
+        "vosman": 32735
       },
       "qualificationEvidence": [
         {
@@ -6433,8 +6481,25 @@
           "fullSafeSha256": "57cc8290e756dac610583dc82dc4bd8accd16b20aa6f06ec6796b44f4ffcb1da",
           "metricReportSha256": "50827acde66c3af202d256cdbf8a19c96ebaa95e12560696cf70e872bdb89de2",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/3126/qualification.json"
+        },
+        {
+          "cityCode": "3855",
+          "appCityId": "lenasia",
+          "candidateSha256": "ffe03df2cd5d07ee3ac81e6f0270118ac85543fb6dd92fa2de6aef3c66e1bee3",
+          "qualificationSha256": "9c3f856e28dd290419f0661920a4f36164fc9bf48c4ecbca74e93e2706139fae",
+          "metricSrid": 32735,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json"
+        },
+        {
+          "cityCode": "4800",
+          "appCityId": "vosman",
+          "candidateSha256": "33626eb282396b75bfde69fedbbfdf6cf86f18998f0f7a0ff0ae8d471e0b3a4f",
+          "qualificationSha256": "4673724639ac50bdac00ab11cf4cdd6844668034bbc78800cdf1cd762d00d294",
+          "metricSrid": 32735,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/vosman/qualification.json"
         }
-      ]
+      ],
+      "defaultForCity": true
     },
     {
       "id": "za-ekurhuleni-stands",
@@ -6689,12 +6754,13 @@
       "maxFeatures": 2000,
       "maxBboxKm2": 1,
       "boundsQueryMode": "object-ids",
-      "idsQueryMode": "single-equality",
+      "idsQueryMode": "object-ids",
       "idBatchSize": 1,
       "name": "Lands Department CSDI Lot polygons",
       "adapter": "arcgis",
       "cityIds": [
-        "tuenmun"
+        "tuenmun",
+        "tung_chung"
       ],
       "operator": "Hong Kong Lands Department / Common Spatial Data Infrastructure Portal",
       "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
@@ -6702,8 +6768,26 @@
       "parcelNumberField": "LotID",
       "evidenceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
       "licenceNote": "Retain Hong Kong Lands Department attribution and published approximate-boundary and survey notices.",
-      "scope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
-      "maxConcurrentQueries": 1
+      "scope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information. The 2026-10-12 admission updates exact-ID transport to object-ID resolution followed by one-feature batches; retained Tuen Mun samples matched the same full XY footprints under the updated profile.",
+      "maxConcurrentQueries": 1,
+      "metricSridByCity": {
+        "tung_chung": 32649,
+        "tuenmun": 32650
+      },
+      "defaultForCity": true,
+      "cityScopes": {
+        "tung_chung": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Tung Chung. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "qualificationEvidence": [
+        {
+          "cityCode": "11554",
+          "appCityId": "tung_chung",
+          "candidateSha256": "9f320d008e5b5fe25e8e64ccca8463781beb64ee9d8b298ca1b3accd9def5196",
+          "qualificationSha256": "d3b199651f121d7e6b6d1402d193173825ea42772af4ad662efe8f9bee09c6d9",
+          "metricSrid": 32649,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/tung_chung/qualification.json"
+        }
+      ]
     },
     {
       "id": "de-bw-lgl-alkis-flurstueck",
@@ -7165,7 +7249,9 @@
         "kabwe",
         "livingstone",
         "kafue",
-        "mumbwa"
+        "mumbwa",
+        "mongu",
+        "luanshya"
       ],
       "maxConcurrentQueries": 6,
       "boundsQueryMode": "object-ids",
@@ -7185,7 +7271,9 @@
         "kabwe": 32735,
         "livingstone": 32735,
         "kafue": 32735,
-        "mumbwa": 32735
+        "mumbwa": 32735,
+        "mongu": 32734,
+        "luanshya": 32735
       },
       "additionalCityEvidence": {
         "mansa": "research/qualification-2026-10-11-round2/2412/qualification.json",
@@ -7199,7 +7287,9 @@
         "kabwe": "16 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "livingstone": "109 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "kafue": "4 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
-        "mumbwa": "62 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+        "mumbwa": "62 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "mongu": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Mongu. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "luanshya": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Luanshya. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
       },
       "qualificationEvidence": [
         {
@@ -7246,8 +7336,25 @@
           "fullSafeSha256": "d346b2e236695b28aa92070554e4f1da6d2cab625d0b46197ec2b0293f405907",
           "metricReportSha256": "b7959482970f7ae29a53029572e2a476257ae79fc4995c7d1b6a3c67a27cc073",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/838/qualification.json"
+        },
+        {
+          "cityCode": "104",
+          "appCityId": "mongu",
+          "candidateSha256": "6cc6136e4dbc0eba8dee8b1b7bc9443a7aaa7d227ce575fa99950d77bebc7f94",
+          "qualificationSha256": "ec5d75f34041f4fdb9ca244f275d96b0a002a4966689e6227629fcf2291881df",
+          "metricSrid": 32734,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/mongu/qualification.json"
+        },
+        {
+          "cityCode": "2025",
+          "appCityId": "luanshya",
+          "candidateSha256": "a4bb2766b85d3f2e0e5c19d0d32b37a6e5fe7c7c72a72fc2ea246e6f42cdf9f2",
+          "qualificationSha256": "0639cad898b450c4b96361618d2dd200f3afe7186f6a36117047e4347ae0faed",
+          "metricSrid": 32735,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json"
         }
-      ]
+      ],
+      "defaultForCity": true
     },
     {
       "id": "it-sicilia-sitr-cadastral-parcels",
@@ -7290,7 +7397,8 @@
       "countryCode": "IT",
       "metricSrid": 32633,
       "cityIds": [
-        "palermo"
+        "palermo",
+        "acireale"
       ],
       "maxConcurrentQueries": 2,
       "idBatchSize": 1,
@@ -7300,9 +7408,25 @@
       "catalogueUrl": "https://www.sitr.regione.sicilia.it/",
       "licenceNote": "Public publisher geometry and attribution verified; provider conditions remain informational. Geometry does not establish legal title, survey accuracy or currentness. Personal fields excluded.",
       "cityScopes": {
-        "palermo": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
+        "palermo": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+        "acireale": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Acireale. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
       },
-      "attribution": "Regione Siciliana SITR · cadastral-reference polygons · adapted"
+      "attribution": "Regione Siciliana SITR · cadastral-reference polygons · adapted",
+      "metricSridByCity": {
+        "palermo": 32633,
+        "acireale": 32633
+      },
+      "defaultForCity": true,
+      "qualificationEvidence": [
+        {
+          "cityCode": "5104",
+          "appCityId": "acireale",
+          "candidateSha256": "423d25e5b6830fab200370b8a88e9e6bbbfdea1f54011864cab3818eae9e06cc",
+          "qualificationSha256": "4836e49c5b72e70f0597399698ad2203e3caf839c1111abd9fb52c9aff71f6cf",
+          "metricSrid": 32633,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/acireale/qualification.json"
+        }
+      ]
     },
     {
       "id": "us-tx-el-paso-city-gis-parcels",
@@ -7671,7 +7795,9 @@
       "countryCode": "US",
       "metricSrid": 26917,
       "cityIds": [
-        "orlando"
+        "orlando",
+        "buenaventura_lakes",
+        "alafaya"
       ],
       "maxConcurrentQueries": 1,
       "operator": "Orange County Property Appraiser",
@@ -7682,7 +7808,36 @@
       "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
       "catalogueUrl": "https://webmap.ocpafl.org/search",
       "attribution": "Orange County Property Appraiser · assessment parcel references · adapted",
-      "licenceNote": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested."
+      "licenceNote": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested.",
+      "metricSridByCity": {
+        "orlando": 26917,
+        "buenaventura_lakes": 32617,
+        "alafaya": 32617
+      },
+      "defaultForCity": true,
+      "cityScopes": {
+        "buenaventura_lakes": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Buenaventura Lakes. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "alafaya": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Alafaya. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "qualificationEvidence": [
+        {
+          "cityCode": "7367",
+          "appCityId": "buenaventura_lakes",
+          "candidateSha256": "6339cd16398f6d98d5b9036693154bbb581707cf0d8146800ee1b6af8529441b",
+          "qualificationSha256": "f262ef7dac130a19cf6e2fa903b67e2e070045e9f8a9ef0caac8a588c1f3207d",
+          "metricSrid": 32617,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/qualification.json"
+        },
+        {
+          "cityCode": "7468",
+          "appCityId": "alafaya",
+          "candidateSha256": "30beacad2349c419aa20d2896e1d5565cbf7bba724d613c6a7eef8f0d2df1c21",
+          "qualificationSha256": "213a90ed0f690c4d82c39e711f418ff8be2daae83475772eaaf16b642f038e55",
+          "metricSrid": 32617,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/alafaya/qualification.json"
+        }
+      ],
+      "queryFormat": "esri-json"
     },
     {
       "id": "ie-tailte-hvd-freehold",
@@ -8515,7 +8670,8 @@
       "countryCode": "US",
       "stateCode": "NY",
       "cityIds": [
-        "buffalo"
+        "buffalo",
+        "lackawanna"
       ],
       "operator": "Erie County Office of GIS",
       "scope": "Erie County tax-parcel polygon service linked by the City of Buffalo; bounded local qualification only. Buffalo municipal completeness is unverified.",
@@ -8535,9 +8691,24 @@
           "fullSafeSha256": "6aab4399de5ff02b5389625852101aee8d15debefb7f42cb31d38e239e957f18",
           "metricReportSha256": "85e3f454dd98e4ee22447cf59070bbc85ed2c6c4a2195044eef6ac7f304161fe",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json"
+        },
+        {
+          "cityCode": "8193",
+          "appCityId": "lackawanna",
+          "candidateSha256": "efbe2a199f2cf75e98438dc8a322ba6a4bb08b0a7aa6787b0335c205666ab271",
+          "qualificationSha256": "b195362b5aa59378db8d5d48dc2ab8710f431ffeea0959a14ada1310245c8a58",
+          "metricSrid": 32617,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/lackawanna/qualification.json"
         }
       ],
-      "defaultForCity": true
+      "defaultForCity": true,
+      "metricSridByCity": {
+        "buffalo": 32617,
+        "lackawanna": 32617
+      },
+      "cityScopes": {
+        "lackawanna": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lackawanna. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      }
     },
     {
       "id": "ca-on-oshawa-assessed-parcels",
@@ -8597,7 +8768,8 @@
       "adapter": "arcgis",
       "endpoint": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
       "cityIds": [
-        "arlington"
+        "arlington",
+        "lindberg"
       ],
       "idField": "TaxParcelId",
       "objectIdField": "OBJECTID",
@@ -8631,9 +8803,24 @@
           "fullSafeSha256": "ed72aecc3aca11181548bf29cfd7b2448fb6eb9bc5c3bf20e0e0e1867198e504",
           "metricReportSha256": "3a358ddb01ff461b0e25b6cba328f0f822022ea103d60b6b0b7b6098a204b581",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json"
+        },
+        {
+          "cityCode": "6345",
+          "appCityId": "lindberg",
+          "candidateSha256": "efa17bebf38383f0f0ba8a2a6f9c09411b86e57fb6627db86ebd42c96a1fea9a",
+          "qualificationSha256": "fdbbbd31de0c40326ad410954a080fa9e6224386c8dd743ae500040067fadad7",
+          "metricSrid": 32614,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/lindberg/qualification.json"
         }
       ],
-      "defaultForCity": true
+      "defaultForCity": true,
+      "metricSridByCity": {
+        "arlington": 32614,
+        "lindberg": 32614
+      },
+      "cityScopes": {
+        "lindberg": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lindberg. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      }
     },
     {
       "id": "brno-city-gis-katastr-g-parcely",
@@ -9048,7 +9235,7 @@
     },
     {
       "id": "gb-hmlr-browser-v1",
-      "name": "HM Land Registry \u2014 England and Wales browser ground",
+      "name": "HM Land Registry — England and Wales browser ground",
       "adapter": "hmlr-browser",
       "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
       "idPrefix": "GB-HMLR-BROWSER-v1-",
@@ -9060,25 +9247,274 @@
       "idType": "string",
       "countryCode": "GB",
       "metricSrid": 27700,
-      "cityIds": [],
-      "defaultForCity": false,
+      "cityIds": [
+        "manchester",
+        "birmingham",
+        "newcastle",
+        "oxford",
+        "london",
+        "cardiff",
+        "bristol",
+        "stoke_on_trent",
+        "bournemouth",
+        "leeds",
+        "coventry",
+        "southampton",
+        "sheffield",
+        "nottingham",
+        "middlesbrough",
+        "portsmouth",
+        "leicester",
+        "brighton",
+        "hull",
+        "southend_on_sea"
+      ],
+      "defaultForCity": true,
       "maxFeatures": 5000,
       "maxBboxKm2": 25,
       "geometryKind": "derived-ground",
       "normalizationPolicy": "hmlr-browser-v1-area-desc-id-asc-grid1mm-project-before-overlay-geos3.13.0",
-      "scope": "England and Wales registered freehold title-index coverage; deterministic derived ground, not legal title boundaries.",
+      "scope": "England and Wales HM Land Registry INSPIRE freehold title-index coverage. Application ground is a deterministic derived surface, not a legal title boundary; qualification evidence is bounded at each listed WUP city locator.",
       "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.",
       "maxConcurrentQueries": 2,
       "capabilities": {
         "areaEnumeration": true
       },
-      "evidenceFile": "backend/parcels/HMLR-GROUND.md",
+      "evidenceFile": "world-parcels/research/qualification-admission-2026-10-12.json",
       "licenceNote": "Official INSPIRE freehold index downloads are published under the Open Government Licence. Derived ground retains publisher attribution and source provenance.",
       "caveats": [
         "Requires a complete, SHA-verified static routing manifest before city bindings are enabled.",
         "Council ZIPs are downloaded and processed in the browser; a transport relay handles the publisher cookie/redirect flow.",
         "Application footprints use deterministic overlap resolution and remain indicative freehold title-index derivatives."
-      ]
+      ],
+      "metricSridByCity": {
+        "manchester": 32630,
+        "birmingham": 32630,
+        "newcastle": 32630,
+        "oxford": 32630,
+        "london": 32630,
+        "cardiff": 32630,
+        "bristol": 32630,
+        "stoke_on_trent": 32630,
+        "bournemouth": 32630,
+        "leeds": 32630,
+        "coventry": 32630,
+        "southampton": 32630,
+        "sheffield": 32630,
+        "nottingham": 32630,
+        "middlesbrough": 32630,
+        "portsmouth": 32630,
+        "leicester": 32630,
+        "brighton": 32630,
+        "hull": 32630,
+        "southend_on_sea": 32631
+      },
+      "cityScopes": {
+        "manchester": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Manchester. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "birmingham": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Birmingham. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "newcastle": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Newcastle upon Tyne. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "oxford": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Oxford. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "london": "Bounded qualification around the UN DESA WUP 2025 settlement locator for London. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "cardiff": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Cardiff. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "bristol": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Bristol. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "stoke_on_trent": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Stoke-on-Trent. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "bournemouth": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Bournemouth. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "leeds": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Leeds. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "coventry": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Coventry. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "southampton": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Southampton. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "sheffield": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Sheffield. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "nottingham": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Nottingham. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "middlesbrough": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Middlesbrough. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "portsmouth": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Portsmouth. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "leicester": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Leicester. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "brighton": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Brighton. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "hull": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Hull. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "southend_on_sea": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Southend-on-Sea. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "qualificationEvidence": [
+        {
+          "cityCode": "3388",
+          "appCityId": "manchester",
+          "candidateSha256": "3e7ce02d3496eaaa649917f33f44d0935f480fdf8c23b765dfcbd2d729b417d0",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/manchester/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/manchester/metric-report.json"
+        },
+        {
+          "cityCode": "3979",
+          "appCityId": "birmingham",
+          "candidateSha256": "89732df8b8f28d15e4da95953be0196fcbfd4d7b81377750d4ba3224425b27c6",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/birmingham/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/birmingham/metric-report.json"
+        },
+        {
+          "cityCode": "4536",
+          "appCityId": "newcastle",
+          "candidateSha256": "349d861a6a8f57b9a07b01c7738ddba9dfce9617a1736dbbe7c168c558267d78",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/newcastle/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/newcastle/metric-report.json"
+        },
+        {
+          "cityCode": "5278",
+          "appCityId": "oxford",
+          "candidateSha256": "f9f456f2707f2a1d9aee2326b42f806b71589c23fd743338e01c40ccea159f85",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/oxford/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/oxford/metric-report.json"
+        },
+        {
+          "cityCode": "5938",
+          "appCityId": "london",
+          "candidateSha256": "8295512fa712defda444542f4301e50903459b9ce650ece6733d8e1cacf45f81",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/london/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/london/metric-report.json"
+        },
+        {
+          "cityCode": "2001",
+          "appCityId": "cardiff",
+          "candidateSha256": "4063dba20da1c02531cde4ce6ff16691496dde35f5e0c389d9cc58a4ec060881",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/cardiff/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/cardiff/metric-report.json"
+        },
+        {
+          "cityCode": "3110",
+          "appCityId": "bristol",
+          "candidateSha256": "b9548f23adc25fe0eb45a1cc8905e107f7908a03288539a56c718269d1f97fac",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/bristol/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/bristol/metric-report.json"
+        },
+        {
+          "cityCode": "3890",
+          "appCityId": "stoke_on_trent",
+          "candidateSha256": "26ce63cee14243dd45e9699ac5a4509abf2e6c121298b577f8ab0ca689c260fc",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/stoke_on_trent/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/stoke_on_trent/metric-report.json"
+        },
+        {
+          "cityCode": "4108",
+          "appCityId": "bournemouth",
+          "candidateSha256": "ac9bf8c00d3a3940e55eb7f3faa887c0cfd5c58914cadaed6a42f6153bc4b776",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/bournemouth/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/bournemouth/metric-report.json"
+        },
+        {
+          "cityCode": "4425",
+          "appCityId": "leeds",
+          "candidateSha256": "896e1450b5d29d0480f790efcda7eccf24ae01b96e7f1993d7941e403cc9fea6",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/leeds/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/leeds/metric-report.json"
+        },
+        {
+          "cityCode": "4647",
+          "appCityId": "coventry",
+          "candidateSha256": "3c23c78f3943b37ea8fa899d9045b983576a5dcc9a471f9d2d31cf396d67a6bf",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/coventry/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/coventry/metric-report.json"
+        },
+        {
+          "cityCode": "4684",
+          "appCityId": "southampton",
+          "candidateSha256": "aadb9dad8d7dc47dbb98fa04761d623b0af1d21b8cc71c14f0e9dc10a2c3c378",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/southampton/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/southampton/metric-report.json"
+        },
+        {
+          "cityCode": "4792",
+          "appCityId": "sheffield",
+          "candidateSha256": "a1f280ba1866ef114618be9719e3000dec7242e0a5b4286a4dc95a8087609005",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/sheffield/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/sheffield/metric-report.json"
+        },
+        {
+          "cityCode": "5220",
+          "appCityId": "nottingham",
+          "candidateSha256": "7ea0f32b2602aec9951dd9b310b92b406942eceb4ccdc2acf8d9f18102933cd8",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/nottingham/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/nottingham/metric-report.json"
+        },
+        {
+          "cityCode": "5250",
+          "appCityId": "middlesbrough",
+          "candidateSha256": "70c0590ec62f5bad6cba8dc9c9d4b65e1906d60de40c4ea652c36a142346bfca",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/middlesbrough/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/middlesbrough/metric-report.json"
+        },
+        {
+          "cityCode": "5388",
+          "appCityId": "portsmouth",
+          "candidateSha256": "eb150eb0f9d5e564ff6379c5f98342b87148e6b697e9efa4b8cf85d8042e1b50",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/portsmouth/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/portsmouth/metric-report.json"
+        },
+        {
+          "cityCode": "5469",
+          "appCityId": "leicester",
+          "candidateSha256": "89ee3386368b22ef72c9b5739e6fb4fbf20ca36cd37f3da748eb24aaaa6a88be",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/leicester/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/leicester/metric-report.json"
+        },
+        {
+          "cityCode": "6034",
+          "appCityId": "brighton",
+          "candidateSha256": "a700209671372013f42f88c10ebf9a83bfff453731c194f83978072e31fb3df3",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/brighton/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/brighton/metric-report.json"
+        },
+        {
+          "cityCode": "6053",
+          "appCityId": "hull",
+          "candidateSha256": "96eeda5824e597a3da738413f6c7356d7ae7d9de527080d4550258585876110c",
+          "qualificationSha256": null,
+          "metricSrid": 32630,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/hull/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/hull/metric-report.json"
+        },
+        {
+          "cityCode": "6431",
+          "appCityId": "southend_on_sea",
+          "candidateSha256": "0e294b3e7c4eb0aa2e67e1af63f10ad40c231d800a63441fd5664ff159794bce",
+          "qualificationSha256": null,
+          "metricSrid": 32631,
+          "evidenceFile": "world-parcels/research/qualification-2026-10-12/southend_on_sea/qualification.json",
+          "metricReportFile": "world-parcels/research/qualification-2026-10-12/southend_on_sea/metric-report.json"
+        }
+      ],
+      "manifestUrl": "https://urbangametheory.xyz/data/hmlr/44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90/manifest.json",
+      "snapshotId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90"
     }
   ]
 }

@@ -1,0 +1,1637 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "2025",
+  "cityName": "Luanshya",
+  "sourceId": "zm-nsdi-zilmis-lots",
+  "candidateSha256": "a4bb2766b85d3f2e0e5c19d0d32b37a6e5fe7c7c72a72fc2ea246e6f42cdf9f2",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 5,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 5,
+      "collectedUniqueCount": 5
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 26
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "[absolute path omitted]",
+      "inputSha256": "55e6b0e3b91c6bc4a0c7bc99f010a97a9003300863b1fc55dbb058a357dc9482",
+      "featureCount": 5,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32735",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "[saved full-safe cache intentionally omitted from durable release]",
+  "cacheSha256": "55e6b0e3b91c6bc4a0c7bc99f010a97a9003300863b1fc55dbb058a357dc9482",
+  "featureCount": 5,
+  "sampleIds": [
+    "ZM-NSDI-LOT-298159"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        28.421,
+        -13.145,
+        28.422,
+        -13.144
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        28.422,
+        -13.145,
+        28.423,
+        -13.144
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        28.423,
+        -13.145,
+        28.424,
+        -13.144
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-307961"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        28.421,
+        -13.144,
+        28.422,
+        -13.143
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        28.422,
+        -13.144,
+        28.423,
+        -13.143
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        28.423,
+        -13.144,
+        28.424,
+        -13.143
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        28.421,
+        -13.143,
+        28.422,
+        -13.142
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        28.422,
+        -13.143,
+        28.423,
+        -13.142
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        28.423,
+        -13.143,
+        28.424,
+        -13.142
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        28.422,
+        -13.146,
+        28.423,
+        -13.145
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        28.422,
+        -13.142,
+        28.423,
+        -13.141
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "ZM-NSDI-LOT-298159",
+        "ZM-NSDI-LOT-303935",
+        "ZM-NSDI-LOT-303948",
+        "ZM-NSDI-LOT-304482"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        28.42,
+        -13.144,
+        28.421,
+        -13.143
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZM-NSDI-LOT-298159"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        28.424,
+        -13.144,
+        28.425,
+        -13.143
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 104,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:40.625Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2257
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:42.887Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1266
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:44.160Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1266
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:45.430Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1213
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:46.644Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1167
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:47.812Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1785
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:49.599Z",
+      "queryHash": "df969bc1fd4f98e65a732d08623ea44141d83bb4fa8991a12b130e2080698431",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1216
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:50.816Z",
+      "queryHash": "df969bc1fd4f98e65a732d08623ea44141d83bb4fa8991a12b130e2080698431",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1131
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:51.950Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1273
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:53.225Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1459
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:54.685Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1237
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:55.923Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1363
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:57.286Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1337
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:58.624Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1202
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T16:59:59.830Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1307
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:01.138Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1451
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:02.591Z",
+      "queryHash": "fb0113e94ea0edc334b7863401dcd67ddd1f79e43f3afa3b97a0806dce59cfcd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1280
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:03.872Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1293
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:05.166Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1348
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:06.515Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1235
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:07.751Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1253
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:09.005Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1414
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:10.420Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1247
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:11.670Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1280
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:12.950Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1250
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:14.201Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1302
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:15.505Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1423
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:16.929Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1211
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:18.141Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1262
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:19.404Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1474
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:20.881Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1237
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:22.123Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1257
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:23.381Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1361
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:24.743Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1381
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:26.127Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1440
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:27.568Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1319
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:28.889Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1361
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:30.250Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1369
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:31.620Z",
+      "queryHash": "2bbaa5fdb0b0364eccb0c0c8f2311f21ab8cf599311840955706db4ddaaa6042",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1424
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:33.045Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1264
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:34.310Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1378
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:35.689Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1226
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:36.917Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1363
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:38.281Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1300
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:39.583Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1285
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:40.868Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1492
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:42.360Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1285
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:43.646Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1334
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:44.982Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1332
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:46.315Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1276
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:47.592Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1338
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:48.931Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1494
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:50.425Z",
+      "queryHash": "fb0113e94ea0edc334b7863401dcd67ddd1f79e43f3afa3b97a0806dce59cfcd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1263
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:51.689Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1305
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:52.995Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1476
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:54.472Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1313
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:55.786Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1284
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:57.071Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1426
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:58.498Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1288
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:00:59.787Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1407
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:01.197Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1320
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:02.518Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1197
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:03.717Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1466
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:05.183Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1246
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:06.430Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1366
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:07.797Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1568
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:09.366Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1252
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:10.619Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1394
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:12.015Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1407
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:13.423Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1316
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:14.740Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1528
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:16.268Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1266
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:17.535Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1297
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:18.833Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1572
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:20.407Z",
+      "queryHash": "2bbaa5fdb0b0364eccb0c0c8f2311f21ab8cf599311840955706db4ddaaa6042",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1380
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:21.788Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1358
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:23.147Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1540
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:24.688Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1333
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:26.022Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1458
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:27.482Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1430
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:28.914Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1400
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:30.315Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1298
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:31.614Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1277
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:32.893Z",
+      "queryHash": "ff61290eab875d461e07079109d961fa5357f3949c56439c438a14f48715825c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1292
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:34.186Z",
+      "queryHash": "ff61290eab875d461e07079109d961fa5357f3949c56439c438a14f48715825c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1352
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:35.540Z",
+      "queryHash": "6daadfbc314db418f0317bfd2ff9523fe97453e825023364dff807192ba6e871",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1333
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:36.874Z",
+      "queryHash": "aea0ab794b46110e5fc7fd684bb62136c63648564cd3ebeece72796ec7fa3290",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1299
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:38.174Z",
+      "queryHash": "aea0ab794b46110e5fc7fd684bb62136c63648564cd3ebeece72796ec7fa3290",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1271
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:39.446Z",
+      "queryHash": "c97c83dfaf98a01c4fab9edd44713f04c3486f0a08ffa5d0a510853ce4e0c92b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1364
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:40.813Z",
+      "queryHash": "1410c2f995fbd1acf2ff82b3b3d3c7bf70dd99a71f05b551d01affbb2ab6bc8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1086
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:41.900Z",
+      "queryHash": "1410c2f995fbd1acf2ff82b3b3d3c7bf70dd99a71f05b551d01affbb2ab6bc8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1100
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:43.002Z",
+      "queryHash": "996c16e1642769ad4c6edda7c747fb245ffd219ff6104ca0f52da721d21cfb21",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1303
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:44.311Z",
+      "queryHash": "7f218981262d8ea3db83036f42640150591ad2f0684370ee81fb571d9c73c997",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1334
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:45.649Z",
+      "queryHash": "7f218981262d8ea3db83036f42640150591ad2f0684370ee81fb571d9c73c997",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1070
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:46.720Z",
+      "queryHash": "fb0113e94ea0edc334b7863401dcd67ddd1f79e43f3afa3b97a0806dce59cfcd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1358
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:48.082Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1189
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:49.272Z",
+      "queryHash": "a49c60ffbd57e254ee9160ee087112ba89db6ba2505ee7fc73c5f3d9874f4963",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1079
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:50.353Z",
+      "queryHash": "a7c4cc0266293eecb793cefec8e91492cd621bf01b594eadd746444bad058ce4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1297
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:51.653Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1303
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:52.956Z",
+      "queryHash": "69934c60a1393e03db2d50f489c94fb0870771b1ece2482507a04473e9488b60",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1342
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:54.300Z",
+      "queryHash": "37e8db9498c97be7ee00b5fb3729ea9f4dff9223920315f7838c5a51f5febd8a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 35,
+      "httpStatus": 200,
+      "elapsedMs": 1352
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:55.875Z",
+      "queryHash": "c42804c59b944b6039df411c5590fddc8656643d969b27fa6b28b34a2c40185b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1323
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:57.201Z",
+      "queryHash": "c42804c59b944b6039df411c5590fddc8656643d969b27fa6b28b34a2c40185b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1116
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-11T17:01:58.318Z",
+      "queryHash": "760aa85372ede7892153a20d72edcb60c11a753eedf87589806aa008db80353e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 1199
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

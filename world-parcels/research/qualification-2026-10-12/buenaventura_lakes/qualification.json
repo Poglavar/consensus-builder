@@ -1,0 +1,1968 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "7367",
+  "cityName": "Buenaventura Lakes",
+  "sourceId": "orlando-ocpa-arcgis",
+  "candidateSha256": "6339cd16398f6d98d5b9036693154bbb581707cf0d8146800ee1b6af8529441b",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 84,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 84,
+      "collectedUniqueCount": 84
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 274
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "[absolute path omitted]",
+      "inputSha256": "89cf94a4d65c8b6bab0d3a4410b8ab408b3ca220be752d8e82faf66b27b04d21",
+      "featureCount": 84,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32617",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "[saved full-safe cache intentionally omitted from durable release]",
+  "cacheSha256": "89cf94a4d65c8b6bab0d3a4410b8ab408b3ca220be752d8e82faf66b27b04d21",
+  "featureCount": 84,
+  "sampleIds": [
+    "US-ORANGE-COUNTY-PARCEL-292435606300006"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -81.38,
+        28.351,
+        -81.379,
+        28.352
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300005",
+        "US-ORANGE-COUNTY-PARCEL-292435606300006"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -81.379,
+        28.351,
+        -81.378,
+        28.352
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606400004",
+        "US-ORANGE-COUNTY-PARCEL-292435606300005",
+        "US-ORANGE-COUNTY-PARCEL-292435606300006"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -81.378,
+        28.351,
+        -81.377,
+        28.352
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606400004",
+        "US-ORANGE-COUNTY-PARCEL-292435606400002",
+        "US-ORANGE-COUNTY-PARCEL-292435606300005",
+        "US-ORANGE-COUNTY-PARCEL-292435606300006"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -81.38,
+        28.352,
+        -81.379,
+        28.353
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300480",
+        "US-ORANGE-COUNTY-PARCEL-292435606300470",
+        "US-ORANGE-COUNTY-PARCEL-292435606300460",
+        "US-ORANGE-COUNTY-PARCEL-292435606300430",
+        "US-ORANGE-COUNTY-PARCEL-292435606300005",
+        "US-ORANGE-COUNTY-PARCEL-292435606300450",
+        "US-ORANGE-COUNTY-PARCEL-292435606300006",
+        "US-ORANGE-COUNTY-PARCEL-292435606300440"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -81.379,
+        28.352,
+        -81.378,
+        28.353
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300001",
+        "US-ORANGE-COUNTY-PARCEL-292435606300430",
+        "US-ORANGE-COUNTY-PARCEL-292435606300420",
+        "US-ORANGE-COUNTY-PARCEL-292435606300400",
+        "US-ORANGE-COUNTY-PARCEL-292435606300390",
+        "US-ORANGE-COUNTY-PARCEL-292435606300410",
+        "US-ORANGE-COUNTY-PARCEL-292435606300006",
+        "US-ORANGE-COUNTY-PARCEL-292435606300440"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -81.378,
+        28.352,
+        -81.377,
+        28.353
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300001",
+        "US-ORANGE-COUNTY-PARCEL-292435606400004",
+        "US-ORANGE-COUNTY-PARCEL-292435606300360",
+        "US-ORANGE-COUNTY-PARCEL-292435606300370",
+        "US-ORANGE-COUNTY-PARCEL-292435606300380",
+        "US-ORANGE-COUNTY-PARCEL-292435606300390",
+        "US-ORANGE-COUNTY-PARCEL-292435606300350",
+        "US-ORANGE-COUNTY-PARCEL-292435606300005",
+        "US-ORANGE-COUNTY-PARCEL-292435606300006"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -81.38,
+        28.353,
+        -81.379,
+        28.354
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300001",
+        "US-ORANGE-COUNTY-PARCEL-292435606300600",
+        "US-ORANGE-COUNTY-PARCEL-292435606300530",
+        "US-ORANGE-COUNTY-PARCEL-292435606300590",
+        "US-ORANGE-COUNTY-PARCEL-292435606300520",
+        "US-ORANGE-COUNTY-PARCEL-292435606300540",
+        "US-ORANGE-COUNTY-PARCEL-292435606300510",
+        "US-ORANGE-COUNTY-PARCEL-292435606300550",
+        "US-ORANGE-COUNTY-PARCEL-292435606300500",
+        "US-ORANGE-COUNTY-PARCEL-292435606300580",
+        "US-ORANGE-COUNTY-PARCEL-292435606300490",
+        "US-ORANGE-COUNTY-PARCEL-292435606300480",
+        "US-ORANGE-COUNTY-PARCEL-292435606300470",
+        "US-ORANGE-COUNTY-PARCEL-292435606300460",
+        "US-ORANGE-COUNTY-PARCEL-292435931500001",
+        "US-ORANGE-COUNTY-PARCEL-292435606300005",
+        "US-ORANGE-COUNTY-PARCEL-292435606300560",
+        "US-ORANGE-COUNTY-PARCEL-292435606300450",
+        "US-ORANGE-COUNTY-PARCEL-292435606300570",
+        "US-ORANGE-COUNTY-PARCEL-292435606300440"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -81.379,
+        28.353,
+        -81.378,
+        28.354
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300001",
+        "US-ORANGE-COUNTY-PARCEL-292435606300640",
+        "US-ORANGE-COUNTY-PARCEL-292435606300610",
+        "US-ORANGE-COUNTY-PARCEL-292435606300600",
+        "US-ORANGE-COUNTY-PARCEL-292435606300590",
+        "US-ORANGE-COUNTY-PARCEL-292435606300800",
+        "US-ORANGE-COUNTY-PARCEL-292435606300790",
+        "US-ORANGE-COUNTY-PARCEL-292435606300580",
+        "US-ORANGE-COUNTY-PARCEL-292435606300780",
+        "US-ORANGE-COUNTY-PARCEL-292435606300760",
+        "US-ORANGE-COUNTY-PARCEL-292435606300770",
+        "US-ORANGE-COUNTY-PARCEL-292435606300430",
+        "US-ORANGE-COUNTY-PARCEL-292435606300420",
+        "US-ORANGE-COUNTY-PARCEL-292435606300620",
+        "US-ORANGE-COUNTY-PARCEL-292435606300810",
+        "US-ORANGE-COUNTY-PARCEL-292435606300750",
+        "US-ORANGE-COUNTY-PARCEL-292435606300630",
+        "US-ORANGE-COUNTY-PARCEL-292435606300570",
+        "US-ORANGE-COUNTY-PARCEL-292435606300006",
+        "US-ORANGE-COUNTY-PARCEL-292435606300440"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -81.378,
+        28.353,
+        -81.377,
+        28.354
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300001",
+        "US-ORANGE-COUNTY-PARCEL-292435606300660",
+        "US-ORANGE-COUNTY-PARCEL-292435606300640",
+        "US-ORANGE-COUNTY-PARCEL-292435606300300",
+        "US-ORANGE-COUNTY-PARCEL-292435606300310",
+        "US-ORANGE-COUNTY-PARCEL-292435606300280",
+        "US-ORANGE-COUNTY-PARCEL-292435606300330",
+        "US-ORANGE-COUNTY-PARCEL-292435606300270",
+        "US-ORANGE-COUNTY-PARCEL-292435606300340",
+        "US-ORANGE-COUNTY-PARCEL-292435606300260",
+        "US-ORANGE-COUNTY-PARCEL-292435606300007",
+        "US-ORANGE-COUNTY-PARCEL-292435606300360",
+        "US-ORANGE-COUNTY-PARCEL-292435606300370",
+        "US-ORANGE-COUNTY-PARCEL-292435606300820",
+        "US-ORANGE-COUNTY-PARCEL-292435606300810",
+        "US-ORANGE-COUNTY-PARCEL-292435606300750",
+        "US-ORANGE-COUNTY-PARCEL-292435606300650",
+        "US-ORANGE-COUNTY-PARCEL-292435606300350",
+        "US-ORANGE-COUNTY-PARCEL-292435606300320",
+        "US-ORANGE-COUNTY-PARCEL-292435606300290",
+        "US-ORANGE-COUNTY-PARCEL-292435606300740"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -81.379,
+        28.35,
+        -81.378,
+        28.351
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606400004",
+        "US-ORANGE-COUNTY-PARCEL-292435606400002",
+        "US-ORANGE-COUNTY-PARCEL-292435606300005"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -81.379,
+        28.354,
+        -81.378,
+        28.355
+      ],
+      "complete": true,
+      "featureCount": 26,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435931501120",
+        "US-ORANGE-COUNTY-PARCEL-292435931501140",
+        "US-ORANGE-COUNTY-PARCEL-292435931501130",
+        "US-ORANGE-COUNTY-PARCEL-292435931501030",
+        "US-ORANGE-COUNTY-PARCEL-292435931500950",
+        "US-ORANGE-COUNTY-PARCEL-292435931501020",
+        "US-ORANGE-COUNTY-PARCEL-292435931500980",
+        "US-ORANGE-COUNTY-PARCEL-292435931500990",
+        "US-ORANGE-COUNTY-PARCEL-292435931501000",
+        "US-ORANGE-COUNTY-PARCEL-292435931501010",
+        "US-ORANGE-COUNTY-PARCEL-292435931500800",
+        "US-ORANGE-COUNTY-PARCEL-292435931500790",
+        "US-ORANGE-COUNTY-PARCEL-292435931500780",
+        "US-ORANGE-COUNTY-PARCEL-292435931500770",
+        "US-ORANGE-COUNTY-PARCEL-292435931500740",
+        "US-ORANGE-COUNTY-PARCEL-292435931500760",
+        "US-ORANGE-COUNTY-PARCEL-292435931500750",
+        "US-ORANGE-COUNTY-PARCEL-292435606300640",
+        "US-ORANGE-COUNTY-PARCEL-292435606300610",
+        "US-ORANGE-COUNTY-PARCEL-292435606300600",
+        "US-ORANGE-COUNTY-PARCEL-292435931500960",
+        "US-ORANGE-COUNTY-PARCEL-292435931500730",
+        "US-ORANGE-COUNTY-PARCEL-292435606300620",
+        "US-ORANGE-COUNTY-PARCEL-292435606300650",
+        "US-ORANGE-COUNTY-PARCEL-292435931500970",
+        "US-ORANGE-COUNTY-PARCEL-292435606300630"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -81.381,
+        28.352,
+        -81.38,
+        28.353
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300005",
+        "US-ORANGE-COUNTY-PARCEL-292435000000009"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -81.377,
+        28.352,
+        -81.376,
+        28.353
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "US-ORANGE-COUNTY-PARCEL-292435606300001",
+        "US-ORANGE-COUNTY-PARCEL-292435606400004",
+        "US-ORANGE-COUNTY-PARCEL-292435606300004",
+        "US-ORANGE-COUNTY-PARCEL-292435606300120",
+        "US-ORANGE-COUNTY-PARCEL-292435606300007",
+        "US-ORANGE-COUNTY-PARCEL-292435606300130",
+        "US-ORANGE-COUNTY-PARCEL-292435606401130",
+        "US-ORANGE-COUNTY-PARCEL-292435606400830",
+        "US-ORANGE-COUNTY-PARCEL-292435606300350",
+        "US-ORANGE-COUNTY-PARCEL-292435606400001",
+        "US-ORANGE-COUNTY-PARCEL-292435606300005"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 118,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:50.923Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 919
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:51.846Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 169
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:52.016Z",
+      "queryHash": "b1ef39afe1dbbcf893946fc073a5ef0211c9f01853be9d15e2cc89a83b5b5f97",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:52.200Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:52.366Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:52.532Z",
+      "queryHash": "b1ef39afe1dbbcf893946fc073a5ef0211c9f01853be9d15e2cc89a83b5b5f97",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:52.699Z",
+      "queryHash": "cadb3e57b6802a2af5b43430a826e8a3d089eeb0eb3185e01435ea130af8b969",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 163
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:52.863Z",
+      "queryHash": "cadb3e57b6802a2af5b43430a826e8a3d089eeb0eb3185e01435ea130af8b969",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 163
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:53.029Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:53.204Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:53.378Z",
+      "queryHash": "dbcf8d64b4251b445f8cea139a9f38c47aeb1e132997b4cea0b0ea2a9293e52b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:53.550Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:53.722Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 169
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:53.892Z",
+      "queryHash": "7c6fe3d6ab00b9bb68078d345c34d1f71c6eaad4e22975dd4f47d2f6dd71ff41",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 169
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:54.062Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:54.236Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:54.406Z",
+      "queryHash": "20241115bd1b6f44ee3fad813a1c01c8144e236f18d1d432609bc625b4519a3e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:54.614Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:54.786Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:54.956Z",
+      "queryHash": "0d4bc2a56276b03bfecd137a8ecca4fbc227cd5e6fa4b053275d4fae9c4d00da",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:55.130Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:55.308Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:55.483Z",
+      "queryHash": "0173c3f4107a6ffd5ba02538befc853cae8908e38bf2f6659d8c90f0817f353f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 201
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:55.912Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:56.089Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:56.265Z",
+      "queryHash": "2658461d2707e54cacd146cf7df13535d34dd4430f56ce04deaf46179db107f0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 204
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:56.508Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:56.687Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:56.862Z",
+      "queryHash": "77264885d2ae0dcae081440ee87c84e1714b57fc7627e65d4505d9ff2687f0ed",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 206
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:57.104Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:57.279Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:57.455Z",
+      "queryHash": "3fd34684405a47c27818d1a0c34e42897ea319b6cbfd882c92621cabf5c25f9c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 204
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:57.715Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:57.891Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:58.064Z",
+      "queryHash": "dfdd3547afafd3687bb23155d9d0e4382113ac568fefc5b900ff114ff1cceb72",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:58.333Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:58.508Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:38:58.677Z",
+      "queryHash": "6bad9dde09ecb5634618b0a0b7a7cd6db6b0dfbbc4cb19c25c83daf8338a4326",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1532
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:00.211Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:00.389Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:00.564Z",
+      "queryHash": "3fa067ecc41503a8d5e16b6af3ab79d8b4e95d84052844aa56ae604c832c18c0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 25,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:00.753Z",
+      "queryHash": "4a2e1472d9ce9e5e0654610147dc6d1a42b32f4a0e9b13d7e0116121985c1bfd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 167
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:00.921Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:01.092Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:01.265Z",
+      "queryHash": "d6ac92dc48ed10c559ac4df028d6410ec8933970d87a6c26c56d1974033d2798",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 166
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:01.432Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:01.607Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:01.780Z",
+      "queryHash": "39e5ce132bfa341c3d9aa833f22baf218e0c34f9d308d0d6af6b2823b32bc6ca",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 229
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:02.065Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:02.237Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:02.407Z",
+      "queryHash": "dbcf8d64b4251b445f8cea139a9f38c47aeb1e132997b4cea0b0ea2a9293e52b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:02.573Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 340
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:02.913Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:03.086Z",
+      "queryHash": "7c6fe3d6ab00b9bb68078d345c34d1f71c6eaad4e22975dd4f47d2f6dd71ff41",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:03.272Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:03.448Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 208
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:03.657Z",
+      "queryHash": "20241115bd1b6f44ee3fad813a1c01c8144e236f18d1d432609bc625b4519a3e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 239
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:03.898Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:04.076Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:04.259Z",
+      "queryHash": "0d4bc2a56276b03bfecd137a8ecca4fbc227cd5e6fa4b053275d4fae9c4d00da",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 167
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:04.427Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:04.600Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:04.773Z",
+      "queryHash": "0173c3f4107a6ffd5ba02538befc853cae8908e38bf2f6659d8c90f0817f353f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 199
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:05.019Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:05.198Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:05.382Z",
+      "queryHash": "2658461d2707e54cacd146cf7df13535d34dd4430f56ce04deaf46179db107f0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 226
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:05.649Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:05.823Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:05.994Z",
+      "queryHash": "77264885d2ae0dcae081440ee87c84e1714b57fc7627e65d4505d9ff2687f0ed",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 302
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:06.334Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 238
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:06.573Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 227
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:06.801Z",
+      "queryHash": "3fd34684405a47c27818d1a0c34e42897ea319b6cbfd882c92621cabf5c25f9c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 204
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:07.057Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:07.235Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:07.414Z",
+      "queryHash": "dfdd3547afafd3687bb23155d9d0e4382113ac568fefc5b900ff114ff1cceb72",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 210
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:07.659Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:07.835Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:08.008Z",
+      "queryHash": "6bad9dde09ecb5634618b0a0b7a7cd6db6b0dfbbc4cb19c25c83daf8338a4326",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 169
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:08.179Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:08.385Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 200
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:08.587Z",
+      "queryHash": "3fa067ecc41503a8d5e16b6af3ab79d8b4e95d84052844aa56ae604c832c18c0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 25,
+      "httpStatus": 200,
+      "elapsedMs": 613
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:09.341Z",
+      "queryHash": "4a2e1472d9ce9e5e0654610147dc6d1a42b32f4a0e9b13d7e0116121985c1bfd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:09.507Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:09.679Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:09.850Z",
+      "queryHash": "d6ac92dc48ed10c559ac4df028d6410ec8933970d87a6c26c56d1974033d2798",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:10.037Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:10.220Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:10.394Z",
+      "queryHash": "39e5ce132bfa341c3d9aa833f22baf218e0c34f9d308d0d6af6b2823b32bc6ca",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:10.790Z",
+      "queryHash": "588f9eeb2d7c797e65cd3995c1cd01100f49b27eda3cbc75113315fa6af811d6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 160
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:10.951Z",
+      "queryHash": "588f9eeb2d7c797e65cd3995c1cd01100f49b27eda3cbc75113315fa6af811d6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 162
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:11.114Z",
+      "queryHash": "a1449fab96cf81af259ea141eb8378c7f82e35f9c72410b0fd1319cde15dbcb0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 163
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:11.278Z",
+      "queryHash": "c70835332e06852bb1c8237c8eadb9c9a9ecf87db5e1aadda85a00b724981e21",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:11.439Z",
+      "queryHash": "c70835332e06852bb1c8237c8eadb9c9a9ecf87db5e1aadda85a00b724981e21",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 163
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:11.602Z",
+      "queryHash": "82e935a3ae23c168e7b47817bafa1819ce3648467a40452e97eedd0ea378ed00",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:11.829Z",
+      "queryHash": "3ad05ded2622b48dabc7f256448fc26e64039001e872292b767b3f92a5b90945",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 162
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:11.992Z",
+      "queryHash": "3ad05ded2622b48dabc7f256448fc26e64039001e872292b767b3f92a5b90945",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:12.156Z",
+      "queryHash": "a740bc3b0cb5b0f94eb75abfb8e04cb50c3f539d8f74f71f1b610667a566d16c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 163
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:12.320Z",
+      "queryHash": "c90ca1f91a7aaeda1a0fa4c796049c01ff06b226e31885c4387962b3ba310f7c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 159
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:12.479Z",
+      "queryHash": "c90ca1f91a7aaeda1a0fa4c796049c01ff06b226e31885c4387962b3ba310f7c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:12.641Z",
+      "queryHash": "be9aad6e4e4c78fd476d55102198416eb611c0cd27babf4c6ee5336a25302ff8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:12.807Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 160
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:12.968Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:13.130Z",
+      "queryHash": "b1ef39afe1dbbcf893946fc073a5ef0211c9f01853be9d15e2cc89a83b5b5f97",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 162
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:13.297Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 158
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:13.456Z",
+      "queryHash": "e2d476f126e58e396014aa67f336904c72bcaf1c772c59da47807c8f8f218136",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:13.618Z",
+      "queryHash": "b1ef39afe1dbbcf893946fc073a5ef0211c9f01853be9d15e2cc89a83b5b5f97",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:13.785Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:13.962Z",
+      "queryHash": "fc2ade97b93ade836b1560d1847dd21b80619b90c680ad38ff3e5e4f4c3ab5da",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:14.135Z",
+      "queryHash": "218bc24612fd9401dbb7ff03d9e1739d4a4d0d911e1224445994d0067e26dc96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 206
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "POST",
+      "startedAt": "2026-10-11T14:39:14.604Z",
+      "queryHash": "7bfde60e6b3e970feed2210db83b6acf49663a9216359817596d229d3c922607",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 166
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "POST",
+      "startedAt": "2026-10-11T14:39:14.771Z",
+      "queryHash": "7bfde60e6b3e970feed2210db83b6acf49663a9216359817596d229d3c922607",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:14.936Z",
+      "queryHash": "9288ba2ccff783b9f7a8d194919d0009bac0136b1e14c199f0495b53444f4c7d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 25,
+      "httpStatus": 200,
+      "elapsedMs": 208
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:15.181Z",
+      "queryHash": "ab6f727da7bf851f5c6fd573710ee28945e32a0c71b12658db84cdc1eacf00eb",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 25,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:15.361Z",
+      "queryHash": "2b2d62ae515752eeb5c0385f8f29394e316d6bc14b21684aa55a8759c2eba45e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 25,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:15.561Z",
+      "queryHash": "3fc63d806b0a84476518cd8ae17faa9a4d74bdbf61f5d5c702b60e500307a4f5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 166
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:15.728Z",
+      "queryHash": "33ae4ff9a8690b17aefb01c299dbdce12e3f2303aa70f5535317ded8f447b7be",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:15.889Z",
+      "queryHash": "33ae4ff9a8690b17aefb01c299dbdce12e3f2303aa70f5535317ded8f447b7be",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vgispublic.ocpafl.org",
+      "method": "GET",
+      "startedAt": "2026-10-11T14:39:16.061Z",
+      "queryHash": "d05c0ee4d55e1e85defbb3ed7eaf162c32a2044988b943f17b580aae1618c00a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 167
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

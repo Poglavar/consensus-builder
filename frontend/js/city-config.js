@@ -4221,23 +4221,23 @@
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         birmingham: {
-            id: 'birmingham',
+            id: 'birmingham', wupCityCode: '3979',
             label: translateCityText('city.labels.birmingham', 'Birmingham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
-                defaultCenter: [52.4975, -1.978], defaultZoom: SHARED_DEFAULT_ZOOM,
+                defaultCenter: [52.5053948519651, -1.95888767064615], defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                fallbackLatLng: [52.4975, -1.978], fallbackDataset: [-1.978, 52.4975]
+                fallbackLatLng: [52.5053948519651, -1.95888767064615], fallbackDataset: [-1.95888767064615, 52.5053948519651]
             },
             parcels: {
                 strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
-                sourceId: 'gb-arcgis-geodom-land-registry-inspire-2021', idPrefix: 'GB-HMLR-',
-                dataVersion: '2021-10-22', requiresBackend: true, ownership: false, liveRadiusKm: 8,
-                attribution: '<a href="https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0">HM Land Registry title-index polygons · Geodom mirror · Oct 22, 2021</a> · partial extract · adapted'
+                sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -4367,46 +4367,46 @@
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         london: {
-            id: 'london',
+            id: 'london', wupCityCode: '5938',
             label: translateCityText('city.labels.london', 'London, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
-                defaultCenter: [51.515, -0.09], defaultZoom: SHARED_DEFAULT_ZOOM,
+                defaultCenter: [51.5097885891913, -0.126303973484058], defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                fallbackLatLng: [51.515, -0.09], fallbackDataset: [-0.09, 51.515]
+                fallbackLatLng: [51.5097885891913, -0.126303973484058], fallbackDataset: [-0.126303973484058, 51.5097885891913]
             },
             parcels: {
                 strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
-                sourceId: 'gb-hmlr-city-of-london', idPrefix: 'GB-HMLR-LONDON-',
-                requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
-                attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire/download">HM Land Registry INSPIRE Index Polygons</a> · City of London authority only · transformed from British National Grid; approximately 5 m Helmert transformation accuracy · adapted'
+                sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 8,
+                attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         manchester: {
-            id: 'manchester',
+            id: 'manchester', wupCityCode: '3388',
             label: translateCityText('city.labels.manchester', 'Manchester, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
-                defaultCenter: [53.4808, -2.2426], defaultZoom: SHARED_DEFAULT_ZOOM,
+                defaultCenter: [53.4932710593779, -2.25653313803415], defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                fallbackLatLng: [53.4808, -2.2426], fallbackDataset: [-2.2426, 53.4808]
+                fallbackLatLng: [53.4932710593779, -2.25653313803415], fallbackDataset: [-2.25653313803415, 53.4932710593779]
             },
             parcels: {
                 strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
-                sourceId: 'gb-hmlr-manchester', idPrefix: 'GB-HMLR-MANCHESTER-',
+                sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-',
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
-                attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire/download">HM Land Registry INSPIRE Index Polygons</a> · Manchester metropolitan borough only · transformed from British National Grid; approximately 5 m Helmert transformation accuracy · adapted'
+                attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -7940,6 +7940,267 @@
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
             }
+        },
+        newcastle: {
+            id: 'newcastle', wupCityCode: '4536',
+            label: translateCityText('city.labels.newcastle', 'Newcastle upon Tyne, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.9872907396255, -1.55381600364981], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.9872907396255, -1.55381600364981], fallbackDataset: [-1.55381600364981, 54.9872907396255] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        oxford: {
+            id: 'oxford', wupCityCode: '5278',
+            label: translateCityText('city.labels.oxford', 'Oxford, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7487806598031, -1.2342485885213], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7487806598031, -1.2342485885213], fallbackDataset: [-1.2342485885213, 51.7487806598031] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cardiff: {
+            id: 'cardiff', wupCityCode: '2001',
+            label: translateCityText('city.labels.cardiff', 'Cardiff, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4941598754672, -3.18365738997209], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4941598754672, -3.18365738997209], fallbackDataset: [-3.18365738997209, 51.4941598754672] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bristol: {
+            id: 'bristol', wupCityCode: '3110',
+            label: translateCityText('city.labels.bristol', 'Bristol, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4622070766796, -2.56948973765957], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4622070766796, -2.56948973765957], fallbackDataset: [-2.56948973765957, 51.4622070766796] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        stoke_on_trent: {
+            id: 'stoke_on_trent', wupCityCode: '3890',
+            label: translateCityText('city.labels.stoke_on_trent', 'Stoke-on-Trent, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0159155643046, -2.17437344168429], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.0159155643046, -2.17437344168429], fallbackDataset: [-2.17437344168429, 53.0159155643046] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bournemouth: {
+            id: 'bournemouth', wupCityCode: '4108',
+            label: translateCityText('city.labels.bournemouth', 'Bournemouth, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7377349576354, -1.90482883545276], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7377349576354, -1.90482883545276], fallbackDataset: [-1.90482883545276, 50.7377349576354] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        leeds: {
+            id: 'leeds', wupCityCode: '4425',
+            label: translateCityText('city.labels.leeds', 'Leeds, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.80098765836, -1.64273048308533], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.80098765836, -1.64273048308533], fallbackDataset: [-1.64273048308533, 53.80098765836] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        coventry: {
+            id: 'coventry', wupCityCode: '4647',
+            label: translateCityText('city.labels.coventry', 'Coventry, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4197855108422, -1.50597012431852], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4197855108422, -1.50597012431852], fallbackDataset: [-1.50597012431852, 52.4197855108422] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        southampton: {
+            id: 'southampton', wupCityCode: '4684',
+            label: translateCityText('city.labels.southampton', 'Southampton, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9183161488384, -1.39571519357], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.9183161488384, -1.39571519357], fallbackDataset: [-1.39571519357, 50.9183161488384] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sheffield: {
+            id: 'sheffield', wupCityCode: '4792',
+            label: translateCityText('city.labels.sheffield', 'Sheffield, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3706060761954, -1.45914222195097], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.3706060761954, -1.45914222195097], fallbackDataset: [-1.45914222195097, 53.3706060761954] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        nottingham: {
+            id: 'nottingham', wupCityCode: '5220',
+            label: translateCityText('city.labels.nottingham', 'Nottingham, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.9581733581744, -1.18066491650301], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.9581733581744, -1.18066491650301], fallbackDataset: [-1.18066491650301, 52.9581733581744] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        middlesbrough: {
+            id: 'middlesbrough', wupCityCode: '5250',
+            label: translateCityText('city.labels.middlesbrough', 'Middlesbrough, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.560753928282, -1.26260886474088], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.560753928282, -1.26260886474088], fallbackDataset: [-1.26260886474088, 54.560753928282] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        portsmouth: {
+            id: 'portsmouth', wupCityCode: '5388',
+            label: translateCityText('city.labels.portsmouth', 'Portsmouth, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8299919480642, -1.08350256594045], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8299919480642, -1.08350256594045], fallbackDataset: [-1.08350256594045, 50.8299919480642] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        leicester: {
+            id: 'leicester', wupCityCode: '5469',
+            label: translateCityText('city.labels.leicester', 'Leicester, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6309139939256, -1.125767851843], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6309139939256, -1.125767851843], fallbackDataset: [-1.125767851843, 52.6309139939256] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        brighton: {
+            id: 'brighton', wupCityCode: '6034',
+            label: translateCityText('city.labels.brighton', 'Brighton, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.832718747559, -0.232087060115579], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.832718747559, -0.232087060115579], fallbackDataset: [-0.232087060115579, 50.832718747559] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hull: {
+            id: 'hull', wupCityCode: '6053',
+            label: translateCityText('city.labels.hull', 'Hull, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7628896052307, -0.354103477578705], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.7628896052307, -0.354103477578705], fallbackDataset: [-0.354103477578705, 53.7628896052307] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        southend_on_sea: {
+            id: 'southend_on_sea', wupCityCode: '6431',
+            label: translateCityText('city.labels.southend_on_sea', 'Southend-on-Sea, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5551240047725, 0.668467014701583], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5551240047725, 0.668467014701583], fallbackDataset: [0.668467014701583, 51.5551240047725] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mongu: {
+            id: 'mongu', wupCityCode: '104',
+            label: translateCityText('city.labels.mongu', 'Mongu, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-15.2698331723381, 23.1518886178753], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-15.2698331723381, 23.1518886178753], fallbackDataset: [23.1518886178753, -15.2698331723381] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        la_rochelle: {
+            id: 'la_rochelle', wupCityCode: '1469',
+            label: translateCityText('city.labels.la_rochelle', 'La Rochelle, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [46.1625399538636, -1.16258542365523], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [46.1625399538636, -1.16258542365523], fallbackDataset: [-1.16258542365523, 46.1625399538636] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        luanshya: {
+            id: 'luanshya', wupCityCode: '2025',
+            label: translateCityText('city.labels.luanshya', 'Luanshya, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-13.1437301508279, 28.4228139265333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-13.1437301508279, 28.4228139265333], fallbackDataset: [28.4228139265333, -13.1437301508279] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        encinitas: {
+            id: 'encinitas', wupCityCode: '2660',
+            label: translateCityText('city.labels.encinitas', 'Encinitas, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [33.0602781384953, -117.267811873962], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [33.0602781384953, -117.267811873962], fallbackDataset: [-117.267811873962, 33.0602781384953] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-sangis-parcels-reference', idPrefix: 'US-CA-SANGIS-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'SanGIS / County of San Diego · unstacked reference parcel polygons' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lenasia: {
+            id: 'lenasia', wupCityCode: '3855',
+            label: translateCityText('city.labels.lenasia', 'Lenasia, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-26.3478558274038, 27.876034282466], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-26.3478558274038, 27.876034282466], fallbackDataset: [27.876034282466, -26.3478558274038] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vosman: {
+            id: 'vosman', wupCityCode: '4800',
+            label: translateCityText('city.labels.vosman', 'Vosman, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-25.8573418214821, 29.1180026432058], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-25.8573418214821, 29.1180026432058], fallbackDataset: [29.1180026432058, -25.8573418214821] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        acireale: {
+            id: 'acireale', wupCityCode: '5104',
+            label: translateCityText('city.labels.acireale', 'Acireale, Italy'),
+            currency: { locale: 'it-IT', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [37.6049746892746, 15.1470464254041], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [37.6049746892746, 15.1470464254041], fallbackDataset: [15.1470464254041, 37.6049746892746] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'it-sicilia-sitr-cadastral-parcels', idPrefix: 'IT-SICILIA-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Regione Siciliana SITR · cadastral-reference polygons · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lindberg: {
+            id: 'lindberg', wupCityCode: '6345',
+            label: translateCityText('city.labels.lindberg', 'Lindberg, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.6471024349277, -97.1431006262883], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.6471024349277, -97.1431006262883], fallbackDataset: [-97.1431006262883, 32.6471024349277] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'arlington-tax-parcels', idPrefix: 'US-TX-ARLINGTON-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'City of Arlington, Texas GIS / OpenData' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        buenaventura_lakes: {
+            id: 'buenaventura_lakes', wupCityCode: '7367',
+            label: translateCityText('city.labels.buenaventura_lakes', 'Buenaventura Lakes, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.3522565261019, -81.3782104985266], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.3522565261019, -81.3782104985266], fallbackDataset: [-81.3782104985266, 28.3522565261019] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'orlando-ocpa-arcgis', idPrefix: 'US-ORANGE-COUNTY-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Orange County Property Appraiser · assessment parcel references · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        alafaya: {
+            id: 'alafaya', wupCityCode: '7468',
+            label: translateCityText('city.labels.alafaya', 'Alafaya, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.5645463354798, -81.1884381841486], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.5645463354798, -81.1884381841486], fallbackDataset: [-81.1884381841486, 28.5645463354798] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'orlando-ocpa-arcgis', idPrefix: 'US-ORANGE-COUNTY-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Orange County Property Appraiser · assessment parcel references · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lackawanna: {
+            id: 'lackawanna', wupCityCode: '8193',
+            label: translateCityText('city.labels.lackawanna', 'Lackawanna, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.8429861120278, -78.8135507251543], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.8429861120278, -78.8135507251543], fallbackDataset: [-78.8135507251543, 42.8429861120278] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ny-erie-parcels', idPrefix: 'US-NY-ERIE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Erie County Office of GIS' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tung_chung: {
+            id: 'tung_chung', wupCityCode: '11554',
+            label: translateCityText('city.labels.tung_chung', 'Tung Chung, Hong Kong'),
+            currency: { locale: 'zh-HK', code: 'HKD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.2862518536, 113.942260841835], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.2862518536, 113.942260841835], fallbackDataset: [113.942260841835, 22.2862518536] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hk-landsd-csdi-lot', idPrefix: 'HK-LANDSD-CSDI-LOT-CSUID-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hong Kong Lands Department · CSDI Lots · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         }
     };
 

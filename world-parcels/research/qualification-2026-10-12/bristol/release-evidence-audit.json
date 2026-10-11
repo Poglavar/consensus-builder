@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "3110",
+  "cityName": "Bristol",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/3110/attempt-1/evidence/full-safe.geojson",
+    "sha256": "08c63a419fbf9d2edb8f674564495deb7d8a08cd15b7e1d759a868c443bb896d",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 291
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "61ede2571a1285f4b1cd4a027a744e05fdd7fd61a3efe19c519f00c9df15c1ab",
+    "geometryPass": true,
+    "featureCount": 291,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

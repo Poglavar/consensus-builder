@@ -3,22 +3,22 @@
   "purpose": "Interactive inventory of parcel-registry research. Area shares describe jurisdictions with evidence, not cadastral polygon completeness.",
   "metadata": {
     "asOf": "2026-10-11",
-    "demographicSnapshotDate": "2026-10-07",
+    "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 1577,
+    "cityCount": 1599,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 1499,
+    "checkedCityCount": 1521,
     "uncheckedCityCount": 78,
-    "cityRegistryFoundCount": 1150,
-    "verifiedCitySampleCount": 406,
+    "cityRegistryFoundCount": 1172,
+    "verifiedCitySampleCount": 429,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 1303,
-    "growthMatchedCount": 435,
-    "checkedCitiesMissingDate": 27,
+    "populationMatchedCount": 1325,
+    "growthMatchedCount": 463,
+    "checkedCitiesMissingDate": 51,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 325,
+    "configuredAppCityCount": 354,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -555,6 +555,62 @@
         "distanceKm": 6.081,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:5104",
+      "name": "Acireale",
+      "country": "Italy",
+      "countryCode": "IT",
+      "latitude": 37.6049746892746,
+      "longitude": 15.1470464254041,
+      "registryCityIds": [
+        "wup2025:5104"
+      ],
+      "appCityIds": [
+        "acireale"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 5104,
+      "wupName": "Acireale",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 74940,
+      "population2025": 73600,
+      "annualGrowthPct2015To2025": -0.180428,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "it-sicilia-sitr-cadastral-parcels"
+      ],
+      "evidenceUrls": [
+        "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/acireale/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=37.60497&mlon=15.14705#map=12/37.60497/15.14705",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.60497%2C15.14705",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:3241",
@@ -1398,9 +1454,7 @@
       "registryCityIds": [
         "wup2025:4314"
       ],
-      "appCityIds": [
-        "aix_en_provence"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -1434,6 +1488,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4314/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -1452,9 +1507,7 @@
       "registryCityIds": [
         "wup2025:4902"
       ],
-      "appCityIds": [
-        "ajaccio"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -1488,6 +1541,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4902/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -2839,6 +2893,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7468",
+      "name": "Alafaya",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 28.5645463354798,
+      "longitude": -81.1884381841486,
+      "registryCityIds": [
+        "wup2025:7468"
+      ],
+      "appCityIds": [
+        "alafaya"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 7468,
+      "wupName": "Alafaya",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 103970,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "orlando-ocpa-arcgis"
+      ],
+      "evidenceUrls": [
+        "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/alafaya/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=28.56455&mlon=-81.18844#map=12/28.56455/-81.18844",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.56455%2C-81.18844",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:8439",
       "name": "Albany",
       "country": "United States of America",
@@ -3547,9 +3657,7 @@
       "registryCityIds": [
         "wup2025:3112"
       ],
-      "appCityIds": [
-        "amiens"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -3583,6 +3691,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3112/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -4125,9 +4234,7 @@
       "registryCityIds": [
         "wup2025:1659"
       ],
-      "appCityIds": [
-        "angers"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -4161,6 +4268,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1659/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -4387,9 +4495,7 @@
       "registryCityIds": [
         "wup2025:4577"
       ],
-      "appCityIds": [
-        "annecy"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -4423,6 +4529,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4577/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -4441,9 +4548,7 @@
       "registryCityIds": [
         "wup2025:4614"
       ],
-      "appCityIds": [
-        "annemasse"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -4477,6 +4582,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4614/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -5378,9 +5484,7 @@
       "registryCityIds": [
         "wup2025:6413"
       ],
-      "appCityIds": [
-        "arlington"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -5395,12 +5499,8 @@
       "populationPlausibility2025": null,
       "populationMatch": null,
       "checked": true,
-      "checkedDate": "2026-10-11",
-      "checkedDateEvidence": {
-        "date": "2026-10-11",
-        "path": "research/qualification-admission-2026-10-11.json",
-        "field": "$.cities[16].verifiedAt"
-      },
+      "checkedDate": null,
+      "checkedDateEvidence": null,
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -5414,7 +5514,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
-        "research/qualification-admission-2026-10-11.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.71741&mlon=-97.07291#map=12/32.71741/-97.07291",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.71741%2C-97.07291",
@@ -5488,9 +5588,7 @@
       "registryCityIds": [
         "wup2025:3282"
       ],
-      "appCityIds": [
-        "arras"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -5524,6 +5622,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3282/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -6719,9 +6818,7 @@
       "registryCityIds": [
         "wup2025:4111"
       ],
-      "appCityIds": [
-        "avignon"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -6755,6 +6852,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4111/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -9474,9 +9572,7 @@
       "registryCityIds": [
         "wup2025:1367"
       ],
-      "appCityIds": [
-        "bayonne"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -9510,6 +9606,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1367/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -11170,9 +11267,7 @@
       "registryCityIds": [
         "wup2025:3800"
       ],
-      "appCityIds": [
-        "beziers"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -11206,6 +11301,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3800/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -12186,8 +12282,8 @@
       "name": "Birmingham",
       "country": "United Kingdom of Great Britain and Northern Ireland",
       "countryCode": "GB",
-      "latitude": 52.5046,
-      "longitude": -1.9604,
+      "latitude": 52.5053948519651,
+      "longitude": -1.95888767064615,
       "registryCityIds": [
         "wup2025:3979"
       ],
@@ -12215,30 +12311,29 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-03",
-      "checkedDateEvidence": {
-        "date": "2026-10-03",
-        "path": "research/next-five-source-attempts-2026-10-03.json",
-        "field": "integrationAttempts[0].checkedAt"
-      },
+      "checkedDate": null,
+      "checkedDateEvidence": null,
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
+        "gb-hmlr-browser-v1",
         "gb-arcgis-geodom-land-registry-inspire-2021"
       ],
       "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
         "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0"
       ],
       "evidenceFiles": [
-        "research/birmingham.json",
-        "research/next-five-source-attempts-2026-10-03.json",
+        "world-parcels/research/qualification-2026-10-12/birmingham/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json",
         "research/birmingham-live.json"
       ],
-      "osmUrl": "https://www.openstreetmap.org/?mlat=52.50460&mlon=-1.96040#map=12/52.50460/-1.96040",
-      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.50460%2C-1.96040",
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.50539&mlon=-1.95889#map=12/52.50539/-1.95889",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.50539%2C-1.95889",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Birmingham",
       "wikipediaEvidence": {
         "verifiedBy": "MediaWiki action=query returned page title and coordinates; city name/alias matched and coordinate distance <=30 km",
@@ -12802,9 +12897,7 @@
       "registryCityIds": [
         "wup2025:4119"
       ],
-      "appCityIds": [
-        "bohlokong"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -12834,7 +12927,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4119/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-28.20196&mlon=28.32678#map=12/-28.20196/28.32678",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-28.20196%2C28.32678",
@@ -13156,6 +13249,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-1566-bordeaux.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -13313,9 +13407,7 @@
       "registryCityIds": [
         "wup2025:2541"
       ],
-      "appCityIds": [
-        "boulogne_sur_mer"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -13349,6 +13441,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2541/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -13409,6 +13502,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=36.72641&mlon=3.37088#map=12/36.72641/3.37088",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.72641%2C3.37088",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:4108",
+      "name": "Bournemouth",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.7377349576354,
+      "longitude": -1.90482883545276,
+      "registryCityIds": [
+        "wup2025:4108"
+      ],
+      "appCityIds": [
+        "bournemouth"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 4108,
+      "wupName": "Bournemouth",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 357083,
+      "population2025": 386557,
+      "annualGrowthPct2015To2025": 0.793111,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/bournemouth/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.73773&mlon=-1.90483#map=12/50.73773/-1.90483",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.73773%2C-1.90483",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -13730,9 +13879,7 @@
       "registryCityIds": [
         "wup2025:524"
       ],
-      "appCityIds": [
-        "brest"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -13766,6 +13913,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/524/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -13824,6 +13972,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:6034",
+      "name": "Brighton",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.832718747559,
+      "longitude": -0.232087060115579,
+      "registryCityIds": [
+        "wup2025:6034"
+      ],
+      "appCityIds": [
+        "brighton"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 6034,
+      "wupName": "Brighton",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 423316,
+      "population2025": 467937,
+      "annualGrowthPct2015To2025": 1.002147,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/brighton/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.83272&mlon=-0.23209#map=12/50.83272/-0.23209",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.83272%2C-0.23209",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3110",
       "name": "Bristol",
       "country": "United Kingdom of Great Britain and Northern Ireland",
@@ -13833,19 +14037,22 @@
       "registryCityIds": [
         "wup2025:3110"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bristol"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 3110,
       "wupName": "Bristol",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
+      "population2015": 560636,
       "population2025": 615703,
-      "annualGrowthPct2015To2025": null,
+      "annualGrowthPct2015To2025": 0.936929,
       "populationPlausibility2025": "High",
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
@@ -13863,17 +14070,23 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "HM Land Registry’s official INSPIRE data includes a Bristol local-authority freehold index file; this is a title-index map. Bristol’s separate public INSPIRE catalogue covers thematic council layers rather than an identified universal cadastral fabric.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "evidenceUrls": [
         "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
         "https://use-land-property-data.service.gov.uk/datasets/inspire",
         "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities",
-        "https://maps.bristol.gov.uk/metadata/INSPIRE/"
+        "https://maps.bristol.gov.uk/metadata/INSPIRE/",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-3110-bristol.json"
+        "world-parcels/research/qualification-2026-10-12/bristol/qualification.json",
+        "research/overnight-cities-2026-10-08/city-3110-bristol.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.46221&mlon=-2.56949#map=12/51.46221/-2.56949",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.46221%2C-2.56949",
@@ -13890,9 +14103,7 @@
       "registryCityIds": [
         "wup2025:3946"
       ],
-      "appCityIds": [
-        "brits"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -13922,7 +14133,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3946/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.61231&mlon=27.79187#map=12/-25.61231/27.79187",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.61231%2C27.79187",
@@ -14093,6 +14304,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7367",
+      "name": "Buenaventura Lakes",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 28.3522565261019,
+      "longitude": -81.3782104985266,
+      "registryCityIds": [
+        "wup2025:7367"
+      ],
+      "appCityIds": [
+        "buenaventura_lakes"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 7367,
+      "wupName": "Buenaventura Lakes",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 121858,
+      "population2025": 158161,
+      "annualGrowthPct2015To2025": 2.607571,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "orlando-ocpa-arcgis"
+      ],
+      "evidenceUrls": [
+        "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=28.35226&mlon=-81.37821#map=12/28.35226/-81.37821",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.35226%2C-81.37821",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4459",
       "name": "Buenos Aires",
       "country": "Argentina",
@@ -14181,9 +14448,7 @@
       "registryCityIds": [
         "wup2025:8207"
       ],
-      "appCityIds": [
-        "buffalo"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -14198,12 +14463,8 @@
       "populationPlausibility2025": null,
       "populationMatch": null,
       "checked": true,
-      "checkedDate": "2026-10-11",
-      "checkedDateEvidence": {
-        "date": "2026-10-11",
-        "path": "research/qualification-admission-2026-10-11.json",
-        "field": "$.cities[14].verifiedAt"
-      },
+      "checkedDate": null,
+      "checkedDateEvidence": null,
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -14217,7 +14478,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
-        "research/qualification-admission-2026-10-11.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=42.93599&mlon=-78.83904#map=12/42.93599/-78.83904",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.93599%2C-78.83904",
@@ -14856,9 +15117,7 @@
       "registryCityIds": [
         "wup2025:3443"
       ],
-      "appCityIds": [
-        "bussy_saint_georges"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -14892,6 +15151,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3443/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -14963,9 +15223,7 @@
       "registryCityIds": [
         "wup2025:1838"
       ],
-      "appCityIds": [
-        "caen"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -14999,6 +15257,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1838/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -15176,9 +15435,7 @@
       "registryCityIds": [
         "wup2025:2678"
       ],
-      "appCityIds": [
-        "calais"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -15212,6 +15469,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2678/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -15809,9 +16067,7 @@
       "registryCityIds": [
         "wup2025:4760"
       ],
-      "appCityIds": [
-        "cannes"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -15845,6 +16101,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4760/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -16053,6 +16310,62 @@
         "distanceKm": 4.037,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:2001",
+      "name": "Cardiff",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.4941598754672,
+      "longitude": -3.18365738997209,
+      "registryCityIds": [
+        "wup2025:2001"
+      ],
+      "appCityIds": [
+        "cardiff"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 2001,
+      "wupName": "Cardiff",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 368184,
+      "population2025": 390692,
+      "annualGrowthPct2015To2025": 0.593367,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/cardiff/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.49416&mlon=-3.18366#map=12/51.49416/-3.18366",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.49416%2C-3.18366",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "us-capital:NV",
@@ -17361,9 +17674,7 @@
       "registryCityIds": [
         "wup2025:2466"
       ],
-      "appCityIds": [
-        "chartres"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -17397,6 +17708,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2466/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -18008,9 +18320,7 @@
       "registryCityIds": [
         "wup2025:1261"
       ],
-      "appCityIds": [
-        "cherbourg_en_cotentin"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -18044,6 +18354,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1261/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -19673,9 +19984,7 @@
       "registryCityIds": [
         "wup2025:3704"
       ],
-      "appCityIds": [
-        "clermont_ferrand"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -19709,6 +20018,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3704/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -19727,9 +20037,7 @@
       "registryCityIds": [
         "wup2025:3762"
       ],
-      "appCityIds": [
-        "coalbrook"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -19759,7 +20067,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3762/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.85555&mlon=27.86805#map=12/-26.85555/27.86805",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.85555%2C27.86805",
@@ -20674,6 +20982,62 @@
         "distanceKm": 5.319,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:4647",
+      "name": "Coventry",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.4197855108422,
+      "longitude": -1.50597012431852,
+      "registryCityIds": [
+        "wup2025:4647"
+      ],
+      "appCityIds": [
+        "coventry"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 4647,
+      "wupName": "Coventry",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 375694,
+      "population2025": 427678,
+      "annualGrowthPct2015To2025": 1.295956,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/coventry/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.41979&mlon=-1.50597#map=12/52.41979/-1.50597",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.41979%2C-1.50597",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:655",
@@ -23586,9 +23950,7 @@
       "registryCityIds": [
         "wup2025:4153"
       ],
-      "appCityIds": [
-        "dijon"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -23622,6 +23984,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4153/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -24813,9 +25176,7 @@
       "registryCityIds": [
         "wup2025:3602"
       ],
-      "appCityIds": [
-        "douai"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -24849,6 +25210,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3602/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -25258,9 +25620,7 @@
       "registryCityIds": [
         "wup2025:3053"
       ],
-      "appCityIds": [
-        "dunkirk"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -25294,6 +25654,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3053/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -25783,9 +26144,7 @@
       "registryCityIds": [
         "wup2025:4655"
       ],
-      "appCityIds": [
-        "ekangala"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -25815,7 +26174,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4655/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.67660&mlon=28.73811#map=12/-25.67660/28.73811",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.67660%2C28.73811",
@@ -26382,6 +26741,62 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-27.33650&mlon=-55.85900#map=12/-27.33650/-55.85900",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-27.33650%2C-55.85900",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2660",
+      "name": "Encinitas",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 33.0602781384953,
+      "longitude": -117.267811873962,
+      "registryCityIds": [
+        "wup2025:2660"
+      ],
+      "appCityIds": [
+        "encinitas"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 2660,
+      "wupName": "Encinitas",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 69052,
+      "population2025": 79460,
+      "annualGrowthPct2015To2025": 1.403939,
+      "populationPlausibility2025": "Low",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us-ca-sangis-parcels-reference"
+      ],
+      "evidenceUrls": [
+        "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/encinitas/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=33.06028&mlon=-117.26781#map=12/33.06028/-117.26781",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=33.06028%2C-117.26781",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -26982,6 +27397,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-3714-evaton.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.52523&mlon=27.85122#map=12/-26.52523/27.85122",
@@ -26999,9 +27415,7 @@
       "registryCityIds": [
         "wup2025:4975"
       ],
-      "appCityIds": [
-        "ezakheni"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -27031,7 +27445,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4975/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-28.61989&mlon=29.91296#map=12/-28.61989/29.91296",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-28.61989%2C29.91296",
@@ -30245,9 +30659,7 @@
       "registryCityIds": [
         "wup2025:4353"
       ],
-      "appCityIds": [
-        "grenoble"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -30281,6 +30693,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -34664,6 +35077,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:6053",
+      "name": "Hull",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.7628896052307,
+      "longitude": -0.354103477578705,
+      "registryCityIds": [
+        "wup2025:6053"
+      ],
+      "appCityIds": [
+        "hull"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 6053,
+      "wupName": "Hull",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 309317,
+      "population2025": 322100,
+      "annualGrowthPct2015To2025": 0.404954,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/hull/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.76289&mlon=-0.35410#map=12/53.76289/-0.35410",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.76289%2C-0.35410",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:9846",
       "name": "Huludao",
       "country": "China",
@@ -37639,9 +38108,7 @@
       "registryCityIds": [
         "wup2025:5395"
       ],
-      "appCityIds": [
-        "jerusalem_za"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -37671,7 +38138,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5395/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.15519&mlon=31.12952#map=12/-25.15519/31.12952",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.15519%2C31.12952",
@@ -39494,9 +39961,7 @@
       "registryCityIds": [
         "wup2025:1945"
       ],
-      "appCityIds": [
-        "kabwe"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -39526,7 +39991,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1945/qualification.json",
-        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-14.43360&mlon=28.44465#map=12/-14.43360/28.44465",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-14.43360%2C28.44465",
@@ -39699,9 +40164,7 @@
       "registryCityIds": [
         "wup2025:1396"
       ],
-      "appCityIds": [
-        "kafue"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -39731,7 +40194,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1396/qualification.json",
-        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-15.76082&mlon=28.17496#map=12/-15.76082/28.17496",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-15.76082%2C28.17496",
@@ -42753,9 +43216,7 @@
       "registryCityIds": [
         "wup2025:3126"
       ],
-      "appCityIds": [
-        "khuma"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -42785,7 +43246,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3126/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.85073&mlon=26.84726#map=12/-26.85073/26.84726",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.85073%2C26.84726",
@@ -43317,6 +43778,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-1774-kitwe.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-12.80993&mlon=28.22241#map=12/-12.80993/28.22241",
@@ -43376,8 +43838,8 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-4203-klipgat.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
-        "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json"
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.47860&mlon=28.11502#map=12/-25.47860/28.11502",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.47860%2C28.11502",
@@ -45142,9 +45604,7 @@
       "registryCityIds": [
         "wup2025:1858"
       ],
-      "appCityIds": [
-        "kwanobuhle"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -45174,7 +45634,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1858/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.81654&mlon=25.38766#map=12/-33.81654/25.38766",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.81654%2C25.38766",
@@ -45306,6 +45766,67 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:1469",
+      "name": "La Rochelle",
+      "country": "France",
+      "countryCode": "FR",
+      "latitude": 46.1625399538636,
+      "longitude": -1.16258542365523,
+      "registryCityIds": [
+        "wup2025:1469"
+      ],
+      "appCityIds": [
+        "la_rochelle"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 1469,
+      "wupName": "La Rochelle",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 78597,
+      "population2025": 76035,
+      "annualGrowthPct2015To2025": -0.331398,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": "2026-10-03",
+      "checkedDateEvidence": {
+        "date": "2026-10-03",
+        "path": "research/lyon-live.json",
+        "field": "integrationAttempts[1].checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "fr-ign-parcellaire-express"
+      ],
+      "evidenceUrls": [
+        "https://data.geopf.fr/wfs/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/la_rochelle/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/paris-live-wfs.json",
+        "research/lyon-live.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=46.16254&mlon=-1.16259#map=12/46.16254/-1.16259",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=46.16254%2C-1.16259",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:EH:laayoune",
       "name": "Laayoune",
       "country": "Western Sahara",
@@ -45353,6 +45874,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=27.12530&mlon=-13.16250#map=12/27.12530/-13.16250",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=27.12530%2C-13.16250",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:8193",
+      "name": "Lackawanna",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 42.8429861120278,
+      "longitude": -78.8135507251543,
+      "registryCityIds": [
+        "wup2025:8193"
+      ],
+      "appCityIds": [
+        "lackawanna"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 8193,
+      "wupName": "Lackawanna",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 54148,
+      "population2025": 52726,
+      "annualGrowthPct2015To2025": -0.266123,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us-ny-erie-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/lackawanna/qualification.json",
+        "research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.84299&mlon=-78.81355#map=12/42.84299/-78.81355",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.84299%2C-78.81355",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -46333,9 +46909,7 @@
       "registryCityIds": [
         "wup2025:1922"
       ],
-      "appCityIds": [
-        "le_havre"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -46369,6 +46943,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1922/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -46387,9 +46962,7 @@
       "registryCityIds": [
         "wup2025:2005"
       ],
-      "appCityIds": [
-        "le_mans"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -46423,6 +46996,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2005/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -46441,9 +47015,7 @@
       "registryCityIds": [
         "wup2025:3227"
       ],
-      "appCityIds": [
-        "le_mee_sur_seine"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -46477,6 +47049,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3227/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -46495,19 +47068,22 @@
       "registryCityIds": [
         "wup2025:4425"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "leeds"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 4425,
       "wupName": "Leeds",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
+      "population2015": 985674,
       "population2025": 1065607,
-      "annualGrowthPct2015To2025": null,
+      "annualGrowthPct2015To2025": 0.779742,
       "populationPlausibility2025": "High",
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
@@ -46528,7 +47104,7 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "gb-leeds-hmlr-inspire-index"
+        "gb-hmlr-browser-v1"
       ],
       "evidenceUrls": [
         "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
@@ -46536,7 +47112,10 @@
         "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-4425-leeds.json"
+        "world-parcels/research/qualification-2026-10-12/leeds/qualification.json",
+        "research/overnight-cities-2026-10-08/city-4425-leeds.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.80099&mlon=-1.64273#map=12/53.80099/-1.64273",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.80099%2C-1.64273",
@@ -46553,19 +47132,22 @@
       "registryCityIds": [
         "wup2025:5469"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "leicester"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "wupCityCode": 5469,
       "wupName": "Leicester",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
+      "population2015": 491636,
       "population2025": 530264,
-      "annualGrowthPct2015To2025": null,
+      "annualGrowthPct2015To2025": 0.756364,
       "populationPlausibility2025": "High",
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
@@ -46585,14 +47167,20 @@
       "registryBasis": "HM Land Registry’s current local-authority partition listing explicitly includes Leicester City Council and the GML contains registered freehold index polygons; these are indicative extents, not complete legal boundaries.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "evidenceUrls": [
         "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
         "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
-        "https://data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data"
+        "https://data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
       ],
       "evidenceFiles": [
-        "research/overnight-followon-2026-10-09/city-5469-leicester.json"
+        "world-parcels/research/qualification-2026-10-12/leicester/qualification.json",
+        "research/overnight-followon-2026-10-09/city-5469-leicester.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.63091&mlon=-1.12577#map=12/52.63091/-1.12577",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.63091%2C-1.12577",
@@ -46718,6 +47306,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3855",
+      "name": "Lenasia",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -26.3478558274038,
+      "longitude": 27.876034282466,
+      "registryCityIds": [
+        "wup2025:3855"
+      ],
+      "appCityIds": [
+        "lenasia"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 3855,
+      "wupName": "Lenasia",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 142970,
+      "population2025": 214770,
+      "annualGrowthPct2015To2025": 4.069329,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-26.34786&mlon=27.87603#map=12/-26.34786/27.87603",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.34786%2C27.87603",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3390",
       "name": "Lens",
       "country": "France",
@@ -46727,9 +47371,7 @@
       "registryCityIds": [
         "wup2025:3390"
       ],
-      "appCityIds": [
-        "lens"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -46763,6 +47405,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3390/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -47312,6 +47955,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-3549-lille.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -47465,9 +48109,7 @@
       "registryCityIds": [
         "wup2025:2316"
       ],
-      "appCityIds": [
-        "limoges"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -47501,6 +48143,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2316/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -47625,6 +48268,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=40.81360&mlon=-96.70260#map=12/40.81360/-96.70260",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=40.81360%2C-96.70260",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:6345",
+      "name": "Lindberg",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 32.6471024349277,
+      "longitude": -97.1431006262883,
+      "registryCityIds": [
+        "wup2025:6345"
+      ],
+      "appCityIds": [
+        "lindberg"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 6345,
+      "wupName": "Lindberg",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 157903,
+      "population2025": 210973,
+      "annualGrowthPct2015To2025": 2.897492,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "arlington-tax-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/lindberg/qualification.json",
+        "research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=32.64710&mlon=-97.14310#map=12/32.64710/-97.14310",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.64710%2C-97.14310",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -48135,9 +48833,7 @@
       "registryCityIds": [
         "wup2025:429"
       ],
-      "appCityIds": [
-        "livingstone"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -48167,7 +48863,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/429/qualification.json",
-        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-17.84432&mlon=25.85798#map=12/-17.84432/25.85798",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-17.84432%2C25.85798",
@@ -48541,10 +49237,11 @@
       "name": "London",
       "country": "United Kingdom of Great Britain and Northern Ireland",
       "countryCode": "GB",
-      "latitude": 51.50853,
-      "longitude": -0.12574,
+      "latitude": 51.5097885891913,
+      "longitude": -0.126303973484058,
       "registryCityIds": [
-        "geonames:2643743"
+        "geonames:2643743",
+        "wup2025:5938"
       ],
       "appCityIds": [
         "london"
@@ -48582,21 +49279,23 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "gb-hmlr-city-of-london",
-        "gb-hmlr-inspire-index-polygons"
+        "gb-hmlr-browser-v1",
+        "gb-hmlr-city-of-london"
       ],
       "evidenceUrls": [
-        "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
-        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip"
       ],
       "evidenceFiles": [
         "research/batch-seven-live-cities-2026-10-04.json",
         "research/london.json",
         "research/retry/cities/london.json",
-        "research/native-language-2026-10-04/gb-runtime.json"
+        "world-parcels/research/qualification-2026-10-12/london/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
-      "osmUrl": "https://www.openstreetmap.org/?mlat=51.50853&mlon=-0.12574#map=12/51.50853/-0.12574",
-      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.50853%2C-0.12574",
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.50979&mlon=-0.12630#map=12/51.50979/-0.12630",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.50979%2C-0.12630",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/London",
       "wikipediaEvidence": {
         "verifiedBy": "MediaWiki action=query returned title and coordinates; alias matched, page point within 30 km",
@@ -48895,9 +49594,7 @@
       "registryCityIds": [
         "wup2025:666"
       ],
-      "appCityIds": [
-        "lorient"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -48931,6 +49628,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/666/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -49268,6 +49966,62 @@
         "distanceKm": 0.169,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:2025",
+      "name": "Luanshya",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "latitude": -13.1437301508279,
+      "longitude": 28.4228139265333,
+      "registryCityIds": [
+        "wup2025:2025"
+      ],
+      "appCityIds": [
+        "luanshya"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 2025,
+      "wupName": "Luanshya",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 90645,
+      "population2025": 100400,
+      "annualGrowthPct2015To2025": 1.022114,
+      "populationPlausibility2025": "Low",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "zm-nsdi-zilmis-lots"
+      ],
+      "evidenceUrls": [
+        "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-13.14373&mlon=28.42281#map=12/-13.14373/28.42281",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-13.14373%2C28.42281",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:9662",
@@ -50165,7 +50919,7 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": true,
+      "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [
         "fr-ign-parcellaire-express"
@@ -50548,9 +51302,7 @@
       "registryCityIds": [
         "wup2025:5074"
       ],
-      "appCityIds": [
-        "madadeni"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -50580,7 +51332,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5074/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-27.77086&mlon=30.08989#map=12/-27.77086/30.08989",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-27.77086%2C30.08989",
@@ -51998,8 +52750,8 @@
       "name": "Manchester",
       "country": "United Kingdom of Great Britain and Northern Ireland",
       "countryCode": "GB",
-      "latitude": 53.49383,
-      "longitude": -2.25537,
+      "latitude": 53.4932710593779,
+      "longitude": -2.25653313803415,
       "registryCityIds": [
         "wup2025:3388"
       ],
@@ -52027,10 +52779,10 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-04",
+      "checkedDate": "2026-09-30",
       "checkedDateEvidence": {
-        "date": "2026-10-04",
-        "path": "research/batch-seven-live-cities-2026-10-04.json",
+        "date": "2026-09-30",
+        "path": "research/retry/cities/manchester.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -52039,22 +52791,23 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "gb-hmlr-manchester",
-        "gb-hmlr-inspire-index-polygons"
+        "gb-hmlr-browser-v1",
+        "gb-hmlr-manchester"
       ],
       "evidenceUrls": [
-        "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
-        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip"
       ],
       "evidenceFiles": [
-        "research/batch-seven-live-cities-2026-10-04.json",
+        "world-parcels/research/qualification-2026-10-12/manchester/qualification.json",
         "research/manchester.json",
         "research/retry/cities/manchester.json",
-        "research/retry/cities/london.json",
-        "research/native-language-2026-10-04/gb-runtime.json"
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json",
+        "research/batch-seven-live-cities-2026-10-04.json"
       ],
-      "osmUrl": "https://www.openstreetmap.org/?mlat=53.49383&mlon=-2.25537#map=12/53.49383/-2.25537",
-      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.49383%2C-2.25537",
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.49327&mlon=-2.25653#map=12/53.49327/-2.25653",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.49327%2C-2.25653",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Manchester",
       "wikipediaEvidence": {
         "verifiedBy": "MediaWiki action=query returned title and coordinates; alias matched, page point within 30 km",
@@ -52324,9 +53077,7 @@
       "registryCityIds": [
         "wup2025:5197"
       ],
-      "appCityIds": [
-        "mankweng"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -52356,7 +53107,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5197/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-23.89279&mlon=29.72002#map=12/-23.89279/29.72002",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-23.89279%2C29.72002",
@@ -52489,9 +53240,7 @@
       "registryCityIds": [
         "wup2025:2412"
       ],
-      "appCityIds": [
-        "mansa"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "growth200",
         "registry"
@@ -52534,7 +53283,7 @@
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2412/qualification.json",
         "research/india-africa-followup-2026-10-08/mansa-assessment.json",
-        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-11.20273&mlon=28.89149#map=12/-11.20273/28.89149",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-11.20273%2C28.89149",
@@ -53160,6 +53909,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-4276-marseille.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -53578,9 +54328,7 @@
       "registryCityIds": [
         "wup2025:5476"
       ],
-      "appCityIds": [
-        "matsulu"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -53610,7 +54358,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5476/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.50988&mlon=31.34358#map=12/-25.50988/31.34358",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.50988%2C31.34358",
@@ -53683,9 +54431,7 @@
       "registryCityIds": [
         "wup2025:2809"
       ],
-      "appCityIds": [
-        "maurepas"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -53719,6 +54465,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2809/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -55381,9 +56128,7 @@
       "registryCityIds": [
         "wup2025:4429"
       ],
-      "appCityIds": [
-        "metz"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -55417,6 +56162,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4429/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -55614,6 +56360,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=31.47177&mlon=104.73198#map=12/31.47177/104.73198",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.47177%2C104.73198",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5250",
+      "name": "Middlesbrough",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.560753928282,
+      "longitude": -1.26260886474088,
+      "registryCityIds": [
+        "wup2025:5250"
+      ],
+      "appCityIds": [
+        "middlesbrough"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 5250,
+      "wupName": "Middlesbrough",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 327763,
+      "population2025": 349436,
+      "annualGrowthPct2015To2025": 0.640296,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/middlesbrough/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.56075&mlon=-1.26261#map=12/54.56075/-1.26261",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.56075%2C-1.26261",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -56252,6 +57054,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-4.03451&mlon=39.66126#map=12/-4.03451/39.66126",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-4.03451%2C39.66126",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:104",
+      "name": "Mongu",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "latitude": -15.2698331723381,
+      "longitude": 23.1518886178753,
+      "registryCityIds": [
+        "wup2025:104"
+      ],
+      "appCityIds": [
+        "mongu"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 104,
+      "wupName": "Mongu",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 113776,
+      "population2025": 123918,
+      "annualGrowthPct2015To2025": 0.853885,
+      "populationPlausibility2025": "Low",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "zm-nsdi-zilmis-lots"
+      ],
+      "evidenceUrls": [
+        "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/mongu/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-15.26983&mlon=23.15189#map=12/-15.26983/23.15189",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-15.26983%2C23.15189",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -56984,9 +57842,7 @@
       "registryCityIds": [
         "wup2025:5167"
       ],
-      "appCityIds": [
-        "mpumalanga"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -57016,7 +57872,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5167/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-29.81058&mlon=30.62678#map=12/-29.81058/30.62678",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-29.81058%2C30.62678",
@@ -57325,9 +58181,7 @@
       "registryCityIds": [
         "wup2025:838"
       ],
-      "appCityIds": [
-        "mumbwa"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -57357,7 +58211,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/838/qualification.json",
-        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-14.98964&mlon=27.06147#map=12/-14.98964/27.06147",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-14.98964%2C27.06147",
@@ -58785,9 +59639,7 @@
       "registryCityIds": [
         "wup2025:4503"
       ],
-      "appCityIds": [
-        "nancy"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -58821,6 +59673,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4503/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -60441,19 +61294,22 @@
       "registryCityIds": [
         "wup2025:4536"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "newcastle"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 4536,
       "wupName": "Newcastle upon Tyne",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
+      "population2015": 727371,
       "population2025": 760969,
-      "annualGrowthPct2015To2025": null,
+      "annualGrowthPct2015To2025": 0.45156,
       "populationPlausibility2025": "High",
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
@@ -60471,9 +61327,11 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "Newcastle City Council explicitly offers searches of its local land-charges register and describes its LLC1 records. This is a concrete city-local land/property record service, distinct from the national HM Land Registry INSPIRE index dataset. Newcastle’s INSPIRE file/schema and any anonymous full-parcel geometry remain unverified.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "evidenceUrls": [
         "https://new.newcastle.gov.uk/planning-building-development/local-land-charges/official-searches",
         "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
@@ -60481,7 +61339,10 @@
         "https://use-land-property-data.service.gov.uk/datasets/nps/tech-spec/1?back=true"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-4536-newcastle-upon-tyne.json"
+        "world-parcels/research/qualification-2026-10-12/newcastle/qualification.json",
+        "research/overnight-cities-2026-10-08/city-4536-newcastle-upon-tyne.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.98729&mlon=-1.55382#map=12/54.98729/-1.55382",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.98729%2C-1.55382",
@@ -60743,9 +61604,7 @@
       "registryCityIds": [
         "wup2025:4025"
       ],
-      "appCityIds": [
-        "nimes"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -60779,6 +61638,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4025/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -61099,19 +61959,22 @@
       "registryCityIds": [
         "wup2025:5220"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "nottingham"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 5220,
       "wupName": "Nottingham",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
+      "population2015": 611767,
       "population2025": 649610,
-      "annualGrowthPct2015To2025": null,
+      "annualGrowthPct2015To2025": 0.600207,
       "populationPlausibility2025": "High",
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
@@ -61131,14 +61994,20 @@
       "registryBasis": "Nottingham City Council publishes a Land Registry INSPIRE Index Polygons feature layer, whose metadata describes indicative extents of freehold registered property. One complete polygon intersecting the exact WUP point was returned with the sole native property INSPIRE_ID field. This is an indicative registered-freehold index polygon, not a full cadastral parcel or legally determined title boundary.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "evidenceUrls": [
         "https://maps164.nottinghamcity.gov.uk/server/rest/services/Core_services/Housing_and_Property/MapServer/22",
         "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
-        "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification"
+        "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-5220-nottingham.json"
+        "world-parcels/research/qualification-2026-10-12/nottingham/qualification.json",
+        "research/overnight-cities-2026-10-08/city-5220-nottingham.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.95817&mlon=-1.18066#map=12/52.95817/-1.18066",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.95817%2C-1.18066",
@@ -62633,6 +63502,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-next-2026-10-09/city-7432-orlando.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.57185&mlon=-81.32244#map=12/28.57185/-81.32244",
@@ -62650,9 +63520,7 @@
       "registryCityIds": [
         "wup2025:2745"
       ],
-      "appCityIds": [
-        "orleans"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -62686,6 +63554,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2745/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -63302,6 +64171,62 @@
       }
     },
     {
+      "id": "wup2025:5278",
+      "name": "Oxford",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.7487806598031,
+      "longitude": -1.2342485885213,
+      "registryCityIds": [
+        "wup2025:5278"
+      ],
+      "appCityIds": [
+        "oxford"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 5278,
+      "wupName": "Oxford",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 163739,
+      "population2025": 172436,
+      "annualGrowthPct2015To2025": 0.517525,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/oxford/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.74878&mlon=-1.23425#map=12/51.74878/-1.23425",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.74878%2C-1.23425",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3114",
       "name": "Oyo",
       "country": "Nigeria",
@@ -63645,6 +64570,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-4616-palermo.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.12077&mlon=13.34782#map=12/38.12077/13.34782",
@@ -64194,7 +65120,7 @@
       "evidenceFiles": [
         "research/paris.json",
         "research/paris-live-wfs.json",
-        "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=48.84911&mlon=2.35557#map=12/48.84911/2.35557",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=48.84911%2C2.35557",
@@ -64410,9 +65336,7 @@
       "registryCityIds": [
         "wup2025:1749"
       ],
-      "appCityIds": [
-        "pau"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -64446,6 +65370,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1749/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -65474,9 +66399,7 @@
       "registryCityIds": [
         "wup2025:2934"
       ],
-      "appCityIds": [
-        "poissy"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -65510,6 +66433,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2934/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -65528,9 +66452,7 @@
       "registryCityIds": [
         "wup2025:2083"
       ],
-      "appCityIds": [
-        "poitiers"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -65564,6 +66486,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2083/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -66215,19 +67138,22 @@
       "registryCityIds": [
         "wup2025:5388"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "portsmouth"
+      ],
       "cohorts": [
         "registry",
-        "overnight-next-1101-1200"
+        "overnight-next-1101-1200",
+        "app"
       ],
       "wupCityCode": 5388,
       "wupName": "Portsmouth",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
+      "population2015": 456493,
       "population2025": 488385,
-      "annualGrowthPct2015To2025": null,
+      "annualGrowthPct2015To2025": 0.675307,
       "populationPlausibility2025": "High",
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
@@ -66247,7 +67173,9 @@
       "registryBasis": "HM Land Registry’s public INSPIRE Index Polygons dataset publishes a Portsmouth City Council local-authority file for registered freehold-property extents. This is official local-authority scoped registry geometry but is only an indicative freehold index, not a complete cadastre or definitive legal boundary map.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "evidenceUrls": [
         "https://www.portsmouth.gov.uk/services/development-and-planning/local-authority-searches-and-local-land-charges",
         "https://www.portsmouth.gov.uk/services/council-and-democracy/privacy-notices/local-land-charges-register-privacy-notice",
@@ -66256,7 +67184,10 @@
         "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Portsmouth_City_Council.zip"
       ],
       "evidenceFiles": [
-        "research/overnight-next-2026-10-09/city-5388-portsmouth.json"
+        "world-parcels/research/qualification-2026-10-12/portsmouth/qualification.json",
+        "research/overnight-next-2026-10-09/city-5388-portsmouth.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.82999&mlon=-1.08350#map=12/50.82999/-1.08350",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.82999%2C-1.08350",
@@ -69185,9 +70116,7 @@
       "registryCityIds": [
         "wup2025:3847"
       ],
-      "appCityIds": [
-        "reims"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -69221,6 +70150,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3847/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -69239,9 +70169,7 @@
       "registryCityIds": [
         "wup2025:1037"
       ],
-      "appCityIds": [
-        "rennes"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -69275,6 +70203,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1037/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -70310,9 +71239,7 @@
       "registryCityIds": [
         "wup2025:3294"
       ],
-      "appCityIds": [
-        "rustenburg"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -70342,7 +71269,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3294/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.64761&mlon=27.21368#map=12/-25.64761/27.21368",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.64761%2C27.21368",
@@ -71004,9 +71931,7 @@
       "registryCityIds": [
         "wup2025:799"
       ],
-      "appCityIds": [
-        "saint_brieuc"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -71040,6 +71965,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/799/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -71272,9 +72198,7 @@
       "registryCityIds": [
         "wup2025:921"
       ],
-      "appCityIds": [
-        "saint_nazaire"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -71308,6 +72232,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/921/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -71380,9 +72305,7 @@
       "registryCityIds": [
         "wup2025:2761"
       ],
-      "appCityIds": [
-        "sakhrol"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -71412,7 +72335,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2761/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.89152&mlon=26.59470#map=12/-26.89152/26.59470",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.89152%2C26.59470",
@@ -72296,6 +73219,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-2295-san-diego.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.72893&mlon=-117.08697#map=12/32.72893/-117.08697",
@@ -75793,19 +76717,22 @@
       "registryCityIds": [
         "wup2025:4792"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "sheffield"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "wupCityCode": 4792,
       "wupName": "Sheffield",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
+      "population2015": 531621,
       "population2025": 549695,
-      "annualGrowthPct2015To2025": null,
+      "annualGrowthPct2015To2025": 0.334327,
       "populationPlausibility2025": "High",
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
@@ -75825,14 +76752,19 @@
       "registryBasis": "The complete 2026-10-04 Sheffield public HMLR GML archive contains172021 source rows; 554 unmodified full native polygons intersect the 1km square around the unchanged WUP locator. Native INSPIREID27535317 covers the exact point. Three valid ID-and-full-geometry samples retained. Independent EPSG27700 audit found0invalid polygons,3duplicate geometry pairs,80positive-area overlap pairs above0.01m2,5443.90m2 summed pairwise overlap and0operation errors. Indicative registered-freehold index extents are partial tenure coverage; they do not establish complete citywide cadastral fabric.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "evidenceUrls": [
         "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
         "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
         "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Sheffield_City_Council.zip"
       ],
       "evidenceFiles": [
-        "research/overnight-followon-2026-10-09/city-4792-sheffield.json"
+        "world-parcels/research/qualification-2026-10-12/sheffield/qualification.json",
+        "research/overnight-followon-2026-10-09/city-4792-sheffield.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.37061&mlon=-1.45914#map=12/53.37061/-1.45914",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.37061%2C-1.45914",
@@ -77709,6 +78641,118 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:4684",
+      "name": "Southampton",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.9183161488384,
+      "longitude": -1.39571519357,
+      "registryCityIds": [
+        "wup2025:4684"
+      ],
+      "appCityIds": [
+        "southampton"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 4684,
+      "wupName": "Southampton",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 308732,
+      "population2025": 347446,
+      "annualGrowthPct2015To2025": 1.181357,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/southampton/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.91832&mlon=-1.39572#map=12/50.91832/-1.39572",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.91832%2C-1.39572",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:6431",
+      "name": "Southend-on-Sea",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.5551240047725,
+      "longitude": 0.668467014701583,
+      "registryCityIds": [
+        "wup2025:6431"
+      ],
+      "appCityIds": [
+        "southend_on_sea"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 6431,
+      "wupName": "Southend-on-Sea",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 253331,
+      "population2025": 280158,
+      "annualGrowthPct2015To2025": 1.006568,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/southend_on_sea/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.55512&mlon=0.66847#map=12/51.55512/0.66847",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.55512%2C0.66847",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:686",
       "name": "Soyo",
       "country": "Angola",
@@ -78079,9 +79123,7 @@
       "registryCityIds": [
         "wup2025:1173"
       ],
-      "appCityIds": [
-        "stellenbosch"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -78111,7 +79153,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1173/qualification.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/qualification-admission-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.92201&mlon=18.85814#map=12/-33.92201/18.85814",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.92201%2C18.85814",
@@ -78168,6 +79210,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=37.98383&mlon=-121.30363#map=12/37.98383/-121.30363",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.98383%2C-121.30363",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:3890",
+      "name": "Stoke-on-Trent",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.0159155643046,
+      "longitude": -2.17437344168429,
+      "registryCityIds": [
+        "wup2025:3890"
+      ],
+      "appCityIds": [
+        "stoke_on_trent"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 3890,
+      "wupName": "Stoke-on-Trent",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 317258,
+      "population2025": 332542,
+      "annualGrowthPct2015To2025": 0.470508,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/stoke_on_trent/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "world-parcels/research/qualification-admission-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.01592&mlon=-2.17437#map=12/53.01592/-2.17437",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.01592%2C-2.17437",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -83486,6 +84584,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-2391-toulouse.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -83504,9 +84603,7 @@
       "registryCityIds": [
         "wup2025:2162"
       ],
-      "appCityIds": [
-        "tours"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -83540,6 +84637,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2162/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -83726,9 +84824,7 @@
       "registryCityIds": [
         "wup2025:3938"
       ],
-      "appCityIds": [
-        "troyes"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -83762,6 +84858,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3938/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -83985,6 +85082,7 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-11540-tuen-mun.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=22.42664&mlon=113.99637#map=12/22.42664/113.99637",
@@ -84047,6 +85145,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-8.08710&mlon=111.95447#map=12/-8.08710/111.95447",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.08710%2C111.95447",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:11554",
+      "name": "Tung Chung",
+      "country": "China, Hong Kong Special Administrative Region",
+      "countryCode": "HK",
+      "latitude": 22.2862518536,
+      "longitude": 113.942260841835,
+      "registryCityIds": [
+        "wup2025:11554"
+      ],
+      "appCityIds": [
+        "tung_chung"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 11554,
+      "wupName": "Tung Chung",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 66992,
+      "population2025": 68589,
+      "annualGrowthPct2015To2025": 0.23559,
+      "populationPlausibility2025": "Low",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "hk-landsd-csdi-lot"
+      ],
+      "evidenceUrls": [
+        "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/tung_chung/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=22.28625&mlon=113.94226#map=12/22.28625/113.94226",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=22.28625%2C113.94226",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -85006,9 +86160,7 @@
       "registryCityIds": [
         "wup2025:4195"
       ],
-      "appCityIds": [
-        "valence"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -85042,6 +86194,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4195/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -85174,9 +86327,7 @@
       "registryCityIds": [
         "wup2025:3753"
       ],
-      "appCityIds": [
-        "valenciennes"
-      ],
+      "appCityIds": [],
       "cohorts": [
         "registry"
       ],
@@ -85210,6 +86361,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3753/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -86316,6 +87468,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.67257&mlon=39.19961#map=12/51.67257/39.19961",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.67257%2C39.19961",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:4800",
+      "name": "Vosman",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -25.8573418214821,
+      "longitude": 29.1180026432058,
+      "registryCityIds": [
+        "wup2025:4800"
+      ],
+      "appCityIds": [
+        "vosman"
+      ],
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "wupCityCode": 4800,
+      "wupName": "Vosman",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 138364,
+      "population2025": 179869,
+      "annualGrowthPct2015To2025": 2.623409,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12/vosman/qualification.json",
+        "research/qualification-admission-2026-10-12.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-25.85734&mlon=29.11800#map=12/-25.85734/29.11800",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.85734%2C29.11800",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -93753,8 +94961,8 @@
       "population": 7396076,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 3,
-      "citiesWithRegistry": 3,
+      "citiesChecked": 4,
+      "citiesWithRegistry": 4,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -94721,8 +95929,8 @@
       "population": 66650804,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 53,
-      "citiesWithRegistry": 53,
+      "citiesChecked": 54,
+      "citiesWithRegistry": 54,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -96088,8 +97296,8 @@
       "population": 59146260,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 6,
-      "citiesWithRegistry": 6,
+      "citiesChecked": 7,
+      "citiesWithRegistry": 7,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -99482,8 +100690,8 @@
       "population": 64747320,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 28,
-      "citiesWithRegistry": 28,
+      "citiesChecked": 30,
+      "citiesWithRegistry": 30,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -100545,8 +101753,8 @@
       "population": 69551332,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 13,
-      "citiesWithRegistry": 13,
+      "citiesChecked": 23,
+      "citiesWithRegistry": 23,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -100635,8 +101843,8 @@
       "population": 347275807,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 110,
-      "citiesWithRegistry": 110,
+      "citiesChecked": 115,
+      "citiesWithRegistry": 115,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -101292,8 +102500,8 @@
       "population": 21913874,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 9,
-      "citiesWithRegistry": 9,
+      "citiesChecked": 11,
+      "citiesWithRegistry": 11,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -101402,12 +102610,12 @@
     {
       "name": "UN DESA, World Urbanization Prospects 2025 — city population estimates",
       "url": "https://population.un.org/wup/downloads?tab=Cities",
-      "accessedAt": "2026-10-07"
+      "accessedAt": "2026-10-12"
     },
     {
       "name": "UN DESA, average annual population growth definition",
       "url": "https://population.un.org/wup/glossary-demographic-terms",
-      "accessedAt": "2026-10-07"
+      "accessedAt": "2026-10-12"
     },
     {
       "name": "UN Statistics Division, Standard country or area codes for statistical use (M49), Overview",
@@ -101427,7 +102635,7 @@
     {
       "name": "Wikipedia and Wikidata — verified article identities",
       "url": "https://www.wikidata.org/wiki/Wikidata:Main_Page",
-      "accessedAt": "2026-10-07"
+      "accessedAt": "2026-10-12"
     },
     {
       "name": "Inferred parcel experiments — recorded evaluation",

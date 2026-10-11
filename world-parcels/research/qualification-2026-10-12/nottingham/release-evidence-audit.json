@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "5220",
+  "cityName": "Nottingham",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/5220/attempt-1/evidence/full-safe.geojson",
+    "sha256": "ade888cbb73967599f036176836f8c26fd6f330f59d9322b4ef1ea8e29ec1be4",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 220
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "0bc4a08c1a21e5a9a548b42337979dbbaa6e0d526b5df87dfd37a5e1f5459ad9",
+    "geometryPass": true,
+    "featureCount": 220,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-10-07",
+  "asOf": "2026-10-12",
   "sources": [
     {
       "name": "World parcels city registry",
@@ -2716,10 +2716,11 @@
       "id": "wup2025:5938",
       "name": "London",
       "countryCode": "GB",
-      "latitude": 51.50853,
-      "longitude": -0.12574,
+      "latitude": 51.5097885891913,
+      "longitude": -0.126303973484058,
       "registryCityIds": [
-        "geonames:2643743"
+        "geonames:2643743",
+        "wup2025:5938"
       ],
       "appCityIds": [
         "london"
@@ -2761,8 +2762,8 @@
         "coordinateThresholdKm": 30
       },
       "wupName": "London",
-      "wupLatitude": 51.508926472857,
-      "wupLongitude": -0.1269853785119,
+      "wupLatitude": 51.5097885891913,
+      "wupLongitude": -0.126303973484058,
       "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
       "wupCityQualityFlag": null,
       "qualityFlagNote": "The supplied normalized city JSON has no WUP 0–3 quality-flag field; left null.",
@@ -2804,7 +2805,10 @@
           "distanceKm": 2.647
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/london/qualification.json"
     },
     {
       "id": "wup2025:11027",
@@ -15393,8 +15397,8 @@
       "id": "wup2025:3979",
       "name": "Birmingham",
       "countryCode": "GB",
-      "latitude": 52.5046,
-      "longitude": -1.9604,
+      "latitude": 52.5053948519651,
+      "longitude": -1.95888767064615,
       "registryCityIds": [
         "wup2025:3979"
       ],
@@ -15438,8 +15442,8 @@
         "coordinateThresholdKm": 30
       },
       "wupName": "Birmingham",
-      "wupLatitude": 52.5046010416867,
-      "wupLongitude": -1.96039982513583,
+      "wupLatitude": 52.5053948519651,
+      "wupLongitude": -1.95888767064615,
       "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
       "wupCityQualityFlag": null,
       "qualityFlagNote": "The supplied normalized city JSON has no WUP 0–3 quality-flag field; left null.",
@@ -15481,7 +15485,10 @@
           "distanceKm": 1.429
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/birmingham/qualification.json"
     },
     {
       "id": "wup2025:2178",
@@ -15803,8 +15810,8 @@
       "id": "wup2025:3388",
       "name": "Manchester",
       "countryCode": "GB",
-      "latitude": 53.49383,
-      "longitude": -2.25537,
+      "latitude": 53.4932710593779,
+      "longitude": -2.25653313803415,
       "registryCityIds": [
         "wup2025:3388"
       ],
@@ -15848,8 +15855,8 @@
         "coordinateThresholdKm": 30
       },
       "wupName": "Manchester",
-      "wupLatitude": 53.4938305721117,
-      "wupLongitude": -2.25536904358391,
+      "wupLatitude": 53.4932710593779,
+      "wupLongitude": -2.25653313803415,
       "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
       "wupCityQualityFlag": null,
       "qualityFlagNote": "The supplied normalized city JSON has no WUP 0–3 quality-flag field; left null.",
@@ -15891,7 +15898,10 @@
           "distanceKm": 1.677
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/manchester/qualification.json"
     },
     {
       "id": "wup2025:2524",
@@ -38791,13 +38801,16 @@
       "registryCityIds": [
         "wup2025:4425"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "leeds"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
-      "population2015": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 985674,
+      "annualGrowthPct2015To2025": 0.779742,
       "wikipediaUrl": null,
       "wikipediaEvidence": null,
       "wikipediaLookupStatus": "not_attempted",
@@ -38812,7 +38825,11 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/leeds/qualification.json",
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     },
     {
       "id": "wup2025:8550",
@@ -45313,13 +45330,16 @@
       "registryCityIds": [
         "wup2025:4536"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "newcastle"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
-      "population2015": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 727371,
+      "annualGrowthPct2015To2025": 0.45156,
       "wikipediaUrl": null,
       "wikipediaEvidence": null,
       "wikipediaLookupStatus": "not_attempted",
@@ -45334,7 +45354,11 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/newcastle/qualification.json",
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     },
     {
       "id": "wup2025:11354",
@@ -48277,13 +48301,16 @@
       "registryCityIds": [
         "wup2025:5220"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "nottingham"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
-      "population2015": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 611767,
+      "annualGrowthPct2015To2025": 0.600207,
       "wikipediaUrl": null,
       "wikipediaEvidence": null,
       "wikipediaLookupStatus": "not_attempted",
@@ -48298,7 +48325,11 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/nottingham/qualification.json",
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     },
     {
       "id": "wup2025:2753",
@@ -50523,13 +50554,16 @@
       "registryCityIds": [
         "wup2025:3110"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bristol"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
-      "population2015": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 560636,
+      "annualGrowthPct2015To2025": 0.936929,
       "wikipediaUrl": null,
       "wikipediaEvidence": null,
       "wikipediaLookupStatus": "not_attempted",
@@ -50544,7 +50578,11 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/bristol/qualification.json",
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     },
     {
       "id": "wup2025:7788",
@@ -54707,13 +54745,16 @@
       "registryCityIds": [
         "wup2025:4792"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "sheffield"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
-      "population2015": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 531621,
+      "annualGrowthPct2015To2025": 0.334327,
       "wikipediaUrl": null,
       "wikipediaEvidence": null,
       "wikipediaLookupStatus": "not_attempted",
@@ -54730,7 +54771,11 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
-      }
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/sheffield/qualification.json",
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     },
     {
       "id": "wup2025:6010",
@@ -57568,8 +57613,8 @@
     },
     {
       "id": "wup2025:5469",
-      "population2015": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 491636,
+      "annualGrowthPct2015To2025": 0.756364,
       "wikipediaUrl": null,
       "wikipediaEvidence": null,
       "wikipediaLookupStatus": "not_attempted",
@@ -57594,11 +57639,18 @@
       "registryCityIds": [
         "wup2025:5469"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "leicester"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
-      ]
+        "overnight-followon-1001-1100",
+        "app"
+      ],
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/leicester/qualification.json",
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     },
     {
       "id": "wup2025:2312",
@@ -59136,8 +59188,8 @@
     },
     {
       "id": "wup2025:5388",
-      "population2015": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 456493,
+      "annualGrowthPct2015To2025": 0.675307,
       "wikipediaUrl": null,
       "wikipediaEvidence": null,
       "wikipediaLookupStatus": "not_attempted",
@@ -59162,11 +59214,18 @@
       "registryCityIds": [
         "wup2025:5388"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "portsmouth"
+      ],
       "cohorts": [
         "registry",
-        "overnight-next-1101-1200"
-      ]
+        "overnight-next-1101-1200",
+        "app"
+      ],
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/portsmouth/qualification.json",
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     },
     {
       "id": "wup2025:10804",
@@ -60531,6 +60590,776 @@
         "registry",
         "overnight-next-1101-1200"
       ]
+    },
+    {
+      "id": "wup2025:5278",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Oxford",
+      "countryCode": "GB",
+      "latitude": 51.7487806598031,
+      "longitude": -1.2342485885213,
+      "wupLatitude": 51.7487806598031,
+      "wupLongitude": -1.2342485885213,
+      "wupName": "Oxford",
+      "wupCityCode": 5278,
+      "appCityIds": [
+        "oxford"
+      ],
+      "population2025": 172436,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/oxford/qualification.json",
+      "population2015": 163739,
+      "annualGrowthPct2015To2025": 0.517525,
+      "registryCityIds": [
+        "wup2025:5278"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:2001",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Cardiff",
+      "countryCode": "GB",
+      "latitude": 51.4941598754672,
+      "longitude": -3.18365738997209,
+      "wupLatitude": 51.4941598754672,
+      "wupLongitude": -3.18365738997209,
+      "wupName": "Cardiff",
+      "wupCityCode": 2001,
+      "appCityIds": [
+        "cardiff"
+      ],
+      "population2025": 390692,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/cardiff/qualification.json",
+      "population2015": 368184,
+      "annualGrowthPct2015To2025": 0.593367,
+      "registryCityIds": [
+        "wup2025:2001"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:3890",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Stoke-on-Trent",
+      "countryCode": "GB",
+      "latitude": 53.0159155643046,
+      "longitude": -2.17437344168429,
+      "wupLatitude": 53.0159155643046,
+      "wupLongitude": -2.17437344168429,
+      "wupName": "Stoke-on-Trent",
+      "wupCityCode": 3890,
+      "appCityIds": [
+        "stoke_on_trent"
+      ],
+      "population2025": 332542,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/stoke_on_trent/qualification.json",
+      "population2015": 317258,
+      "annualGrowthPct2015To2025": 0.470508,
+      "registryCityIds": [
+        "wup2025:3890"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:4108",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Bournemouth",
+      "countryCode": "GB",
+      "latitude": 50.7377349576354,
+      "longitude": -1.90482883545276,
+      "wupLatitude": 50.7377349576354,
+      "wupLongitude": -1.90482883545276,
+      "wupName": "Bournemouth",
+      "wupCityCode": 4108,
+      "appCityIds": [
+        "bournemouth"
+      ],
+      "population2025": 386557,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/bournemouth/qualification.json",
+      "population2015": 357083,
+      "annualGrowthPct2015To2025": 0.793111,
+      "registryCityIds": [
+        "wup2025:4108"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:4647",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Coventry",
+      "countryCode": "GB",
+      "latitude": 52.4197855108422,
+      "longitude": -1.50597012431852,
+      "wupLatitude": 52.4197855108422,
+      "wupLongitude": -1.50597012431852,
+      "wupName": "Coventry",
+      "wupCityCode": 4647,
+      "appCityIds": [
+        "coventry"
+      ],
+      "population2025": 427678,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/coventry/qualification.json",
+      "population2015": 375694,
+      "annualGrowthPct2015To2025": 1.295956,
+      "registryCityIds": [
+        "wup2025:4647"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:4684",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Southampton",
+      "countryCode": "GB",
+      "latitude": 50.9183161488384,
+      "longitude": -1.39571519357,
+      "wupLatitude": 50.9183161488384,
+      "wupLongitude": -1.39571519357,
+      "wupName": "Southampton",
+      "wupCityCode": 4684,
+      "appCityIds": [
+        "southampton"
+      ],
+      "population2025": 347446,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/southampton/qualification.json",
+      "population2015": 308732,
+      "annualGrowthPct2015To2025": 1.181357,
+      "registryCityIds": [
+        "wup2025:4684"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:5250",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Middlesbrough",
+      "countryCode": "GB",
+      "latitude": 54.560753928282,
+      "longitude": -1.26260886474088,
+      "wupLatitude": 54.560753928282,
+      "wupLongitude": -1.26260886474088,
+      "wupName": "Middlesbrough",
+      "wupCityCode": 5250,
+      "appCityIds": [
+        "middlesbrough"
+      ],
+      "population2025": 349436,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/middlesbrough/qualification.json",
+      "population2015": 327763,
+      "annualGrowthPct2015To2025": 0.640296,
+      "registryCityIds": [
+        "wup2025:5250"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:6034",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Brighton",
+      "countryCode": "GB",
+      "latitude": 50.832718747559,
+      "longitude": -0.232087060115579,
+      "wupLatitude": 50.832718747559,
+      "wupLongitude": -0.232087060115579,
+      "wupName": "Brighton",
+      "wupCityCode": 6034,
+      "appCityIds": [
+        "brighton"
+      ],
+      "population2025": 467937,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/brighton/qualification.json",
+      "population2015": 423316,
+      "annualGrowthPct2015To2025": 1.002147,
+      "registryCityIds": [
+        "wup2025:6034"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:6053",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Hull",
+      "countryCode": "GB",
+      "latitude": 53.7628896052307,
+      "longitude": -0.354103477578705,
+      "wupLatitude": 53.7628896052307,
+      "wupLongitude": -0.354103477578705,
+      "wupName": "Hull",
+      "wupCityCode": 6053,
+      "appCityIds": [
+        "hull"
+      ],
+      "population2025": 322100,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/hull/qualification.json",
+      "population2015": 309317,
+      "annualGrowthPct2015To2025": 0.404954,
+      "registryCityIds": [
+        "wup2025:6053"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:6431",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Southend-on-Sea",
+      "countryCode": "GB",
+      "latitude": 51.5551240047725,
+      "longitude": 0.668467014701583,
+      "wupLatitude": 51.5551240047725,
+      "wupLongitude": 0.668467014701583,
+      "wupName": "Southend-on-Sea",
+      "wupCityCode": 6431,
+      "appCityIds": [
+        "southend_on_sea"
+      ],
+      "population2025": 280158,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/southend_on_sea/qualification.json",
+      "population2015": 253331,
+      "annualGrowthPct2015To2025": 1.006568,
+      "registryCityIds": [
+        "wup2025:6431"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:104",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Mongu",
+      "countryCode": "ZM",
+      "latitude": -15.2698331723381,
+      "longitude": 23.1518886178753,
+      "wupLatitude": -15.2698331723381,
+      "wupLongitude": 23.1518886178753,
+      "wupName": "Mongu",
+      "wupCityCode": 104,
+      "appCityIds": [
+        "mongu"
+      ],
+      "population2025": 123918,
+      "populationPlausibility2025": "Low",
+      "parcelSourceId": "zm-nsdi-zilmis-lots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/mongu/qualification.json",
+      "population2015": 113776,
+      "annualGrowthPct2015To2025": 0.853885,
+      "registryCityIds": [
+        "wup2025:104"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:1469",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "La Rochelle",
+      "countryCode": "FR",
+      "latitude": 46.1625399538636,
+      "longitude": -1.16258542365523,
+      "wupLatitude": 46.1625399538636,
+      "wupLongitude": -1.16258542365523,
+      "wupName": "La Rochelle",
+      "wupCityCode": 1469,
+      "appCityIds": [
+        "la_rochelle"
+      ],
+      "population2025": 76035,
+      "populationPlausibility2025": "Moderate",
+      "parcelSourceId": "fr-ign-parcellaire-express",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/la_rochelle/qualification.json",
+      "population2015": 78597,
+      "annualGrowthPct2015To2025": -0.331398,
+      "registryCityIds": [
+        "wup2025:1469"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:2025",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Luanshya",
+      "countryCode": "ZM",
+      "latitude": -13.1437301508279,
+      "longitude": 28.4228139265333,
+      "wupLatitude": -13.1437301508279,
+      "wupLongitude": 28.4228139265333,
+      "wupName": "Luanshya",
+      "wupCityCode": 2025,
+      "appCityIds": [
+        "luanshya"
+      ],
+      "population2025": 100400,
+      "populationPlausibility2025": "Low",
+      "parcelSourceId": "zm-nsdi-zilmis-lots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json",
+      "population2015": 90645,
+      "annualGrowthPct2015To2025": 1.022114,
+      "registryCityIds": [
+        "wup2025:2025"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:2660",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Encinitas",
+      "countryCode": "US",
+      "latitude": 33.0602781384953,
+      "longitude": -117.267811873962,
+      "wupLatitude": 33.0602781384953,
+      "wupLongitude": -117.267811873962,
+      "wupName": "Encinitas",
+      "wupCityCode": 2660,
+      "appCityIds": [
+        "encinitas"
+      ],
+      "population2025": 79460,
+      "populationPlausibility2025": "Low",
+      "parcelSourceId": "us-ca-sangis-parcels-reference",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/encinitas/qualification.json",
+      "population2015": 69052,
+      "annualGrowthPct2015To2025": 1.403939,
+      "registryCityIds": [
+        "wup2025:2660"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:3855",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Lenasia",
+      "countryCode": "ZA",
+      "latitude": -26.3478558274038,
+      "longitude": 27.876034282466,
+      "wupLatitude": -26.3478558274038,
+      "wupLongitude": 27.876034282466,
+      "wupName": "Lenasia",
+      "wupCityCode": 3855,
+      "appCityIds": [
+        "lenasia"
+      ],
+      "population2025": 214770,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "za-csg-dffe-erven",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json",
+      "population2015": 142970,
+      "annualGrowthPct2015To2025": 4.069329,
+      "registryCityIds": [
+        "wup2025:3855"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:4800",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Vosman",
+      "countryCode": "ZA",
+      "latitude": -25.8573418214821,
+      "longitude": 29.1180026432058,
+      "wupLatitude": -25.8573418214821,
+      "wupLongitude": 29.1180026432058,
+      "wupName": "Vosman",
+      "wupCityCode": 4800,
+      "appCityIds": [
+        "vosman"
+      ],
+      "population2025": 179869,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "za-csg-dffe-erven",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/vosman/qualification.json",
+      "population2015": 138364,
+      "annualGrowthPct2015To2025": 2.623409,
+      "registryCityIds": [
+        "wup2025:4800"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:5104",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Acireale",
+      "countryCode": "IT",
+      "latitude": 37.6049746892746,
+      "longitude": 15.1470464254041,
+      "wupLatitude": 37.6049746892746,
+      "wupLongitude": 15.1470464254041,
+      "wupName": "Acireale",
+      "wupCityCode": 5104,
+      "appCityIds": [
+        "acireale"
+      ],
+      "population2025": 73600,
+      "populationPlausibility2025": "High",
+      "parcelSourceId": "it-sicilia-sitr-cadastral-parcels",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/acireale/qualification.json",
+      "population2015": 74940,
+      "annualGrowthPct2015To2025": -0.180428,
+      "registryCityIds": [
+        "wup2025:5104"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:6345",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Lindberg",
+      "countryCode": "US",
+      "latitude": 32.6471024349277,
+      "longitude": -97.1431006262883,
+      "wupLatitude": 32.6471024349277,
+      "wupLongitude": -97.1431006262883,
+      "wupName": "Lindberg",
+      "wupCityCode": 6345,
+      "appCityIds": [
+        "lindberg"
+      ],
+      "population2025": 210973,
+      "populationPlausibility2025": "Moderate",
+      "parcelSourceId": "arlington-tax-parcels",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/lindberg/qualification.json",
+      "population2015": 157903,
+      "annualGrowthPct2015To2025": 2.897492,
+      "registryCityIds": [
+        "wup2025:6345"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:7367",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Buenaventura Lakes",
+      "countryCode": "US",
+      "latitude": 28.3522565261019,
+      "longitude": -81.3782104985266,
+      "wupLatitude": 28.3522565261019,
+      "wupLongitude": -81.3782104985266,
+      "wupName": "Buenaventura Lakes",
+      "wupCityCode": 7367,
+      "appCityIds": [
+        "buenaventura_lakes"
+      ],
+      "population2025": 158161,
+      "populationPlausibility2025": "Moderate",
+      "parcelSourceId": "orlando-ocpa-arcgis",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/qualification.json",
+      "population2015": 121858,
+      "annualGrowthPct2015To2025": 2.607571,
+      "registryCityIds": [
+        "wup2025:7367"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:7468",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Alafaya",
+      "countryCode": "US",
+      "latitude": 28.5645463354798,
+      "longitude": -81.1884381841486,
+      "wupLatitude": 28.5645463354798,
+      "wupLongitude": -81.1884381841486,
+      "wupName": "Alafaya",
+      "wupCityCode": 7468,
+      "appCityIds": [
+        "alafaya"
+      ],
+      "population2025": 103970,
+      "populationPlausibility2025": "Moderate",
+      "parcelSourceId": "orlando-ocpa-arcgis",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/alafaya/qualification.json",
+      "registryCityIds": [
+        "wup2025:7468"
+      ],
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:8193",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Lackawanna",
+      "countryCode": "US",
+      "latitude": 42.8429861120278,
+      "longitude": -78.8135507251543,
+      "wupLatitude": 42.8429861120278,
+      "wupLongitude": -78.8135507251543,
+      "wupName": "Lackawanna",
+      "wupCityCode": 8193,
+      "appCityIds": [
+        "lackawanna"
+      ],
+      "population2025": 52726,
+      "populationPlausibility2025": "Moderate",
+      "parcelSourceId": "us-ny-erie-parcels",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/lackawanna/qualification.json",
+      "population2015": 54148,
+      "annualGrowthPct2015To2025": -0.266123,
+      "registryCityIds": [
+        "wup2025:8193"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
+    },
+    {
+      "id": "wup2025:11554",
+      "cohorts": [
+        "registry",
+        "app"
+      ],
+      "name": "Tung Chung",
+      "countryCode": "HK",
+      "latitude": 22.2862518536,
+      "longitude": 113.942260841835,
+      "wupLatitude": 22.2862518536,
+      "wupLongitude": 113.942260841835,
+      "wupName": "Tung Chung",
+      "wupCityCode": 11554,
+      "appCityIds": [
+        "tung_chung"
+      ],
+      "population2025": 68589,
+      "populationPlausibility2025": "Low",
+      "parcelSourceId": "hk-landsd-csdi-lot",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12/tung_chung/qualification.json",
+      "population2015": 66992,
+      "annualGrowthPct2015To2025": 0.23559,
+      "registryCityIds": [
+        "wup2025:11554"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate"
     }
   ],
   "wikipediaLookupErrors": [
@@ -60541,7 +61370,7 @@
       "message": "HTTP Error 429: Too Many Requests"
     }
   ],
-  "purpose": "Versioned demographic identity matches and verified article links for the parcel research report. Current checks and source statuses are rebuilt from the canonical registry.",
+  "purpose": "Versioned demographic identity matches and verified article links for the parcel research report. Current checks and source statuses are rebuilt from the canonical registry. Updated with UN DESA WUP 2025 source populations for 32 bounded parcel-qualified city locators; 2015 populations are included where the WUP source row provides them.",
   "wikipediaLookupCoverage": {
     "uniqueTitleVariants": 1048,
     "successfulTitleVariants": 1048,

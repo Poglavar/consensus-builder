@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "6431",
+  "cityName": "Southend-on-Sea",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/6431/attempt-1/evidence/full-safe.geojson",
+    "sha256": "332f24280447f0765d7b136cb6f4f34e3299dc0d084216ffaef64141c952bfb4",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 37
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "63c4cfb204d372ed8697376930b942ad76849525ea6bc7053c4657c1fa7e2a21",
+    "geometryPass": true,
+    "featureCount": 37,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

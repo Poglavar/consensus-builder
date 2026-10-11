@@ -1,0 +1,54 @@
+{
+  "descriptor": {
+    "id": "fr-ign-parcellaire-express",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "adapter": "wfs",
+    "endpoint": "https://data.geopf.fr/wfs/ows",
+    "featureType": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle",
+    "idField": "idu",
+    "idType": "string",
+    "idPattern": "^[0-9A-Z]{14}$",
+    "idPrefix": "FR-PCI-",
+    "outFields": [
+      "idu"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "FR",
+    "licenceUrl": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+    "catalogueUrl": "https://www.data.gouv.fr/datasets/parcellaire-express-pci",
+    "version": "2.0.0",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "minRequestIntervalMs": 1500,
+    "metricSrid": 32630,
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "scope": "National IGN assembly of DGFiP PCI Vecteur cadastral parcels. This candidate is limited to the unchanged La Rochelle settlement point and thirteen local 0.001-degree cells; municipal completeness and legal boundary accuracy are unverified.",
+    "attribution": "IGN/DGFiP Parcellaire Express (PCI), Licence Ouverte 2.0; public WFS checked 2026-10-11."
+  },
+  "city": {
+    "code": "1469",
+    "name": "La Rochelle",
+    "point": [
+      -1.16258542365523,
+      46.1625399538636
+    ]
+  },
+  "sampleIds": [
+    "FR-PCI-17300000AP0069",
+    "FR-PCI-17300000AP0070",
+    "FR-PCI-17300000AP0071"
+  ],
+  "absentId": "FR-PCI-17300000ZZ9999",
+  "metricEpsg": "EPSG:32630",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "IGN first-party catalogue https://www.data.gouv.fr/datasets/parcellaire-express-pci identifies a national assembly of DGFiP PCI Vecteur cadastral parcels and links https://data.geopf.fr/wfs/ows. Live WFS capabilities identify CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle; DescribeFeatureType confirms idu string and geom MultiSurface. The frozen La Rochelle packet independently read native IDs 17300000AP0069, 17300000AP0070 and 17300000AP0071 at the unchanged locator; first-party https://geo.api.gouv.fr/communes/17300 confirms commune 17300 is La Rochelle. See evidence/source-inspection.json for bounded public responses and hashes."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}
