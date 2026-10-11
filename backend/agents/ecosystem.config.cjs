@@ -7,6 +7,12 @@
 // activate these jobs separately.
 // The proposer now renders its immutable thumbnail before minting. Use the same
 // public basemap configuration as the API that rendered its old server-side post.
+const path = require('node:path');
+const HOME_DIR = require('node:os').homedir();
+const REPO_ROOT = path.join(HOME_DIR, 'code', 'consensus-builder');
+const BACKEND_ROOT = path.join(REPO_ROOT, 'backend');
+const SOLANA_CONFIG = path.join(HOME_DIR, '.config', 'solana');
+
 const apiEnv = require('../ecosystem.config.cjs').apps.find(app => app.name === 'consensus-builder-api').env;
 const botEnv = {
   AGENT_SOL_FUNDING_ENABLED: '1',
@@ -21,8 +27,8 @@ const lensEnv = {
 };
 
 const LOGS = {
-  error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
-  out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+  error_file: path.join(BACKEND_ROOT, 'logs', 'agents-error.log'),
+  out_file: path.join(BACKEND_ROOT, 'logs', 'agents.log'),
   merge_logs: true,
   time: true
 };
@@ -34,7 +40,7 @@ function proposerJob(name, persona, cron) {
     name,
     script: 'agents/run.mjs',
     args: `--live --controller algorithm --persona ${persona} --candidates 4 --slot auto --api https://api.urbangametheory.xyz`,
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -61,7 +67,7 @@ function societyJob(name, persona, cron, caps) {
     name,
     script: 'agents/society-run.mjs',
     args: `--live --persona ${persona} --slot auto --api https://api.urbangametheory.xyz`,
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -86,7 +92,7 @@ module.exports = {
     // member services below fill when they start; an empty directory refuses to mint, so if they are
     // down the daily run fails at the lens step rather than minting with the proposer as its own lens.
     args: '--live --controller algorithm --persona densifier-01 --candidates 4 --slot auto --api https://api.urbangametheory.xyz',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -108,15 +114,15 @@ module.exports = {
       AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://127.0.0.1:3096',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
-    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'agents-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'agents.log'),
     merge_logs: true,
     time: true
   }, {
     name: 'consensus-builder-supporter',
     script: 'agents/support-run.mjs',
     args: '--live --persona supporter-01 --slot auto --api https://api.urbangametheory.xyz',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -128,8 +134,8 @@ module.exports = {
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SUPPORT_USDC_CAP: '0.25'
     },
-    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'agents-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'agents.log'),
     merge_logs: true,
     time: true
   }, {
@@ -141,7 +147,7 @@ module.exports = {
     name: 'consensus-builder-preservationist',
     script: 'agents/society-run.mjs',
     args: '--live --persona preservationist-01 --slot auto --api https://api.urbangametheory.xyz',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -155,8 +161,8 @@ module.exports = {
       AGENT_SOCIETY_ACTION_CAP: '3',
       AGENT_SOCIETY_USDC_CAP: '0.01'
     },
-    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'agents-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'agents.log'),
     merge_logs: true,
     time: true
   }, {
@@ -167,7 +173,7 @@ module.exports = {
     name: 'consensus-builder-speculator',
     script: 'agents/society-run.mjs',
     args: '--live --persona speculator-01 --slot auto --api https://api.urbangametheory.xyz',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -182,8 +188,8 @@ module.exports = {
       AGENT_SOCIETY_ACTION_CAP: '2',
       AGENT_SOCIETY_USDC_CAP: '0.05'
     },
-    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'agents-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'agents.log'),
     merge_logs: true,
     time: true
   },
@@ -200,22 +206,22 @@ module.exports = {
     name: 'consensus-builder-tx-sync',
     script: 'scripts/sync-transactions.mjs',
     args: '--run',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
     cron_restart: '*/20 * * * *',
     kill_timeout: 600000,
     env: { NODE_ENV: 'production' },
-    error_file: '/root/code/consensus-builder/backend/logs/tx-sync-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/tx-sync.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'tx-sync-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'tx-sync.log'),
     merge_logs: true,
     time: true
   }, {
     name: 'consensus-builder-land-oracle',
     script: 'scripts/sync-land-events.mjs',
     args: '--live',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -223,23 +229,21 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json'
-      // No RPC URL here. This job lists AcceptanceRecords with getProgramAccounts and uses the
-      // separately configured SOLANA_PROGRAM_ACCOUNTS_RPC_URL, as does the prospective resolver.
-      // Other jobs use SOLANA_RPC_URL. From 2026-10-04 to 2026-10-10 this job used public devnet,
-      // throttled its transaction sync and failed the run.
+      LAND_ORACLE_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'land-oracle-stats.json')
+      // General traffic uses SOLANA_RPC_URL from backend/.env. The RPC helper routes only
+      // getProgramAccounts to the separately configured SOLANA_PROGRAM_ACCOUNTS_RPC_URL.
     },
     // Own log files, not the shared agents.log: the oracle prints its full JSON result (20+ KB),
     // which buried the persona runner's success sentinel past the monitor's tail window.
-    error_file: '/root/code/consensus-builder/backend/logs/land-oracle-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/land-oracle.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'land-oracle-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'land-oracle.log'),
     merge_logs: true,
     time: true
   }, {
     name: 'consensus-builder-prospective-resolver',
     script: 'blockchain/solana/scripts/prospective-external-market.mjs',
     args: '--settle --live',
-    cwd: '/root/code/consensus-builder',
+    cwd: REPO_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
@@ -247,13 +251,13 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      SOLANA_KEYPAIR: '/root/.config/solana/court-oracle.json',
-      PROSPECTIVE_BETTOR_KEYPAIR: '/root/.config/solana/ugt-persona-01.json',
-      PROSPECTIVE_MARKET_STATE: '/root/.config/solana/ugt-prospective-court-v2.json',
-      PROSPECTIVE_RUN_STATS: '/root/code/consensus-builder/backend/logs/prospective-resolver-stats.json'
+      SOLANA_KEYPAIR: path.join(SOLANA_CONFIG, 'court-oracle.json'),
+      PROSPECTIVE_BETTOR_KEYPAIR: path.join(SOLANA_CONFIG, 'ugt-persona-01.json'),
+      PROSPECTIVE_MARKET_STATE: path.join(SOLANA_CONFIG, 'ugt-prospective-court-v2.json'),
+      PROSPECTIVE_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'prospective-resolver-stats.json')
     },
-    error_file: '/root/code/consensus-builder/backend/logs/prospective-resolver-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/prospective-resolver.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'prospective-resolver-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'prospective-resolver.log'),
     merge_logs: true,
     time: true
   }, {
@@ -265,14 +269,14 @@ module.exports = {
     name: 'consensus-builder-lens-member',
     script: 'agents/lens-member-run.mjs',
     args: '--persona notary-01 --live',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
     kill_timeout: 30000,
     env: lensEnv,
-    error_file: '/root/code/consensus-builder/backend/logs/lens-member-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/lens-member.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'lens-member-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'lens-member.log'),
     merge_logs: true,
     time: true
   }, {
@@ -285,14 +289,14 @@ module.exports = {
     name: 'consensus-builder-lifecycle-member',
     script: 'agents/lens-member-run.mjs',
     args: '--persona lifecycle-01 --live',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
     kill_timeout: 30000,
     env: lensEnv,
-    error_file: '/root/code/consensus-builder/backend/logs/lens-member-error.log',
-    out_file: '/root/code/consensus-builder/backend/logs/lens-member.log',
+    error_file: path.join(BACKEND_ROOT, 'logs', 'lens-member-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'lens-member.log'),
     merge_logs: true,
     time: true
   }]

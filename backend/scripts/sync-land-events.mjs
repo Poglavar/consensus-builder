@@ -9,6 +9,7 @@ dotenv.config({ quiet: true });
 
 import pg from 'pg';
 import { createRpcConnection } from '../solana/rpc.js';
+import { createRpcMethodCounter } from '../solana/rpc-method-counts.js';
 import { runLandEventJob } from '../oracle/land-event-job.js';
 import { buildLandOracleRunStats, landOracleStatsPath, writeRunStatsAtomic } from '../operations/run-stats.js';
 
@@ -35,6 +36,15 @@ const known = new Set(['--dry-run', '--live', '--skip-transaction-sync']);
 if (args.size !== argv.length || [...args].some(arg => !known.has(arg)) || (args.has('--dry-run') === args.has('--live'))) usage(2);
 const dryRun = args.has('--dry-run');
 
+function required(value, label) {
+    const text = typeof value === 'string' ? value.trim() : '';
+    if (!text) throw new Error(`${label} is required`);
+    return text;
+}
+
+const RPC_URL = required(process.env.SOLANA_RPC_URL, 'SOLANA_RPC_URL');
+const PROGRAM_ACCOUNTS_RPC_URL = required(process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL, 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL');
+
 const pool = new pg.Pool({
     host: process.env.PGHOST,
     port: Number(process.env.PGPORT),
@@ -42,13 +52,13 @@ const pool = new pg.Pool({
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE
 });
-// The consent sync lists AcceptanceRecords with getProgramAccounts, which the Alchemy free tier behind
-// SOLANA_RPC_URL refuses, so this whole job runs on SOLANA_PROGRAM_ACCOUNTS_RPC_URL (Helius devnet):
-// one endpoint per job. No public fallback: a missing value fails here instead of quietly moving the
-// night's run onto public devnet, which throttled it (2026-10-10).
-const RPC_URL = process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL;
-if (!RPC_URL) throw new Error('SOLANA_PROGRAM_ACCOUNTS_RPC_URL is required (backend .env)');
-const connection = createRpcConnection(RPC_URL, 'confirmed');
+// General reads and writes use SOLANA_RPC_URL; createRpcConnection sends only getProgramAccounts
+// to SOLANA_PROGRAM_ACCOUNTS_RPC_URL after verifying that both endpoints are on the same cluster.
+const rpcCounter = createRpcMethodCounter();
+const connection = createRpcConnection(RPC_URL, 'confirmed', {
+    programAccountsEndpoint: PROGRAM_ACCOUNTS_RPC_URL,
+    onRpcRequest: rpcCounter.onRequest
+});
 console.log(`[${new Date().toISOString()}] RPC ${new URL(RPC_URL).host}`);
 const startedAt = new Date().toISOString();
 let job = { result: null, error: null, exitCode: 1, transactionSync: null };
@@ -57,6 +67,7 @@ try {
     job = await runLandEventJob({
         pool,
         connection,
+        rpcCounter,
         dryRun,
         syncTransactionsFirst: !args.has('--skip-transaction-sync')
     });

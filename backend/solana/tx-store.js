@@ -1,11 +1,9 @@
 // The store behind the transaction explorer: an incremental mirror of every devnet transaction this
 // system has made, in consensus.solana_transaction (DDL: routes/transactions-ddl.sql).
 //
-// Why a store at all: the public devnet RPC rate-limits a single page load that re-scans eight
-// watched addresses and refetches their transactions. Signature scans are cheap, fetching parsed
-// transactions is not — so a sync scans, subtracts what the table already holds, and fetches only
-// the difference. The table is therefore also the checkpoint: a sync killed by a rate limit loses
-// nothing it had already written, and a rerun picks up exactly what is still missing.
+// The public devnet RPC rate-limits repeated scans of watched addresses. The scheduled/CLI worker
+// scans, subtracts what the table already holds, stores raw responses, and resumes from the database
+// checkpoint after restarts. The explorer only reads this mirror.
 //
 // Everything here takes its pool and connection as arguments, so it is unit-testable with stubs.
 
@@ -27,7 +25,7 @@ export function isRateLimited(error) {
 }
 
 // Scheduled jobs can afford to wait out a throttle window (just under two minutes in total) rather
-// than fail the night's run; an API request keeps the short default so a page load never hangs.
+// than fail the night's run; one-off callers can use the short default to avoid long waits.
 export const JOB_RPC_RETRY_DELAYS = [2000, 5000, 15000, 30000, 60000];
 
 // Back off and retry a rate limit a few times; anything else is thrown straight through.
@@ -157,7 +155,7 @@ export async function syncTransactions({
     dryRun = false,
     onProgress = () => { }
 } = {}) {
-    const result = { scanned: 0, newSignatures: 0, fetched: 0, failed: 0, error: null };
+    const result = { scanned: 0, newSignatures: 0, fetched: 0, failed: 0, error: null, errorStack: null };
     // signature -> { slot, blockTime, watchedBy: Set }
     const seen = new Map();
 
@@ -181,6 +179,7 @@ export async function syncTransactions({
         // answer: signature scans are the cheap half, and whatever they surfaced is still worth
         // fetching. The failure is reported, and the next run rescans from scratch anyway.
         result.error = error.message;
+        result.errorStack = error?.stack || null;
     }
 
     result.scanned = seen.size;
@@ -228,6 +227,7 @@ export async function syncTransactions({
             // Chunks already stored stay stored; the caller reports the cause and serves the store.
             // A scan error already recorded stays — it is the earlier, more root cause of the two.
             result.error = result.error || error.message;
+            result.errorStack = result.errorStack || error?.stack || null;
             break;
         }
     }

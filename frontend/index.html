@@ -156,6 +156,7 @@
     </script>
 
     <!-- Leaflet JavaScript -->
+    <script src="rpc-config.js?v=1"></script>
     <script src="carto-config.js?v=20261003"></script>
     <script src="vendor/leaflet-1.9.4/leaflet.js"></script>
 
@@ -1672,6 +1673,7 @@
     </script>
     <script>
         window.writeVersionedLocalScripts([
+            'js/solana/rpc-routing.js',
             'js/proposals/status.js',
             'js/proposals/epoch.js',
             'js/proposals/counts.js',
@@ -2020,9 +2022,9 @@
          performs the dynamic import (the import map below applies to dynamic
          imports from classic scripts too) and populates the global `THREE`,
          including the OrbitControls/GLTFLoader addons that used to ship as
-         examples/js UMD builds (dropped after r147). Same pinned URLs as
-         zagreb-isochrone's photoreal sim, so both projects share one
-         3d-tiles-renderer stack. Callers keep the old eager-bootstrap contract:
+         examples/js UMD builds (dropped after r147). Same pinned URLs used by
+         the shared photoreal simulation keep the 3d-tiles-renderer stack
+         consistent. Callers keep the old eager-bootstrap contract:
          resolves true once window.THREE exists, false if the CDN fails, and
          'threeReady' still fires for legacy listeners. -->
     <script type="importmap">

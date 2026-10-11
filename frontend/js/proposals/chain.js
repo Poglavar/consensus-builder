@@ -401,7 +401,15 @@ async function refreshProposalBalanceDisplay() {
             const cluster = solWmBal.getCluster ? solWmBal.getCluster() : 'devnet';
             const connection = window.SolanaChainDataLoader
                 ? window.SolanaChainDataLoader.getConnection(cluster)
-                : new window.solanaWeb3.Connection('https://api.devnet.solana.com', 'confirmed');
+                : (() => {
+                    const routing = window.SolanaRpcRouting;
+                    if (!routing) throw new Error('Solana RPC routing config is unavailable');
+                    const endpoints = routing.resolveEndpoints(cluster);
+                    return new window.solanaWeb3.Connection(endpoints.primary, {
+                        commitment: 'confirmed',
+                        fetch: routing.createFetch(endpoints.primary, endpoints.programAccounts)
+                    });
+                })();
             const lamports = await connection.getBalance(new window.solanaWeb3.PublicKey(solAccount));
             const solAmount = lamports / 1e9;
             const valueText = solAmount.toLocaleString(undefined, { maximumFractionDigits: 4 });

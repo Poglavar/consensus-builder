@@ -48,9 +48,10 @@ const {
 const marketClient = localRequire('../../../frontend/js/solana/market-client.js');
 marketClient.configure({ web3: { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } });
 
-// Evidence discovery lists attestations with getProgramAccounts, which the Alchemy free tier behind
-// SOLANA_RPC_URL refuses, so this whole job runs on the endpoint that answers it (Helius devnet).
-const RPC_URL = process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL;
+// General reads and writes use SOLANA_RPC_URL. The shared RPC helper sends only getProgramAccounts
+// to SOLANA_PROGRAM_ACCOUNTS_RPC_URL after checking that both endpoints share a cluster.
+const RPC_URL = required(process.env.SOLANA_RPC_URL, 'SOLANA_RPC_URL');
+const PROGRAM_ACCOUNTS_RPC_URL = required(process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL, 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL');
 const USDC_MINT = new PublicKey(process.env.EXTERNAL_MARKET_STAKE_MINT || '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
 const STATE_FILE = path.resolve(process.env.PROSPECTIVE_MARKET_STATE || '.prospective-external-market.private.json');
 const RUN_STATS_FILE = process.env.PROSPECTIVE_RUN_STATS
@@ -386,7 +387,7 @@ async function main() {
     const settle = process.argv.includes('--settle');
     if (open === settle) throw new Error('choose exactly one phase: --open or --settle');
     const live = process.argv.includes('--live');
-    const connection = createRpcConnection(required(RPC_URL, 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL'), 'confirmed');
+    const connection = createRpcConnection(RPC_URL, 'confirmed', { programAccountsEndpoint: PROGRAM_ACCOUNTS_RPC_URL });
     console.error(`[${new Date().toISOString()}] RPC ${new URL(RPC_URL).host}`);
     if (open) return openMarket(connection, live);
     return settleMarket(connection, live);
