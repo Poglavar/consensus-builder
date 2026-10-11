@@ -26,6 +26,8 @@ module.exports = {
       // origin as that proposal's screenshot_url. It is a public URL, not a secret, so it lives
       // here (versioned, deployed) rather than in a hand-edited .env.
       PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz',
+      // Read immutable metadata from the same public gateway as the pinning service.
+      IPFS_READ_GATEWAY: 'https://gateway.pinata.cloud/ipfs',
       // Basemap tiles for server-rendered proposal thumbnails (thumbnails/tile-stitch.js). Public
       // key — the browser basemap (frontend/js/basemap.js) ships the same one.
       MAPTILER_API_KEY: 'kps68PDVgfwEhLNACcHe',

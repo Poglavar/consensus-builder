@@ -12,7 +12,11 @@ describe('algorithmic agent schedule', () => {
         const proposers = apps.filter(item => item.script === 'agents/run.mjs');
         expect(proposers).toHaveLength(3);
         expect(apiEnv.MAPTILER_API_KEY).toBeTruthy();
-        for (const proposer of proposers) expect(proposer.env.MAPTILER_API_KEY).toBe(apiEnv.MAPTILER_API_KEY);
+        expect(apiEnv.IPFS_READ_GATEWAY).toBe('https://gateway.pinata.cloud/ipfs');
+        for (const proposer of proposers) {
+            expect(proposer.env.MAPTILER_API_KEY).toBe(apiEnv.MAPTILER_API_KEY);
+            expect(proposer.env.IPFS_READ_GATEWAY).toBe(apiEnv.IPFS_READ_GATEWAY);
+        }
     });
     it('checkpoints support and society runs before RPC reads and persists pre-action failures', () => {
         const supporter = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
