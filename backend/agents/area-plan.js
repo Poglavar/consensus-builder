@@ -71,6 +71,7 @@ export function parcelsFromSource(featureCollection, { turf, place, minAreaM2 = 
         const [lng, lat] = turf.pointOnFeature(feature).geometry.coordinates;
         parcels.push({
             parcelId,
+            parcelSourceId: feature.properties?.sourceId || null,
             parcelNumber: String(feature.properties?.parcelNumber || feature.properties?.sourceParcelId || '').trim() || null,
             koName: place || null,
             areaM2,
@@ -125,6 +126,7 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
             if (retired.has(summary.mints?.[pick.candidateId]?.proposalPda)) continue;
             byParcel.set(candidate.parcelId, {
                 parcelId: candidate.parcelId,
+                parcelSourceId: candidate.parcelSourceId || null,
                 parcelNumber: candidate.parcelNumber ?? null,
                 koName: candidate.koName ?? null,
                 city: summary.city ?? null,

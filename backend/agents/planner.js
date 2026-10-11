@@ -153,6 +153,7 @@ export function planCandidates(parcels, persona, {
         candidates.push({
             candidateId: `${personaName}:${parcel.parcelId}`,
             parcelId: parcel.parcelId,
+            parcelSourceId: parcel.parcelSourceId || null,
             koName: parcel.koName ?? null,
             areaM2,
             centroid: parcel.centroid ?? null,

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import Module, { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 import {
-    mirrorAgentPublication, prepareAgentPublication, verifyPublicationReadable
+    agentParcelSource, mirrorAgentPublication, prepareAgentPublication, verifyPublicationReadable
 } from '../agents/chain-publication.js';
 
 const require = createRequire(import.meta.url);
@@ -52,6 +52,19 @@ function fixture() {
 
 
 describe('agent chain publication', () => {
+    it('keeps explicit NYC tax-lot identity even when that source is not the city default', () => {
+        const source = agentParcelSource({ city: 'new_york', cadastreParcelIds: ['US-NYC-BBL-1001440001'] },
+            [{ city: 'new_york', sourceId: 'us-nyc-dof-digital-tax-map' }]);
+        expect(source.descriptor.id).toBe('us-nyc-dof-digital-tax-map');
+        expect(agentParcelSource({ city: 'zagreb', cadastreParcelIds: ['HR-335061-2316/1'] })).toBeNull();
+    });
+    it('uses the selected cadastral source for the independent pre-mint check', async () => {
+        const { args, deps, spies } = fixture();
+        const baseLoad = deps.loadGround;
+        deps.loadGround = async (...params) => ({ ...await baseLoad(...params), parcelSourceId: 'explicit-source' });
+        await prepareAgentPublication(args, deps);
+        expect(spies.checkBinding.mock.calls[0][3].parcelSourceId).toBe('explicit-source');
+    });
     it('works with backend-only node_modules and no global Turf, as deployed', async () => {
         const resolve = Module._resolveFilename;
         Module._resolveFilename = function (request, parent, ...args) {

@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import * as turf from '@turf/turf';
 import { buildProposalRecord } from './record-builder.js';
-import { parcelSourceForCity } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceCatalog } from '../parcels/sources.js';
 import { checkProposalBinding } from '../proposals/binding.js';
 import { readChainMetadata } from '../proposals/chain-mirror.js';
 import { normalizeChainRef } from '../proposals/chain-reader.js';
@@ -31,10 +31,22 @@ export const MINT_GROUND_SQL = `
     ORDER BY p.cestica_id LIMIT 5001
 `;
 
-export async function loadMintGround(pool, record) {
+// A city may also offer a non-default source with a different cadastral namespace.
+// The planner has already chosen canonical IDs from that source; use their identity,
+// rather than silently switching an explicit NYC tax lot to the city's DB cadastre.
+export function agentParcelSource(record, areas = []) {
+    const ids = record.cadastreParcelIds || [];
+    const chosen = new Set(areas.filter(area => area.city === record.city && area.sourceId).map(area => area.sourceId));
+    const sources = parcelSourceCatalog.sources.filter(source => chosen.has(source.id) && source.cityIds.includes(record.city)
+        && ids.length && ids.every(id => String(id).startsWith(source.idPrefix)));
+    if (sources.length > 1) throw new Error('The agent parcel namespace names more than one cadastral source.');
+    return parcelSourceForCity(record.city, sources[0]?.id);
+}
+
+export async function loadMintGround(pool, record, { areas = [], parcelSourceId = null } = {}) {
     const site = siteBinding.siteOf(record, { turf });
     if (!site) throw new Error('The agent proposal has no material site.');
-    const provider = parcelSourceForCity(record.city);
+    const provider = parcelSourceId ? parcelSourceForCity(record.city, parcelSourceId) : agentParcelSource(record, areas);
     if (provider) {
         const result = await provider.adapter.queryGeometry(site);
         if (result?.complete !== true || !Array.isArray(result.features) || result.features.length > 5000) {
@@ -44,7 +56,7 @@ export async function loadMintGround(pool, record) {
             || feature.properties.sourceId !== provider.descriptor.id)) {
             throw new Error('The cadastral source returned a malformed or foreign parcel.');
         }
-        return { parcels: result.features, source: provider.descriptor.id };
+        return { parcels: result.features, source: provider.descriptor.id, parcelSourceId: provider.descriptor.id };
     }
     const { rows } = await pool.query(MINT_GROUND_SQL, [JSON.stringify(site)]);
     if (rows.length > 5000) throw new Error('The mint site reaches too many cadastral parcels.');
@@ -60,13 +72,13 @@ export async function prepareAgentPublication({ pool, candidate, pick, persona, 
     if (!persona.wallet || !Array.isArray(lens) || !lens.length) throw new Error('A signer and resolving lens are required.');
     const draft = { ...buildProposalRecord({ candidate, pick, persona, runId, city, turf }),
         author: persona.wallet, createdAt: now().toISOString(), lens };
-    const ground = await loadGround(pool, draft);
+    const ground = await loadGround(pool, draft, { areas: persona.areas || [], parcelSourceId: candidate.parcelSourceId || null });
     if (!ground.parcels.length) throw new Error('No cadastral evidence covers the proposed building.');
     const record = await mintBinding.buildRecord(draft, { ...ground, regionHasCadastre: true, turf, now });
     // Independently recheck the full footprint before uploading, using the same public binding
     // rule as ordinary publication. This is a read, not /prepare or a server signature.
     const bound = await checkBinding(pool, record, record.cadastreParcelIds, {
-        site: record.site, city, toleranceM: record.toleranceM
+        site: record.site, city, parcelSourceId: ground.parcelSourceId || null, toleranceM: record.toleranceM
     });
     if (!bound.ok || bound.binding?.coverage !== 'complete' || !record.cadastreParcelIds.includes(candidate.parcelId)) {
         throw Object.assign(new Error(bound.error || bound.message || 'The complete candidate footprint could not be verified.'), {
