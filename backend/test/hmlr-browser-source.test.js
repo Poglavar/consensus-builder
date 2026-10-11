@@ -102,6 +102,36 @@ beforeAll(() => {
 });
 afterEach(() => { vi.restoreAllMocks(); });
 
+test.each(['missing-length', 'compressed-wire-length'])('reads verified decoded bytes with %s HTTP metadata', async mode => {
+    const f = fixture();
+    const fetchImpl = async (url, options) => {
+        const original = await f.fetchImpl(url, options);
+        const headers = new Headers(original.headers);
+        if (mode === 'missing-length') headers.delete('content-length');
+        else {
+            // Fetch exposes decoded bytes even when headers describe the compressed wire body.
+            headers.set('content-encoding', 'gzip');
+            headers.set('content-length', '1');
+        }
+        return new Response(original.body, { status: original.status, headers });
+    };
+    const result = await f.create({}, { fetchImpl }).queryIds([`${HMLR_BROWSER_GROUND_PREFIX}1002`]);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.features.map(feature => feature.id), [`${HMLR_BROWSER_GROUND_PREFIX}1002`]);
+});
+
+test('cancels an oversized headerless manifest while reading its decoded stream', async () => {
+    const f = fixture();
+    let cancelled = false;
+    const fetchImpl = async () => new Response(new ReadableStream({
+        pull(controller) { controller.enqueue(new Uint8Array(1024 * 1024)); },
+        cancel() { cancelled = true; }
+    }));
+    await assert.rejects(f.create({}, { fetchImpl }).queryIds([`${HMLR_BROWSER_GROUND_PREFIX}1002`]), /exceeds.*byte limit/);
+    assert.equal(cancelled, true);
+    assert.equal(f.archiveCalls.length, 0);
+});
+
 test('a completed archive download timeout cannot abort local authority parsing', async () => {
     const f = fixture({ bulkFeatureCount: 600 }), downloadSignals = [];
     const timeout = AbortSignal.timeout.bind(AbortSignal);

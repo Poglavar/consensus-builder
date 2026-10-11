@@ -285,10 +285,12 @@ function cachedArchiveStore(cacheStorage, manifestUrl) {
 
 async function responseBytes(response, expectedBytes, limit, label) {
     if (!response.ok || response.status !== 200) throw providerHttpError(response);
-    const contentLength = response.headers?.get?.('content-length');
-    if (!contentLength || !/^\d+$/.test(contentLength) || Number(contentLength) !== expectedBytes || expectedBytes > limit) {
-        throw upstreamError(`${label} response length disagrees with its manifest.`);
+    if (expectedBytes !== null && (!Number.isSafeInteger(expectedBytes) || expectedBytes < 1 || expectedBytes > limit)) {
+        throw upstreamError(`${label} has an invalid manifest byte limit.`);
     }
+    // Fetch returns decoded bytes. HTTP Content-Length can be absent or describe
+    // compressed bytes, so enforce the release size against the stream itself.
+    const byteLimit = expectedBytes ?? limit;
     const reader = response.body?.getReader?.();
     if (!reader) throw upstreamError(`${label} response has no readable body.`);
     let total = 0; const chunks = [];
@@ -296,12 +298,12 @@ async function responseBytes(response, expectedBytes, limit, label) {
         for (;;) {
             const part = await reader.read(); if (part.done) break;
             total += part.value.byteLength;
-            if (total > expectedBytes || total > limit) throw upstreamError(`${label} exceeds its manifest byte limit.`);
+            if (total > byteLimit) throw upstreamError(`${label} exceeds its manifest byte limit.`);
             chunks.push(part.value);
         }
     } catch (error) { await reader.cancel().catch(() => {}); throw error; }
     finally { reader.releaseLock(); }
-    if (total !== expectedBytes) throw upstreamError(`${label} response is incomplete.`);
+    if (total < 1 || (expectedBytes !== null && total !== expectedBytes)) throw upstreamError(`${label} response is incomplete.`);
     const bytes = new Uint8Array(total); let offset = 0;
     for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
     return bytes;
@@ -338,9 +340,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             let response;
             try { response = await fetchImpl(manifestUrl.href, { signal: controller, redirect: 'follow', headers: { Accept: 'application/json' } }); }
             catch (error) { if (error.status) throw error; throw upstreamError('HMLR release manifest is unavailable.', controller.aborted ? 504 : 502); }
-            const length = Number(response.headers?.get?.('content-length'));
-            if (!Number.isSafeInteger(length) || length < 1 || length > MAX_METADATA_BYTES) throw upstreamError('HMLR release manifest has an invalid size.');
-            const bytes = await responseBytes(response, length, MAX_METADATA_BYTES, 'HMLR release manifest');
+            const bytes = await responseBytes(response, null, MAX_METADATA_BYTES, 'HMLR release manifest');
             let raw;
             try { raw = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
             catch { throw upstreamError('HMLR release manifest is malformed.'); }
