@@ -1,0 +1,60 @@
+{
+  "descriptor": {
+    "id": "ie-tailte-hvd-freehold",
+    "adapter": "arcgis",
+    "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+    "idField": "SP_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "IE-SP-",
+    "outFields": [
+      "SP_ID",
+      "OBJECTID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "maxConcurrentQueries": 1,
+    "countryCode": "IE",
+    "cityIds": [
+      "dublin",
+      "47"
+    ],
+    "metricSrid": 2157,
+    "name": "Dublin Tailte Éireann freehold cadastral parcels",
+    "operator": "Tailte Éireann",
+    "scope": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency.",
+    "responseCrs": "EPSG:4326",
+    "evidenceFile": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json",
+    "catalogueUrl": "https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1",
+    "attribution": "© Tailte Éireann · freehold title boundaries only · adapted",
+    "licenceNote": "Published national High Value Dataset. Source terms, title certainty and currentness are informational; only public OBJECTID/SP_ID and geometry requested."
+  },
+  "city": {
+    "code": "47",
+    "name": "Galway",
+    "point": [
+      -9.05394189330571,
+      53.2754032975264
+    ]
+  },
+  "sampleIds": [
+    "IE-SP-5232572",
+    "IE-SP-4728758",
+    "IE-SP-6054729"
+  ],
+  "absentId": "IE-SP-999999999",
+  "metricEpsg": "EPSG:32629",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Dublin Tailte Éireann freehold cadastral parcels",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Dublin Tailte Éireann freehold cadastral parcels; Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency.; Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "8e2c8401440bc9feaa18e964b03456228f6f67924c8a34cfb88258310c170437",
+  "qualificationRecordedSha256": "da9218c769531d83f87ca11affc2246b50d8237b71a5bee74f209b83f4e26e1e",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/47/attempt-01/candidate.json"
+}

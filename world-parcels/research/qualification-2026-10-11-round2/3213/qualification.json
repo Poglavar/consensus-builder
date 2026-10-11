@@ -1,0 +1,1838 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3213",
+  "cityName": "Rosedale",
+  "sourceId": "us-bakersfield-municipal-cadastral-parcels",
+  "candidateSha256": "dfeb3da44cdad1252bcf16247512f0fe0de2d001907413ac987df93dec3ae3f0",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 73,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 73,
+      "collectedUniqueCount": 73
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 238
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "37c41dbd4fe511234ae6a3f8af8e66faa5ed81b1f9c6b6a34f8e8bde32519288",
+      "featureCount": 73,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32611",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "37c41dbd4fe511234ae6a3f8af8e66faa5ed81b1f9c6b6a34f8e8bde32519288",
+  "featureCount": 73,
+  "sampleIds": [
+    "US-BAKERSFIELD-APN-49475103",
+    "US-BAKERSFIELD-APN-49475303",
+    "US-BAKERSFIELD-APN-49475102"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -119.11,
+        35.406,
+        -119.109,
+        35.407
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435013"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -119.109,
+        35.406,
+        -119.108,
+        35.407
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435013",
+        "US-BAKERSFIELD-APN-49476107",
+        "US-BAKERSFIELD-APN-49476106",
+        "US-BAKERSFIELD-APN-49476105",
+        "US-BAKERSFIELD-APN-49476104",
+        "US-BAKERSFIELD-APN-49476103",
+        "US-BAKERSFIELD-APN-49476102",
+        "US-BAKERSFIELD-APN-49476101",
+        "US-BAKERSFIELD-APN-49476401",
+        "US-BAKERSFIELD-APN-49476402",
+        "US-BAKERSFIELD-APN-49476203",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -119.108,
+        35.406,
+        -119.107,
+        35.407
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49476401",
+        "US-BAKERSFIELD-APN-49476403",
+        "US-BAKERSFIELD-APN-49476402",
+        "US-BAKERSFIELD-APN-49476205",
+        "US-BAKERSFIELD-APN-49476204",
+        "US-BAKERSFIELD-APN-49476203",
+        "US-BAKERSFIELD-APN-49476312",
+        "US-BAKERSFIELD-APN-49476311",
+        "US-BAKERSFIELD-APN-49476310",
+        "US-BAKERSFIELD-APN-49476309",
+        "US-BAKERSFIELD-APN-49476308",
+        "US-BAKERSFIELD-APN-49476307",
+        "US-BAKERSFIELD-APN-49476306",
+        "US-BAKERSFIELD-APN-49476305",
+        "US-BAKERSFIELD-APN-49476206",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -119.11,
+        35.407,
+        -119.109,
+        35.408
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435013",
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49475101",
+        "US-BAKERSFIELD-APN-49475102",
+        "US-BAKERSFIELD-APN-49475304",
+        "US-BAKERSFIELD-APN-49474003",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -119.109,
+        35.407,
+        -119.108,
+        35.408
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435013",
+        "US-BAKERSFIELD-APN-49476101",
+        "US-BAKERSFIELD-APN-49475105",
+        "US-BAKERSFIELD-APN-49475104",
+        "US-BAKERSFIELD-APN-49475103",
+        "US-BAKERSFIELD-APN-49475205",
+        "US-BAKERSFIELD-APN-49475204",
+        "US-BAKERSFIELD-APN-49475102",
+        "US-BAKERSFIELD-APN-49475304",
+        "US-BAKERSFIELD-APN-49475305",
+        "US-BAKERSFIELD-APN-49476401",
+        "US-BAKERSFIELD-APN-49475203",
+        "US-BAKERSFIELD-APN-49475202",
+        "US-BAKERSFIELD-APN-49474004",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -119.108,
+        35.407,
+        -119.107,
+        35.408
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49475204",
+        "US-BAKERSFIELD-APN-49476401",
+        "US-BAKERSFIELD-APN-49475203",
+        "US-BAKERSFIELD-APN-49475202",
+        "US-BAKERSFIELD-APN-49475201",
+        "US-BAKERSFIELD-APN-49476314",
+        "US-BAKERSFIELD-APN-49476313",
+        "US-BAKERSFIELD-APN-49476312",
+        "US-BAKERSFIELD-APN-49476311",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -119.11,
+        35.408,
+        -119.109,
+        35.409
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49475303",
+        "US-BAKERSFIELD-APN-49475302",
+        "US-BAKERSFIELD-APN-49475301",
+        "US-BAKERSFIELD-APN-49475304"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -119.109,
+        35.408,
+        -119.108,
+        35.409
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49475303",
+        "US-BAKERSFIELD-APN-49475302",
+        "US-BAKERSFIELD-APN-49475301",
+        "US-BAKERSFIELD-APN-49475211",
+        "US-BAKERSFIELD-APN-49475210",
+        "US-BAKERSFIELD-APN-49475208",
+        "US-BAKERSFIELD-APN-49475207",
+        "US-BAKERSFIELD-APN-49475206",
+        "US-BAKERSFIELD-APN-49475205",
+        "US-BAKERSFIELD-APN-49475204",
+        "US-BAKERSFIELD-APN-49475304",
+        "US-BAKERSFIELD-APN-49475305",
+        "US-BAKERSFIELD-APN-49474002",
+        "US-BAKERSFIELD-APN-49475209",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -119.108,
+        35.408,
+        -119.107,
+        35.409
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49475205",
+        "US-BAKERSFIELD-APN-49475204"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -119.109,
+        35.405,
+        -119.108,
+        35.406
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435019",
+        "US-BAKERSFIELD-APN-49435013",
+        "US-BAKERSFIELD-APN-49473004",
+        "US-BAKERSFIELD-APN-49473005",
+        "US-BAKERSFIELD-APN-49473003",
+        "US-BAKERSFIELD-APN-49476110",
+        "US-BAKERSFIELD-APN-49476109",
+        "US-BAKERSFIELD-APN-49476108",
+        "US-BAKERSFIELD-APN-49476107",
+        "US-BAKERSFIELD-APN-49476203",
+        "US-BAKERSFIELD-APN-49473002",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -119.109,
+        35.409,
+        -119.108,
+        35.41
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49475211",
+        "US-BAKERSFIELD-APN-49475210",
+        "US-BAKERSFIELD-APN-49475209",
+        "US-BAKERSFIELD-APN-49474001"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -119.111,
+        35.407,
+        -119.11,
+        35.408
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "US-BAKERSFIELD-APN-52632114",
+        "US-BAKERSFIELD-APN-52632115",
+        "US-BAKERSFIELD-APN-52632201",
+        "US-BAKERSFIELD-APN-52632202",
+        "US-BAKERSFIELD-APN-52632203",
+        "US-BAKERSFIELD-APN-52620101",
+        "US-BAKERSFIELD-APN-52620102",
+        "US-BAKERSFIELD-APN-52620103",
+        "US-BAKERSFIELD-APN-52620501",
+        "US-BAKERSFIELD-APN-52620502",
+        "US-BAKERSFIELD-APN-52620113",
+        "US-BAKERSFIELD-APN-52632222",
+        "US-BAKERSFIELD-APN-52620417"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -119.107,
+        35.407,
+        -119.106,
+        35.408
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-BAKERSFIELD-APN-49435014",
+        "US-BAKERSFIELD-APN-49435015"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 110,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:31.869Z",
+      "queryHash": "3d2443695170d72684c870764539eedb9a74dd36bea63daf4337725825e333c5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 716
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:32.590Z",
+      "queryHash": "3d2443695170d72684c870764539eedb9a74dd36bea63daf4337725825e333c5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:32.810Z",
+      "queryHash": "f12f3dd77b41f32c00294cbb2e2489bbf8dd01dec6ccf005d78385afa7f7b604",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 236
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:33.049Z",
+      "queryHash": "3d2443695170d72684c870764539eedb9a74dd36bea63daf4337725825e333c5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:33.262Z",
+      "queryHash": "3d2443695170d72684c870764539eedb9a74dd36bea63daf4337725825e333c5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:33.470Z",
+      "queryHash": "f12f3dd77b41f32c00294cbb2e2489bbf8dd01dec6ccf005d78385afa7f7b604",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:33.684Z",
+      "queryHash": "8e87a5102694bfa05ed5cf1a9c24f6adc74bc299c0a4bc6eb44f1079ace99342",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:33.907Z",
+      "queryHash": "8e87a5102694bfa05ed5cf1a9c24f6adc74bc299c0a4bc6eb44f1079ace99342",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:34.133Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1438
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:35.573Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:35.851Z",
+      "queryHash": "bf1395a04dec7aec68781bcfd16f010ae1affdc52fb2e6cd151e0371261bf270",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:36.075Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:36.336Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 278
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:36.614Z",
+      "queryHash": "47ba65b9e012a07b5ca720cd8be09bc81cd4ca0b02524d818a945a5bc2d2153d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:37.059Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1490
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:38.551Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 685
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:39.237Z",
+      "queryHash": "571bf5c482dc8cdadcf39b65f6f1734455cffc9ae3207bc7c5c11f2290d79be1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:39.880Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1466
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:41.346Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 279
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:41.625Z",
+      "queryHash": "859bdfabc5b43613ce1784d6d1f04ddf66559a20271337ccd7584b98bad5e47d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:41.896Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:42.153Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 276
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:42.430Z",
+      "queryHash": "4c2cedf3c8c19ae247238454a24bc14270c76b36e05e58e027fb9ec1e2f8122a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:42.707Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:42.966Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 279
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:43.246Z",
+      "queryHash": "724bdd54427528e9f40395cf9dfac097fc8ab3a1bf8183232748b960f334ba03",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 253
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:43.518Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 266
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:43.785Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 281
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.067Z",
+      "queryHash": "4156e03e5b9d4174f3b1de68f97e37379299beff31852ced7fe2bc941a328190",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 235
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.307Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.568Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 298
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.867Z",
+      "queryHash": "01f083e1e0fef1866ccb9723ee1645af4dc26dbe24aaf647ea9bf9d2c0f26368",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 293
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.184Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 259
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.443Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 284
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.728Z",
+      "queryHash": "7a7ca72b601850f56743b622d4be428fc1a3fd393e594fd7d6ebf69514f55d8c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 245
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.978Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 259
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.238Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 279
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.518Z",
+      "queryHash": "a26ab195c1e79787cb5a996b5375cd7ac37229e1205c3395ff98600d5b323874",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 263
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.816Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.075Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 280
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.356Z",
+      "queryHash": "7e573acc5372ca5f1c3462cd03922b2573d57a0979d05313f52bc8ebec4df2e0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 249
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.625Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.883Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.162Z",
+      "queryHash": "aa024255ffc08eb4560fb7b14acf9a29fcfa6d5a89a675363e3f38be796c9fdd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 13,
+      "httpStatus": 200,
+      "elapsedMs": 237
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.400Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 256
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.657Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 288
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.946Z",
+      "queryHash": "bd54a5ad0c3309bd5fe5e29b9d75977279ea63d3a5a9986f8a5e7020b932bb14",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 240
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:49.194Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 716
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:49.911Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 279
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.191Z",
+      "queryHash": "bf1395a04dec7aec68781bcfd16f010ae1affdc52fb2e6cd151e0371261bf270",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.399Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.658Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 288
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.947Z",
+      "queryHash": "47ba65b9e012a07b5ca720cd8be09bc81cd4ca0b02524d818a945a5bc2d2153d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 230
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:51.375Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:51.634Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 279
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:51.914Z",
+      "queryHash": "571bf5c482dc8cdadcf39b65f6f1734455cffc9ae3207bc7c5c11f2290d79be1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 261
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:52.365Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:52.623Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:52.903Z",
+      "queryHash": "859bdfabc5b43613ce1784d6d1f04ddf66559a20271337ccd7584b98bad5e47d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 229
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:53.149Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 259
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:53.408Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:53.686Z",
+      "queryHash": "4c2cedf3c8c19ae247238454a24bc14270c76b36e05e58e027fb9ec1e2f8122a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 234
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:53.939Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:54.196Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:54.473Z",
+      "queryHash": "724bdd54427528e9f40395cf9dfac097fc8ab3a1bf8183232748b960f334ba03",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 232
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:54.726Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:54.984Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 274
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:55.259Z",
+      "queryHash": "4156e03e5b9d4174f3b1de68f97e37379299beff31852ced7fe2bc941a328190",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:55.479Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:55.738Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 286
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:56.025Z",
+      "queryHash": "01f083e1e0fef1866ccb9723ee1645af4dc26dbe24aaf647ea9bf9d2c0f26368",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 241
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:56.292Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 269
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:56.562Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 279
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:56.842Z",
+      "queryHash": "7a7ca72b601850f56743b622d4be428fc1a3fd393e594fd7d6ebf69514f55d8c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:57.063Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:57.320Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 284
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:57.604Z",
+      "queryHash": "a26ab195c1e79787cb5a996b5375cd7ac37229e1205c3395ff98600d5b323874",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 253
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:57.889Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 256
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:58.145Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 281
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:58.429Z",
+      "queryHash": "7e573acc5372ca5f1c3462cd03922b2573d57a0979d05313f52bc8ebec4df2e0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 229
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:58.676Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 259
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:58.935Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 334
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:59.270Z",
+      "queryHash": "aa024255ffc08eb4560fb7b14acf9a29fcfa6d5a89a675363e3f38be796c9fdd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 13,
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:59.490Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 256
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:59.746Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 280
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.027Z",
+      "queryHash": "bd54a5ad0c3309bd5fe5e29b9d75977279ea63d3a5a9986f8a5e7020b932bb14",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.259Z",
+      "queryHash": "e4a715ce12113460c9b8a653fd8452fb3856e868af45ea99719147edc9b4423f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.482Z",
+      "queryHash": "e4a715ce12113460c9b8a653fd8452fb3856e868af45ea99719147edc9b4423f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.707Z",
+      "queryHash": "bf1395a04dec7aec68781bcfd16f010ae1affdc52fb2e6cd151e0371261bf270",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 208
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.915Z",
+      "queryHash": "4ce5ae304f1d23fa3fa4628a1d8d27ac823a782b0e2ba8ddf07f01239c684b70",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:01.139Z",
+      "queryHash": "4ce5ae304f1d23fa3fa4628a1d8d27ac823a782b0e2ba8ddf07f01239c684b70",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:01.364Z",
+      "queryHash": "8a1afffb8d175c47557542730f025284a97c288ad33d85339e569c1c450967aa",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 225
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:01.591Z",
+      "queryHash": "3f994290135728d3855642cf9415afb50999a0a4d1cbcbb33d313d3637e6e42a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:01.814Z",
+      "queryHash": "3f994290135728d3855642cf9415afb50999a0a4d1cbcbb33d313d3637e6e42a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 221
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:02.036Z",
+      "queryHash": "cce678c336fa5ff8fd5a916b950305f05985f0e54a19c67693aa757aa4796bd8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:02.262Z",
+      "queryHash": "ddc1baa2c0252eff3ff7d990f7664db13f7b98cf628ef91d6fb915eed62afc44",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 221
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:02.483Z",
+      "queryHash": "ddc1baa2c0252eff3ff7d990f7664db13f7b98cf628ef91d6fb915eed62afc44",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:02.706Z",
+      "queryHash": "0d641a7f7d50ff8fe0f2895fda2e9ddaef851cbb646b20f89656356f94658c72",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:02.929Z",
+      "queryHash": "3847d03cc4b4987802ce7a6d94a7ef903c12362c3b9d3aa6278db37a286278a1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.152Z",
+      "queryHash": "3847d03cc4b4987802ce7a6d94a7ef903c12362c3b9d3aa6278db37a286278a1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.376Z",
+      "queryHash": "63e7f853659b059554ea9daf4c20ac0a8307193abf8aa0cdc1947cadd763d2d1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 233
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.622Z",
+      "queryHash": "3d2443695170d72684c870764539eedb9a74dd36bea63daf4337725825e333c5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 206
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.828Z",
+      "queryHash": "3d2443695170d72684c870764539eedb9a74dd36bea63daf4337725825e333c5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:04.034Z",
+      "queryHash": "f12f3dd77b41f32c00294cbb2e2489bbf8dd01dec6ccf005d78385afa7f7b604",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:04.269Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:04.527Z",
+      "queryHash": "bcd592b49734960d820638084d3e79964c326572f045ac568637464e3f9a14ee",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:04.811Z",
+      "queryHash": "5a99b39abe82fad6bf52acdcea1e247c6c52c0901ad32345e30d51f8a5ddb4a8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 256
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:05.269Z",
+      "queryHash": "dc98274521f4c6df5db0d7d6398362c76a2217a92c3c49fe004ba927078612d5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 240
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:05.510Z",
+      "queryHash": "dc98274521f4c6df5db0d7d6398362c76a2217a92c3c49fe004ba927078612d5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 239
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.bakersfieldcity.us",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:05.750Z",
+      "queryHash": "16de4d2ff082fa2d917402fcfb809e4a4dec769d533c809ecc5f342a88e7a74e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 73,
+      "httpStatus": 200,
+      "elapsedMs": 287
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

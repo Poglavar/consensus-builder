@@ -459,6 +459,2384 @@
             }
         }
         ,
+        // BEGIN qualification admission 2026-10-11 round2
+        arlington_va: {
+            id: 'arlington_va', wupCityCode: '8123',
+            label: translateCityText('city.labels.arlington_va', 'Arlington (Washington urban area), United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.9039833204685, -77.1038638561717], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [38.9039833204685, -77.1038638561717], fallbackDataset: [-77.1038638561717, 38.9039833204685]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-va-richmond-parcels', idPrefix: 'US-VA-RICHMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        norfolk: {
+            id: 'norfolk', wupCityCode: '8102',
+            label: translateCityText('city.labels.norfolk', 'Norfolk, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [36.8489951683071, -76.206100528634], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [36.8489951683071, -76.206100528634], fallbackDataset: [-76.206100528634, 36.8489951683071]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-va-richmond-parcels', idPrefix: 'US-VA-RICHMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        quebec: {
+            id: 'quebec', wupCityCode: '4103',
+            label: translateCityText('city.labels.quebec', 'Quebec, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.8389003853526, -71.2572062217076], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [46.8389003853526, -71.2572062217076], fallbackDataset: [-71.2572062217076, 46.8389003853526]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        point_cook: {
+            id: 'point_cook', wupCityCode: '1336',
+            label: translateCityText('city.labels.point_cook', 'Point Cook, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-37.8751576905159, 144.700997109625], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-37.8751576905159, 144.700997109625], fallbackDataset: [144.700997109625, -37.8751576905159]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'au-vic-vicmap-parcel', idPrefix: 'AU-VIC-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        mansa: {
+            id: 'mansa', wupCityCode: '2412',
+            label: translateCityText('city.labels.mansa', 'Mansa, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-11.2019915432278, 28.8911174838639], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-11.2019915432278, 28.8911174838639], fallbackDataset: [28.8911174838639, -11.2019915432278]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        chingola: {
+            id: 'chingola', wupCityCode: '1183',
+            label: translateCityText('city.labels.chingola', 'Chingola, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-12.5459298146707, 27.8723779018079], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-12.5459298146707, 27.8723779018079], fallbackDataset: [27.8723779018079, -12.5459298146707]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'zm-nsdi-lots', idPrefix: 'ZM-NSDI-LOTS-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        madadeni: {
+            id: 'madadeni', wupCityCode: '5074',
+            label: translateCityText('city.labels.madadeni', 'Madadeni, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-27.7708606886661, 30.0898860571651], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-27.7708606886661, 30.0898860571651], fallbackDataset: [30.0898860571651, -27.7708606886661]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        kabwe: {
+            id: 'kabwe', wupCityCode: '1945',
+            label: translateCityText('city.labels.kabwe', 'Kabwe, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-14.4336039608812, 28.4446474227614], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-14.4336039608812, 28.4446474227614], fallbackDataset: [28.4446474227614, -14.4336039608812]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        rennes: {
+            id: 'rennes', wupCityCode: '1037',
+            label: translateCityText('city.labels.rennes', 'Rennes, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.1077099658178, -1.66805550111597], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.1077099658178, -1.66805550111597], fallbackDataset: [-1.66805550111597, 48.1077099658178]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        cinco_ranch: {
+            id: 'cinco_ranch', wupCityCode: '6201',
+            label: translateCityText('city.labels.cinco_ranch', 'Cinco Ranch, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [29.7637175582969, -95.7466412885247], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [29.7637175582969, -95.7466412885247], fallbackDataset: [-95.7466412885247, 29.7637175582969]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-harris-hcad-parcels', idPrefix: 'US-TX-HCAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        cannes: {
+            id: 'cannes', wupCityCode: '4760',
+            label: translateCityText('city.labels.cannes', 'Cannes, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.5719458326226, 7.04733103055821], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.5719458326226, 7.04733103055821], fallbackDataset: [7.04733103055821, 43.5719458326226]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        rustenburg: {
+            id: 'rustenburg', wupCityCode: '3294',
+            label: translateCityText('city.labels.rustenburg', 'Rustenburg, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.647609084368, 27.2136775618594], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.647609084368, 27.2136775618594], fallbackDataset: [27.2136775618594, -25.647609084368]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        tours: {
+            id: 'tours', wupCityCode: '2162',
+            label: translateCityText('city.labels.tours', 'Tours, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.3855108210304, 0.68814656071703], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.3855108210304, 0.68814656071703], fallbackDataset: [0.68814656071703, 47.3855108210304]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        nancy: {
+            id: 'nancy', wupCityCode: '4503',
+            label: translateCityText('city.labels.nancy', 'Nancy, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.684976784432, 6.17652544178752], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.684976784432, 6.17652544178752], fallbackDataset: [6.17652544178752, 48.684976784432]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        maurepas: {
+            id: 'maurepas', wupCityCode: '2809',
+            label: translateCityText('city.labels.maurepas', 'Maurepas, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.7790545654258, 2.01232272915475], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.7790545654258, 2.01232272915475], fallbackDataset: [2.01232272915475, 48.7790545654258]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        orleans: {
+            id: 'orleans', wupCityCode: '2745',
+            label: translateCityText('city.labels.orleans', 'Orléans, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.9070309670625, 1.910333917362], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.9070309670625, 1.910333917362], fallbackDataset: [1.910333917362, 47.9070309670625]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        burien: {
+            id: 'burien', wupCityCode: '5359',
+            label: translateCityText('city.labels.burien', 'Burien, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.5111975110014, -122.347924002959], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.5111975110014, -122.347924002959], fallbackDataset: [-122.347924002959, 47.5111975110014]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-wa-king-county-parcel-boundary', idPrefix: 'US-WA-KC-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gismaps.kingcounty.gov/parcelviewer2/">City of Seattle GIS · King County parcel boundaries</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        livingstone: {
+            id: 'livingstone', wupCityCode: '429',
+            label: translateCityText('city.labels.livingstone', 'Livingstone, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-17.8443175114028, 25.8579818245686], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-17.8443175114028, 25.8579818245686], fallbackDataset: [25.8579818245686, -17.8443175114028]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        dale_city: {
+            id: 'dale_city', wupCityCode: '8116',
+            label: translateCityText('city.labels.dale_city', 'Dale City, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.6538966219803, -77.3154953850735], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [38.6538966219803, -77.3154953850735], fallbackDataset: [-77.3154953850735, 38.6538966219803]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-va-richmond-parcels', idPrefix: 'US-VA-RICHMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        dijon: {
+            id: 'dijon', wupCityCode: '4153',
+            label: translateCityText('city.labels.dijon', 'Dijon, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.3224500591218, 5.03455990082728], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.3224500591218, 5.03455990082728], fallbackDataset: [5.03455990082728, 47.3224500591218]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        clermont_ferrand: {
+            id: 'clermont_ferrand', wupCityCode: '3704',
+            label: translateCityText('city.labels.clermont_ferrand', 'Clermont-Ferrand, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.7788192599618, 3.09538089789519], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.7788192599618, 3.09538089789519], fallbackDataset: [3.09538089789519, 45.7788192599618]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        reims: {
+            id: 'reims', wupCityCode: '3847',
+            label: translateCityText('city.labels.reims', 'Reims, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.2522532111006, 4.02982535965047], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.2522532111006, 4.02982535965047], fallbackDataset: [4.02982535965047, 49.2522532111006]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        le_havre: {
+            id: 'le_havre', wupCityCode: '1922',
+            label: translateCityText('city.labels.le_havre', 'Le Havre, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.4981726752836, 0.134070399129953], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.4981726752836, 0.134070399129953], fallbackDataset: [0.134070399129953, 49.4981726752836]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        lens: {
+            id: 'lens', wupCityCode: '3390',
+            label: translateCityText('city.labels.lens', 'Lens, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.4236894177911, 2.85912943634957], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.4236894177911, 2.85912943634957], fallbackDataset: [2.85912943634957, 50.4236894177911]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        surprise: {
+            id: 'surprise', wupCityCode: '4893',
+            label: translateCityText('city.labels.surprise', 'Surprise, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.6188868133642, -112.372924484317], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [33.6188868133642, -112.372924484317], fallbackDataset: [-112.372924484317, 33.6188868133642]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-az-maricopa-assessor-parcels', idPrefix: 'US-AZ-MARICOPA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&#x27;s Office. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        angers: {
+            id: 'angers', wupCityCode: '1659',
+            label: translateCityText('city.labels.angers', 'Angers, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.4675805985513, -0.546475968773458], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.4675805985513, -0.546475968773458], fallbackDataset: [-0.546475968773458, 47.4675805985513]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        cork: {
+            id: 'cork', wupCityCode: '218',
+            label: translateCityText('city.labels.cork', 'Cork, Ireland'),
+            currency: { locale: 'en-IE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.8919175232513, -8.46231743765622], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [51.8919175232513, -8.46231743765622], fallbackDataset: [-8.46231743765622, 51.8919175232513]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ie-tailte-hvd-freehold', idPrefix: 'IE-SP-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann · freehold title boundaries only · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        sakhrol: {
+            id: 'sakhrol', wupCityCode: '2761',
+            label: translateCityText('city.labels.sakhrol', 'Sakhrol, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.8915238480992, 26.5946978926275], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-26.8915238480992, 26.5946978926275], fallbackDataset: [26.5946978926275, -26.8915238480992]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        laveen: {
+            id: 'laveen', wupCityCode: '4928',
+            label: translateCityText('city.labels.laveen', 'Laveen, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.3870634428889, -112.090183211919], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [33.3870634428889, -112.090183211919], fallbackDataset: [-112.090183211919, 33.3870634428889]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-az-maricopa-assessor-parcels', idPrefix: 'US-AZ-MARICOPA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&#x27;s Office. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        caen: {
+            id: 'caen', wupCityCode: '1838',
+            label: translateCityText('city.labels.caen', 'Caen, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.1817332399594, -0.359577786626392], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.1817332399594, -0.359577786626392], fallbackDataset: [-0.359577786626392, 49.1817332399594]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        le_mans: {
+            id: 'le_mans', wupCityCode: '2005',
+            label: translateCityText('city.labels.le_mans', 'Le Mans, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.993038069969, 0.19931326476688], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.993038069969, 0.19931326476688], fallbackDataset: [0.19931326476688, 47.993038069969]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        metz: {
+            id: 'metz', wupCityCode: '4429',
+            label: translateCityText('city.labels.metz', 'Metz, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.1140645064827, 6.17540051586319], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.1140645064827, 6.17540051586319], fallbackDataset: [6.17540051586319, 49.1140645064827]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        homestead: {
+            id: 'homestead', wupCityCode: '7263',
+            label: translateCityText('city.labels.homestead', 'Homestead, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [25.4832250785167, -80.4466277419018], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [25.4832250785167, -80.4466277419018], fallbackDataset: [-80.4466277419018, 25.4832250785167]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-fl-miamidade-pa-parcels', idPrefix: 'US-FL-MIAMI-DADE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about">Miami-Dade County GIS, Property Appraiser parcels. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        brest: {
+            id: 'brest', wupCityCode: '524',
+            label: translateCityText('city.labels.brest', 'Brest, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.3970003572057, -4.49027666677197], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.3970003572057, -4.49027666677197], fallbackDataset: [-4.49027666677197, 48.3970003572057]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        nimes: {
+            id: 'nimes', wupCityCode: '4025',
+            label: translateCityText('city.labels.nimes', 'Nimes, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.8363271141078, 4.35451021750621], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.8363271141078, 4.35451021750621], fallbackDataset: [4.35451021750621, 43.8363271141078]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        kwanobuhle: {
+            id: 'kwanobuhle', wupCityCode: '1858',
+            label: translateCityText('city.labels.kwanobuhle', 'KwaNobuhle, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-33.8165435653616, 25.3876641088701], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-33.8165435653616, 25.3876641088701], fallbackDataset: [25.3876641088701, -33.8165435653616]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        annecy: {
+            id: 'annecy', wupCityCode: '4577',
+            label: translateCityText('city.labels.annecy', 'Annecy, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.9079585806247, 6.11731386325407], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.9079585806247, 6.11731386325407], fallbackDataset: [6.11731386325407, 45.9079585806247]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        dallas_au: {
+            id: 'dallas_au', wupCityCode: '1724',
+            label: translateCityText('city.labels.dallas_au', 'Dallas, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-37.6257503775702, 144.925301017964], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-37.6257503775702, 144.925301017964], fallbackDataset: [144.925301017964, -37.6257503775702]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'au-vic-vicmap-parcel', idPrefix: 'AU-VIC-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        gatineau: {
+            id: 'gatineau', wupCityCode: '3541',
+            label: translateCityText('city.labels.gatineau', 'Gatineau, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.4900584387138, -75.6695508443772], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.4900584387138, -75.6695508443772], fallbackDataset: [-75.6695508443772, 45.4900584387138]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        coalbrook: {
+            id: 'coalbrook', wupCityCode: '3762',
+            label: translateCityText('city.labels.coalbrook', 'Coalbrook, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.8555457508788, 27.8680543147876], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-26.8555457508788, 27.8680543147876], fallbackDataset: [27.8680543147876, -26.8555457508788]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        limoges: {
+            id: 'limoges', wupCityCode: '2316',
+            label: translateCityText('city.labels.limoges', 'Limoges, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.8323551960741, 1.25663886918468], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.8323551960741, 1.25663886918468], fallbackDataset: [1.25663886918468, 45.8323551960741]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        amiens: {
+            id: 'amiens', wupCityCode: '3112',
+            label: translateCityText('city.labels.amiens', 'Amiens, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.8915394519759, 2.30099003995009], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.8915394519759, 2.30099003995009], fallbackDataset: [2.30099003995009, 49.8915394519759]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        mpumalanga: {
+            id: 'mpumalanga', wupCityCode: '5167',
+            label: translateCityText('city.labels.mpumalanga', 'Mpumalanga, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-29.8105831623784, 30.626783378393], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-29.8105831623784, 30.626783378393], fallbackDataset: [30.626783378393, -29.8105831623784]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        stellenbosch: {
+            id: 'stellenbosch', wupCityCode: '1173',
+            label: translateCityText('city.labels.stellenbosch', 'Stellenbosch, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-33.9220058023364, 18.8581408012698], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-33.9220058023364, 18.8581408012698], fallbackDataset: [18.8581408012698, -33.9220058023364]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        pau: {
+            id: 'pau', wupCityCode: '1749',
+            label: translateCityText('city.labels.pau', 'Pau, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.3068960617087, -0.366814327032866], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.3068960617087, -0.366814327032866], fallbackDataset: [-0.366814327032866, 43.3068960617087]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        troyes: {
+            id: 'troyes', wupCityCode: '3938',
+            label: translateCityText('city.labels.troyes', 'Troyes, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.2934364366475, 4.06880952558493], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.2934364366475, 4.06880952558493], fallbackDataset: [4.06880952558493, 48.2934364366475]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        valenciennes: {
+            id: 'valenciennes', wupCityCode: '3753',
+            label: translateCityText('city.labels.valenciennes', 'Valenciennes, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.3601124544803, 3.5177086135875], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.3601124544803, 3.5177086135875], fallbackDataset: [3.5177086135875, 50.3601124544803]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        campbelltown: {
+            id: 'campbelltown', wupCityCode: '1981',
+            label: translateCityText('city.labels.campbelltown', 'Campbelltown, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-34.063620251064, 150.818086470537], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-34.063620251064, 150.818086470537], fallbackDataset: [150.818086470537, -34.063620251064]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'au-nsw-six-cadastre-lot', idPrefix: 'AU-NSW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9">NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        trois_rivieres: {
+            id: 'trois_rivieres', wupCityCode: '4017',
+            label: translateCityText('city.labels.trois_rivieres', 'Trois-Rivières, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.3564663630225, -72.5642843762759], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [46.3564663630225, -72.5642843762759], fallbackDataset: [-72.5642843762759, 46.3564663630225]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        repentigny: {
+            id: 'repentigny', wupCityCode: '3930',
+            label: translateCityText('city.labels.repentigny', 'Repentigny, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.7562771986768, -73.4524389608457], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.7562771986768, -73.4524389608457], fallbackDataset: [-73.4524389608457, 45.7562771986768]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        bayonne: {
+            id: 'bayonne', wupCityCode: '1367',
+            label: translateCityText('city.labels.bayonne', 'Bayonne, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.488520194426, -1.50621665272733], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.488520194426, -1.50621665272733], fallbackDataset: [-1.50621665272733, 43.488520194426]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        sainte_foy: {
+            id: 'sainte_foy', wupCityCode: '4060',
+            label: translateCityText('city.labels.sainte_foy', 'Sainte-Foy, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.761890089852, -71.3243530969267], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [46.761890089852, -71.3243530969267], fallbackDataset: [-71.3243530969267, 46.761890089852]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        poitiers: {
+            id: 'poitiers', wupCityCode: '2083',
+            label: translateCityText('city.labels.poitiers', 'Poitiers, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.5809521856312, 0.345786397743728], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [46.5809521856312, 0.345786397743728], fallbackDataset: [0.345786397743728, 46.5809521856312]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        montoya: {
+            id: 'montoya', wupCityCode: '5247',
+            label: translateCityText('city.labels.montoya', 'Montoya, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [31.8488538212543, -106.54653350243], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [31.8488538212543, -106.54653350243], fallbackDataset: [-106.54653350243, 31.8488538212543]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-el-paso-city-gis-parcels', idPrefix: 'US-TX-ELPASO-OBJECTID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://opendata.elpasotexas.gov/">El Paso public parcel reference map · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        kafue: {
+            id: 'kafue', wupCityCode: '1396',
+            label: translateCityText('city.labels.kafue', 'Kafue, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-15.7608203662575, 28.1749561677829], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-15.7608203662575, 28.1749561677829], fallbackDataset: [28.1749561677829, -15.7608203662575]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        jerusalem_za: {
+            id: 'jerusalem_za', wupCityCode: '5395',
+            label: translateCityText('city.labels.jerusalem_za', 'Jerusalem, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.1551904236958, 31.1295161397507], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.1551904236958, 31.1295161397507], fallbackDataset: [31.1295161397507, -25.1551904236958]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        le_mee_sur_seine: {
+            id: 'le_mee_sur_seine', wupCityCode: '3227',
+            label: translateCityText('city.labels.le_mee_sur_seine', 'Le Mée-sur-Seine, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.534769008477, 2.65180134337815], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.534769008477, 2.65180134337815], fallbackDataset: [2.65180134337815, 48.534769008477]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        sherbrooke: {
+            id: 'sherbrooke', wupCityCode: '3974',
+            label: translateCityText('city.labels.sherbrooke', 'Sherbrooke, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.4019145613402, -71.9004339251759], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.4019145613402, -71.9004339251759], fallbackDataset: [-71.9004339251759, 45.4019145613402]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        dunkirk: {
+            id: 'dunkirk', wupCityCode: '3053',
+            label: translateCityText('city.labels.dunkirk', 'Dunkirk, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.030649843182, 2.37038693978408], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [51.030649843182, 2.37038693978408], fallbackDataset: [2.37038693978408, 51.030649843182]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        cambridge_park: {
+            id: 'cambridge_park', wupCityCode: '2060',
+            label: translateCityText('city.labels.cambridge_park', 'Cambridge Park, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-33.761537051073, 150.704178051856], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-33.761537051073, 150.704178051856], fallbackDataset: [150.704178051856, -33.761537051073]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'au-nsw-six-cadastre-lot', idPrefix: 'AU-NSW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9">NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        langwarrin: {
+            id: 'langwarrin', wupCityCode: '1440',
+            label: translateCityText('city.labels.langwarrin', 'Langwarrin, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-38.1424007782017, 145.147328797441], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-38.1424007782017, 145.147328797441], fallbackDataset: [145.147328797441, -38.1424007782017]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'au-vic-vicmap-parcel', idPrefix: 'AU-VIC-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        lakeside: {
+            id: 'lakeside', wupCityCode: '8074',
+            label: translateCityText('city.labels.lakeside', 'Lakeside, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [37.6237420873137, -77.5466662646729], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [37.6237420873137, -77.5466662646729], fallbackDataset: [-77.5466662646729, 37.6237420873137]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-va-richmond-parcels', idPrefix: 'US-VA-RICHMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        aix_en_provence: {
+            id: 'aix_en_provence', wupCityCode: '4314',
+            label: translateCityText('city.labels.aix_en_provence', 'Aix-en-Provence, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.5281700432726, 5.44089902875396], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.5281700432726, 5.44089902875396], fallbackDataset: [5.44089902875396, 43.5281700432726]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        annemasse: {
+            id: 'annemasse', wupCityCode: '4614',
+            label: translateCityText('city.labels.annemasse', 'Annemasse, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.1920523464964, 6.23337531803031], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [46.1920523464964, 6.23337531803031], fallbackDataset: [6.23337531803031, 46.1920523464964]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        lorient: {
+            id: 'lorient', wupCityCode: '666',
+            label: translateCityText('city.labels.lorient', 'Lorient, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.7496741766556, -3.36747847296714], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.7496741766556, -3.36747847296714], fallbackDataset: [-3.36747847296714, 47.7496741766556]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        poissy: {
+            id: 'poissy', wupCityCode: '2934',
+            label: translateCityText('city.labels.poissy', 'Poissy, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.9373728992024, 2.04485612042936], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.9373728992024, 2.04485612042936], fallbackDataset: [2.04485612042936, 48.9373728992024]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        nassau_bay: {
+            id: 'nassau_bay', wupCityCode: '6429',
+            label: translateCityText('city.labels.nassau_bay', 'Nassau Bay, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [29.5718416890512, -95.1251905565392], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [29.5718416890512, -95.1251905565392], fallbackDataset: [-95.1251905565392, 29.5718416890512]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-harris-hcad-parcels', idPrefix: 'US-TX-HCAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        avondale: {
+            id: 'avondale', wupCityCode: '4822',
+            label: translateCityText('city.labels.avondale', 'Avondale, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.4298305052063, -112.300758489489], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [33.4298305052063, -112.300758489489], fallbackDataset: [-112.300758489489, 33.4298305052063]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-az-maricopa-assessor-parcels', idPrefix: 'US-AZ-MARICOPA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&#x27;s Office. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        valence: {
+            id: 'valence', wupCityCode: '4195',
+            label: translateCityText('city.labels.valence', 'Valence, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.9310525128625, 4.90029987187105], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [44.9310525128625, 4.90029987187105], fallbackDataset: [4.90029987187105, 44.9310525128625]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        avignon: {
+            id: 'avignon', wupCityCode: '4111',
+            label: translateCityText('city.labels.avignon', 'Avignon, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.9435782595834, 4.82508109892887], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.9435782595834, 4.82508109892887], fallbackDataset: [4.82508109892887, 43.9435782595834]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        galway: {
+            id: 'galway', wupCityCode: '47',
+            label: translateCityText('city.labels.galway', 'Galway, Ireland'),
+            currency: { locale: 'en-IE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [53.2754032975264, -9.05394189330571], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [53.2754032975264, -9.05394189330571], fallbackDataset: [-9.05394189330571, 53.2754032975264]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ie-tailte-hvd-freehold', idPrefix: 'IE-SP-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann · freehold title boundaries only · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        henderson: {
+            id: 'henderson', wupCityCode: '4786',
+            label: translateCityText('city.labels.henderson', 'Henderson, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [36.0189560326963, -114.964137432928], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [36.0189560326963, -114.964137432928], fallbackDataset: [-114.964137432928, 36.0189560326963]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-nv-clark-assessor-parcels', idPrefix: 'US-NV-CLARK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1">Clark County Assessor / GISMO · parcel reference polygons</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        saint_jean_sur_richelieu: {
+            id: 'saint_jean_sur_richelieu', wupCityCode: '3885',
+            label: translateCityText('city.labels.saint_jean_sur_richelieu', 'Saint-Jean-sur-Richelieu, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.3244754486743, -73.2692282789854], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.3244754486743, -73.2692282789854], fallbackDataset: [-73.2692282789854, 45.3244754486743]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        manassas_park: {
+            id: 'manassas_park', wupCityCode: '8109',
+            label: translateCityText('city.labels.manassas_park', 'Manassas Park, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.7805995376932, -77.4907009907728], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [38.7805995376932, -77.4907009907728], fallbackDataset: [-77.4907009907728, 38.7805995376932]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-va-richmond-parcels', idPrefix: 'US-VA-RICHMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        calais: {
+            id: 'calais', wupCityCode: '2678',
+            label: translateCityText('city.labels.calais', 'Calais, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.9510067614361, 1.86975615934025], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.9510067614361, 1.86975615934025], fallbackDataset: [1.86975615934025, 50.9510067614361]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        swords: {
+            id: 'swords', wupCityCode: '663',
+            label: translateCityText('city.labels.swords', 'Swords, Ireland'),
+            currency: { locale: 'en-IE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [53.4523651121946, -6.20262009552807], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [53.4523651121946, -6.20262009552807], fallbackDataset: [-6.20262009552807, 53.4523651121946]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ie-tailte-hvd-freehold', idPrefix: 'IE-SP-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann · freehold title boundaries only · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        saint_constant: {
+            id: 'saint_constant', wupCityCode: '3745',
+            label: translateCityText('city.labels.saint_constant', 'Saint-Constant, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.3858907489289, -73.550741926208], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.3858907489289, -73.550741926208], fallbackDataset: [-73.550741926208, 45.3858907489289]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        mankweng: {
+            id: 'mankweng', wupCityCode: '5197',
+            label: translateCityText('city.labels.mankweng', 'Mankweng, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-23.8927880512037, 29.7200189295319], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-23.8927880512037, 29.7200189295319], fallbackDataset: [29.7200189295319, -23.8927880512037]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        boulogne_sur_mer: {
+            id: 'boulogne_sur_mer', wupCityCode: '2541',
+            label: translateCityText('city.labels.boulogne_sur_mer', 'Boulogne-sur-Mer, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.7208164221729, 1.60460239298483], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.7208164221729, 1.60460239298483], fallbackDataset: [1.60460239298483, 50.7208164221729]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        melton: {
+            id: 'melton', wupCityCode: '1541',
+            label: translateCityText('city.labels.melton', 'Melton, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-37.6814071531491, 144.569508451494], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-37.6814071531491, 144.569508451494], fallbackDataset: [144.569508451494, -37.6814071531491]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'au-vic-vicmap-parcel', idPrefix: 'AU-VIC-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        rosedale: {
+            id: 'rosedale', wupCityCode: '3213',
+            label: translateCityText('city.labels.rosedale', 'Rosedale, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.4078977941674, -119.108769926261], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [35.4078977941674, -119.108769926261], fallbackDataset: [-119.108769926261, 35.4078977941674]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-bakersfield-municipal-cadastral-parcels', idPrefix: 'US-BAKERSFIELD-APN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1">City of Bakersfield GIS · cadastral parcel APN references · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        ekangala: {
+            id: 'ekangala', wupCityCode: '4655',
+            label: translateCityText('city.labels.ekangala', 'Ekangala, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.6765958332362, 28.738105593779], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.6765958332362, 28.738105593779], fallbackDataset: [28.738105593779, -25.6765958332362]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        chartres: {
+            id: 'chartres', wupCityCode: '2466',
+            label: translateCityText('city.labels.chartres', 'Chartres, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.4399842486095, 1.47900906363337], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.4399842486095, 1.47900906363337], fallbackDataset: [1.47900906363337, 48.4399842486095]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        beziers: {
+            id: 'beziers', wupCityCode: '3800',
+            label: translateCityText('city.labels.beziers', 'Béziers, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.3486761582679, 3.23146610496642], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.3486761582679, 3.23146610496642], fallbackDataset: [3.23146610496642, 43.3486761582679]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        asbury_park: {
+            id: 'asbury_park', wupCityCode: '8367',
+            label: translateCityText('city.labels.asbury_park', 'Asbury Park, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.2076369877962, -74.0242410688984], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [40.2076369877962, -74.0242410688984], fallbackDataset: [-74.0242410688984, 40.2076369877962]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-nj-trenton-parcels', idPrefix: 'US-NJ-TRENTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://nj.gov/njgin/edata/parcels/">New Jersey Office of Information Technology, Office of GIS (NJOGIS). Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        terrebonne: {
+            id: 'terrebonne', wupCityCode: '3839',
+            label: translateCityText('city.labels.terrebonne', 'Terrebonne, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.7085641674979, -73.6476016264373], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.7085641674979, -73.6476016264373], fallbackDataset: [-73.6476016264373, 45.7085641674979]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        atascocita: {
+            id: 'atascocita', wupCityCode: '6509',
+            label: translateCityText('city.labels.atascocita', 'Atascocita, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [29.9939041523149, -95.1780429611103], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [29.9939041523149, -95.1780429611103], fallbackDataset: [-95.1780429611103, 29.9939041523149]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-harris-hcad-parcels', idPrefix: 'US-TX-HCAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        douai: {
+            id: 'douai', wupCityCode: '3602',
+            label: translateCityText('city.labels.douai', 'Douai, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.3748780609615, 3.08623150802197], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.3748780609615, 3.08623150802197], fallbackDataset: [3.08623150802197, 50.3748780609615]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        meridian: {
+            id: 'meridian', wupCityCode: '5494',
+            label: translateCityText('city.labels.meridian', 'Meridian, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.6297298219097, -116.409780592603], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.6297298219097, -116.409780592603], fallbackDataset: [-116.409780592603, 43.6297298219097]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-id-ada-boise-parcels', idPrefix: 'US-ID-ADA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7">Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        mumbwa: {
+            id: 'mumbwa', wupCityCode: '838',
+            label: translateCityText('city.labels.mumbwa', 'Mumbwa, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-14.9896385277852, 27.0614658156504], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-14.9896385277852, 27.0614658156504], fallbackDataset: [27.0614658156504, -14.9896385277852]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        ajaccio: {
+            id: 'ajaccio', wupCityCode: '4902',
+            label: translateCityText('city.labels.ajaccio', 'Ajaccio, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [41.9323362354918, 8.7448317165461], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [41.9323362354918, 8.7448317165461], fallbackDataset: [8.7448317165461, 41.9323362354918]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        arras: {
+            id: 'arras', wupCityCode: '3282',
+            label: translateCityText('city.labels.arras', 'Arras, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.2884743408313, 2.7712389505543], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.2884743408313, 2.7712389505543], fallbackDataset: [2.7712389505543, 50.2884743408313]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        cherbourg_en_cotentin: {
+            id: 'cherbourg_en_cotentin', wupCityCode: '1261',
+            label: translateCityText('city.labels.cherbourg_en_cotentin', 'Cherbourg-en-Cotentin, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.6441780814002, -1.63397465947901], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.6441780814002, -1.63397465947901], fallbackDataset: [-1.63397465947901, 49.6441780814002]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        bohlokong: {
+            id: 'bohlokong', wupCityCode: '4119',
+            label: translateCityText('city.labels.bohlokong', 'Bohlokong, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-28.201963040675, 28.3267786786967], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-28.201963040675, 28.3267786786967], fallbackDataset: [28.3267786786967, -28.201963040675]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        saint_brieuc: {
+            id: 'saint_brieuc', wupCityCode: '799',
+            label: translateCityText('city.labels.saint_brieuc', 'Saint-Brieuc, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.5091567792358, -2.75448986561707], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.5091567792358, -2.75448986561707], fallbackDataset: [-2.75448986561707, 48.5091567792358]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        brits: {
+            id: 'brits', wupCityCode: '3946',
+            label: translateCityText('city.labels.brits', 'Brits, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.6123104329217, 27.791871188497], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.6123104329217, 27.791871188497], fallbackDataset: [27.791871188497, -25.6123104329217]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        ezakheni: {
+            id: 'ezakheni', wupCityCode: '4975',
+            label: translateCityText('city.labels.ezakheni', 'Ezakheni, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-28.6198900929786, 29.9129601172082], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-28.6198900929786, 29.9129601172082], fallbackDataset: [29.9129601172082, -28.6198900929786]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        cary: {
+            id: 'cary', wupCityCode: '7997',
+            label: translateCityText('city.labels.cary', 'Cary, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.784901551333, -78.7870570250863], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [35.784901551333, -78.7870570250863], fallbackDataset: [-78.7870570250863, 35.784901551333]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-nc-wake-raleigh-parcels', idPrefix: 'US-NC-WAKE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.nconemap.gov/pages/parcels">North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        pittsville: {
+            id: 'pittsville', wupCityCode: '6541',
+            label: translateCityText('city.labels.pittsville', 'Pittsville, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [30.0640585361082, -95.1971592355123], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [30.0640585361082, -95.1971592355123], fallbackDataset: [-95.1971592355123, 30.0640585361082]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-harris-hcad-parcels', idPrefix: 'US-TX-HCAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        greenspoint: {
+            id: 'greenspoint', wupCityCode: '6397',
+            label: translateCityText('city.labels.greenspoint', 'Greenspoint, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [29.9325205499184, -95.3988351002803], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [29.9325205499184, -95.3988351002803], fallbackDataset: [-95.3988351002803, 29.9325205499184]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-harris-hcad-parcels', idPrefix: 'US-TX-HCAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        pakenham: {
+            id: 'pakenham', wupCityCode: '1813',
+            label: translateCityText('city.labels.pakenham', 'Pakenham, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-38.071609200146, 145.471217620277], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-38.071609200146, 145.471217620277], fallbackDataset: [145.471217620277, -38.071609200146]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'au-vic-vicmap-parcel', idPrefix: 'AU-VIC-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        sugarland_run: {
+            id: 'sugarland_run', wupCityCode: '8144',
+            label: translateCityText('city.labels.sugarland_run', 'Sugarland Run, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.0426212119399, -77.3883142250015], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [39.0426212119399, -77.3883142250015], fallbackDataset: [-77.3883142250015, 39.0426212119399]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-va-richmond-parcels', idPrefix: 'US-VA-RICHMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        bussy_saint_georges: {
+            id: 'bussy_saint_georges', wupCityCode: '3443',
+            label: translateCityText('city.labels.bussy_saint_georges', 'Bussy-Saint-Georges, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.840494113858, 2.71958855946101], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [48.840494113858, 2.71958855946101], fallbackDataset: [2.71958855946101, 48.840494113858]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        prairie_oaks: {
+            id: 'prairie_oaks', wupCityCode: '4418',
+            label: translateCityText('city.labels.prairie_oaks', 'Prairie Oaks, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.6720225936686, -121.148601042322], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [38.6720225936686, -121.148601042322], fallbackDataset: [-121.148601042322, 38.6720225936686]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-ca-sacramento-active-parcels', idPrefix: 'US-CA-SACRAMENTO-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.saccounty.gov/">Sacramento County GIS. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        matsulu: {
+            id: 'matsulu', wupCityCode: '5476',
+            label: translateCityText('city.labels.matsulu', 'Matsulu, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.5098756982165, 31.3435761774052], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.5098756982165, 31.3435761774052], fallbackDataset: [31.3435761774052, -25.5098756982165]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        saint_jerome: {
+            id: 'saint_jerome', wupCityCode: '3696',
+            label: translateCityText('city.labels.saint_jerome', 'Saint-Jérôme, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.7822725905303, -73.9977167770777], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.7822725905303, -73.9977167770777], fallbackDataset: [-73.9977167770777, 45.7822725905303]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-cadastre-bd-allegee', idPrefix: 'CA-QC-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        khuma: {
+            id: 'khuma', wupCityCode: '3126',
+            label: translateCityText('city.labels.khuma', 'Khuma, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.8507332371509, 26.8472605527769], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-26.8507332371509, 26.8472605527769], fallbackDataset: [26.8472605527769, -26.8507332371509]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        saint_nazaire: {
+            id: 'saint_nazaire', wupCityCode: '921',
+            label: translateCityText('city.labels.saint_nazaire', 'Saint-Nazaire, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.2768743201976, -2.22008257060929], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [47.2768743201976, -2.22008257060929], fallbackDataset: [-2.22008257060929, 47.2768743201976]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        // END qualification admission 2026-10-11 round2
         // BEGIN qualification admission 2026-10-11
         west_valley_city: {
             id: 'west_valley_city',

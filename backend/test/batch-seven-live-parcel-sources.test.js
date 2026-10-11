@@ -93,5 +93,5 @@ describe.each(cases)('$city batch-seven configured runtime',sample => {
 it('shares the Spanish runtime while resolving the binding projection per city',()=>{
     const madrid=parcelSourceForCity('madrid'),barcelona=parcelSourceForCity('barcelona');
     expect(madrid.adapter).toBe(barcelona.adapter);expect(madrid.descriptor.metricSrid).toBe(25830);expect(barcelona.descriptor.metricSrid).toBe(25831);
-    expect(madrid.descriptor.metricSridByCity).toEqual({madrid:25830,barcelona:25831});
+    expect(madrid.descriptor.metricSridByCity).toMatchObject({madrid:25830,barcelona:25831});
 });

@@ -1,0 +1,1878 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "4655",
+  "cityName": "Ekangala",
+  "sourceId": "za-csg-dffe-erven",
+  "candidateSha256": "5775f1609a41f448bc4e04b9c74d3671b3140b588e27d62ffac8b1dc1b327c4b",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 100,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 100,
+      "collectedUniqueCount": 100
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 244
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "9d87fa6c4d6548bdf592e8caea529f5048655bc949038305d7fef101f5960c81",
+      "featureCount": 100,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32735",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "9d87fa6c4d6548bdf592e8caea529f5048655bc949038305d7fef101f5960c81",
+  "featureCount": 100,
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        28.737,
+        -25.678,
+        28.738,
+        -25.677
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006113000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006116000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006074000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006117000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006115000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006059000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006056000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006054000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006051000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006050000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006060000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006058000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006057000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006055000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006053000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006052000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006114000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006073000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR039500001080000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR039500001079000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR039500001078000000"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        28.738,
+        -25.678,
+        28.739,
+        -25.677
+      ],
+      "complete": true,
+      "featureCount": 26,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006049000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006113000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006112000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006111000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006108000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006107000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006082000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006081000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006080000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006077000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006076000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006074000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006117000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006050000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006048000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006047000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006046000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006045000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006044000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006043000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006110000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006109000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006079000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006078000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006075000000"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        28.739,
+        -25.678,
+        28.74,
+        -25.677
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006038000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006037000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006087000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006086000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006085000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006083000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006082000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006088000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006042000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006041000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006040000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006039000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006090000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006089000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006084000000"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        28.737,
+        -25.677,
+        28.738,
+        -25.676
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006052000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR039500001078000000"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        28.738,
+        -25.677,
+        28.739,
+        -25.676
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        28.739,
+        -25.677,
+        28.74,
+        -25.676
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        28.737,
+        -25.676,
+        28.738,
+        -25.675
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        28.738,
+        -25.676,
+        28.739,
+        -25.675
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        28.739,
+        -25.676,
+        28.74,
+        -25.675
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        28.738,
+        -25.679,
+        28.739,
+        -25.678
+      ],
+      "complete": true,
+      "featureCount": 45,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006160000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006159000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006158000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006157000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006156000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006155000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006154000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006153000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006152000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006151000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006126000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006125000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006124000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006121000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006120000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006204000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006203000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006202000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006201000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006200000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006108000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006107000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006105000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006104000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006172000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006171000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006083000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006082000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006081000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006161000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006168000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006164000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006123000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006122000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006119000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006118000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006117000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006170000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006169000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006167000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006166000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006165000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006110000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006109000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006106000000"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        28.738,
+        -25.675,
+        28.739,
+        -25.674
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        28.736,
+        -25.677,
+        28.737,
+        -25.676
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR039500001108000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR039500001097000000",
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR039500001078000000"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        28.74,
+        -25.677,
+        28.741,
+        -25.676
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GTSHT0JR034700006001000000"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 113,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:38.603Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1365
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:39.973Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 771
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:40.746Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 231
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:40.981Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 767
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:41.750Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 787
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:42.538Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 233
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:42.773Z",
+      "queryHash": "c5271289ca47de88fddaa06d31bfc110efb99534eba47fc3aa8c9586e1c4a736",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 773
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:43.547Z",
+      "queryHash": "c5271289ca47de88fddaa06d31bfc110efb99534eba47fc3aa8c9586e1c4a736",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 755
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.305Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.526Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.745Z",
+      "queryHash": "55d0a215aca5f54dd09af5fc426cc43f4dfbeb874e56cb2eb89dbd175c0d5235",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 226
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:44.974Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 241
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.215Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.427Z",
+      "queryHash": "ee829b0dfd03d566063f02a2de0f16e3ff4b976c888e354b67d59351c22f9a0c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 26,
+      "httpStatus": 200,
+      "elapsedMs": 215
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.647Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:45.859Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 210
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.070Z",
+      "queryHash": "9075966f375f035e7f8b025593ebb0fbffdd9d724e2b53889f830c6571e6d9c4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.288Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 214
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.503Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.715Z",
+      "queryHash": "f7ae8eb0a33471afb410f856e76967a26546f9f5b46a5f5ba3f708839fba911a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 221
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:46.937Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.149Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.361Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.575Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:47.792Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 238
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.031Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.251Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.471Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.692Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:48.909Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:49.170Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:49.388Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 220
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:49.609Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:49.827Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.044Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.258Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.477Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 238
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.717Z",
+      "queryHash": "802adab27d585aca84088b2648438fedb1be4aed4286b65b143d1a92ce992d7a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 45,
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:50.941Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 214
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:51.156Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:51.369Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:51.583Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 221
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:51.805Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 215
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:52.021Z",
+      "queryHash": "849e25e13a87042aea4b11d53b3bb3affccfcca82e5ddf0c384ed897a065bae6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:52.238Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 214
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:52.453Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:52.667Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 627
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:53.296Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:53.510Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 568
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:54.078Z",
+      "queryHash": "55d0a215aca5f54dd09af5fc426cc43f4dfbeb874e56cb2eb89dbd175c0d5235",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:54.295Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 442
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:54.737Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 354
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:55.094Z",
+      "queryHash": "ee829b0dfd03d566063f02a2de0f16e3ff4b976c888e354b67d59351c22f9a0c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 26,
+      "httpStatus": 200,
+      "elapsedMs": 768
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:55.864Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:56.082Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 315
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:56.398Z",
+      "queryHash": "9075966f375f035e7f8b025593ebb0fbffdd9d724e2b53889f830c6571e6d9c4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 464
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:56.864Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 503
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:57.368Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 265
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:57.634Z",
+      "queryHash": "f7ae8eb0a33471afb410f856e76967a26546f9f5b46a5f5ba3f708839fba911a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:57.847Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:58.061Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 391
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:58.453Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 281
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:58.735Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 602
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:59.338Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:59.550Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 210
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:42:59.761Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 282
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.044Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 442
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.487Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 210
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:00.698Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 618
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:01.317Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:01.534Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:01.747Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 519
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:02.267Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:02.479Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 790
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.270Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.488Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.702Z",
+      "queryHash": "802adab27d585aca84088b2648438fedb1be4aed4286b65b143d1a92ce992d7a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 45,
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:03.917Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:04.139Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:04.353Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 665
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:05.019Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 339
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:05.359Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 248
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:05.608Z",
+      "queryHash": "849e25e13a87042aea4b11d53b3bb3affccfcca82e5ddf0c384ed897a065bae6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 618
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:06.227Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 610
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:06.838Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:07.054Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:07.268Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1371
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:08.639Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 842
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:09.483Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 214
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:09.698Z",
+      "queryHash": "c7e13ee698db7658cc0f4c768e500ad5bfb6dc048f0b744a3c16da4654f6da09",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1693
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:11.392Z",
+      "queryHash": "c7e13ee698db7658cc0f4c768e500ad5bfb6dc048f0b744a3c16da4654f6da09",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 814
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:12.207Z",
+      "queryHash": "d91492a855bbb7f145318cbedd7cb428cddba6fbf6033a75ac6743f8943ad7e9",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 934
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:13.141Z",
+      "queryHash": "4ccffbde2906e4f844cf0d99bd787ab6df53e9cb31262c60e5edfdc279ab06d9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1682
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:14.824Z",
+      "queryHash": "4ccffbde2906e4f844cf0d99bd787ab6df53e9cb31262c60e5edfdc279ab06d9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2338
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:17.163Z",
+      "queryHash": "6fc82461e598e3fd9ea9d34072ada3a305246765bf9a4639f9947290af8bb556",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 344
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:17.508Z",
+      "queryHash": "42d311005be2b36de5c79fec1723242b6853147e3a631185f60328f48e516e71",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 757
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:18.265Z",
+      "queryHash": "42d311005be2b36de5c79fec1723242b6853147e3a631185f60328f48e516e71",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 789
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:19.054Z",
+      "queryHash": "57cdc9f0739ce86536f7980e12148d21da44bc98f276c42d2770861b326989c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 244
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:19.299Z",
+      "queryHash": "c9c7000663c31c609da584216c39bd9967123ce7237885d2e97052be90671f6a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 814
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:20.116Z",
+      "queryHash": "c9c7000663c31c609da584216c39bd9967123ce7237885d2e97052be90671f6a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 791
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:20.908Z",
+      "queryHash": "2443b4e2b9145b6e86bc5ba7dc3810aa6aa5a15b51c536a5ca2536012c50ece5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:21.126Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 789
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:21.916Z",
+      "queryHash": "acca75efa363e8c65808c5de66d0ef9e6bb36f8c91132a0a9cb44d33a5fe1174",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 761
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:22.678Z",
+      "queryHash": "f9bbd29096daa4144ad3df63c1eb8edccf3976fecfb31e8db7f0d088d33b8f96",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 210
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:22.891Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:23.104Z",
+      "queryHash": "7cb47e10699f715cf3ed05589572ae961afbd4318f4e900624d771c86ba7466b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 214
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:23.320Z",
+      "queryHash": "c36f27066c386a4a3a9e6fcae78f796c439cdab3775ab86cf565e26576e91d6a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 79,
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "dffeportal.environment.gov.za",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:43:23.804Z",
+      "queryHash": "f22b50c8e2686ff654673d44de0a25b3e93ccedf11eaca5034f9359c6624f72a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1199
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "dffeportal.environment.gov.za",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:43:25.004Z",
+      "queryHash": "f22b50c8e2686ff654673d44de0a25b3e93ccedf11eaca5034f9359c6624f72a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1191
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:26.197Z",
+      "queryHash": "6284803a566aa6227cb116fec9488cf5fd3a18f856c6a0eb9b8a900d89491c5e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:26.422Z",
+      "queryHash": "a5337fdb0fb62ce89ad7a7fce54cd0d4271cb915c5b2ebb92c7c3b517b1a7c17",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1712
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:28.134Z",
+      "queryHash": "a5337fdb0fb62ce89ad7a7fce54cd0d4271cb915c5b2ebb92c7c3b517b1a7c17",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1867
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:43:30.002Z",
+      "queryHash": "0e3e9bf6edea52a255ec56b0b7722ead1a26f11130ab644615ab8aaae45cd083",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 216
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

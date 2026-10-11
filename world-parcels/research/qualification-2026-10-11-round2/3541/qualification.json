@@ -1,0 +1,1984 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3541",
+  "cityName": "Gatineau",
+  "sourceId": "ca-qc-cadastre-bd-allegee",
+  "candidateSha256": "ad6037dfc616b6685cd61a8132dfb1817feeaaa0f5fdbb145737d0cbcb0bdb38",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 212,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 212,
+      "collectedUniqueCount": 212
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 560
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "08cca250ad73f5b2600e78848b4608eeab9f4b0d7730734085ba681c24d95859",
+      "featureCount": 212,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32618",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "08cca250ad73f5b2600e78848b4608eeab9f4b0d7730734085ba681c24d95859",
+  "featureCount": 212,
+  "sampleIds": [
+    "CA-QC-CADASTRE-22ac6309-8eeb-4529-af11-95f7b122d51f",
+    "CA-QC-CADASTRE-bcd5e23e-9c4b-4456-af83-43bcc25195fd",
+    "CA-QC-CADASTRE-e3518281-d319-400d-a46f-c497f3410993"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -75.671,
+        45.489,
+        -75.67,
+        45.49
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "CA-QC-CADASTRE-671c5b85-ba3e-4af5-b77a-5e15ec940728",
+        "CA-QC-CADASTRE-54c09e0d-2421-4968-bd1d-5d3a536dda16",
+        "CA-QC-CADASTRE-4e66ddb7-6f46-4d2e-9890-5a72eac179b0",
+        "CA-QC-CADASTRE-22ac6309-8eeb-4529-af11-95f7b122d51f",
+        "CA-QC-CADASTRE-66e127c3-94d6-42d5-ae7e-23476d8ee6dc",
+        "CA-QC-CADASTRE-1669e219-76c9-450e-9566-a94dccf0f7fb",
+        "CA-QC-CADASTRE-65bd3d39-690e-426a-b9c5-6716dac807d8",
+        "CA-QC-CADASTRE-c037f1b7-99d0-43b8-97db-e2503bd878b6",
+        "CA-QC-CADASTRE-55f1a670-9360-42cb-8680-ca73dd53f65d",
+        "CA-QC-CADASTRE-acac9e7c-a648-4bb6-9fc2-b8a76ced0af1",
+        "CA-QC-CADASTRE-e3518281-d319-400d-a46f-c497f3410993",
+        "CA-QC-CADASTRE-9758e28a-a1d0-4634-b718-7e92474f2834",
+        "CA-QC-CADASTRE-14920fb0-99e7-4980-950a-d0a38c4eab48",
+        "CA-QC-CADASTRE-7d9dd42f-cbe8-423f-8700-3acdc075904c",
+        "CA-QC-CADASTRE-b2043f66-d9c2-41fa-af1f-6bc4a8e947de",
+        "CA-QC-CADASTRE-97be27e2-9290-4cf3-990f-fcc53ff834e1",
+        "CA-QC-CADASTRE-d9d42e2f-2dc9-4a4c-b769-c0dacd38ba90",
+        "CA-QC-CADASTRE-922f3d35-036d-4d14-a4a1-b4d03d29a722",
+        "CA-QC-CADASTRE-6d9d185b-c8be-4707-ba8c-9246f2ae20f5",
+        "CA-QC-CADASTRE-5ad25a06-3576-471e-8532-409570ed1adc",
+        "CA-QC-CADASTRE-887a2af5-5c15-47c2-b30c-822f66534e7f"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -75.67,
+        45.489,
+        -75.669,
+        45.49
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "CA-QC-CADASTRE-22ac6309-8eeb-4529-af11-95f7b122d51f",
+        "CA-QC-CADASTRE-1a2b6cd0-0704-447e-b239-767ef76769ed",
+        "CA-QC-CADASTRE-1669e219-76c9-450e-9566-a94dccf0f7fb",
+        "CA-QC-CADASTRE-a390cdba-dfd1-4fab-aec8-1e021e1135bd",
+        "CA-QC-CADASTRE-55f1a670-9360-42cb-8680-ca73dd53f65d",
+        "CA-QC-CADASTRE-1667c049-1e8e-446f-b645-9aa4d04bdc43",
+        "CA-QC-CADASTRE-acac9e7c-a648-4bb6-9fc2-b8a76ced0af1",
+        "CA-QC-CADASTRE-bcd5e23e-9c4b-4456-af83-43bcc25195fd",
+        "CA-QC-CADASTRE-44e6a692-e0d0-48ec-b098-2ed46aafb8cc",
+        "CA-QC-CADASTRE-9758e28a-a1d0-4634-b718-7e92474f2834",
+        "CA-QC-CADASTRE-7d9dd42f-cbe8-423f-8700-3acdc075904c",
+        "CA-QC-CADASTRE-d6eb9c90-e0a5-42dc-906a-700c6571b238",
+        "CA-QC-CADASTRE-b33da5ed-af17-46d6-ae55-038895eb31a5",
+        "CA-QC-CADASTRE-b2043f66-d9c2-41fa-af1f-6bc4a8e947de",
+        "CA-QC-CADASTRE-704b0b4f-bdf8-4659-b6d9-2a8f11ad0ce6",
+        "CA-QC-CADASTRE-8ddc38fb-9639-4429-8c9d-58adac8e68b1",
+        "CA-QC-CADASTRE-056e2b41-e433-4167-a5e9-d933d3cea701",
+        "CA-QC-CADASTRE-8b3b6ce5-3819-4852-81dc-c4fff93d1051",
+        "CA-QC-CADASTRE-847bd7db-89c7-4152-8428-890de594e54c",
+        "CA-QC-CADASTRE-6d9d185b-c8be-4707-ba8c-9246f2ae20f5",
+        "CA-QC-CADASTRE-f6a92f16-2727-4510-97a5-ba6fb743fe98",
+        "CA-QC-CADASTRE-31d7b978-d2be-4214-876d-86ab4f81eda8"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -75.669,
+        45.489,
+        -75.668,
+        45.49
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "CA-QC-CADASTRE-e855bfda-955f-4d05-9465-14437d893399",
+        "CA-QC-CADASTRE-1d2099c1-5a8e-45f8-94f9-d75ac6931110",
+        "CA-QC-CADASTRE-a390cdba-dfd1-4fab-aec8-1e021e1135bd",
+        "CA-QC-CADASTRE-1a6af6a5-939d-407a-ac7d-1e2a9db530bb",
+        "CA-QC-CADASTRE-65f2984b-fd13-4f1b-983c-7c510bd2bc9f",
+        "CA-QC-CADASTRE-41aadf88-f4ca-40df-9d08-97274d24f8a5",
+        "CA-QC-CADASTRE-67d0eb3d-a112-43f2-96d5-4daf4dc1d7b1",
+        "CA-QC-CADASTRE-9bb418cb-8907-4e02-a212-89db96cae917",
+        "CA-QC-CADASTRE-6ae6861c-24e6-4673-a562-4ba47604dd48",
+        "CA-QC-CADASTRE-60312b4d-48d1-475d-b7df-ec9a6e5afa3d",
+        "CA-QC-CADASTRE-b33da5ed-af17-46d6-ae55-038895eb31a5",
+        "CA-QC-CADASTRE-c73ab48d-8598-46bb-b473-60e6a48e2b18",
+        "CA-QC-CADASTRE-0dd346c0-c5d4-40b8-9c5e-6acaa6c9bf61",
+        "CA-QC-CADASTRE-91fa0396-9cb3-4676-8c02-53cab4f207d8",
+        "CA-QC-CADASTRE-8b3b6ce5-3819-4852-81dc-c4fff93d1051",
+        "CA-QC-CADASTRE-847bd7db-89c7-4152-8428-890de594e54c",
+        "CA-QC-CADASTRE-6e1c63ab-abbb-478e-8b45-30a5f22e50f9",
+        "CA-QC-CADASTRE-6f28aa8c-ddbd-406a-9c3c-d75ad54de930",
+        "CA-QC-CADASTRE-d44ea901-6a6f-45a1-a352-793951f5e7b5",
+        "CA-QC-CADASTRE-7c8bf914-d051-4c91-ae53-f623e1dffe95",
+        "CA-QC-CADASTRE-b1cc011f-ea40-4f36-9069-bdf6a7b358c3",
+        "CA-QC-CADASTRE-31d7b978-d2be-4214-876d-86ab4f81eda8"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -75.671,
+        45.49,
+        -75.67,
+        45.491
+      ],
+      "complete": true,
+      "featureCount": 23,
+      "ids": [
+        "CA-QC-CADASTRE-e243fd3e-0ad8-4a2e-afe1-2514457113db",
+        "CA-QC-CADASTRE-41d771b0-144d-4649-8a20-21c2e3ede9da",
+        "CA-QC-CADASTRE-671c5b85-ba3e-4af5-b77a-5e15ec940728",
+        "CA-QC-CADASTRE-3f9beb2c-7a13-47a7-b1ff-ceb3eef7479f",
+        "CA-QC-CADASTRE-463bc961-6c69-4e7d-9255-677c8af53875",
+        "CA-QC-CADASTRE-16f39c6b-130e-41ed-8616-07c271e6b7c8",
+        "CA-QC-CADASTRE-c764c5aa-3b85-4019-860e-edf0092c97d7",
+        "CA-QC-CADASTRE-7f5d76e0-0ade-4434-b47e-bdd090be743c",
+        "CA-QC-CADASTRE-22ac6309-8eeb-4529-af11-95f7b122d51f",
+        "CA-QC-CADASTRE-a636ddae-b056-4a58-970c-7cc3ce0de4d8",
+        "CA-QC-CADASTRE-d1feb476-6998-4f30-8027-aabb10aacefd",
+        "CA-QC-CADASTRE-de9f5aa4-461c-4cdd-aba3-a0f10b73a76f",
+        "CA-QC-CADASTRE-c037f1b7-99d0-43b8-97db-e2503bd878b6",
+        "CA-QC-CADASTRE-480fe520-6eb0-4b95-8fdd-b41e4be974cf",
+        "CA-QC-CADASTRE-0bdb7d2f-3762-4ab7-b25e-75f0fcc02958",
+        "CA-QC-CADASTRE-8f8ede5e-7a14-48c0-9457-0413a7216412",
+        "CA-QC-CADASTRE-e3518281-d319-400d-a46f-c497f3410993",
+        "CA-QC-CADASTRE-14920fb0-99e7-4980-950a-d0a38c4eab48",
+        "CA-QC-CADASTRE-35ce81af-2aa6-4629-8b3b-d7567c85cfc4",
+        "CA-QC-CADASTRE-31abd7c3-cc6c-43dc-91ee-54f7244da3be",
+        "CA-QC-CADASTRE-b2043f66-d9c2-41fa-af1f-6bc4a8e947de",
+        "CA-QC-CADASTRE-2c182eec-2475-47d8-8c45-5ef2dee08aca",
+        "CA-QC-CADASTRE-59a9f928-ac69-4fb7-8d0e-189f2bd7eca8"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -75.67,
+        45.49,
+        -75.669,
+        45.491
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "CA-QC-CADASTRE-af4da871-bd9b-4506-a68d-c0a3611ef582",
+        "CA-QC-CADASTRE-4cea3d2a-fcdc-4b4b-b969-59f84e0f2ad4",
+        "CA-QC-CADASTRE-7f5d76e0-0ade-4434-b47e-bdd090be743c",
+        "CA-QC-CADASTRE-a070618f-f5c3-441f-a6dc-e166abacb6f0",
+        "CA-QC-CADASTRE-22ac6309-8eeb-4529-af11-95f7b122d51f",
+        "CA-QC-CADASTRE-a636ddae-b056-4a58-970c-7cc3ce0de4d8",
+        "CA-QC-CADASTRE-bae8606c-5ea6-49ea-98a3-2394b1fbe9c8",
+        "CA-QC-CADASTRE-480fe520-6eb0-4b95-8fdd-b41e4be974cf",
+        "CA-QC-CADASTRE-b15e7bed-b476-41ae-aa2b-deeff3affa14",
+        "CA-QC-CADASTRE-e3518281-d319-400d-a46f-c497f3410993",
+        "CA-QC-CADASTRE-b33da5ed-af17-46d6-ae55-038895eb31a5",
+        "CA-QC-CADASTRE-29f77703-5e20-4561-a9ae-6df6506f2905",
+        "CA-QC-CADASTRE-fb794175-652e-444f-9c1d-958b507ac063",
+        "CA-QC-CADASTRE-8ddc38fb-9639-4429-8c9d-58adac8e68b1",
+        "CA-QC-CADASTRE-0c53fb20-87aa-4632-abe7-e0d27ececfec",
+        "CA-QC-CADASTRE-9e451727-df3f-4d05-9afe-b04febb207c2",
+        "CA-QC-CADASTRE-847bd7db-89c7-4152-8428-890de594e54c",
+        "CA-QC-CADASTRE-ed229b3f-9025-4119-8c6d-88ae2bf4d080",
+        "CA-QC-CADASTRE-646f9e8a-4358-475c-ae90-ab790102d9d2",
+        "CA-QC-CADASTRE-f6a92f16-2727-4510-97a5-ba6fb743fe98",
+        "CA-QC-CADASTRE-c5afc49f-d054-42af-af89-793359000865"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -75.669,
+        45.49,
+        -75.668,
+        45.491
+      ],
+      "complete": true,
+      "featureCount": 23,
+      "ids": [
+        "CA-QC-CADASTRE-d181c04f-f74b-4788-ac0f-b6ebb60fa116",
+        "CA-QC-CADASTRE-eeb466fb-62ad-4257-a865-4a66a6eba6cf",
+        "CA-QC-CADASTRE-e15a7035-df07-40f2-90ee-c16bc828fefc",
+        "CA-QC-CADASTRE-a636ddae-b056-4a58-970c-7cc3ce0de4d8",
+        "CA-QC-CADASTRE-9b305195-a9e9-4c68-98cd-1f757a2ce7c6",
+        "CA-QC-CADASTRE-9bb418cb-8907-4e02-a212-89db96cae917",
+        "CA-QC-CADASTRE-b15e7bed-b476-41ae-aa2b-deeff3affa14",
+        "CA-QC-CADASTRE-e3518281-d319-400d-a46f-c497f3410993",
+        "CA-QC-CADASTRE-10714f30-f2ff-4bc8-ba9d-3e9d0f14d0f9",
+        "CA-QC-CADASTRE-6ae6861c-24e6-4673-a562-4ba47604dd48",
+        "CA-QC-CADASTRE-274c73eb-d939-48e3-ba0e-3783116847ec",
+        "CA-QC-CADASTRE-b33da5ed-af17-46d6-ae55-038895eb31a5",
+        "CA-QC-CADASTRE-9523e5c9-0929-458c-b175-19f8649a2d42",
+        "CA-QC-CADASTRE-556199ea-2cf4-4d8f-966d-1d774d5569c5",
+        "CA-QC-CADASTRE-afd9004b-31b0-4b7f-b50d-48295b4b2ef1",
+        "CA-QC-CADASTRE-fb794175-652e-444f-9c1d-958b507ac063",
+        "CA-QC-CADASTRE-c73ab48d-8598-46bb-b473-60e6a48e2b18",
+        "CA-QC-CADASTRE-728498a2-32f2-408d-9bd9-9876b051ae98",
+        "CA-QC-CADASTRE-b283fb9b-6034-4886-a9ca-fa1b98d270c1",
+        "CA-QC-CADASTRE-964a8952-a5f6-4d1d-b081-aaa07b08adb9",
+        "CA-QC-CADASTRE-c9a5729a-b6f4-489b-bcdd-4fb5c5752901",
+        "CA-QC-CADASTRE-87862525-c6e9-4de0-8fc7-13b24f26b9e7",
+        "CA-QC-CADASTRE-b1cc011f-ea40-4f36-9069-bdf6a7b358c3"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -75.671,
+        45.491,
+        -75.67,
+        45.492
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "CA-QC-CADASTRE-d79aa251-8ef8-4889-afda-5913108043fc",
+        "CA-QC-CADASTRE-4ac43852-8199-42d5-af6b-c1c47a197e95",
+        "CA-QC-CADASTRE-a636ddae-b056-4a58-970c-7cc3ce0de4d8",
+        "CA-QC-CADASTRE-8eca05b6-8f7d-41b5-80d0-b45586e14dc7",
+        "CA-QC-CADASTRE-de9f5aa4-461c-4cdd-aba3-a0f10b73a76f",
+        "CA-QC-CADASTRE-0bdb7d2f-3762-4ab7-b25e-75f0fcc02958",
+        "CA-QC-CADASTRE-8f8ede5e-7a14-48c0-9457-0413a7216412",
+        "CA-QC-CADASTRE-599cac4a-b5a3-46a3-aaab-c777d8d16755",
+        "CA-QC-CADASTRE-b70d9aef-1f2f-4c4d-a9f0-fe49de5a69fa",
+        "CA-QC-CADASTRE-54bf3d20-e18a-45e3-b603-e9f4df8c21da",
+        "CA-QC-CADASTRE-597bfde5-f0a0-4770-b1b2-72149b27ad54",
+        "CA-QC-CADASTRE-3712e53e-1f6b-407b-9f66-0902a8fda30b",
+        "CA-QC-CADASTRE-36886b6c-043a-446b-ba36-f8ad6bbe891a",
+        "CA-QC-CADASTRE-e49aa299-97a4-43b6-b122-60a1d6f95691",
+        "CA-QC-CADASTRE-b7539248-13d0-4104-a16c-74dd05ae6188",
+        "CA-QC-CADASTRE-f545c21c-b815-4f46-9dda-e95ef83f22cd",
+        "CA-QC-CADASTRE-5308f07f-de27-472f-b5c8-13d0036ae41d"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -75.67,
+        45.491,
+        -75.669,
+        45.492
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "CA-QC-CADASTRE-466461fc-49a5-4ea7-90b2-8e16ec575898",
+        "CA-QC-CADASTRE-c35aaab6-11d6-40fd-bd74-f19b1088b675",
+        "CA-QC-CADASTRE-e7a62afe-971b-4759-b952-8c983eb28c39",
+        "CA-QC-CADASTRE-e8a70e1d-9881-4a67-87db-b0c9c9c05dba",
+        "CA-QC-CADASTRE-ad71167b-10ad-4723-bef0-bdb6c51507bd",
+        "CA-QC-CADASTRE-511c1e82-ada2-4078-a39d-5bdb7bb33b26",
+        "CA-QC-CADASTRE-a636ddae-b056-4a58-970c-7cc3ce0de4d8",
+        "CA-QC-CADASTRE-957a443b-689a-40b3-8f66-7ed2f6df99e7",
+        "CA-QC-CADASTRE-30562669-449f-4c71-bd7f-c895677ed097",
+        "CA-QC-CADASTRE-a8031c35-7340-46d8-b6d7-030ac3c8f10f",
+        "CA-QC-CADASTRE-7ffdd271-99b3-4549-8216-3de880ccdd57",
+        "CA-QC-CADASTRE-599cac4a-b5a3-46a3-aaab-c777d8d16755",
+        "CA-QC-CADASTRE-7fe838f6-d306-401f-a897-91063ff75669",
+        "CA-QC-CADASTRE-c076441c-a6bb-4f18-a12a-aabcd3ca9b22",
+        "CA-QC-CADASTRE-b7539248-13d0-4104-a16c-74dd05ae6188",
+        "CA-QC-CADASTRE-79e47749-8fb6-440d-b03e-845833ca7fd8",
+        "CA-QC-CADASTRE-89f7d42d-7370-4b7a-8172-a96ee086b480",
+        "CA-QC-CADASTRE-039b8232-cf23-4dce-9ac4-5c6272873fbe",
+        "CA-QC-CADASTRE-2ce4c15a-42da-43dd-95f1-65ecfeea5265",
+        "CA-QC-CADASTRE-205d5ea5-8a8a-479f-8167-97933a812022",
+        "CA-QC-CADASTRE-5308f07f-de27-472f-b5c8-13d0036ae41d",
+        "CA-QC-CADASTRE-2244c531-b45d-4c84-87a9-954cd606ac9c"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -75.669,
+        45.491,
+        -75.668,
+        45.492
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "CA-QC-CADASTRE-fc1cd6d8-e29b-4b5d-a4b5-f130806ea60f",
+        "CA-QC-CADASTRE-c8d92f97-fd06-4528-8ce4-ed5097408035",
+        "CA-QC-CADASTRE-6d10a04d-f852-4016-8fdb-1a60e7fb552f",
+        "CA-QC-CADASTRE-42dde0b9-22c5-44b8-baf6-95d61a48a2e3",
+        "CA-QC-CADASTRE-e62f7e80-d6d2-4670-b804-d6c5337ff3bf",
+        "CA-QC-CADASTRE-a636ddae-b056-4a58-970c-7cc3ce0de4d8",
+        "CA-QC-CADASTRE-957a443b-689a-40b3-8f66-7ed2f6df99e7",
+        "CA-QC-CADASTRE-d74e8042-1250-40e9-ae14-ef8d3fb77a98",
+        "CA-QC-CADASTRE-9b305195-a9e9-4c68-98cd-1f757a2ce7c6",
+        "CA-QC-CADASTRE-d491c7ec-1b8c-4203-ab85-8056d450768f",
+        "CA-QC-CADASTRE-29f83b7d-e1a2-4dd8-8898-256d42355432",
+        "CA-QC-CADASTRE-10c72647-83b7-488d-95ac-8dc17118b80f",
+        "CA-QC-CADASTRE-e922bb83-4360-4828-9100-d636c4de2c8e",
+        "CA-QC-CADASTRE-921c8655-6fdf-4e4b-b824-430d7b61028a",
+        "CA-QC-CADASTRE-e62aa501-827c-40e9-9889-1cea5c70c461",
+        "CA-QC-CADASTRE-e2b1c350-7306-4ca9-a90f-5384008d6974",
+        "CA-QC-CADASTRE-50d760b1-a6f1-4702-8cc7-1e95b9f0bcfa",
+        "CA-QC-CADASTRE-4ad5aa9a-36b7-4f1f-9fa1-458539af5f5f",
+        "CA-QC-CADASTRE-e1366216-3fd3-4d0e-a5ee-d2ecfd3ed54e",
+        "CA-QC-CADASTRE-9a353ba1-b69a-43c2-becc-d69b7ff9d7af"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -75.67,
+        45.488,
+        -75.669,
+        45.489
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "CA-QC-CADASTRE-eff1eef0-ff92-4ccc-8de8-f9cc05850f92",
+        "CA-QC-CADASTRE-ca27f4bf-b86c-48fd-b6cd-8a44906a9576",
+        "CA-QC-CADASTRE-61269de8-3013-4888-a6a9-71e2ed517633",
+        "CA-QC-CADASTRE-382d439e-dc8c-471d-a60e-be5afd98b768",
+        "CA-QC-CADASTRE-ea0192d5-09cb-4785-98b4-7baeb32b8c44",
+        "CA-QC-CADASTRE-74dee072-ecf5-4c07-8af8-0b50eb3b115d",
+        "CA-QC-CADASTRE-6d30b110-001e-4a49-b36d-b2b218204fc7",
+        "CA-QC-CADASTRE-8451a4b4-0e9d-4977-bcef-5a7b9307c633",
+        "CA-QC-CADASTRE-55f1a670-9360-42cb-8680-ca73dd53f65d",
+        "CA-QC-CADASTRE-d55d0257-4347-4466-800e-c2b5c9994110",
+        "CA-QC-CADASTRE-357bd16d-2570-48e0-b063-c3438b02fdb8",
+        "CA-QC-CADASTRE-ea885a36-ac9f-4b11-aea5-81a3afa1981f",
+        "CA-QC-CADASTRE-3bbf6614-8b18-4a42-b81a-2875ecb7b618",
+        "CA-QC-CADASTRE-a4495631-f0bb-471c-910b-77477b07a776",
+        "CA-QC-CADASTRE-b60ac12b-db91-477f-a17c-70b1aea09df5",
+        "CA-QC-CADASTRE-8b3b6ce5-3819-4852-81dc-c4fff93d1051",
+        "CA-QC-CADASTRE-26a36826-7889-4e07-91dd-ed658b7f903c",
+        "CA-QC-CADASTRE-a7d43999-4cfa-493c-aba0-5eee9f13e704",
+        "CA-QC-CADASTRE-bf42f1ec-e3a3-49c3-997d-0cf677654270",
+        "CA-QC-CADASTRE-b642a658-165d-46d8-ab5e-9482293e535a",
+        "CA-QC-CADASTRE-713cb883-736c-40b2-bedd-bc45f253f9de"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -75.67,
+        45.492,
+        -75.669,
+        45.493
+      ],
+      "complete": true,
+      "featureCount": 27,
+      "ids": [
+        "CA-QC-CADASTRE-9ce579b6-db3e-4509-88ed-d18061cd4042",
+        "CA-QC-CADASTRE-11913189-aa89-4794-ab22-a1f5d7b25923",
+        "CA-QC-CADASTRE-c76c81c7-f4cb-41d1-be34-00b56b3f5c4b",
+        "CA-QC-CADASTRE-a20728de-d7ce-4915-b7e3-fbc5f4b00da3",
+        "CA-QC-CADASTRE-957a443b-689a-40b3-8f66-7ed2f6df99e7",
+        "CA-QC-CADASTRE-3699a312-20a1-4d97-9403-491a8659d009",
+        "CA-QC-CADASTRE-03cd482e-43ca-447b-bf8a-a95fc7a5ab89",
+        "CA-QC-CADASTRE-599cac4a-b5a3-46a3-aaab-c777d8d16755",
+        "CA-QC-CADASTRE-0d43aae7-f61b-40b5-b39b-580a87324a64",
+        "CA-QC-CADASTRE-e31629d1-3e0d-4094-93ef-acaf0f2f5754",
+        "CA-QC-CADASTRE-bf6a17c7-eb2c-4bee-bb7b-2f003f1e049f",
+        "CA-QC-CADASTRE-6aab44bb-f6af-4fc9-8582-f3f1b3a394ef",
+        "CA-QC-CADASTRE-08339fce-99cb-4f2f-9347-f53331af3176",
+        "CA-QC-CADASTRE-716b4c00-4b5b-4f36-aac4-6a2b21ddc1ce",
+        "CA-QC-CADASTRE-ee253154-5ca0-411c-b0bf-76dda504ab6a",
+        "CA-QC-CADASTRE-8d6c08ed-8a8b-4eb4-832f-a394d864b191",
+        "CA-QC-CADASTRE-8019d33c-cec8-494d-9486-f5e134808bb1",
+        "CA-QC-CADASTRE-d7b791c6-c629-44b1-b186-670c2f87124d",
+        "CA-QC-CADASTRE-c076441c-a6bb-4f18-a12a-aabcd3ca9b22",
+        "CA-QC-CADASTRE-4de69697-48fd-4060-ac72-3cefe059b385",
+        "CA-QC-CADASTRE-734df3a9-2b11-4a47-8f09-59eb796f3a96",
+        "CA-QC-CADASTRE-79e47749-8fb6-440d-b03e-845833ca7fd8",
+        "CA-QC-CADASTRE-54e9317e-8fcd-4723-bb2e-07c649d1617a",
+        "CA-QC-CADASTRE-2ce4c15a-42da-43dd-95f1-65ecfeea5265",
+        "CA-QC-CADASTRE-7005ab6d-8458-49dd-b0c2-30e2a6bb5d47",
+        "CA-QC-CADASTRE-626e7418-e365-420f-91f3-d26a991389a6",
+        "CA-QC-CADASTRE-e8c6b027-299a-4342-a8e3-869f8c20ba91"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -75.672,
+        45.49,
+        -75.671,
+        45.491
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "CA-QC-CADASTRE-e243fd3e-0ad8-4a2e-afe1-2514457113db",
+        "CA-QC-CADASTRE-41d771b0-144d-4649-8a20-21c2e3ede9da",
+        "CA-QC-CADASTRE-671c5b85-ba3e-4af5-b77a-5e15ec940728",
+        "CA-QC-CADASTRE-35fa3273-8b6d-4512-bfd4-e4994c7a2a3f",
+        "CA-QC-CADASTRE-527402a8-4147-408f-ba52-8eb2d0dfddb9",
+        "CA-QC-CADASTRE-16f39c6b-130e-41ed-8616-07c271e6b7c8",
+        "CA-QC-CADASTRE-a636ddae-b056-4a58-970c-7cc3ce0de4d8",
+        "CA-QC-CADASTRE-8f8ede5e-7a14-48c0-9457-0413a7216412",
+        "CA-QC-CADASTRE-8904bc5c-e660-4c2e-a68f-c5d15fcbb60f",
+        "CA-QC-CADASTRE-0616ba32-48ba-4123-a2ea-25f97a1f63bb",
+        "CA-QC-CADASTRE-2c182eec-2475-47d8-8c45-5ef2dee08aca",
+        "CA-QC-CADASTRE-d5049abc-60a4-4dd3-b27f-3d7589f6115a",
+        "CA-QC-CADASTRE-578dedc4-8ccb-4eff-8f58-647a4ad8eace",
+        "CA-QC-CADASTRE-d312bd89-0b54-48f4-bc6b-7868cc8be3e0",
+        "CA-QC-CADASTRE-ce39e050-33c8-4645-9206-bd0fcb8a450a",
+        "CA-QC-CADASTRE-bc5a29d0-35a5-43a6-86c1-cad2e7783df3",
+        "CA-QC-CADASTRE-a587b02c-0dd0-4953-9dd1-912465823f6b",
+        "CA-QC-CADASTRE-c6f7a6f1-891a-4a60-8c68-18602c4bd1fa",
+        "CA-QC-CADASTRE-7e7b7f81-60b4-4c07-9bad-1bb48db0ff81",
+        "CA-QC-CADASTRE-3c42fdeb-d4c6-4046-b6bc-c4075d1a9170",
+        "CA-QC-CADASTRE-d971d338-170a-418e-b8e0-c7687ab8ac2f",
+        "CA-QC-CADASTRE-6783f0bf-7078-4370-b572-a143e593a626"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -75.668,
+        45.49,
+        -75.667,
+        45.491
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "CA-QC-CADASTRE-c5230c49-746e-46bb-a802-cc69d0398181",
+        "CA-QC-CADASTRE-1cdddfcf-2ca5-4b3f-9972-f324f3fd5758",
+        "CA-QC-CADASTRE-a27b7a87-5d6a-480c-8891-af1c736c69f2",
+        "CA-QC-CADASTRE-0d85f3ae-2c39-4b5e-b080-f80367807109",
+        "CA-QC-CADASTRE-dc8c4b35-9897-4a07-8048-be6e22700847",
+        "CA-QC-CADASTRE-1999b34c-9e7b-4330-83f1-2364c7f43f81",
+        "CA-QC-CADASTRE-9b305195-a9e9-4c68-98cd-1f757a2ce7c6",
+        "CA-QC-CADASTRE-e3518281-d319-400d-a46f-c497f3410993",
+        "CA-QC-CADASTRE-06b398ae-d2c8-4ac4-92c3-b939e81dc0ad",
+        "CA-QC-CADASTRE-3fd2040a-1ff1-4cd3-a3a2-5dff7cda9add",
+        "CA-QC-CADASTRE-556199ea-2cf4-4d8f-966d-1d774d5569c5",
+        "CA-QC-CADASTRE-4eda5aaa-77be-46b5-a5d9-a8dee51440b6",
+        "CA-QC-CADASTRE-5fd28f54-93b4-4b84-8cd3-79aab4b1eb57",
+        "CA-QC-CADASTRE-b283fb9b-6034-4886-a9ca-fa1b98d270c1",
+        "CA-QC-CADASTRE-68eff7b6-8f9b-4c0a-884b-321058e33759",
+        "CA-QC-CADASTRE-964a8952-a5f6-4d1d-b081-aaa07b08adb9",
+        "CA-QC-CADASTRE-a60ed1c7-efe8-4895-a738-ad01248e7b0c",
+        "CA-QC-CADASTRE-9ccacb9c-57ae-4bcf-8cd3-260bbe8b09bc",
+        "CA-QC-CADASTRE-b1cc011f-ea40-4f36-9069-bdf6a7b358c3"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 101,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:23.850Z",
+      "queryHash": "7e8ba61f289b3eae8c77fe5b9001ab968ca968ecdcd9fcc1ec403651850fe80e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 453
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:24.311Z",
+      "queryHash": "7e8ba61f289b3eae8c77fe5b9001ab968ca968ecdcd9fcc1ec403651850fe80e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 46
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:24.363Z",
+      "queryHash": "e0f5d569eabbdd8908d8c92c0601a36e72bf8c39e3c37ccad0eeb76c58635a67",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:24.563Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:24.823Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 361
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:25.186Z",
+      "queryHash": "8d1fb11f1eaa9b14caa64a803ba1865bfb2932fbebcf9f3526557202693bb9e6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:25.470Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 201
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:25.672Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:25.853Z",
+      "queryHash": "c6778bb922fb9f2fc5033f11d31183b733df0d74f2472ee6ebc493729f9581c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:26.134Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 251
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:26.386Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:26.556Z",
+      "queryHash": "807dc7f7a4f446932d964db335cdf30530dae8e061e586a00b26b77a941cebe9",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:26.781Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 206
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:26.988Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:27.161Z",
+      "queryHash": "3c53e66faedab96a2a28ec64173cbb0d0c638a1129c44154fa4dedae0a0203fb",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 23,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:27.346Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:27.537Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:27.712Z",
+      "queryHash": "4a8cd1ed6afc2b9a3512e5a0ad5d40b33d1ace644fc41af184360a42f37f2708",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:27.997Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 200
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:28.197Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:28.383Z",
+      "queryHash": "cbfc4eb332ea055968013a141935de8dbd9e965a61482e406d2333551a29ea5b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 23,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:28.566Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 209
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:28.776Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:28.945Z",
+      "queryHash": "bf15d8081d23b4d7dae377f08b975e848cd6b9f49e6b951276519b39f9c24c15",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:29.142Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:29.329Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:29.506Z",
+      "queryHash": "ada6c28a4ebe9cf8af6ca57dd24c35a97b99a4e2c0480aa5a66e0d58048fd1e8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:29.823Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:30.021Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:30.193Z",
+      "queryHash": "e141d30bab0ecebbb0808f1fc02a3b327622e25216855050fa7f01e554ed620f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:30.378Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 248
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:30.627Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:30.796Z",
+      "queryHash": "a3b00e014d4fd365cd4f653e904b36592ce916ef667446ecc4d8852de7efea99",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 416
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:31.214Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 249
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:31.463Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:31.634Z",
+      "queryHash": "2dabaccd61ff585056ff7a2e10cdc0ced4b93b3cf68d8b47ccc58bb418b04912",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 27,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:31.929Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:32.123Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 162
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:32.286Z",
+      "queryHash": "013068d8cda5acf7fc6d2d76fb4c4ecd57499025408b7c157f5a33673b04e068",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:32.475Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 409
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:32.885Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 404
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:33.289Z",
+      "queryHash": "4f02f978e97aad0436bb5b0b123152ab8d084fb84f906ddf43d2bbc3a1c65e8b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:33.472Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:33.646Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 167
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:33.814Z",
+      "queryHash": "8d1fb11f1eaa9b14caa64a803ba1865bfb2932fbebcf9f3526557202693bb9e6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:34.099Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:34.277Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 169
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:34.447Z",
+      "queryHash": "c6778bb922fb9f2fc5033f11d31183b733df0d74f2472ee6ebc493729f9581c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:34.724Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:34.901Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 167
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:35.069Z",
+      "queryHash": "807dc7f7a4f446932d964db335cdf30530dae8e061e586a00b26b77a941cebe9",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 200
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:35.271Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:35.452Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 167
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:35.620Z",
+      "queryHash": "3c53e66faedab96a2a28ec64173cbb0d0c638a1129c44154fa4dedae0a0203fb",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 23,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:35.802Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:36.140Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 358
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:36.499Z",
+      "queryHash": "4a8cd1ed6afc2b9a3512e5a0ad5d40b33d1ace644fc41af184360a42f37f2708",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:36.780Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:36.966Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:37.145Z",
+      "queryHash": "cbfc4eb332ea055968013a141935de8dbd9e965a61482e406d2333551a29ea5b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 23,
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:37.327Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:37.505Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 202
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:37.708Z",
+      "queryHash": "bf15d8081d23b4d7dae377f08b975e848cd6b9f49e6b951276519b39f9c24c15",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:37.897Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:38.074Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:38.245Z",
+      "queryHash": "ada6c28a4ebe9cf8af6ca57dd24c35a97b99a4e2c0480aa5a66e0d58048fd1e8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:38.531Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:38.706Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:38.876Z",
+      "queryHash": "e141d30bab0ecebbb0808f1fc02a3b327622e25216855050fa7f01e554ed620f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:39.057Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:39.237Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 166
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:39.404Z",
+      "queryHash": "a3b00e014d4fd365cd4f653e904b36592ce916ef667446ecc4d8852de7efea99",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:39.577Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 353
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:39.930Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 167
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:40.098Z",
+      "queryHash": "2dabaccd61ff585056ff7a2e10cdc0ced4b93b3cf68d8b47ccc58bb418b04912",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 27,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:40.385Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:40.572Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:40.741Z",
+      "queryHash": "013068d8cda5acf7fc6d2d76fb4c4ecd57499025408b7c157f5a33673b04e068",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:40.929Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:41.112Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 166
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:41.279Z",
+      "queryHash": "4f02f978e97aad0436bb5b0b123152ab8d084fb84f906ddf43d2bbc3a1c65e8b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:41.461Z",
+      "queryHash": "4cd98cdeefe880bc1ebeb10408f97f938bd8624c822e573e79ee24a824ac5785",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 550
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:42.012Z",
+      "queryHash": "73d6e50dd7da11373af695f616bc5ec50d563611bc2e2bf11714d41e36a5b915",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:42.196Z",
+      "queryHash": "a7ce8cdf76c1a8ec4c412b9b71bb6afe228164bd5e459340e400b91d84089864",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:42.379Z",
+      "queryHash": "750dca82a4e4872e2e6a7b8090ba9b26eb29cb301b326f4f4df25a3dbfbc1a8e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:42.550Z",
+      "queryHash": "49cd7b55f8994d777e60d5c78afc3323f61e809ec712cdb4544379a439086ab9",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:42.731Z",
+      "queryHash": "92e78c2d4c531c2d1adba911aae9c9c37aa9bc6b17985108d3a28ade788a910f",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 399
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:43.131Z",
+      "queryHash": "5914c3560397b8f3962b890a49c2491f128234e33a403cbda3dbef75045ef018",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 203
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:43.335Z",
+      "queryHash": "ce9b48f7688553dc32d7c136ebf9f6a11ecf98447fbd9e0e2d876cab29414309",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 297
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:43.633Z",
+      "queryHash": "8e3901f00dac3840a3ca6d24169a4410129f9a2a482d38599c214edc3b2a2dcd",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:44.006Z",
+      "queryHash": "89b50bd1657f0af4d477e5614e5ca463b183943cf26136de3a65afda093f5d92",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 334
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:44.342Z",
+      "queryHash": "7e8ba61f289b3eae8c77fe5b9001ab968ca968ecdcd9fcc1ec403651850fe80e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 47
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:44.419Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 201
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:44.620Z",
+      "queryHash": "d63ba65973ff4d9d64100d0f65ad14d0a4b8c8fc2823c11c665f1af0eeb560e6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services3.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:27:44.782Z",
+      "queryHash": "0212389ccd318de4095e31b725885ead9ba6b97cd9b3547ce8a7fbeb1cbcea21",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services3.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:27:45.021Z",
+      "queryHash": "0d94f0914a929dda27b797ea5b23cae10dc2aa0dac2f2b4530bcd37f7420fcb2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 357
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services3.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:27:45.485Z",
+      "queryHash": "698609d331a87b6eccef91faff9677631ac640f3b11cdc0466033d8c79491104",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 50,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services3.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:27:45.678Z",
+      "queryHash": "7f599fd6d909140acd248a7a98a1ab2152e62914d6b867d3d41020fb8566a3bc",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 323
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services3.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:27:46.012Z",
+      "queryHash": "94fd63268076c1adcc919c36587a50c254bcb031166c6395bc06167c13d66b20",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 50,
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services3.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:27:46.209Z",
+      "queryHash": "7be32a436692008854e9dee804cbe71a8fe9e25663f601ea32952539ad710e75",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 411
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services3.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:27:46.713Z",
+      "queryHash": "1498c1cf41ed05063f572f3469283ea6663f23778185e868d1fc78b96c5773c3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 50,
+      "offsetParam": "resultOffset",
+      "offset": 50,
+      "httpStatus": 200,
+      "elapsedMs": 171
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

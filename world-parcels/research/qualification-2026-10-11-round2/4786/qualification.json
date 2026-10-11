@@ -1,0 +1,1325 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "4786",
+  "cityName": "Henderson",
+  "sourceId": "us-nv-clark-assessor-parcels",
+  "candidateSha256": "baa1a70fcbe4c8099ee426d44cdceac89ef8dd8c070be9256537840d6804c1f8",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 182,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 182,
+      "collectedUniqueCount": 182
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 484
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "2dd4fc370623913ed06da44acbb602e3621157b78da64f51b0c8eaeb4013201e",
+      "featureCount": 182,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32611",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "2dd4fc370623913ed06da44acbb602e3621157b78da64f51b0c8eaeb4013201e",
+  "featureCount": 182,
+  "sampleIds": [
+    "US-NV-CLARK-17920711011",
+    "US-NV-CLARK-17920711016",
+    "US-NV-CLARK-17920711012"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -114.966,
+        36.017,
+        -114.965,
+        36.018
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-NV-CLARK-17920797004",
+        "US-NV-CLARK-17920710058",
+        "US-NV-CLARK-17920711030",
+        "US-NV-CLARK-17920711034",
+        "US-NV-CLARK-17920711033",
+        "US-NV-CLARK-17920711031",
+        "US-NV-CLARK-17920711032",
+        "US-NV-CLARK-17920710036",
+        "US-NV-CLARK-17920710060",
+        "US-NV-CLARK-17920710061",
+        "US-NV-CLARK-17920710035",
+        "US-NV-CLARK-17920710059",
+        "US-NV-CLARK-17920711035",
+        "US-NV-CLARK-17920710062",
+        "US-NV-CLARK-17920710034",
+        "US-NV-CLARK-17920711036",
+        "US-NV-CLARK-17920797001",
+        "US-NV-CLARK-17920710063",
+        "US-NV-CLARK-17920799001",
+        "US-NV-CLARK-17920799009",
+        "US-NV-CLARK-17920798001"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -114.965,
+        36.017,
+        -114.964,
+        36.018
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "US-NV-CLARK-17920711061",
+        "US-NV-CLARK-17920711060",
+        "US-NV-CLARK-17920711054",
+        "US-NV-CLARK-17920711059",
+        "US-NV-CLARK-17920711004",
+        "US-NV-CLARK-17920711003",
+        "US-NV-CLARK-17920711005",
+        "US-NV-CLARK-17920711006",
+        "US-NV-CLARK-17920711062",
+        "US-NV-CLARK-17920711049",
+        "US-NV-CLARK-17920711007",
+        "US-NV-CLARK-17920711050",
+        "US-NV-CLARK-17920711058",
+        "US-NV-CLARK-17920711057",
+        "US-NV-CLARK-17920711051",
+        "US-NV-CLARK-17920711055",
+        "US-NV-CLARK-17920711056",
+        "US-NV-CLARK-17920711048",
+        "US-NV-CLARK-17920799009"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -114.964,
+        36.017,
+        -114.963,
+        36.018
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-NV-CLARK-17920797003",
+        "US-NV-CLARK-17920711063",
+        "US-NV-CLARK-17920711064",
+        "US-NV-CLARK-17920711045",
+        "US-NV-CLARK-17920711003",
+        "US-NV-CLARK-17920711002",
+        "US-NV-CLARK-17920711062",
+        "US-NV-CLARK-17920711046",
+        "US-NV-CLARK-17920711001",
+        "US-NV-CLARK-17920711051",
+        "US-NV-CLARK-17920711047",
+        "US-NV-CLARK-17920711048",
+        "US-NV-CLARK-17920799008",
+        "US-NV-CLARK-17920799004",
+        "US-NV-CLARK-17920799009",
+        "US-NV-CLARK-17920702003",
+        "US-NV-CLARK-17920702005"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -114.966,
+        36.018,
+        -114.965,
+        36.019
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "US-NV-CLARK-17920710054",
+        "US-NV-CLARK-17920710058",
+        "US-NV-CLARK-17920711023",
+        "US-NV-CLARK-17920711026",
+        "US-NV-CLARK-17920711028",
+        "US-NV-CLARK-17920711027",
+        "US-NV-CLARK-17920711030",
+        "US-NV-CLARK-17920711029",
+        "US-NV-CLARK-17920711024",
+        "US-NV-CLARK-17920711025",
+        "US-NV-CLARK-17920710040",
+        "US-NV-CLARK-17920710037",
+        "US-NV-CLARK-17920710053",
+        "US-NV-CLARK-17920710036",
+        "US-NV-CLARK-17920710042",
+        "US-NV-CLARK-17920710055",
+        "US-NV-CLARK-17920710052",
+        "US-NV-CLARK-17920710038",
+        "US-NV-CLARK-17920710041",
+        "US-NV-CLARK-17920710057",
+        "US-NV-CLARK-17920710056",
+        "US-NV-CLARK-17920710039",
+        "US-NV-CLARK-17920799001",
+        "US-NV-CLARK-17920799009"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -114.965,
+        36.018,
+        -114.964,
+        36.019
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-NV-CLARK-17920711004",
+        "US-NV-CLARK-17920711010",
+        "US-NV-CLARK-17920711003",
+        "US-NV-CLARK-17920711011",
+        "US-NV-CLARK-17920711005",
+        "US-NV-CLARK-17920711006",
+        "US-NV-CLARK-17920711007",
+        "US-NV-CLARK-17920711014",
+        "US-NV-CLARK-17920711008",
+        "US-NV-CLARK-17920711013",
+        "US-NV-CLARK-17920711009",
+        "US-NV-CLARK-17920711012",
+        "US-NV-CLARK-17920711015",
+        "US-NV-CLARK-17920799009",
+        "US-NV-CLARK-17920701004"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -114.964,
+        36.018,
+        -114.963,
+        36.019
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "US-NV-CLARK-17920711003",
+        "US-NV-CLARK-17920711002",
+        "US-NV-CLARK-17920711001",
+        "US-NV-CLARK-17920702004",
+        "US-NV-CLARK-17920799004",
+        "US-NV-CLARK-17920799009",
+        "US-NV-CLARK-17920799013",
+        "US-NV-CLARK-17920702005",
+        "US-NV-CLARK-17920701004"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -114.966,
+        36.019,
+        -114.965,
+        36.02
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-NV-CLARK-17920797002",
+        "US-NV-CLARK-17920610008",
+        "US-NV-CLARK-17920711022",
+        "US-NV-CLARK-17920711023",
+        "US-NV-CLARK-17920710042",
+        "US-NV-CLARK-17920710048",
+        "US-NV-CLARK-17920710052",
+        "US-NV-CLARK-17920710049",
+        "US-NV-CLARK-17920710045",
+        "US-NV-CLARK-17920710050",
+        "US-NV-CLARK-17920710051",
+        "US-NV-CLARK-17920710043",
+        "US-NV-CLARK-17920710044",
+        "US-NV-CLARK-17920711021",
+        "US-NV-CLARK-17920710046",
+        "US-NV-CLARK-17920710047",
+        "US-NV-CLARK-17920711020",
+        "US-NV-CLARK-17920711019",
+        "US-NV-CLARK-17920799001",
+        "US-NV-CLARK-17920799009",
+        "US-NV-CLARK-17920601008"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -114.965,
+        36.019,
+        -114.964,
+        36.02
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "US-NV-CLARK-17920797002",
+        "US-NV-CLARK-17920711014",
+        "US-NV-CLARK-17920711016",
+        "US-NV-CLARK-17920711017",
+        "US-NV-CLARK-17920711018",
+        "US-NV-CLARK-17920711015",
+        "US-NV-CLARK-17920799009",
+        "US-NV-CLARK-17920601008",
+        "US-NV-CLARK-17920701004"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -114.964,
+        36.019,
+        -114.963,
+        36.02
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "US-NV-CLARK-17920799002",
+        "US-NV-CLARK-17920702004",
+        "US-NV-CLARK-17920799004",
+        "US-NV-CLARK-17920799013",
+        "US-NV-CLARK-17920702005",
+        "US-NV-CLARK-17920699016",
+        "US-NV-CLARK-17920701004",
+        "US-NV-CLARK-17920612044",
+        "US-NV-CLARK-17920699010",
+        "US-NV-CLARK-17920614086",
+        "US-NV-CLARK-17920615059",
+        "US-NV-CLARK-17920615058",
+        "US-NV-CLARK-17920615069"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -114.965,
+        36.016,
+        -114.964,
+        36.017
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-NV-CLARK-17920790001",
+        "US-NV-CLARK-17920815003",
+        "US-NV-CLARK-17920815002",
+        "US-NV-CLARK-17920815001",
+        "US-NV-CLARK-17920711041",
+        "US-NV-CLARK-17920711040",
+        "US-NV-CLARK-17920711039",
+        "US-NV-CLARK-17920711038",
+        "US-NV-CLARK-17920711053",
+        "US-NV-CLARK-17920711054",
+        "US-NV-CLARK-17920711037",
+        "US-NV-CLARK-17920711052",
+        "US-NV-CLARK-17920711042",
+        "US-NV-CLARK-17920890001",
+        "US-NV-CLARK-17920711050",
+        "US-NV-CLARK-17920711051",
+        "US-NV-CLARK-17920711055",
+        "US-NV-CLARK-17920899018",
+        "US-NV-CLARK-17920799009",
+        "US-NV-CLARK-17920898001",
+        "US-NV-CLARK-17920798001"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -114.965,
+        36.02,
+        -114.964,
+        36.021
+      ],
+      "complete": true,
+      "featureCount": 49,
+      "ids": [
+        "US-NV-CLARK-17920601008",
+        "US-NV-CLARK-17920701004",
+        "US-NV-CLARK-17920612044",
+        "US-NV-CLARK-17920613094",
+        "US-NV-CLARK-17920613095",
+        "US-NV-CLARK-17920613096",
+        "US-NV-CLARK-17920613097",
+        "US-NV-CLARK-17920613121",
+        "US-NV-CLARK-17920613120",
+        "US-NV-CLARK-17920695002",
+        "US-NV-CLARK-17920614028",
+        "US-NV-CLARK-17920614008",
+        "US-NV-CLARK-17920614007",
+        "US-NV-CLARK-17920614006",
+        "US-NV-CLARK-17920614005",
+        "US-NV-CLARK-17920614088",
+        "US-NV-CLARK-17920614004",
+        "US-NV-CLARK-17920614003",
+        "US-NV-CLARK-17920614002",
+        "US-NV-CLARK-17920614084",
+        "US-NV-CLARK-17920614085",
+        "US-NV-CLARK-17920695003",
+        "US-NV-CLARK-17920615055",
+        "US-NV-CLARK-17920615054",
+        "US-NV-CLARK-17920615053",
+        "US-NV-CLARK-17920615052",
+        "US-NV-CLARK-17920615051",
+        "US-NV-CLARK-17920615050",
+        "US-NV-CLARK-17920615049",
+        "US-NV-CLARK-17920615048",
+        "US-NV-CLARK-17920615047",
+        "US-NV-CLARK-17920615046",
+        "US-NV-CLARK-17920615045",
+        "US-NV-CLARK-17920615044",
+        "US-NV-CLARK-17920615043",
+        "US-NV-CLARK-17920615001",
+        "US-NV-CLARK-17920615042",
+        "US-NV-CLARK-17920615002",
+        "US-NV-CLARK-17920615003",
+        "US-NV-CLARK-17920615004",
+        "US-NV-CLARK-17920615005",
+        "US-NV-CLARK-17920615006",
+        "US-NV-CLARK-17920615007",
+        "US-NV-CLARK-17920615008",
+        "US-NV-CLARK-17920615009",
+        "US-NV-CLARK-17920615010",
+        "US-NV-CLARK-17920615071",
+        "US-NV-CLARK-17920615069",
+        "US-NV-CLARK-17920695004"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -114.967,
+        36.018,
+        -114.966,
+        36.019
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-NV-CLARK-17920710027",
+        "US-NV-CLARK-17920710031",
+        "US-NV-CLARK-17920710010",
+        "US-NV-CLARK-17920710040",
+        "US-NV-CLARK-17920710037",
+        "US-NV-CLARK-17920710028",
+        "US-NV-CLARK-17920710030",
+        "US-NV-CLARK-17920710026",
+        "US-NV-CLARK-17920710036",
+        "US-NV-CLARK-17920710042",
+        "US-NV-CLARK-17920710029",
+        "US-NV-CLARK-17920710038",
+        "US-NV-CLARK-17920710041",
+        "US-NV-CLARK-17920710039",
+        "US-NV-CLARK-17920710032",
+        "US-NV-CLARK-17920710013",
+        "US-NV-CLARK-17920710014",
+        "US-NV-CLARK-17920710015",
+        "US-NV-CLARK-17920710011",
+        "US-NV-CLARK-17920710012",
+        "US-NV-CLARK-17920799001"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -114.963,
+        36.018,
+        -114.962,
+        36.019
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "US-NV-CLARK-17920702004",
+        "US-NV-CLARK-17920702005",
+        "US-NV-CLARK-17920702001"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 44,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:29.839Z",
+      "queryHash": "4f3a2a798b320c31e2a73bfa125b1d5e1110040fe2b5cd61b1fd6bf3e3ae4151",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 747
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:30.594Z",
+      "queryHash": "4f3a2a798b320c31e2a73bfa125b1d5e1110040fe2b5cd61b1fd6bf3e3ae4151",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 208
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:30.805Z",
+      "queryHash": "0fea1291a985ff0f116658d4d2994d59c7519874fc49a6229e12bddcf4a98fae",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:30.996Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:31.195Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:31.388Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:31.581Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:31.777Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:31.969Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:32.166Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:32.361Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:32.555Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:32.749Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:32.949Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 208
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:33.162Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:33.355Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:33.548Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:33.743Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:33.942Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:34.134Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:34.329Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:34.528Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:34.717Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:34.909Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:35.101Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:35.296Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 249
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:35.548Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:35.810Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:36.001Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:36.196Z",
+      "queryHash": "ab177b3985f142f45fe0a6bbfbed0cab8b4973296a94e180d920ba372f9da317",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:36.388Z",
+      "queryHash": "3e9b7f5416411ac9c7e34fbb749534938eb302a5febca1ec9f141d561d55658d",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:36.576Z",
+      "queryHash": "2c027679171aa08ed3d779b36f237f1bfbd51c3a284e35b84f3105d6b069da57",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:36.763Z",
+      "queryHash": "387020dbda343b2b0a8c545c840398ce7511cbcf02130a3fdf316365d3871b25",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:36.949Z",
+      "queryHash": "469d2327bbd9d5ffce71a5eb76c8b89dbcb7b6f67e274bf399d3c967f3206c15",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:37.141Z",
+      "queryHash": "8775da24e0e7d64bf176f1a40a1eadebae12e4940312872617b5296e4c09cbdb",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:37.329Z",
+      "queryHash": "f34288432be343c65cf0cc0a1358476410afa3604a7c4b45027e384e44270ac4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:37.516Z",
+      "queryHash": "3ba584e4590c0b2523d3edca8e83835ed1beb5fd29b47a412b1a9fc1c932e01d",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:37.702Z",
+      "queryHash": "8ec97a35eda5aa0c84c9d73a14da9df96636f285a83b09ab0f41a366039e5272",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:37.889Z",
+      "queryHash": "5801685f4a178a3972c021b21f5eefed1b915c5a39f6043f9f448037ac251f42",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:38.083Z",
+      "queryHash": "4f3a2a798b320c31e2a73bfa125b1d5e1110040fe2b5cd61b1fd6bf3e3ae4151",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:38.281Z",
+      "queryHash": "35dfcd578bb7e8d9cedc42163b0616834e7c52d17f71791c8a323c9eba32c68c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "maps.clarkcountynv.gov",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:38:38.550Z",
+      "queryHash": "e25674542df196ac248f6141f7e3b1968f3bc6abb4e71ef118f704361cf12828",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 225
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "maps.clarkcountynv.gov",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:38:38.781Z",
+      "queryHash": "0150689d53a6acb4c1d4bd827a47bb7724e05267d61b8d299077058fd699bf7b",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "maps.clarkcountynv.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:38.980Z",
+      "queryHash": "7d05ea4cdfebea8302a1225ffc60f5a86712386284855cd9d61bd07babed7d03",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

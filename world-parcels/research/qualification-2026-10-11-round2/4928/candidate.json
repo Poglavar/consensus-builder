@@ -1,0 +1,62 @@
+{
+  "descriptor": {
+    "id": "us-az-maricopa-assessor-parcels",
+    "name": "Maricopa County Assessor's Office — Phoenix",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0",
+    "idField": "APN",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[0-9]{8}[A-Za-z]?$",
+    "idPrefix": "US-AZ-MARICOPA-",
+    "outFields": [
+      "APN",
+      "OBJECTID"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32612,
+    "countryCode": "US",
+    "stateCode": "AZ",
+    "cityIds": [
+      "phoenix",
+      "4928"
+    ],
+    "operator": "Maricopa County Assessor's Office",
+    "scope": "Maricopa County assessment parcels, with a conservative Phoenix entry area; no Arizona-wide coverage claim.",
+    "caveats": [
+      "APN is a string, including letter suffixes; OBJECTID is only a transport row key."
+    ],
+    "catalogueUrl": "https://mcassessor.maricopa.gov/",
+    "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+    "attribution": "Maricopa County Assessor's Office. Adapted to WGS84.",
+    "licenceNote": "Source conditions are informational; users choose their source and intended use."
+  },
+  "city": {
+    "code": "4928",
+    "name": "Laveen",
+    "point": [
+      -112.090183211919,
+      33.3870634428889
+    ]
+  },
+  "sampleIds": [
+    "US-AZ-MARICOPA-10583099",
+    "US-AZ-MARICOPA-10583100",
+    "US-AZ-MARICOPA-10583101"
+  ],
+  "absentId": "US-AZ-MARICOPA-99999999",
+  "metricEpsg": "EPSG:32612",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Maricopa County Assessor's Office — Phoenix",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Maricopa County Assessor's Office — Phoenix; Maricopa County assessment parcels, with a conservative Phoenix entry area; no Arizona-wide coverage claim.; Real configured adapter acceptance; no parcel imports or raw geometry retained."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "644052a2ccc898c94abfc150c3c9398f387135536ac319f41d7fa39beb7ac4aa",
+  "qualificationRecordedSha256": "5b14107ab5d6b7ddd37f226cfcec52d921fe5f60b8d5d4628a4117bd3d683475",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/4928/attempt-01/candidate.json"
+}

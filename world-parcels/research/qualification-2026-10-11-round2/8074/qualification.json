@@ -1,0 +1,1216 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "8074",
+  "cityName": "Lakeside",
+  "sourceId": "us-va-richmond-parcels",
+  "candidateSha256": "3da6956c26daa4b3853971ced30bca9afa0108ae29a1ecac2bf54b763f6fe07d",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 91,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 91,
+      "collectedUniqueCount": 91
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 302
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "4cf5571d3c299bc79ffacf9653c1d5e4aafdc848ef326d919e96bc1cb1e9f4c8",
+      "featureCount": 91,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32618",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "4cf5571d3c299bc79ffacf9653c1d5e4aafdc848ef326d919e96bc1cb1e9f4c8",
+  "featureCount": 91,
+  "sampleIds": [
+    "US-VA-RICHMOND-5108700038558",
+    "US-VA-RICHMOND-5108700038568",
+    "US-VA-RICHMOND-5108700038586"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -77.548,
+        37.622,
+        -77.547,
+        37.623
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-VA-RICHMOND-5108700038609",
+        "US-VA-RICHMOND-5108700038619",
+        "US-VA-RICHMOND-5108700038624",
+        "US-VA-RICHMOND-5108700038625",
+        "US-VA-RICHMOND-5108700038630",
+        "US-VA-RICHMOND-5108700038634",
+        "US-VA-RICHMOND-5108700038637",
+        "US-VA-RICHMOND-5108700038646",
+        "US-VA-RICHMOND-5108700038650",
+        "US-VA-RICHMOND-5108700038659",
+        "US-VA-RICHMOND-5108700038664",
+        "US-VA-RICHMOND-5108700038670",
+        "US-VA-RICHMOND-5108700038675",
+        "US-VA-RICHMOND-5108700038679"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -77.547,
+        37.622,
+        -77.546,
+        37.623
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "US-VA-RICHMOND-5108700038624",
+        "US-VA-RICHMOND-5108700038629",
+        "US-VA-RICHMOND-5108700038631",
+        "US-VA-RICHMOND-5108700038641",
+        "US-VA-RICHMOND-5108700038646",
+        "US-VA-RICHMOND-5108700038650",
+        "US-VA-RICHMOND-5108700038655",
+        "US-VA-RICHMOND-5108700038657",
+        "US-VA-RICHMOND-5108700038668",
+        "US-VA-RICHMOND-5108700038678",
+        "US-VA-RICHMOND-5108700038679",
+        "US-VA-RICHMOND-5108700038685",
+        "US-VA-RICHMOND-5108700038689"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -77.546,
+        37.622,
+        -77.545,
+        37.623
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-VA-RICHMOND-5108700038572",
+        "US-VA-RICHMOND-5108700038615",
+        "US-VA-RICHMOND-5108700038628",
+        "US-VA-RICHMOND-5108700038631",
+        "US-VA-RICHMOND-5108700038636",
+        "US-VA-RICHMOND-5108700038641",
+        "US-VA-RICHMOND-5108700038645",
+        "US-VA-RICHMOND-5108700038652",
+        "US-VA-RICHMOND-5108700038657",
+        "US-VA-RICHMOND-5108700038662",
+        "US-VA-RICHMOND-5108700038668",
+        "US-VA-RICHMOND-5108700038674",
+        "US-VA-RICHMOND-5108700038678",
+        "US-VA-RICHMOND-5108700038681"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -77.548,
+        37.623,
+        -77.547,
+        37.624
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-VA-RICHMOND-5108700038554",
+        "US-VA-RICHMOND-5108700038557",
+        "US-VA-RICHMOND-5108700038558",
+        "US-VA-RICHMOND-5108700038567",
+        "US-VA-RICHMOND-5108700038571",
+        "US-VA-RICHMOND-5108700038575",
+        "US-VA-RICHMOND-5108700038579",
+        "US-VA-RICHMOND-5108700038582",
+        "US-VA-RICHMOND-5108700038586",
+        "US-VA-RICHMOND-5108700038600",
+        "US-VA-RICHMOND-5108700038601",
+        "US-VA-RICHMOND-5108700038607",
+        "US-VA-RICHMOND-5108700038609",
+        "US-VA-RICHMOND-5108700038619",
+        "US-VA-RICHMOND-5108700038624",
+        "US-VA-RICHMOND-5108700038625",
+        "US-VA-RICHMOND-5108700038630"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -77.547,
+        37.623,
+        -77.546,
+        37.624
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-VA-RICHMOND-5108700038557",
+        "US-VA-RICHMOND-5108700038558",
+        "US-VA-RICHMOND-5108700038568",
+        "US-VA-RICHMOND-5108700038580",
+        "US-VA-RICHMOND-5108700038582",
+        "US-VA-RICHMOND-5108700038586",
+        "US-VA-RICHMOND-5108700038594",
+        "US-VA-RICHMOND-5108700038596",
+        "US-VA-RICHMOND-5108700038606",
+        "US-VA-RICHMOND-5108700038619",
+        "US-VA-RICHMOND-5108700038620",
+        "US-VA-RICHMOND-5108700038624",
+        "US-VA-RICHMOND-5108700038629",
+        "US-VA-RICHMOND-5108700038631"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -77.546,
+        37.623,
+        -77.545,
+        37.624
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-VA-RICHMOND-5108700038565",
+        "US-VA-RICHMOND-5108700038568",
+        "US-VA-RICHMOND-5108700038572",
+        "US-VA-RICHMOND-5108700038573",
+        "US-VA-RICHMOND-5108700038574",
+        "US-VA-RICHMOND-5108700038580",
+        "US-VA-RICHMOND-5108700038595",
+        "US-VA-RICHMOND-5108700038596",
+        "US-VA-RICHMOND-5108700038597",
+        "US-VA-RICHMOND-5108700038604",
+        "US-VA-RICHMOND-5108700038606",
+        "US-VA-RICHMOND-5108700038615",
+        "US-VA-RICHMOND-5108700038617",
+        "US-VA-RICHMOND-5108700038620",
+        "US-VA-RICHMOND-5108700038628",
+        "US-VA-RICHMOND-5108700038631"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -77.548,
+        37.624,
+        -77.547,
+        37.625
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "US-VA-RICHMOND-5108700038547",
+        "US-VA-RICHMOND-5108700038549",
+        "US-VA-RICHMOND-5108700038552",
+        "US-VA-RICHMOND-5108700038554",
+        "US-VA-RICHMOND-5108700038557",
+        "US-VA-RICHMOND-5108700038567",
+        "US-VA-RICHMOND-5108700038571",
+        "US-VA-RICHMOND-5108700038575",
+        "US-VA-RICHMOND-5108700038825"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -77.547,
+        37.624,
+        -77.546,
+        37.625
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "US-VA-RICHMOND-5108700038557",
+        "US-VA-RICHMOND-5108700038558",
+        "US-VA-RICHMOND-5108700038568",
+        "US-VA-RICHMOND-5108700038825"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -77.546,
+        37.624,
+        -77.545,
+        37.625
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "US-VA-RICHMOND-5108700038523",
+        "US-VA-RICHMOND-5108700038527",
+        "US-VA-RICHMOND-5108700038533",
+        "US-VA-RICHMOND-5108700038544",
+        "US-VA-RICHMOND-5108700038545",
+        "US-VA-RICHMOND-5108700038553",
+        "US-VA-RICHMOND-5108700038565",
+        "US-VA-RICHMOND-5108700038568",
+        "US-VA-RICHMOND-5108700038572",
+        "US-VA-RICHMOND-5108700038573",
+        "US-VA-RICHMOND-5108700038574",
+        "US-VA-RICHMOND-5108700038825"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -77.547,
+        37.621,
+        -77.546,
+        37.622
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "US-VA-RICHMOND-5108700038572",
+        "US-VA-RICHMOND-5108700038678",
+        "US-VA-RICHMOND-5108700038679",
+        "US-VA-RICHMOND-5108700038685",
+        "US-VA-RICHMOND-5108700038689",
+        "US-VA-RICHMOND-5108700038691",
+        "US-VA-RICHMOND-5108700038697",
+        "US-VA-RICHMOND-5108700038701",
+        "US-VA-RICHMOND-5108700038710",
+        "US-VA-RICHMOND-5108700038718"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -77.547,
+        37.625,
+        -77.546,
+        37.626
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-VA-RICHMOND-5108700038823",
+        "US-VA-RICHMOND-5108700038825"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -77.549,
+        37.623,
+        -77.548,
+        37.624
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-VA-RICHMOND-5108700038560",
+        "US-VA-RICHMOND-5108700038567",
+        "US-VA-RICHMOND-5108700038571",
+        "US-VA-RICHMOND-5108700038576",
+        "US-VA-RICHMOND-5108700038583",
+        "US-VA-RICHMOND-5108700038591",
+        "US-VA-RICHMOND-5108700038599",
+        "US-VA-RICHMOND-5108700038600",
+        "US-VA-RICHMOND-5108700038601",
+        "US-VA-RICHMOND-5108700038602",
+        "US-VA-RICHMOND-5108700038608",
+        "US-VA-RICHMOND-5108700038612",
+        "US-VA-RICHMOND-5108700038621",
+        "US-VA-RICHMOND-5108700038625"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -77.545,
+        37.623,
+        -77.544,
+        37.624
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "US-VA-RICHMOND-5108700038562",
+        "US-VA-RICHMOND-5108700038563",
+        "US-VA-RICHMOND-5108700038564",
+        "US-VA-RICHMOND-5108700038565",
+        "US-VA-RICHMOND-5108700038590",
+        "US-VA-RICHMOND-5108700038592",
+        "US-VA-RICHMOND-5108700038593",
+        "US-VA-RICHMOND-5108700038595",
+        "US-VA-RICHMOND-5108700038610",
+        "US-VA-RICHMOND-5108700038613",
+        "US-VA-RICHMOND-5108700038614",
+        "US-VA-RICHMOND-5108700038615"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 43,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:15.626Z",
+      "queryHash": "213f0f488686cb999aa5fc264b706c618039e73db786a573f069176d9e5f7d39",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 931
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:16.564Z",
+      "queryHash": "213f0f488686cb999aa5fc264b706c618039e73db786a573f069176d9e5f7d39",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 452
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:17.018Z",
+      "queryHash": "1022b74ac627f3f8f3298ff8279a2592450954e6089f8e2a199ce5c4fcc44545",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 375
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:17.395Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:17.575Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:17.754Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:17.941Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:18.126Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:18.313Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 199
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:18.515Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:18.712Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:18.890Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:19.070Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:19.266Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 156
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:19.423Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:19.599Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:19.780Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 209
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:19.990Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:20.165Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:20.380Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 158
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:20.539Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:20.710Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 766
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:21.477Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:21.643Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:21.819Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:21.997Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:22.166Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:22.332Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:22.513Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:22.700Z",
+      "queryHash": "01ad479ebce604e07544f97cd5629e84eb268194324ec3e8c8630afb5f74baa8",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 392
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:23.093Z",
+      "queryHash": "f8837ae10ae64fb678f575b6d6459f6c76824ca2676db43fd8763f39d260a7ed",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 500
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:23.602Z",
+      "queryHash": "e202f85281c63bd55f3ac60171066a6ee7e6876d0c8edf6f648ba01794a6c790",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 366
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:23.969Z",
+      "queryHash": "ca64aa8c8c8d58ff539827da70044fb47b9264ab28977be14d3d15fa39cb5049",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 381
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:24.351Z",
+      "queryHash": "5ae5d33f7cd06419f9b4b10280cc0b183e5ca00a2f6e822bf1c233dbebeaa16d",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:24.712Z",
+      "queryHash": "7f4bff6410e434d8fb5ba26a7fe870188662b6b7a2ee635dfa9d7f43a2574415",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 438
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:25.151Z",
+      "queryHash": "9cd177cbbd5772f785b789869aad64d20049a9330b3737c7e4ef04f072c6fdd6",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 443
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:25.595Z",
+      "queryHash": "5a90482616ad0b53b25d30cd0f5ce38d672fc64b491f6e40cfd53a178a094e88",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 423
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:26.019Z",
+      "queryHash": "b9ce76b25d798203f02d9f049e485bfc7cd1cc80472cfe378b0a78213186404d",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 429
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:26.449Z",
+      "queryHash": "e8295a7e51260a4961ac9823427bcc3912f85da25ba6f4af5f6ba93daa5fbd16",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 401
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:26.852Z",
+      "queryHash": "213f0f488686cb999aa5fc264b706c618039e73db786a573f069176d9e5f7d39",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 403
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:27.271Z",
+      "queryHash": "bd82810e112246c32f6267729a16c89346a0c79b574930f98ab5556e05a8be38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 168
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:27.587Z",
+      "queryHash": "6540b81b8e0dee3827556a28d232791c707150e7da0dc6439da9b0eaf4868afd",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 481
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "vginmaps.vdem.virginia.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:35:28.073Z",
+      "queryHash": "6f7b18ed43ac280c25ae6555f2bc08ce78cd9a318528f63ee8e8624f27b43b1d",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 540
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}
