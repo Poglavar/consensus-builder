@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { createRequire } from 'node:module';
-import { afterAll, describe, expect, it, vi } from 'vitest';
+import Module, { createRequire } from 'node:module';
+import { describe, expect, it, vi } from 'vitest';
 import {
     mirrorAgentPublication, prepareAgentPublication, verifyPublicationReadable
 } from '../agents/chain-publication.js';
@@ -8,7 +8,6 @@ import {
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
 const chainRecord = require('../../frontend/js/proposals/chain-record.js');
-globalThis.turf = turf;
 
 const polygon = (west, south, east, north) => ({
     type: 'Polygon',
@@ -51,9 +50,22 @@ function fixture() {
     return { args, deps: { loadGround, checkBinding, render, pinImage, pinMetadata, now }, spies: { loadGround, checkBinding, render, pinImage, pinMetadata } };
 }
 
-afterAll(() => { delete globalThis.turf; });
 
 describe('agent chain publication', () => {
+    it('works with backend-only node_modules and no global Turf, as deployed', async () => {
+        const resolve = Module._resolveFilename;
+        Module._resolveFilename = function (request, parent, ...args) {
+            if (request === '@turf/turf' && parent?.filename?.includes('/frontend/')) {
+                throw new Error('Frontend node_modules is not installed in production');
+            }
+            return resolve.call(this, request, parent, ...args);
+        };
+        try {
+            const { args, deps } = fixture();
+            const publication = await prepareAgentPublication(args, deps);
+            expect(publication.record.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
+        } finally { Module._resolveFilename = resolve; }
+    });
     it('binds the actual building across both parcels and pins its exact authored record', async () => {
         const { args, deps, spies } = fixture();
         const publication = await prepareAgentPublication(args, deps);

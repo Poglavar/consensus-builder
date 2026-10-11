@@ -39,8 +39,8 @@
     // buffer here produced a second, round-capped acquisition model whose ancestry disagreed with
     // the square-ended parcel cut. A failed derivation propagates: a corridor whose land cannot be
     // built must not be cut as if it took nothing (projections.md §3, errors propagate).
-    function corridorFootprintFromCenterline(definition) {
-        const t = T();
+    function corridorFootprintFromCenterline(definition, options) {
+        const t = options?.turf || T();
         const derive = global && typeof global.corridorSurfaceFootprintForDefinition === 'function'
             ? global.corridorSurfaceFootprintForDefinition
             : null;
@@ -56,15 +56,15 @@
     // A proposal's own footprint, from whichever geometry its typology carries. Pure GeoJSON in/out.
     // WHICH parts count is defined once in footprint-parts.js (shared with the API and migrations);
     // this only unions them, rebuilding a centreline-only road with the exact corridor builder.
-    function footprintOf(proposal) {
-        const t = T();
+    function footprintOf(proposal, options) {
+        const t = options?.turf || T();
         const partsApi = footprintPartsApi();
         if (!t || !proposal || !partsApi) return null;
         const parts = partsApi.footprintParts(proposal);
         if (parts.invalid) return null;
         const polys = parts.polygons.map(geometry => t.feature(geometry));
         if (parts.centerline) {
-            const corridor = corridorFootprintFromCenterline(parts.centerline.definition);
+            const corridor = corridorFootprintFromCenterline(parts.centerline.definition, { turf: t });
             if (corridor) polys.push(corridor);
         }
 
@@ -83,7 +83,7 @@
     // Geometry-only coverage inspection for explicit repair/audit tools. This result is diagnostic;
     // authored proposal identity always comes from proposal.cadastreParcelIds.
     function cadastreCoverageIdsForGeometry(proposal, baseParcels, options) {
-        const footprint = footprintOf(proposal);
+        const footprint = footprintOf(proposal, options);
         if (!footprint) return [];
         return computeBaseAncestry(footprint, baseParcels, options).map(hit => hit.id);
     }

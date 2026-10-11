@@ -154,7 +154,7 @@
         const t = T(opts);
         const plan = planOrderApi();
         if (t && plan && typeof plan.footprintOf === 'function' && hasOwnFootprint(record)) {
-            const footprint = plan.footprintOf(record);
+            const footprint = plan.footprintOf(record, { turf: t });
             const geometry = toMultiPolygon(footprint && (footprint.geometry || footprint));
             if (geometry) return geometry;
         }
