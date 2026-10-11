@@ -654,6 +654,12 @@ button.status-log-message {
     display: none;
 }
 
+/* Keep live counters visible after long council names, including on narrow phones. */
+.floating-status.has-progress {
+    white-space: normal;
+    text-align: center;
+}
+
 .share-proposal-container {
     padding: 15px;
     text-align: center;

@@ -44,6 +44,7 @@ function updateStatus(message, options = {}) {
     const floatingStatusText = document.getElementById('floating-status-text');
     if (floatingStatusText) {
         floatingStatusText.textContent = message;
+        floatingStatusText.parentElement?.classList.toggle('has-progress', options.transient === true);
     }
 }
 

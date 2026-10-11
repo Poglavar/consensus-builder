@@ -22,7 +22,10 @@ const dictOf = locale => JSON.parse(read(`../../frontend/i18n/${locale}.json`));
 const locales = ['en', 'hr', 'sr', 'es'];
 
 it('updates both status displays with live progress without filling the session log', () => {
-    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: '' } };
+    const classes = new Set();
+    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: '', parentElement: {
+        classList: { toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); } }
+    } } };
     const context = vm.createContext({ window: {}, document: {
         readyState: 'loading', addEventListener() {}, getElementById: id => elements[id] || null
     }, CbFormat: { formatTime: () => '12:00' } });
@@ -31,8 +34,10 @@ it('updates both status displays with live progress without filling the session 
     for (let mb = 1; mb <= 100; mb++) context.window.updateStatus(`Downloading… ${mb} MB`, { transient: true });
     expect(elements.status.textContent).toBe('Downloading… 100 MB');
     expect(elements['floating-status-text'].textContent).toBe('Downloading… 100 MB');
+    expect(classes.has('has-progress')).toBe(true);
     expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tLoading parcels');
     context.window.updateStatus('Loaded parcels');
+    expect(classes.has('has-progress')).toBe(false);
     expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tLoading parcels\n12:00\tLoaded parcels');
 });
 
