@@ -9,6 +9,8 @@ describe('parcel source progress messages', () => {
         const detail = { phase: 'source-download', authority: 'Oxford', loadedBytes: 55_250_000, totalBytes: 70_000_000 };
         expect(format(detail)).toBe('Downloading Oxford… 55.3 / 70.0 MB');
         expect(format(detail, { language: 'hr' })).toBe('Downloading Oxford… 55,3 / 70,0 MB');
+        expect(format({ ...detail, authority: 'South_Oxfordshire_District_Council' }))
+            .toBe('Downloading South Oxfordshire District Council… 55.3 / 70.0 MB');
     });
 
     it('ignores unrelated progress and invalid counters', () => {

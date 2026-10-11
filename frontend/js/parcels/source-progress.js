@@ -8,7 +8,7 @@
 
     function format(detail, { language = 'en', translate } = {}) {
         if (!detail || typeof detail !== 'object') return null;
-        const authority = String(detail.authority || '');
+        const authority = String(detail.authority || '').replace(/[_\s]+/g, ' ').trim();
         const message = (key, fallback, params = {}) => {
             const fullKey = `status.messages.${key}`;
             const translated = translate?.(fullKey, params);
