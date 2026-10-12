@@ -243,7 +243,8 @@
             "passesWithYou": "Tu aceptación basta para que la propuesta se apruebe.",
             "needsMore": "Después de ti deben aceptar más propietarios para que se apruebe.",
             "verifyFirst": "Para aceptar, primero confirma con un miembro de la lente que tu billetera puede actuar por este propietario.",
-            "notSigned": "La billetera no firmó, así que no se aceptó nada."
+            "notSigned": "La billetera no firmó, así que no se aceptó nada.",
+            "cashYouPay": "Dinero que pagas"
         },
         "receipt": {
             "signed": "Firmado por {{signer}} el {{date}}.",
@@ -268,6 +269,12 @@
             "anchoring": "Fijando las decisiones y esperando a tu billetera…",
             "anchoredNow": "Decisiones ancladas: {{count}}.",
             "anchorFailed": "No se ancló nada: {{reason}}"
+        },
+        "money": {
+            "summary": "Los propietarios reciben {{out}} y pagan {{in}} en total.",
+            "sponsorPays": "El patrocinador paga {{amount}}.",
+            "sponsorReceives": "El patrocinador recibe {{amount}}.",
+            "sponsorNothing": "Los pagos de los propietarios cubren todos los cobros; el patrocinador no paga nada."
         }
     },
     "proposalDrafts": {
@@ -1371,7 +1378,13 @@
                 "accepted": "Aceptada",
                 "pending": "Pendiente",
                 "recipient": "destinatario",
-                "solanaLensHint": "Di sí en la tarjeta Lente"
+                "solanaLensHint": "Di sí en la tarjeta Lente",
+                "moneySchedule": "Calendario de pagos",
+                "moneyScope": "Lo que cada propietario recibe o paga en todo el acuerdo y lo que cubre el patrocinador. Siempre suma cero.",
+                "moneyReceives": "recibe {{amount}}",
+                "moneyPays": "aporta {{amount}}",
+                "moneySponsor": "Patrocinador",
+                "moneySponsorNothing": "no paga nada"
             },
             "voting": {
                 "voteYes": "Votar sí",
@@ -3550,7 +3563,9 @@
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
             "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta.",
             "cashTermsHint": "Compensación total del balance de propietarios. Edite las ofertas individuales en el editor de reajuste de tierras.",
-            "jointShareHint": "Las participaciones del patio parten del terreno privado restante de cada propietario. Usa Editar participaciones para fijar porcentajes."
+            "jointShareHint": "Las participaciones del patio parten del terreno privado restante de cada propietario. Usa Editar participaciones para fijar porcentajes.",
+            "colCash": "Dinero (+ recibe, − paga)",
+            "ownerPays": "Dinero que paga el propietario"
         },
         "validation": {
             "missing-polygons": "Dibuja una parcela de reemplazo antes de continuar.",

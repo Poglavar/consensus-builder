@@ -314,7 +314,7 @@ test('courtyard amendment can be reviewed and saved on a 390px viewport', async 
   await expect(modal.locator('.reparcel-newplot-row')).toHaveCount(3);
   const cash = modal.locator('.cash-offer-input').first();
   await cash.scrollIntoViewIfNeeded();
-  await expect(cash).toHaveAttribute('aria-label', /Cash offer.*Owner/);
+  await expect(cash).toHaveAttribute('aria-label', /Cash \(\+ receives, − pays\).*Owner/);
   const bounds = await cash.boundingBox();
   expect(bounds?.x).toBeGreaterThanOrEqual(0);
   expect((bounds?.x || 0) + (bounds?.width || 0)).toBeLessThanOrEqual(390);
@@ -356,8 +356,13 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
     await expect(modal.locator('#reparcel-map path.reparcel-owner-input')).toHaveCount(1);
     await expect(modal.locator('#reparcel-map path.reparcel-owner-output')).toHaveCount(2);
     const cash = modal.locator('[data-reparcel-owners-table] tr').filter({ hasText: 'Owner A' }).locator('.cash-offer-input');
+    // A negative amount is a payment by the owner, and the totals show who covers the rest.
     await cash.fill('-1');
-    await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();
+    await expect(review.locator('[data-impact="cash"]')).toContainText('1.00');
+    await expect(review).toContainText('Cash the owner pays');
+    // Owners with surplus land pay for it by default, so the total includes more than this 1.00.
+    await expect(modal.locator('[data-reparcel-cashtotal]')).toContainText(/and pay [\d,.]+\sEUR in total\. The sponsor (pays|receives) [\d,.]+\sEUR\./);
+    await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled();
     await cash.fill('12.345');
     await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();
     await cash.fill('');

@@ -980,14 +980,16 @@
             .setLatLng(state.map.getCenter()).setContent(container).openOn(state.map);
     }
 
-    // Default cash offer for an owner: the shortfall to compensate when they were
-    // assigned less than their entitlement (negative balance), otherwise nothing.
+    // Default cash for an owner (+ receives, − pays): with a unit value the balance is money, so
+    // a shortfall is compensated and a surplus is paid for. Without one the balance is in m² and
+    // says nothing about money, so the default is none.
     function defaultCashOffer(ledger) {
         if (ledger.noOwner) return null;
-        return ledger.cashBalance < 0 ? -ledger.cashBalance : 0;
+        if (!ledgerUsesMoney() || !Number.isFinite(ledger.cashBalance)) return 0;
+        return -ledger.cashBalance;
     }
 
-    // Cash offer for an owner: the user's edited override if any, else the default.
+    // Signed cash for an owner (+ receives, − pays): the user's edited override if any, else the default.
     function getCashOffer(ownerKey, ledger) {
         if (ledger && ledger.noOwner) return null;
         if (Object.prototype.hasOwnProperty.call(state.cashOfferOverrides, ownerKey)) {
@@ -997,15 +999,27 @@
         return value === null ? null : Math.round(value * 100) / 100;
     }
 
-    function computeTotalCashOffer() {
-        let total = 0;
+    // Ledger fields for a signed amount. An amount being typed (empty, too many decimals) is kept
+    // as an invalid offer, so validation names it instead of the editor throwing.
+    function storedCash(amount) {
+        if (amount === null) return { cashOffer: null };
+        return Number.isFinite(amount) ? window.ReparcellizationDeal.cashFields(amount) : { cashOffer: amount };
+    }
+
+    // Payouts to owners (the proposal's offer) and owner payments, or NaN when an amount is invalid.
+    function computeCashTotals() {
+        let payOut = 0, payIn = 0;
         for (const entry of state.ownerShares) {
             if (isNoOwnerEntry(entry)) continue;
             const amount = getCashOffer(entry.ownerKey, computeOwnerLedger(entry));
-            if (!Number.isFinite(amount) || amount < 0) return NaN;
-            total += amount;
+            if (!Number.isFinite(amount)) return { payOut: NaN, payIn: NaN };
+            if (amount > 0) payOut += amount; else payIn -= amount;
         }
-        return Math.round(total * 100) / 100;
+        return { payOut: Math.round(payOut * 100) / 100, payIn: Math.round(payIn * 100) / 100 };
+    }
+
+    function computeTotalCashOffer() {
+        return computeCashTotals().payOut;
     }
 
     function updateCashTotalDisplay() {
@@ -1015,16 +1029,20 @@
             state.cashTotalEl.textContent = '';
             return;
         }
-        const total = computeTotalCashOffer();
-        if (!Number.isFinite(total)) {
+        const { payOut, payIn } = computeCashTotals();
+        if (!Number.isFinite(payOut)) {
             state.cashTotalEl.textContent = t('reparcellization.validation.invalid-readjustment-deal', 'Review the owner cash offers and proposal total.');
             return;
         }
-        state.cashTotalEl.textContent = t(
-            'reparcellization.modal.totalCashOffer',
-            'Total cash offers: {{amount}}',
-            { amount: CbFormat.formatMoney(total, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 }) }
-        );
+        // The balanced schedule: owners' payouts and payments, and the sponsor line that zeroes it.
+        const eur = amount => CbFormat.formatMoney(amount, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
+        const sponsor = Math.round((payIn - payOut) * 100) / 100;
+        state.cashTotalEl.textContent = [
+            t('proposalApproval.money.summary', 'Owners receive {{out}} and pay {{in}} in total.', { out: eur(payOut), in: eur(payIn) }),
+            sponsor < 0 ? t('proposalApproval.money.sponsorPays', 'The sponsor pays {{amount}}.', { amount: eur(-sponsor) })
+                : sponsor > 0 ? t('proposalApproval.money.sponsorReceives', 'The sponsor receives {{amount}}.', { amount: eur(sponsor) })
+                    : t('proposalApproval.money.sponsorNothing', 'Owner payments cover every payout; the sponsor pays nothing.')
+        ].join(' ');
     }
 
     // The editor, publication and apply paths validate the same authored plan. Source rights
@@ -1113,7 +1131,7 @@
                 <th>${t('reparcellization.modal.colContributed', 'Pooled')}</th>
                 <th>${t('reparcellization.modal.colAssigned', 'Assigned')}</th>
                 <th>${t('reparcellization.modal.colBalance', 'Balance')}</th>
-                <th>${t('reparcellization.modal.colCashOffer', 'Cash offer')}</th>
+                <th>${t('reparcellization.modal.colCash', 'Cash (+ receives, − pays)')}</th>
             </tr>`;
             table.appendChild(thead);
             const tbody = document.createElement('tbody');
@@ -1289,13 +1307,15 @@
         if (owner) {
             try {
                 const impact = window.ReparcellizationAllocation.ownerImpact({ ...owner,
-                    cashOffer: getCashOffer(owner.ownerKey, computeOwnerLedger(owner)) }, state.slices, turf);
+                    ...storedCash(getCashOffer(owner.ownerKey, computeOwnerLedger(owner))) }, state.slices, turf);
                 const unknown = t('reparcellization.modal.unknownContribution', 'Unknown');
                 const entries = [
                     ['contributed', t('reparcellization.modal.contributedLand', 'Contributed land'), impact.contributedAreaM2 === null ? unknown : formatArea(impact.contributedAreaM2)],
                     ['assigned', t('reparcellization.modal.assignedLand', 'Assigned land (by share)'), formatArea(impact.assignedAreaM2)],
                     ['change', t('reparcellization.modal.landChange', 'Land change'), impact.areaChangeM2 === null ? unknown : `${impact.areaChangeM2 > 0 ? '+' : ''}${formatArea(impact.areaChangeM2)}`],
-                    ['cash', t('reparcellization.modal.colCashOffer', 'Cash offer'), CbFormat.formatMoney(impact.cashOfferCents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 })]
+                    impact.cashPaymentCents > 0
+                        ? ['cash', t('reparcellization.modal.ownerPays', 'Cash the owner pays'), CbFormat.formatMoney(impact.cashPaymentCents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 })]
+                        : ['cash', t('reparcellization.modal.colCashOffer', 'Cash offer'), CbFormat.formatMoney(impact.cashOfferCents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 })]
                 ];
                 const details = document.createElement('dl');
                 entries.forEach(([key, title, value]) => {
@@ -3854,7 +3874,8 @@
                     assignedArea: ledger.assignedArea,
                     assignedValue: ledger.assigned,
                     cashBalance: ledger.cashBalance,
-                    cashOffer: getCashOffer(entry.ownerKey, ledger)
+                    // Open ground keeps a null cash offer; owners store payouts and payments separately.
+                    ...storedCash(ledger.noOwner ? null : getCashOffer(entry.ownerKey, ledger))
                 };
             }),
             polygons: state.slices.map(slice => ({
@@ -4656,7 +4677,7 @@
         state.cashOfferOverrides = Object.fromEntries((savedPolygons?.length
             ? window.pendingReparcellizationPlan?.ownerShares || [] : [])
             .filter(owner => !owner.noOwner && Number.isFinite(owner.cashOffer) && owner.cashOffer >= 0)
-            .map(owner => [owner.ownerKey, owner.cashOffer]));
+            .map(owner => [owner.ownerKey, window.ReparcellizationDeal.netCash(owner)]));
         state.algorithm = options.algorithm || 'sweep-line';
         state.initialPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
             ? JSON.parse(JSON.stringify(options.initialPolygons))

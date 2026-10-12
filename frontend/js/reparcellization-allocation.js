@@ -118,13 +118,15 @@
         });
 
         const cashOfferCents = dealApi().moneyCents(owner.cashOffer ?? 0);
+        const cashPaymentCents = dealApi().moneyCents(owner.cashPayment ?? 0);
         return {
             ownerKey,
             contributedAreaM2,
             assignedAreaM2,
             areaChangeM2: contributedAreaM2 == null ? null : assignedAreaM2 - contributedAreaM2,
             plots: ownerPlots,
-            cashOfferCents
+            cashOfferCents,
+            cashPaymentCents
         };
     }
 

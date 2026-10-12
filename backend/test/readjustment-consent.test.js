@@ -62,7 +62,8 @@ function fixture() {
     const context = createContext({
         ...approval,
         TextEncoder,
-        getProposalI18nHelper: () => (_key, fallback) => fallback,
+        // Like storage.js getProposalI18nHelper without a loaded language: the fallback, interpolated.
+        getProposalI18nHelper: () => (_key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (key in params ? params[key] : match)),
         getCurrentUserAgent: () => currentActor,
         getProposalNftInfo: () => nftInfo,
         turf,
@@ -214,9 +215,10 @@ describe('fixed readjustment consent', () => {
             { ownerKey: 'owner-b', cashOffer: 20 },
             { ownerKey: 'Alice Example', cashOffer: 10 }
         ];
-        const rows = [...context.buildReadjustmentCashReviewHtml(proposal).matchAll(/<li>\s*<span>([^<]*)<\/span>\s*<strong>([^<]*)<\/strong>/g)]
+        const rows = [...context.buildReadjustmentCashReviewHtml(proposal).matchAll(/<li data-money-[^>]*>\s*<span>([^<]*)<\/span>\s*<strong>([^<]*)<\/strong>/g)]
             .map(match => [match[1], match[2]]);
-        expect(rows).toEqual([['Recipient outside the ownership snapshot', '10.00\u00a0EUR'], ['Owner B', '20.00\u00a0EUR']]);
+        expect(rows).toEqual([['Recipient outside the ownership snapshot', 'receives 10.00\u00a0EUR'], ['Owner B', 'receives 20.00\u00a0EUR'],
+            ['Sponsor', 'pays in 30.00\u00a0EUR']]);
     });
 
     it('rejects unknown owner slots and invalid deals before opening the wallet flow', async () => {

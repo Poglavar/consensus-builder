@@ -526,8 +526,21 @@
                 <div><dt>${esc(t('proposalApproval.review.landBefore', 'Land you put in'))}</dt><dd>${esc(area(receives.contributedAreaM2 ?? review.contributedAreaM2))}</dd></div>
                 <div><dt>${esc(t('proposalApproval.review.landAfter', 'Land you get back'))}</dt><dd>${esc(area(receives.assignedAreaM2))}</dd></div>
                 <div><dt>${esc(t('proposalApproval.review.landChange', 'Change in land'))}</dt><dd>${esc(change)}</dd></div>
-                <div data-approval-cash><dt>${esc(t('proposalApproval.review.cash', 'Cash offered to you'))}</dt><dd>${esc(money(receives.cashCents))}</dd></div>
+                ${receives.payCents > 0
+                    ? `<div data-approval-cash="pays"><dt>${esc(t('proposalApproval.review.cashYouPay', 'Cash you pay'))}</dt><dd>${esc(money(receives.payCents))}</dd></div>`
+                    : `<div data-approval-cash="receives"><dt>${esc(t('proposalApproval.review.cash', 'Cash offered to you'))}</dt><dd>${esc(money(receives.cashCents))}</dd></div>`}
             </dl>`;
+    }
+
+    // The whole money schedule, so an owner sees who else pays and who covers the rest.
+    function moneyLines(schedule) {
+        if (!schedule || (!schedule.payOutCents && !schedule.payInCents)) return [];
+        const lines = [t('proposalApproval.money.summary', 'Owners receive {{out}} and pay {{in}} in total.', {
+            out: money(schedule.payOutCents), in: money(schedule.payInCents) })];
+        if (schedule.sponsorCents < 0) lines.push(t('proposalApproval.money.sponsorPays', 'The sponsor pays {{amount}}.', { amount: money(-schedule.sponsorCents) }));
+        else if (schedule.sponsorCents > 0) lines.push(t('proposalApproval.money.sponsorReceives', 'The sponsor receives {{amount}}.', { amount: money(schedule.sponsorCents) }));
+        else lines.push(t('proposalApproval.money.sponsorNothing', 'Owner payments cover every payout; the sponsor pays nothing.'));
+        return lines;
     }
 
     function conditionsHtml(review, members) {
@@ -538,10 +551,13 @@
                 ? t('panel.proposal.disbursement.conditionalHint', 'All owners must accept before payout')
                 : t('panel.proposal.disbursement.partialHint', 'Payout released as each owner accepts'));
         }
+        lines.push(...moneyLines(c.money));
         lines.push(c.expiresAt
             ? t('proposalApproval.review.openUntil', 'Open until {{date}}', { date: format().formatDateTime(c.expiresAt) })
             : t('proposalApproval.review.noDeadline', 'No deadline'));
-        if (c.totalCashCents > 0) {
+        // Only the sponsor's share is funded beforehand; owner payments settle with the payouts.
+        const sponsorFunding = c.money ? c.money.sponsorFundingCents : c.totalCashCents;
+        if (sponsorFunding > 0) {
             lines.push(c.fundingConfirmed
                 ? t('proposalApproval.review.funded', 'The cash is funded.')
                 : t('proposalApproval.review.unfunded', 'The cash is not funded yet; the proposal cannot execute until it is.'));

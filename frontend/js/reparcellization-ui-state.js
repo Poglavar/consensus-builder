@@ -125,7 +125,8 @@
 
     function cashOfferInputHtml(ownerKey, value) {
         const amount = Number.isFinite(Number(value)) ? Math.round(Number(value) * 100) / 100 : 0;
-        return `<input type="number" class="cash-offer-input" min="0" step="0.01" data-owner-key="${esc(ownerKey)}" value="${amount}">`;
+        // Signed: a positive amount is paid to the owner, a negative one is paid by the owner.
+        return `<input type="number" class="cash-offer-input" step="0.01" data-owner-key="${esc(ownerKey)}" value="${amount}">`;
     }
 
     // One owner chip in the New plots table. White/public swatches get a border to stay visible.

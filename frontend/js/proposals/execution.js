@@ -240,14 +240,25 @@ function buildReadjustmentCashReviewHtml(proposal) {
             : t('proposalApproval.outsideSnapshot', 'Recipient outside the ownership snapshot'));
     const labels = new Map(ids.map(id => [id, label(id)]));
     const money = cents => CbFormat.formatMoney(cents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
-    const rows = deal.ledger.filter(owner => !owner.noOwner).map(owner => `<li>
+    // One balanced schedule: every owner's payout or payment and the sponsor's line, summing to zero.
+    const schedule = window.ReparcellizationDeal.schedule(deal);
+    const amountText = cents => (cents < 0
+        ? t('panel.proposal.acceptance.moneyPays', 'pays in {{amount}}', { amount: money(-cents) })
+        : t('panel.proposal.acceptance.moneyReceives', 'receives {{amount}}', { amount: money(cents) }));
+    const rows = deal.ledger.filter(owner => !owner.noOwner).map(owner => {
+        const net = owner.cashCents - (owner.payCents || 0);
+        return `<li data-money-owner="${escapeHtml(owner.ownerKey)}" data-money-direction="${net < 0 ? 'pays' : 'receives'}">
         <span>${escapeHtml(String(labels.get(owner.ownerKey) || owner.ownerKey))}</span>
-        <strong>${money(owner.cashCents)}</strong>
-    </li>`).join('');
-    return `<section class="readjustment-cash-review" aria-label="${t('panel.proposal.acceptance.cashOffers', 'Readjustment cash offers')}">
-        <h4>${t('panel.proposal.acceptance.cashOffers', 'Readjustment cash offers')}</h4>
-        <p>${t('panel.proposal.acceptance.cashOffersScope', 'Proposed compensation for each owner across the whole agreement.')}</p>
-        <ul>${rows}</ul>
+        <strong>${escapeHtml(amountText(net))}</strong>
+    </li>`;
+    }).join('');
+    const sponsor = schedule.sponsorCents === 0
+        ? t('panel.proposal.acceptance.moneySponsorNothing', 'pays nothing')
+        : amountText(schedule.sponsorCents);
+    return `<section class="readjustment-cash-review" aria-label="${t('panel.proposal.acceptance.moneySchedule', 'Money schedule')}">
+        <h4>${t('panel.proposal.acceptance.moneySchedule', 'Money schedule')}</h4>
+        <p>${t('panel.proposal.acceptance.moneyScope', 'What each owner receives or pays across the whole agreement, and what the sponsor covers. It always sums to zero.')}</p>
+        <ul>${rows}<li data-money-sponsor data-money-direction="${schedule.sponsorCents < 0 ? 'pays' : 'receives'}"><span>${t('panel.proposal.acceptance.moneySponsor', 'Sponsor')}</span><strong>${escapeHtml(sponsor)}</strong></li></ul>
         <div class="readjustment-cash-review-total"><span>${t('panel.proposal.acceptance.cashTotal', 'Total cash offer')}</span><strong>${money(deal.terms.totalCashCents)}</strong></div>
     </section>`;
 }

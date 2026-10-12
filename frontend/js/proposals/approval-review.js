@@ -70,15 +70,21 @@
             assignedAreaM2: impact.assignedAreaM2,
             contributedAreaM2: impact.contributedAreaM2,
             areaChangeM2: impact.areaChangeM2,
-            cashCents: impact.cashOfferCents
+            cashCents: impact.cashOfferCents,
+            payCents: impact.cashPaymentCents
         };
     }
 
     function conditions(proposal) {
         const context = approval().contextContent(proposal);
         let totalCashCents = null;
+        let money = null;
         if (deal().isReadjustment(proposal)) {
-            try { totalCashCents = deal().content(proposal).terms.totalCashCents; } catch (_) { totalCashCents = null; }
+            try {
+                const content = deal().content(proposal);
+                totalCashCents = content.terms.totalCashCents;
+                money = deal().schedule(content);
+            } catch (_) { totalCashCents = null; money = null; }
         }
         const expires = proposal.expiresAt == null ? null : new Date(proposal.expiresAt);
         const offer = Number(proposal.offer);
@@ -89,6 +95,8 @@
             isConditional: proposal.isConditional === true,
             expiresAt: expires && Number.isFinite(expires.getTime()) ? expires.toISOString() : null,
             totalCashCents,
+            // The balanced schedule (reparcellization-deal.js schedule): owners' nets and the sponsor.
+            money,
             cashOffered: totalCashCents == null ? Number.isFinite(offer) && offer > 0 : totalCashCents > 0,
             // An absent funding flag is not funding (reparcellization-validation.js says the same).
             fundingConfirmed: proposal.funded === true,

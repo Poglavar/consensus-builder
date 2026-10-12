@@ -243,7 +243,8 @@
             "passesWithYou": "Your acceptance is enough for the proposal to pass.",
             "needsMore": "More owners must accept after you before it passes.",
             "verifyFirst": "To accept, first confirm with a lens member that your wallet may act for this owner.",
-            "notSigned": "The wallet did not sign, so nothing was accepted."
+            "notSigned": "The wallet did not sign, so nothing was accepted.",
+            "cashYouPay": "Cash you pay"
         },
         "receipt": {
             "signed": "Signed by {{signer}} on {{date}}.",
@@ -268,6 +269,12 @@
             "anchoring": "Pinning the decisions and waiting for your wallet…",
             "anchoredNow": "Anchored {{count}} decisions.",
             "anchorFailed": "Nothing was anchored: {{reason}}"
+        },
+        "money": {
+            "summary": "Owners receive {{out}} and pay {{in}} in total.",
+            "sponsorPays": "The sponsor pays {{amount}}.",
+            "sponsorReceives": "The sponsor receives {{amount}}.",
+            "sponsorNothing": "Owner payments cover every payout; the sponsor pays nothing."
         }
     },
     "proposalDrafts": {
@@ -1324,7 +1331,13 @@
                 "accepted": "Accepted",
                 "pending": "Pending",
                 "recipient": "recipient",
-                "solanaLensHint": "Say yes in the Lens card"
+                "solanaLensHint": "Say yes in the Lens card",
+                "moneySchedule": "Money schedule",
+                "moneyScope": "What each owner receives or pays across the whole agreement, and what the sponsor covers. It always sums to zero.",
+                "moneyReceives": "receives {{amount}}",
+                "moneyPays": "pays in {{amount}}",
+                "moneySponsor": "Sponsor",
+                "moneySponsorNothing": "pays nothing"
             },
             "voting": {
                 "voteYes": "Vote yes",
@@ -3499,7 +3512,9 @@
             "siteUnavailable": "This site cannot be subdivided here.",
             "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.",
             "cashTermsHint": "Total compensation from the owner ledger. Edit individual cash offers in the land readjustment editor.",
-            "jointShareHint": "Courtyard shares start from each owner’s remaining private land. Use Edit shares to set fixed percentages."
+            "jointShareHint": "Courtyard shares start from each owner’s remaining private land. Use Edit shares to set fixed percentages.",
+            "colCash": "Cash (+ receives, − pays)",
+            "ownerPays": "Cash the owner pays"
         },
         "validation": {
             "missing-polygons": "Draw a replacement parcel before continuing.",

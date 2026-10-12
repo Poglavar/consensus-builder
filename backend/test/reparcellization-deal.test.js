@@ -240,7 +240,7 @@ describe('ReparcellizationDeal shared fingerprint', () => {
         openGround.reparcellization.ownerShares = [{
             ownerKey: 'open-ground', ...(noOwner === undefined ? {} : { noOwner }), cashOffer: 1
         }];
-        expect(() => deal.fingerprint(openGround)).toThrow('Ownerless ground cannot receive cash.');
+        expect(() => deal.fingerprint(openGround)).toThrow('Ownerless ground cannot receive or pay cash.');
     });
 });
 

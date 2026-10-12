@@ -94,9 +94,13 @@
             keys.add(key);
             const noOwner = owner.noOwner === true || key === OPEN_GROUND_OWNER_KEY;
             const cashCents = moneyCents(owner.cashOffer === undefined || (noOwner && owner.cashOffer === null) ? 0 : owner.cashOffer);
-            if (noOwner && cashCents) throw new Error('Ownerless ground cannot receive cash.');
+            // What the owner pays into the deal (e.g. for land beyond their entitlement). Present only
+            // when non-zero, so deals without owner payments keep their committed fingerprint.
+            const payCents = owner.cashPayment == null ? 0 : moneyCents(owner.cashPayment);
+            if (noOwner && (cashCents || payCents)) throw new Error('Ownerless ground cannot receive or pay cash.');
+            if (cashCents && payCents) throw new Error('An owner either receives or pays cash, not both.');
             return {
-                ownerKey: key, noOwner, cashCents,
+                ownerKey: key, noOwner, cashCents, ...(payCents ? { payCents } : {}),
                 contributedArea: optionalNumber(owner.contributedArea),
                 contributedValue: optionalNumber(owner.contributedValue),
                 entitledValue: optionalNumber(owner.entitledValue),
@@ -106,11 +110,12 @@
             };
         }));
         const totalCashCents = ledger.reduce((sum, owner) => sum + owner.cashCents, 0);
-        if (!Number.isSafeInteger(totalCashCents)) throw new Error('Total cash offer is too large.');
+        const ownerPaymentsCents = ledger.reduce((sum, owner) => sum + (owner.payCents || 0), 0);
+        if (!Number.isSafeInteger(totalCashCents) || !Number.isSafeInteger(ownerPaymentsCents)) throw new Error('Total cash offer is too large.');
         if (moneyCents(proposal.offer ?? 0) !== totalCashCents) throw new Error('Proposal offer must equal the owner cash ledger.');
         // A deal without cash has no currency: the stored record may still carry one (a database
         // column default stamped USD on the Borovje readjustments), and it must not void the deal.
-        const currency = totalCashCents ? String(proposal.offerCurrency || proposal.currency || 'EUR').toUpperCase() : null;
+        const currency = totalCashCents || ownerPaymentsCents ? String(proposal.offerCurrency || proposal.currency || 'EUR').toUpperCase() : null;
         if (currency !== null && currency !== 'EUR') throw new Error('Readjustment cash offers currently use EUR.');
         return {
             schema: SCHEMA,
@@ -147,6 +152,33 @@
         };
     }
 
+    // The deal's money as one balanced schedule: each owner's net (+ receives, − pays) and the
+    // sponsor (the proposer), whose line makes the total exactly zero. The sponsor pays what owner
+    // payments do not cover, or receives what they exceed. Derived from the committed ledger, so
+    // the deal fingerprint already commits it.
+    function schedule(payload) {
+        const owners = (payload?.ledger || []).filter(owner => !owner.noOwner)
+            .map(owner => ({ party: 'owner', ownerKey: owner.ownerKey, amountCents: owner.cashCents - (owner.payCents || 0) }))
+            .filter(line => line.amountCents !== 0);
+        const payOutCents = owners.filter(line => line.amountCents > 0).reduce((sum, line) => sum + line.amountCents, 0);
+        const payInCents = owners.filter(line => line.amountCents < 0).reduce((sum, line) => sum - line.amountCents, 0);
+        const sponsorCents = payInCents - payOutCents;
+        const lines = [...owners, { party: 'sponsor', amountCents: sponsorCents }];
+        return {
+            currency: payload?.terms?.currency ?? null, lines, payOutCents, payInCents, sponsorCents,
+            // What the sponsor must fund before the deal can execute; owner payments settle with it.
+            sponsorFundingCents: Math.max(0, -sponsorCents),
+            balanced: lines.reduce((sum, line) => sum + line.amountCents, 0) === 0
+        };
+    }
+
+    // An owner's net cash (+ receives, − pays) and the ledger fields that store it.
+    const netCash = owner => (Number(owner?.cashOffer) || 0) - (Number(owner?.cashPayment) || 0);
+    function cashFields(amount) {
+        if (typeof amount !== 'number' || !Number.isFinite(amount)) throw new Error('Cash must be a finite amount.');
+        return amount < 0 ? { cashOffer: 0, cashPayment: -amount } : { cashOffer: amount };
+    }
+
     function fingerprint(proposal) {
         let payload;
         try {
@@ -168,5 +200,5 @@
         return 'lr-design2-sha256:' + crypto().sha256Hex(stableStringify(design));
     }
 
-    return { SCHEMA, HASH_PREFIX, isReadjustment, content, fingerprint, designFingerprint, stableStringify, moneyCents };
+    return { SCHEMA, HASH_PREFIX, isReadjustment, content, schedule, netCash, cashFields, fingerprint, designFingerprint, stableStringify, moneyCents };
 });

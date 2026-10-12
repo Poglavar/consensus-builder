@@ -4,13 +4,13 @@
 
 Audit and follow-up review dates: **2026-10-11–12**. Filename follows the requested `land-readjustmend.md` spelling.
 The old implementation was selectively integrated and its local branch/worktree deleted.
-**§20 records the chain anchor for minted approval setups; §19 records the receipt relay that shares signed owner decisions between browsers; §18 records the lens-backed owner authority and the owner's Accept review; §17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
+**§21 records the balanced money schedule; §20 records the chain anchor for minted approval setups; §19 records the receipt relay that shares signed owner decisions between browsers; §18 records the lens-backed owner authority and the owner's Accept review; §17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
 abstraction; §14 the earlier consent/review increment; §13 the integration and §12 the review.**
 
 This is the working reference for land readjustment (LR): what exists, what is broken, prior
 decisions, international schemes, and the proposed path forward. Recommendations below are
 **proposed changes** unless explicitly marked implemented. The October 11–12 work in §§13–18 is
-implemented locally within the limits stated in each section (§§19–20 included).
+implemented locally within the limits stated in each section (§§19–21 included).
 Broader settlement and jurisdiction recommendations remain proposals.
 
 ## 1. Findings that determine the next work
@@ -1582,4 +1582,77 @@ Using that contract would execute a different deal from the one the owners signe
 - **Chain coverage.** EVM and Canton still refuse approval setups.
 - **Deploy.** Nothing is deployed. Production needs the §19 table and the Pinata keys already used
   for minting.
+
+## 21. Balanced money schedule (2026-10-12)
+
+Before this, LR cash was one non-negative `cashOffer` per owner, paid by an unnamed proposer.
+- The editor computed each owner's value balance: surplus land means the owner pays, a shortfall
+  means the owner is compensated. Only the compensation side ever became money.
+- Without a unit value that balance is in m², yet the default offer used it as euros: a 12.5 m²
+  shortfall became €12.50.
+
+### What a deal now says about money
+
+- **Owners can pay.** An owner ledger row has either `cashOffer` (paid to the owner) or
+  `cashPayment` (paid by the owner), never both. Open ground can do neither. The committed deal
+  ledger carries `payCents` only when it is non-zero, so every existing deal keeps the fingerprint
+  its owners signed. A plan with an owner payment gets a new one.
+- **One schedule that sums to zero.** `ReparcellizationDeal.schedule(content)` lists each owner's
+  net amount (+ receives, − pays) and the **sponsor** (the proposer). The sponsor's line balances
+  the rest: it pays in what owner payments do not cover, or receives what they exceed, for example
+  a municipality collecting for surplus land.
+  - The deal fingerprint already commits the ledger, so it commits the schedule.
+  - `offer` is still what owners receive in total.
+- **Funding.** Only the sponsor's net pay-in (`sponsorFundingCents`) has to be funded before
+  execution. Owner payments are part of the terms each owner signs and settle with the payouts.
+  `fundingReady` follows that; it is still the local simulation flag, not escrow.
+- **Split parcel agreements** cannot carry an owner payment, because one owner's payment funds
+  others across the whole pool. Building the batch refuses with that reason, and the offer total
+  ignores payments.
+
+### Where people see it
+
+- **Editor › Owners table:** the cash column is signed, *Cash (+ receives, − pays)*.
+  - With a unit value, the default is the negative of the value balance: a shortfall is
+    compensated and a surplus is paid for. Without one, the default is zero, which fixes the m²/€
+    mix-up.
+  - The total line reads, for example, *Owners receive 25.00 EUR and pay 5.00 EUR in total. The
+    sponsor pays 20.00 EUR.*
+  - An amount still being typed (empty, too many decimals) is kept as an invalid offer for
+    validation to name, instead of throwing.
+- **Details › Land & ownership › Money schedule** (was *Readjustment cash offers*): one row per
+  owner (*receives …* / *pays in …*), a **Sponsor** row and the total offer.
+- **Accept as Owner X:**
+  - an owner who pays sees *Cash you pay*;
+  - Conditions list the schedule: owners' totals, then what the sponsor pays or receives (or that
+    owner payments cover everything);
+  - the funding line refers to the sponsor's share.
+
+### Verification
+
+- **Fast:**
+  - `readjustment-money-schedule.test.js` (7 tests) covers payments and the sponsor line in both
+    directions, unchanged fingerprints, the refusals, signed-amount storage, sponsor-only funding,
+    the paying owner's review and the split-agreement refusal.
+  - These mutations each turned it red: always committing `payCents`, a sponsor that ignores
+    payments, funding that ignores payments, a review that hides the payment, and allowing both
+    directions.
+  - The two older tests pinned to the old wording now assert the new behaviour.
+  - Full backend suite: 786 files passed, 1 failed, 6 skipped. The failure was `api-robustness`
+    getting stray 401s at load ~34. That file then passed 4 of 4 runs both on this branch and on
+    `colosseum-worlds-fair` at load ~15.
+- **Headed:** `proposal-approval-lens` (Owner A now pays 5.00), `land-readjustment-consent` (Money
+  schedule with the sponsor row), `land-readjustment-courtyard` (−1 is now a valid payment, the
+  totals show who covers it, and an empty field no longer throws), `-audit`, `reparcel-button-controls`
+  and `proposal-approval`: 32 passed, with the devnet scenario skipped. The review screenshot was
+  inspected.
+- `npm --prefix e2e run check:controls` fails on the before/after **compare** button in
+  `details-panel.js`. That button arrived with `7774522f` on `colosseum-worlds-fair` without a
+  contract entry; this change does not touch it.
+
+### Next
+
+- Settlement against this schedule needs the program version from §20: collect owner payments and
+  the sponsor's share into escrow, then pay owners exactly their lines.
+- Timing (instalments, due dates) and currencies other than EUR are not modelled.
 

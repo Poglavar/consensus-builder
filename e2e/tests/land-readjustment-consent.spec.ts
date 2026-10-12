@@ -194,8 +194,12 @@ test('changed LR cash terms lapse old consent, then preserve its receipt when an
   await expect(rows).toHaveCount(2);
   const cashReview = page.locator('#proposal-details-panel details[data-proposal-section="land"] .readjustment-cash-review');
   await expect(cashReview).toBeVisible();
-  const cashRows = cashReview.locator('li');
+  await expect(cashReview.locator('h4')).toHaveText('Money schedule');
+  const cashRows = cashReview.locator('li[data-money-owner]');
   await expect(cashRows).toHaveCount(2);
+  // The sponsor's line balances the schedule: it pays in everything the owners receive.
+  await expect(cashReview.locator('li[data-money-sponsor]')).toContainText('Sponsor');
+  await expect(cashReview.locator('li[data-money-sponsor]')).toContainText('pays in 100.00');
   const ownerACash = cashRows.filter({ hasText: 'Owner A' });
   const ownerBCash = cashRows.filter({ hasText: 'Owner B' });
   await expect(ownerACash).toContainText('65.12');

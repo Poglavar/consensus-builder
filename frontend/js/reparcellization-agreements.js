@@ -56,7 +56,8 @@
         return offers;
     }
 
-    // Total EUR cash offer from the owner ledger, rounding each owner's amount to cents first.
+    // Total EUR paid out to owners (the proposal's offer), rounding each owner's amount to cents
+    // first. Owner payments are not part of it; the deal's money schedule carries them.
     function cashOfferTotal(plan) {
         const cents = [...cashOffersInCents(plan).values()].reduce((sum, value) => sum + value, 0);
         if (!Number.isSafeInteger(cents)) throw new Error('Owner cash-offer ledger total is too large to represent in cents.');
@@ -66,6 +67,9 @@
     // Allocate each owner's declared EUR offer by their contribution to each input parcel.
     // Largest remainder makes every owner's per-parcel cents sum back to the declared amount.
     function offersByPart(plan, parts, proposalOffer) {
+        // A payment by one owner funds others across the whole pool; split agreements cannot carry it.
+        const payer = (plan?.ownerShares || []).find(owner => owner && owner.noOwner !== true && Number(owner.cashPayment) > 0);
+        if (payer) throw new Error(`Owner ${payer.ownerKey} pays cash; owner payments need one joint readjustment agreement.`);
         const declared = cashOffersInCents(plan);
         const declaredTotal = moneyCents(cashOfferTotal(plan), 'Owner cash-offer ledger total');
         const proposalCents = moneyCents(proposalOffer ?? 0, 'Proposal offer');

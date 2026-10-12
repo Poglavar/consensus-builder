@@ -90,7 +90,8 @@ async function seedReadjustment(page: Page, memberKey: string, extra: Record<str
           { geometry: plots[2], jointPool: true, owners: [{ ownerKey: 'owner-c', share: 0.5 }, { ownerKey: 'owner-d', share: 0.5 }] }
         ],
         ownerShares: [
-          { ownerKey: 'owner-a', cashOffer: 0, contributedArea: 100 },
+          // Owner A pays for land beyond its entitlement; the sponsor covers the rest (20.00).
+          { ownerKey: 'owner-a', cashOffer: 0, cashPayment: 5, contributedArea: 100 },
           { ownerKey: 'owner-b', cashOffer: 10, contributedArea: 50 },
           { ownerKey: 'owner-c', cashOffer: 7.5, contributedArea: 12.5 },
           { ownerKey: 'owner-d', cashOffer: 7.5, contributedArea: 12.5 }
@@ -319,6 +320,10 @@ test('four owners across three parcels accept only for themselves through a lens
   await expect(dialog(page)).toHaveAttribute('data-approval-review', 'owner-a');
   await expect(dialog(page).locator(`[data-approval-contribution="${PARCELS.a}"]`)).toContainText('Your share 1/1');
   await expect(dialog(page).locator('[data-approval-plot="1"]')).toContainText('100%');
+  await expect(dialog(page).locator('[data-approval-cash="pays"]')).toContainText('Cash you pay');
+  await expect(dialog(page).locator('[data-approval-cash="pays"]')).toContainText('5.00');
+  await expect(dialog(page)).toContainText(/Owners receive 25\.00\sEUR and pay 5\.00\sEUR in total\./);
+  await expect(dialog(page)).toContainText(/The sponsor pays 20\.00\sEUR\./);
   await screenshot(page, testInfo, 'review-owner-a');
   expect(await page.evaluate(() => (window as any).__e2eWallet.signed.filter((entry: any) =>
     entry.text.startsWith('Urban Game Theory owner decision')).length), 'nothing is signed before the review').toBe(0);
@@ -439,7 +444,7 @@ test('the review shows what an owner contributes, gets back and signs, on a phon
   await expect(review.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('co-owned with Owner D');
   await expect(review.locator('[data-approval-plot="3"]')).toContainText('50%');
   await expect(review.locator('[data-approval-plot="3"]')).toContainText('shared with Owner D');
-  await expect(review.locator('[data-approval-cash]')).toContainText('7.50');
+  await expect(review.locator('[data-approval-cash="receives"]')).toContainText('7.50');
   await expect(review).toContainText('All owners must accept before payout');
   await expect(review).toContainText('The cash is not funded yet');
   await expect(review).toContainText('attested by: Test notary');

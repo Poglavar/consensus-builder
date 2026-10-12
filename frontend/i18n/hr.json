@@ -243,7 +243,8 @@
             "passesWithYou": "Vaše prihvaćanje dovoljno je da prijedlog prođe.",
             "needsMore": "Nakon vas moraju prihvatiti još neki vlasnici da bi prijedlog prošao.",
             "verifyFirst": "Da biste prihvatili, najprije kod člana leće potvrdite da vaš novčanik smije djelovati u ime ovog vlasnika.",
-            "notSigned": "Novčanik nije potpisao pa ništa nije prihvaćeno."
+            "notSigned": "Novčanik nije potpisao pa ništa nije prihvaćeno.",
+            "cashYouPay": "Novac koji plaćate"
         },
         "receipt": {
             "signed": "Potpisao {{signer}}, {{date}}.",
@@ -268,6 +269,12 @@
             "anchoring": "Pohranjivanje odluka i čekanje novčanika…",
             "anchoredNow": "Usidreno odluka: {{count}}.",
             "anchorFailed": "Ništa nije usidreno: {{reason}}"
+        },
+        "money": {
+            "summary": "Vlasnici ukupno primaju {{out}} i plaćaju {{in}}.",
+            "sponsorPays": "Pokrovitelj plaća {{amount}}.",
+            "sponsorReceives": "Pokrovitelj prima {{amount}}.",
+            "sponsorNothing": "Uplate vlasnika pokrivaju sve isplate; pokrovitelj ne plaća ništa."
         }
     },
     "proposalDrafts": {
@@ -1358,7 +1365,13 @@
                 "accepted": "Prihvaćeno",
                 "pending": "Na čekanju",
                 "recipient": "primatelj",
-                "solanaLensHint": "Recite da u kartici Leća"
+                "solanaLensHint": "Recite da u kartici Leća",
+                "moneySchedule": "Novčani raspored",
+                "moneyScope": "Što svaki vlasnik prima ili plaća u cijelom sporazumu i što pokriva pokrovitelj. Zbroj je uvijek nula.",
+                "moneyReceives": "prima {{amount}}",
+                "moneyPays": "uplaćuje {{amount}}",
+                "moneySponsor": "Pokrovitelj",
+                "moneySponsorNothing": "ne plaća ništa"
             },
             "voting": {
                 "voteYes": "Glasaj za",
@@ -3538,7 +3551,9 @@
             "agreementFailed": "Izrađeno je {{created}} sporazuma za čestice; {{failed}} zahtijeva pažnju. Skica je sačuvana za ponovni pokušaj.",
             "perParcelProposalName": "{{name}} — čestica {{parcel}}",
             "cashTermsHint": "Ukupna naknada iz obračuna vlasnika. Pojedinačne novčane ponude uredite u uređivaču preparcelacije.",
-            "jointShareHint": "Udjeli za dvorište polaze od preostalog privatnog zemljišta svakog vlasnika. Odaberite Uredi udjele za fiksne postotke."
+            "jointShareHint": "Udjeli za dvorište polaze od preostalog privatnog zemljišta svakog vlasnika. Odaberite Uredi udjele za fiksne postotke.",
+            "colCash": "Novac (+ prima, − plaća)",
+            "ownerPays": "Novac koji vlasnik plaća"
         },
         "validation": {
             "missing-polygons": "Nacrtajte zamjensku česticu prije nastavka.",

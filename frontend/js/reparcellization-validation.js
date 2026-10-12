@@ -115,10 +115,12 @@
             catch (error) { issue('invalid-allocation', `New parcel ${index + 1}: ${error.message}`, 'allocation', { plotIndex: index }); }
         });
         let totalCashCents = null;
+        let money = null;
         if (!errors.some(item => item.section === 'allocation')) {
             try {
                 const content = deal().content(proposal);
                 totalCashCents = content?.terms.totalCashCents ?? null;
+                money = content ? deal().schedule(content) : null;
                 for (const row of content?.ledger || []) {
                     if (['contributedArea', 'contributedValue', 'entitledValue', 'assignedArea', 'assignedValue']
                         .some(key => row[key] !== null && row[key] < 0)) throw new Error('Areas and allocation values cannot be negative.');
@@ -134,9 +136,10 @@
         } catch (error) { issue('invalid-proposal-approval', error.message, 'approval'); }
         const valid = errors.length === 0;
         // This is the existing local simulation's funding flag. It is never evidence of on-chain
-        // escrow. Unspecified funding cannot execute a positive cash obligation.
-        const fundingReady = totalCashCents === 0 || (totalCashCents > 0 && proposal?.funded === true);
-        return { valid, errors, warnings, metrics, normalizedOwnership, areas, totalCashCents,
+        // escrow. Unspecified funding cannot execute a positive cash obligation. Only the sponsor's
+        // share needs funding beforehand; owner payments are signed terms settled with the payouts.
+        const fundingReady = !!money && (money.sponsorFundingCents === 0 || proposal?.funded === true);
+        return { valid, errors, warnings, metrics, normalizedOwnership, areas, totalCashCents, money,
             rightsReady, readyForApproval: valid && rightsReady, fundingReady };
     }
     // An editor has a per-owner ledger before it has a proposal offer field. Derive the latter
