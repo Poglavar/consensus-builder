@@ -6,6 +6,10 @@
     margin: var(--cb-space-2) 0 var(--cb-space-3);
 }
 
+.approval-edit-action {
+    margin: 0 0 var(--cb-space-3);
+}
+
 .approval-card {
     display: flex;
     flex-direction: column;

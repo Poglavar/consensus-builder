@@ -420,7 +420,12 @@
             "parcels": "Čestice",
             "geometry": "Geometrija",
             "changed": "Promijenjeno",
-            "unchanged": "Nepromijenjeno"
+            "unchanged": "Nepromijenjeno",
+            "noLens": "Nema članova leće",
+            "lensMembers": "Članova leće: {{count}} ({{keys}})",
+            "noApproval": "Nema postavki odobravanja",
+            "rights": "Prava za čestica: {{parcels}}, vlasnika: {{owners}}, izvor: {{source}}.",
+            "noRights": "Nema podataka o vlasništvu."
         },
         "validation": {
             "valid": "Spremno za pregled",
@@ -1345,7 +1350,10 @@
                 "editDetails": "Detalji",
                 "counterpropose": "Kopiraj prijedlog",
                 "counterproposeHint": "Izradite protuprijedlog kao kopiju koju možete uređivati. Prijedlog koji gledate ostaje nepromijenjen.",
-                "apply_disabled_for_type": "Primjena je onemogućena za ovu vrstu prijedloga."
+                "apply_disabled_for_type": "Primjena je onemogućena za ovu vrstu prijedloga.",
+                "editApproval": "Uredi vlasništvo i odobravanje",
+                "addApproval": "Dodaj vlasništvo i odobravanje",
+                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Spremanje stvara zamjenski prijedlog; prihvaćanja ovog prijedloga se ne prenose."
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",

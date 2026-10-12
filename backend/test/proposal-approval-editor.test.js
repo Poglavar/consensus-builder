@@ -32,6 +32,24 @@ const source = {
     acceptedParcelIds: ['parcel-1']
 };
 
+describe('proposal editor review of the approval setup', () => {
+    it('words rights, rule and lens instead of printing them as JSON', () => {
+        const config = approval.normalizeConfig({ schema: 'proposal-approval/v1', rights: {
+            schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'register-1' }, parcels: [
+                { parcelId: 'p-1', complete: true, areaM2: 100, owners: [{ ownerId: 'owner-a', share: '1/1' }] },
+                { parcelId: 'p-2', complete: true, areaM2: 50, owners: [{ ownerId: 'owner-a', share: '1/2' }, { ownerId: 'owner-b', share: '1/2' }] }
+            ] }, policy: { type: 'threshold', owners: { numerator: 1, denominator: 2, strict: false }, area: { numerator: 7, denominator: 10, strict: false } } });
+        const text = editorShell.reviewValue('approvalConfig', config);
+        expect(text).toBe('Rights for 2 parcel(s), 2 owner(s), from upload · register-1. Approval uses owner-count 1/2 and area 7/10 thresholds.');
+        expect(editorShell.reviewValue('approvalConfig', { ...config, rights: null, policy: { type: 'unanimous' } }))
+            .toBe('No ownership data. Every declared owner must approve.');
+        expect(editorShell.reviewValue('lens', [{ address: '5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z', name: '' }, 'member-a']))
+            .toBe('2 lens member(s): 5x8h…Bg4z, member-a');
+        expect(editorShell.reviewValue('lens', [])).toBe('No lens members');
+        expect(editorShell.reviewValue('name', { a: 1 })).toBe('{"a":1}');
+    });
+});
+
 describe('proposal approval editor projection', () => {
     it('renders approval readiness against canonical cadastre IDs without mutating the live-piece draft', () => {
         const adapter = registry.get('as-is');

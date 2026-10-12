@@ -13,7 +13,7 @@ const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false } = {}) {
+function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null } = {}) {
     const content = { dataset: {}, innerHTML: '', scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
@@ -108,7 +108,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ensureProposalMetadataLoaded: async () => null,
         setProposalDetailsPanelMinimized() {}, setupGameLogClickListeners() {},
         hideProposalDetailsPanel() {},
-        buildOwnerAcceptanceSectionHtml: () => ''
+        buildOwnerAcceptanceSectionHtml: () => '',
+        ...(editable === null ? {} : { getProposalEditCapability: () => ({ editable }), editProposalApproval() {} })
     };
     const context = vm.createContext(globals);
     vm.runInContext(`${renderSource}\nthis.renderProposal = showProposalInfo;`, context);
@@ -131,6 +132,16 @@ describe('proposal details action footer', () => {
         expect(content('[data-proposal-section="funding"], [data-proposal-section="market"]').length).toBe(0);
         expect(content('.proposal-lens-card').length).toBe(1);
         expect(content('.approval-card-slot').length).toBe(1);
+    });
+
+    it('opens the editor on its Approval tab from Land & ownership, only for a proposal the editor can open', () => {
+        const proposal = { proposalId: 'p-1', title: 'Readjustment', cadastreParcelIds: [] };
+        const button = options => parse(render(proposal, options).content.innerHTML)('.btn-edit-approval');
+        expect(button({ editable: true }).text()).toContain('Add ownership and approval');
+        expect(render(proposal, { editable: true }).content.innerHTML).toContain('onclick="editProposalApproval("p-1")"');
+        expect(button({ editable: true, approvalSetup: true }).text()).toContain('Edit ownership and approval');
+        expect(button({ editable: false, approvalSetup: true }).length).toBe(0);
+        expect(button({}).length).toBe(0);
     });
 
     it('renders primary and contextual actions, plus disconnected support in the footer once', () => {

@@ -420,7 +420,12 @@
             "parcels": "Parcelas",
             "geometry": "Geometría",
             "changed": "Modificada",
-            "unchanged": "Sin cambios"
+            "unchanged": "Sin cambios",
+            "noLens": "Sin miembros de la lente",
+            "lensMembers": "{{count}} miembro(s) de la lente: {{keys}}",
+            "noApproval": "Sin configuración de aprobación",
+            "rights": "Derechos de {{parcels}} parcela(s), {{owners}} propietario(s), de {{source}}.",
+            "noRights": "Sin datos de propiedad."
         },
         "validation": {
             "valid": "Lista para revisar",
@@ -1358,7 +1363,10 @@
                 "editDetails": "Detalles",
                 "counterpropose": "Duplicar propuesta",
                 "counterproposeHint": "Crea una contrapropuesta como copia editable. La propuesta que estás viendo no cambia.",
-                "apply_disabled_for_type": "Aplicar está desactivado para este tipo de propuesta."
+                "apply_disabled_for_type": "Aplicar está desactivado para este tipo de propuesta.",
+                "editApproval": "Editar propiedad y aprobación",
+                "addApproval": "Añadir propiedad y aprobación",
+                "editApprovalHint": "Abre el editor en la pestaña Aprobación. Guardar crea una propuesta de reemplazo; las aceptaciones de esta no se trasladan."
             },
             "expiry": {
                 "expired": "Propuesta caducada",

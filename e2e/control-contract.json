@@ -3143,377 +3143,77 @@
     {
       "id": "control-d0cf76d056b42a-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"use-map-selection\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its use-map-selection control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"use-map-selection\">"
     },
     {
       "id": "control-3466716fab19ce-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"approval-import\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its approval-import control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"approval-import\">"
     },
     {
       "id": "control-1c4de4c428531b-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"approval-template\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its approval-template control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"approval-template\">"
     },
     {
       "id": "control-dc40b588a72724-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-danger\" data-editor-action=\"approval-remove\"${config?.rights ? '' : ' disabled'}>",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its approval-remove control is rendered only if an internal shell API is invoked. It is disabled unless config.rights is provided.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-danger\" data-editor-action=\"approval-remove\"${config?.rights ? '' : ' disabled'}>"
     },
     {
       "id": "control-e83060c439754f-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-primary\" data-editor-action=\"open-design\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its open-design control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-primary\" data-editor-action=\"open-design\">"
     },
     {
       "id": "control-b59635b14db5af-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" data-editor-action=\"focus-issue\" data-issue-index=\"${offset + index}\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its focus-issue control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" data-editor-action=\"focus-issue\" data-issue-index=\"${offset + index}\">"
     },
     {
       "id": "control-1cc9fc253772b4-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" data-editor-action=\"tab\" data-editor-tab=\"${escapeHtml(section)}\" class=\"${editorState.tab === section ? 'is-active' : ''}\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its tab control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" data-editor-action=\"tab\" data-editor-tab=\"${escapeHtml(section)}\" class=\"${editorState.tab === section ? 'is-active' : ''}\">"
     },
     {
       "id": "control-9c0b27df72f515-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"back-to-edit\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its back-to-edit control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-secondary\" data-editor-action=\"back-to-edit\">"
     },
     {
       "id": "control-0f9b444321fd9d-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-primary\" data-editor-action=\"publish\"${draft.validation?.valid ? '' : ' disabled'}>",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its publish control is rendered only if an internal shell API is invoked. It is disabled unless the draft validates.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-primary\" data-editor-action=\"publish\"${draft.validation?.valid ? '' : ' disabled'}>"
     },
     {
       "id": "control-fd97f736af9cda-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-primary\" data-editor-action=\"review\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its review control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-primary\" data-editor-action=\"review\">"
     },
     {
       "id": "control-b6673dceccd5bf-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-close\" data-editor-action=\"close\" aria-label=\"${escapeHtml(tDraft('proposalDrafts.actions.close', 'Close editor'))}\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its close control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-close\" data-editor-action=\"close\" aria-label=\"${escapeHtml(tDraft('proposalDrafts.actions.close', 'Close editor'))}\">"
     },
     {
       "id": "control-a60bfb687164b6-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" data-editor-action=\"undo\" aria-label=\"${escapeHtml(tDraft('proposalDrafts.actions.undo', 'Undo'))}\"${draft.history?.past?.length ? '' : ' disabled'}>",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its undo control is rendered only if an internal shell API is invoked. It is disabled without past history.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" data-editor-action=\"undo\" aria-label=\"${escapeHtml(tDraft('proposalDrafts.actions.undo', 'Undo'))}\"${draft.history?.past?.length ? '' : ' disabled'}>"
     },
     {
       "id": "control-aab8316fdb0263-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" data-editor-action=\"redo\" aria-label=\"${escapeHtml(tDraft('proposalDrafts.actions.redo', 'Redo'))}\"${draft.history?.future?.length ? '' : ' disabled'}>",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its redo control is rendered only if an internal shell API is invoked. It is disabled without future history.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" data-editor-action=\"redo\" aria-label=\"${escapeHtml(tDraft('proposalDrafts.actions.redo', 'Redo'))}\"${draft.history?.future?.length ? '' : ' disabled'}>"
     },
     {
       "id": "control-126b55364c4573-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"proposal-editor-danger\" data-editor-action=\"discard\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its discard control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" class=\"proposal-editor-danger\" data-editor-action=\"discard\">"
     },
     {
       "id": "control-51eaf94fe1522d-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" data-editor-action=\"comparison\" data-comparison-mode=\"${mode}\" class=\"${editorState.comparison === mode ? 'is-active' : ''}\">",
-      "exempt": "Unreachable through the normal application UI: the proposal editor shell has no external UI entry point, so its comparison control is rendered only if an internal shell API is invoked.",
-      "mustRemainInactive": false,
-      "guards": [
-        {
-          "pattern": "\\bopenProposalEditorShell\\b",
-          "occurrences": 5
-        },
-        {
-          "pattern": "\\bcreateNewProposalDraft\\b",
-          "occurrences": 3
-        },
-        {
-          "pattern": "\\beditProposal\\b",
-          "occurrences": 4
-        },
-        {
-          "pattern": "\\beditProposalAsReplacement\\b",
-          "occurrences": 1
-        }
-      ]
+      "markup": "<button type=\"button\" data-editor-action=\"comparison\" data-comparison-mode=\"${mode}\" class=\"${editorState.comparison === mode ? 'is-active' : ''}\">"
     },
     {
       "id": "control-da5695b54d9a3f-1",
@@ -3678,6 +3378,11 @@
       "id": "control-719da76c1dce7b-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-outline-secondary btn-edit-geometry\" onclick=\"editProposalGeometry(${inlineJsArg(proposalKey)})\">"
+    },
+    {
+      "id": "control-2f184396a529a2-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-outline-secondary btn-sm btn-edit-approval\" title=\"${safeAgentText(tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.'))}\" onclick=\"editProposalApproval(${inlineJsArg(proposalKey)})\">"
     },
     {
       "id": "control-ded286887a9124-1",

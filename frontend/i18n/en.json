@@ -420,7 +420,12 @@
             "parcels": "Parcels",
             "geometry": "Geometry",
             "changed": "Changed",
-            "unchanged": "Unchanged"
+            "unchanged": "Unchanged",
+            "noLens": "No lens members",
+            "lensMembers": "{{count}} lens member(s): {{keys}}",
+            "noApproval": "No approval setup",
+            "rights": "Rights for {{parcels}} parcel(s), {{owners}} owner(s), from {{source}}.",
+            "noRights": "No ownership data."
         },
         "validation": {
             "valid": "Ready to review",
@@ -1311,7 +1316,10 @@
                 "editDetails": "Details",
                 "counterpropose": "Fork proposal",
                 "counterproposeHint": "Counterpropose by creating an editable copy. The proposal you are viewing stays unchanged.",
-                "apply_disabled_for_type": "Apply is disabled for this proposal type."
+                "apply_disabled_for_type": "Apply is disabled for this proposal type.",
+                "editApproval": "Edit ownership and approval",
+                "addApproval": "Add ownership and approval",
+                "editApprovalHint": "Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over."
             },
             "expiry": {
                 "expired": "Proposal expired",

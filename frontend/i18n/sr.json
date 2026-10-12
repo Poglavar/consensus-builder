@@ -420,7 +420,12 @@
             "parcels": "Parcele",
             "geometry": "Geometrija",
             "changed": "Promenjeno",
-            "unchanged": "Nepromenjeno"
+            "unchanged": "Nepromenjeno",
+            "noLens": "Nema članova sočiva",
+            "lensMembers": "Članova sočiva: {{count}} ({{keys}})",
+            "noApproval": "Nema podešavanja odobravanja",
+            "rights": "Prava za parcela: {{parcels}}, vlasnika: {{owners}}, izvor: {{source}}.",
+            "noRights": "Nema podataka o vlasništvu."
         },
         "validation": {
             "valid": "Spremno za pregled",
@@ -1345,7 +1350,10 @@
                 "editDetails": "Detalji",
                 "counterpropose": "Kopiraj predlog",
                 "counterproposeHint": "Napravite protivpredlog kao kopiju koju možete uređivati. Predlog koji gledate ostaje nepromenjen.",
-                "apply_disabled_for_type": "Primena je onemogućena za ovu vrstu predloga."
+                "apply_disabled_for_type": "Primena je onemogućena za ovu vrstu predloga.",
+                "editApproval": "Uredi vlasništvo i odobravanje",
+                "addApproval": "Dodaj vlasništvo i odobravanje",
+                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi zamenski predlog; prihvatanja ovog predloga se ne prenose."
             },
             "expiry": {
                 "expired": "Predlog je istekao",

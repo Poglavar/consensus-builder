@@ -467,6 +467,27 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // The editor's Approval tab (rights, rule, lens) for a proposal the editor can open; saving there
+    // creates a replacement record, so acceptances of this one do not carry over.
+    const approvalEditable = proposalKey
+        && typeof editProposalApproval === 'function'
+        && typeof getProposalEditCapability === 'function'
+        && getProposalEditCapability(fullProposal || proposal).editable === true;
+    const hasApprovalSetup = window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true;
+    const editApprovalButtonHtml = approvalEditable
+        ? `
+        <div class="approval-edit-action">
+            <button type="button" class="btn btn-outline-secondary btn-sm btn-edit-approval"
+                title="${safeAgentText(tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.'))}"
+                onclick="editProposalApproval(${inlineJsArg(proposalKey)})">
+                <i class="fas fa-user-check" aria-hidden="true"></i> ${hasApprovalSetup
+                    ? tProposal('panel.proposal.actions.editApproval', 'Edit ownership and approval')
+                    : tProposal('panel.proposal.actions.addApproval', 'Add ownership and approval')}
+            </button>
+        </div>
+    `
+        : '';
+
     // Before / after (dividers.md, M2): the ground without this proposal beside the map with it.
     // Only an applied record with a footprint has an "after" to show.
     const beforeAfter = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
@@ -989,6 +1010,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHint', 'Parcels: {{count}} · alternatives and acceptance', { count: cadastreParcelIds.length }))}
             ${parcelSetRelationsHtml}
             ${window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true ? '<div class="approval-card-slot" data-approval-card-slot></div>' : ''}
+            ${editApprovalButtonHtml}
             ${parcelAcceptancePlaceholder}
             ${ownerAcceptancePlaceholder}
 

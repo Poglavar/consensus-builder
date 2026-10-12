@@ -303,6 +303,35 @@
         return `<div class="proposal-editor-approval-status ${inspection.ready ? 'is-ready' : 'is-incomplete'}">${escapeHtml(status)}</div>${missing}<div class="proposal-editor-approval-list">${rows || `<p>${escapeHtml(tDraft('proposalDrafts.approval.emptyRights', 'The dataset has no parcel rows yet.'))}</p>`}</div>`;
     }
 
+    function approvalPolicyText(policy) {
+        return policy?.type === 'threshold'
+            ? tDraft('proposalDrafts.approval.policyContextThreshold', 'Approval uses owner-count {{owners}} and area {{area}} thresholds.', {
+                owners: fractionText(policy.owners), area: fractionText(policy.area)
+            })
+            : tDraft('proposalDrafts.approval.policyContextUnanimous', 'Every declared owner must approve.');
+    }
+
+    // The review's words for the approval setup and the lens, which displayValue would print as JSON.
+    function approvalReviewText(key, value) {
+        if (key === 'lens') {
+            const keys = (Array.isArray(value) ? value : [])
+                .map(entry => typeof entry === 'string' ? entry : (entry?.address || entry?.key || '')).filter(Boolean);
+            if (!keys.length) return tDraft('proposalDrafts.review.noLens', 'No lens members');
+            const short = keys.map(entry => entry.length > 12 ? `${entry.slice(0, 4)}…${entry.slice(-4)}` : entry).join(', ');
+            return tDraft('proposalDrafts.review.lensMembers', '{{count}} lens member(s): {{keys}}', { count: keys.length, keys: short });
+        }
+        if (!value || typeof value !== 'object') return tDraft('proposalDrafts.review.noApproval', 'No approval setup');
+        const rights = value.rights;
+        const rightsText = rights && Array.isArray(rights.parcels)
+            ? tDraft('proposalDrafts.review.rights', 'Rights for {{parcels}} parcel(s), {{owners}} owner(s), from {{source}}.', {
+                parcels: rights.parcels.length,
+                owners: new Set(rights.parcels.flatMap(parcel => (parcel.owners || []).map(owner => owner.ownerId))).size,
+                source: [rights.source?.provider, rights.source?.reference].filter(Boolean).join(' · ') || '—'
+            })
+            : tDraft('proposalDrafts.review.noRights', 'No ownership data.');
+        return `${rightsText} ${approvalPolicyText(value.policy)}`;
+    }
+
     function renderApproval(draft) {
         const api = approvalApi();
         let config = null;
@@ -317,11 +346,7 @@
             source.id === 'upload' ? tDraft('proposalDrafts.approval.upload', 'Upload JSON') : (source.label || source.id), selectedSource)).join('');
         const policy = config?.policy || { type: 'unanimous' };
         const threshold = policy.type === 'threshold' ? policy : {};
-        const policySummary = policy.type === 'threshold'
-            ? tDraft('proposalDrafts.approval.policyContextThreshold', 'Approval uses owner-count {{owners}} and area {{area}} thresholds.', {
-                owners: fractionText(policy.owners), area: fractionText(policy.area)
-            })
-            : tDraft('proposalDrafts.approval.policyContextUnanimous', 'Every declared owner must approve.');
+        const policySummary = approvalPolicyText(policy);
         const lens = Array.isArray(draft.fields?.lens) ? draft.fields.lens : [];
         const lensLines = lens.map(entry => typeof entry === 'string' ? entry : (entry?.address || entry?.key || '')).filter(Boolean).join('\n');
         const message = editorState.approvalError || configError;
@@ -466,6 +491,10 @@
         return String(value);
     }
 
+    function reviewValue(key, value) {
+        return key === 'approvalConfig' || key === 'lens' ? approvalReviewText(key, value) : displayValue(value);
+    }
+
     function renderReview(draft) {
         const summary = typeof global.summarizeProposalDraftChanges === 'function'
             ? global.summarizeProposalDraftChanges(draft)
@@ -474,7 +503,7 @@
         const rows = changed.map(change => `
             <div class="proposal-editor-diff-row">
                 <dt>${escapeHtml(change.label || change.key)}</dt>
-                <dd><s>${escapeHtml(displayValue(change.before))}</s><br>${escapeHtml(displayValue(change.after))}</dd>
+                <dd><s>${escapeHtml(reviewValue(change.key, change.before))}</s><br>${escapeHtml(reviewValue(change.key, change.after))}</dd>
             </div>`).join('');
         const parcels = summary?.parcels || { added: [], removed: [] };
         const geometry = summary?.geometry || {};
@@ -1011,7 +1040,7 @@
         return { ...capability, draft, proposal };
     }
 
-    async function editProposal(proposalIdOrHash) {
+    async function editProposal(proposalIdOrHash, options = {}) {
         const proposal = proposalById(proposalIdOrHash);
         const capability = getProposalEditCapability(proposal);
         if (!capability.editable) {
@@ -1022,7 +1051,13 @@
         }
         const draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
         try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
-        return openProposalEditorShell(draft.id);
+        return openProposalEditorShell(draft.id, { tab: options.tab || null });
+    }
+
+    // The details panel's way into the editor's Approval tab (rights, rule, lens); publishing the
+    // edit creates a replacement record, as every edit does.
+    function editProposalApproval(proposalIdOrHash) {
+        return editProposal(proposalIdOrHash, { tab: 'approval' });
     }
 
     // "Create proposal" on an existing map object: skip the editor entirely and go straight to
@@ -2072,6 +2107,7 @@
     global.closeProposalEditorShell = closeProposalEditorShell;
     global.editProposal = editProposal;
     global.editProposalAsReplacement = editProposal;
+    global.editProposalApproval = editProposalApproval;
     global.proposeExistingProposal = proposeExistingProposal;
     global.editProposalGeometry = editProposalGeometry;
     global.canEditProposalGeometry = canEditProposalGeometry;
@@ -2108,7 +2144,8 @@
             patchForPath,
             displayValue,
             approvalCadastreParcelIds,
-            renderApprovalPreview
+            renderApprovalPreview,
+            reviewValue
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);
