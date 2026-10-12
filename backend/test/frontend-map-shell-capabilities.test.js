@@ -53,7 +53,7 @@ class FakeElement {
     getClientRects() { return this.hidden ? [] : [{}]; }
 }
 
-function bootMapShell() {
+function bootMapShell({ phone = false } = {}) {
     const documentListeners = new Map();
     const body = new FakeElement();
     body.style = new FakeStyle();
@@ -63,7 +63,7 @@ function bootMapShell() {
         new FakeElement({ id: 'photo', attributes: { 'data-map-modes': 'photo' }, hidden: true })
     ];
     const measureSheet = new FakeElement({ id: 'measurement-sheet', classes: ['map-sheet'], attributes: { 'data-map-modes': '2d' }, hidden: true });
-    const activitySheet = new FakeElement({ id: 'activity-sheet', classes: ['map-sheet'], hidden: true });
+    const activitySheet = new FakeElement({ id: 'activity-sheet', classes: ['map-sheet', 'map-sheet--dock'], hidden: true });
     const trigger = new FakeElement({ id: 'measurement-trigger', attributes: { 'data-sheet-target': 'measurement-sheet' } });
     const nav = ['proposals', 'bets', 'activity'].map(id => new FakeElement({ id }));
     const elements = new Map([[measureSheet.id, measureSheet], [activitySheet.id, activitySheet]]);
@@ -104,7 +104,7 @@ function bootMapShell() {
         CustomEvent: FakeCustomEvent,
         innerWidth: 1200,
         innerHeight: 800,
-        matchMedia: () => ({ matches: false }),
+        matchMedia: () => ({ matches: phone }),
         requestAnimationFrame: callback => callback(),
         addEventListener(type, listener) {
             const listeners = windowListeners.get(type) || [];
@@ -152,5 +152,30 @@ describe('MapShell mode capabilities', () => {
         shell.syncModeAvailability();
         expect(modes.map(control => control.hidden)).toEqual([true, true, false]);
         expect(nav.every(button => button.disabled === false)).toBe(true);
+    });
+
+    // On a phone the dock's sheets fill the screen above the bar. The credits follow the map a
+    // sheet leaves exposed, and a full-screen one leaves none; a control sheet still lifts them.
+    it('reports a phone dock sheet as covering the map and moves no credits for it', () => {
+        const { win, body, measureSheet, activitySheet } = bootMapShell({ phone: true });
+        const shell = win.MapShell;
+
+        shell.openSheet(activitySheet, { focus: false });
+        expect(shell.coversMap()).toBe(true);
+        expect(body.style.values.has('--map-visible-bottom')).toBe(false);
+
+        shell.openSheet(measureSheet, { focus: false });
+        expect(shell.coversMap()).toBe(false);
+        expect(body.style.values.get('--map-visible-bottom')).toBe('790px');
+
+        shell.closeSheets();
+        expect(shell.coversMap()).toBe(false);
+        expect(body.style.values.has('--map-visible-bottom')).toBe(false);
+    });
+
+    it('never reports a covering sheet on a wide map', () => {
+        const { win, activitySheet } = bootMapShell();
+        win.MapShell.openSheet(activitySheet, { focus: false });
+        expect(win.MapShell.coversMap()).toBe(false);
     });
 });

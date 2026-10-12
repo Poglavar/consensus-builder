@@ -19,7 +19,8 @@ coverage.
 3. **The sidebar is deleted, not hidden.** No fallback path. Code that read `#sidebar.collapsed` or
    called `toggleSidebar()` is changed to the no-sidebar reality (the map is always unobstructed on
    the left).
-4. **Mobile first.** Every sheet is a bottom sheet under 768px; popovers become bottom-sheet peeks.
+4. **Mobile first.** Every sheet is a bottom sheet under 768px, except the bottom row's own three
+   (Proposals, Bets, Activity), which fill the screen above the bar; popovers become bottom-sheet peeks.
    300–400px widths must work.
 5. **i18n** en/hr/es/sr for every new string. **Reduced motion** honoured (globe spin, fly-in).
 6. **Logic in pure modules** (search ranking, coverage tier lookup, command availability, globe
@@ -143,7 +144,10 @@ Status per step is recorded at the end of this file.
   `revealControl(id)`, `revealSection(name)`, `setSectionBusy(name, busy, msg)` (replaces
   `setSidebarDisabled`, locks only the named section), `setLockedFor3D(bool)` (replaces
   disable/enableSidebarFor3D), pure `placePopover` (tested). Popover on desktop anchored to its
-  button (below a top button, above a bottom one), bottom sheet (≤80vh) under 768px; one open at a
+  button (below a top button, above a bottom one), bottom sheet (≤80vh) under 768px. The dock
+  sheets (`.map-sheet--dock`: Proposals, Bets, Activity) share one 560px frame centred on the
+  bottom row, and on a phone fill the screen above the bar, translucent (`MapShell.coversMap()`;
+  a list row tap there opens the proposal's compact card instead of previewing); one open at a
   time; Esc / close button restore focus to the button; outside pointerdown closes; aria-expanded /
   aria-controls on every trigger. The Proposals badge mirrors `#showProposalsButton`'s
   `data-i18n-params` count via a MutationObserver.
@@ -725,6 +729,7 @@ Canonical names for follow-up discussion.
 | **Proposals button** / **Proposals sheet** | bottom-right with the count badge; list, plan stats, rooster, minted, share plan |
 | **Tools button** / **Tools sheet** | bottom-right; Measurement, Parcel Blocks actions, Stations, Roads, Area Monitor |
 | **Activity button** / **Activity sheet** | bottom-right; activity explorer, actors, Simulation section, status line + log |
+| **dock sheets** | the Proposals, Bets and Activity sheets: one frame (560px, same height) centred on the bottom row; phones: full screen above the bar, translucent |
 | **running dot** | small pulsing green dot on the Activity button's corner while the simulation runs ("Simulation running"); no pulse under reduced motion |
 | **Simulation section** | Activity sheet, under the explorer buttons: play/pause icon button, date · Turn N; **Simulation settings** disclosure (Enable game mode, interval, next-turn progress, New Game) |
 | **status toast** | `#floating-status`, one line above the bottom row |

@@ -154,4 +154,61 @@ describe('proposal list navigation', () => {
         expect(calls[1][2]).toMatchObject({ centerOnProposal: false, closeSheets: true, presentation: 'details' });
         expect(context.openProposalFromList).toHaveBeenCalledTimes(1);
     });
+
+    // A phone's list fills the screen, so a preview would land behind it: the tap goes to the
+    // proposal on the map with its compact card instead, centred, and the list closes.
+    it('on a phone, where the list covers the map, opens the tapped proposal compact and centred', async () => {
+        const row = {
+            getAttribute: name => name === 'data-proposal-id' ? 'proposal-17' : null,
+            classList: { add: vi.fn() }
+        };
+        const { context, calls } = loadListUi({ modal: { querySelectorAll: () => [] }, window: { MapShell: { coversMap: () => true } } });
+
+        await context.handleProposalListItemClick(clickEvent(row));
+
+        expect(context.previewProposalOnMap).not.toHaveBeenCalled();
+        expect(row.classList.add).not.toHaveBeenCalled();
+        expect(calls).toHaveLength(1);
+        expect(calls[0][0]).toBe('details');
+        expect(calls[0][2]).toMatchObject({ centerOnProposal: true, closeSheets: true, presentation: 'compact' });
+    });
+
+    it('on a phone, Details still opens the full panel, centred since nothing framed it', async () => {
+        const { context, calls } = loadListUi({ window: { MapShell: { coversMap: () => true } } });
+        const button = { getAttribute: name => name === 'data-proposal-details' ? 'proposal-17' : null };
+
+        await context.handleProposalListDetailsClick(clickEvent(button));
+
+        expect(calls[0][2]).toMatchObject({ centerOnProposal: true, closeSheets: true, presentation: 'details' });
+    });
+});
+
+describe('proposal panel fit padding', () => {
+    const { context } = loadListUi();
+    const pad = (rect, viewport) => JSON.parse(JSON.stringify(context.proposalPanelFitPadding(rect, viewport, 40)));
+    const box = (left, top, right, bottom) => ({ left, top, right, bottom, width: right - left, height: bottom - top });
+    const desktop = { width: 1280, height: 860 };
+    const phone = { width: 390, height: 844 };
+
+    it('pads only the margin when no panel is open', () => {
+        expect(pad(null, desktop)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] });
+    });
+
+    it('frames left of a panel docked on the right', () => {
+        expect(pad(box(870, 58, 1270, 802), desktop)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [450, 40] });
+    });
+
+    // The list sheet sits centred over the dock: content goes to the free side, never under it.
+    it('frames on the free side of a centred sheet, and right of a panel docked on the left', () => {
+        expect(pad(box(360, 114, 920, 802), desktop)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [960, 40] });
+        expect(pad(box(10, 58, 410, 802), desktop)).toEqual({ paddingTopLeft: [450, 40], paddingBottomRight: [40, 40] });
+    });
+
+    it('frames above a card across the width of a phone', () => {
+        expect(pad(box(0, 505, 390, 786), phone)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [40, 379] });
+    });
+
+    it('pads nothing for a sheet covering the whole map: the framing is for when it closes', () => {
+        expect(pad(box(0, 0, 390, 784), phone)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] });
+    });
 });

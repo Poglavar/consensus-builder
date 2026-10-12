@@ -1,7 +1,8 @@
 // ui/map-shell.js — the floating map shell that replaced the left sidebar: the Layers/Settings
 // buttons (top-right), the Proposals/Bets/Activity dock and the sheets they
 // open. A sheet is a popover anchored to its button on desktop and
-// a bottom sheet under 768px; one is open at a time, Esc and an outside click close it. The controls
+// a bottom sheet under 768px; the dock's own three (.map-sheet--dock) share one frame centred on the
+// dock, and fill the screen above the bar on a phone. One is open at a time, Esc and an outside click close it. The controls
 // inside the sheets are the old sidebar's, moved with their ids and handlers (see UI-REWORK.md).
 // placePopover is pure and exported for backend/test/frontend-ui-commands.test.js.
 (function (root, factory) {
@@ -270,10 +271,18 @@
         updateMapViewportInsets();
     }
 
-    // Attribution follows the exposed map when a phone sheet opens. The dock never moves.
+    // Whether the open sheet hides the whole map: a dock sheet on a phone fills the screen above the
+    // bar. A list there cannot preview on the map behind it (js/proposals/list-ui.js).
+    function coversMap() {
+        const sheet = state.openSheet;
+        return !!(sheet && !sheet.hidden && isMobile() && sheet.classList.contains('map-sheet--dock'));
+    }
+
+    // Attribution follows the exposed map when a phone sheet opens. The dock never moves. A sheet
+    // that covers the map exposes none of it, so the credits stay where the map will be again.
     function updateMapViewportInsets() {
         let inset = 0;
-        if (isMobile() && state.openSheet && !state.openSheet.hidden) {
+        if (isMobile() && state.openSheet && !state.openSheet.hidden && !coversMap()) {
             const top = state.openSheet.getBoundingClientRect().top;
             inset = Math.max(0, win.innerHeight - top);
         }
@@ -461,6 +470,7 @@
         closeSheets,
         toggleSheet,
         isOpen,
+        coversMap,
         revealControl,
         revealSection,
         setSectionBusy,

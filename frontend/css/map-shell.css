@@ -421,6 +421,16 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     box-sizing: border-box;
 }
 
+/* ---- Dock sheets: Proposals, Bets, Activity ----
+   The bottom row's three destinations share one frame: the same width and height, centred on the
+   row (its data-sheet-anchor in index.html), so switching between them swaps the content and
+   nothing moves or resizes. Wide enough for a row with a thumbnail, a title and its actions. On a
+   phone they fill the screen above the bar instead (the phone block at the end of this file). */
+.map-sheet--dock {
+    width: 560px;
+    height: min(var(--sheet-max-height, 70vh), 80vh, 880px);
+}
+
 .map-sheet .btn-group {
     display: flex;
     flex-direction: column;
@@ -1075,6 +1085,22 @@ body.app-loading .map-shell-cluster {
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
+    /* The bar's own sheets are full screens above it, not bottom sheets: the bar stays as the way
+       between them. They take the bar's veil, so the map still shows through, blurred. */
+    .map-sheet--dock {
+        top: 0;
+        bottom: var(--map-shell-dock-height);
+        height: auto;
+        max-height: none;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: 0;
+        border: 0;
+        border-radius: 0;
+        background: var(--cb-glass-veil);
+        backdrop-filter: blur(12px);
+        box-shadow: none;
+    }
+
     /* A labelled bar along the bottom (docs/design-language.md): three equal buttons, icon over
        label, instead of an icon-only column with a floating count. The bottom clearance grows with
        it so the toast and the tray sit above the bar, and the credits and scale bar take the row
@@ -1114,6 +1140,17 @@ body.app-loading .map-shell-cluster {
         /* Transparent at rest so the veil is what one sees; hover and the active state keep their fills. */
         background: transparent;
         box-shadow: none;
+    }
+
+    /* The open sheet's button, in the tab-bar way. The dark pill fill does not reach this far (the
+       rule above wins), which left its white label on the light veil, unreadable. */
+    .map-shell-cluster--bottom-right .map-shell-button--labelled.is-active {
+        background: var(--cb-primary-soft);
+        color: var(--cb-primary);
+    }
+
+    .map-shell-cluster--bottom-right .map-shell-button--labelled.is-active i {
+        color: var(--cb-primary);
     }
 
     .map-shell-cluster--bottom-right .map-shell-button-label {

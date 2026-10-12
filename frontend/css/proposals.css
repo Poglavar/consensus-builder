@@ -409,12 +409,6 @@
 }
 
 @media (max-width: 767.98px) {
-    #proposals-sheet {
-        bottom: var(--map-shell-dock-height, 52px);
-        height: min(65dvh, calc(100dvh - var(--map-shell-dock-height) - var(--map-shell-top-clearance)));
-        max-height: min(65dvh, calc(100dvh - var(--map-shell-dock-height) - var(--map-shell-top-clearance)));
-    }
-
     /* The title gets its own line: squeezed next to the number, status pill and action button it
        was cut to "Block 2109…", dropping exactly the part that tells sibling proposals apart. */
     .proposal-card-head {

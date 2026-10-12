@@ -380,8 +380,9 @@
             </div>
         </div>
 
-        <!-- Bottom navigation: Proposals, Bets, Activity -->
-        <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right">
+        <!-- Bottom navigation: Proposals, Bets, Activity. Their sheets anchor to the whole row, so all three
+             open in the same place (js/ui/map-shell.js positionSheet). -->
+        <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right" data-sheet-anchor>
             <button type="button" id="proposals-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="proposals-sheet" aria-controls="proposals-sheet" aria-expanded="false"
                 title="Proposals" data-i18n-key="mapShell.proposals" data-i18n-attr="title">
@@ -860,7 +861,7 @@
         </section>
 
         <!-- Proposals sheet: the whole sheet is the proposals section -->
-        <section id="proposals-sheet" class="map-sheet accordion-section" data-section="proposals" role="dialog"
+        <section id="proposals-sheet" class="map-sheet map-sheet--dock accordion-section" data-section="proposals" role="dialog"
             aria-labelledby="proposals-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="proposals-sheet-title" class="map-sheet-title">
@@ -928,7 +929,7 @@
         </section>
 
         <!-- Bets sheet: the city's contests with each proposal's yes/no pool (js/bets/bets-sheet.js renders the body) -->
-        <section id="bets-sheet" class="map-sheet" role="dialog" aria-labelledby="bets-sheet-title" hidden>
+        <section id="bets-sheet" class="map-sheet map-sheet--dock" role="dialog" aria-labelledby="bets-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="bets-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.bets">Bets</h2>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
@@ -955,7 +956,7 @@
         </section>
 
         <!-- Activity: recent events, watched areas, simulation and technical status -->
-        <section id="activity-sheet" class="map-sheet" role="dialog" aria-labelledby="activity-sheet-title" hidden>
+        <section id="activity-sheet" class="map-sheet map-sheet--dock" role="dialog" aria-labelledby="activity-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="activity-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.activity">Activity</h2>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close

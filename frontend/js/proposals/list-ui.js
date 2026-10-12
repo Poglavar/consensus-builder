@@ -938,6 +938,14 @@ async function handleProposalListItemClick(event) {
 
     if (!proposal) return;
 
+    // On a phone the list fills the screen, so a preview behind it would show nothing: the tap
+    // closes the list and goes to the proposal on the map with its compact card, as a search
+    // result does. Its Details button still opens the full panel.
+    if (window.MapShell?.coversMap?.()) {
+        await openListedProposal(proposal, proposalIdAttr, 'compact');
+        return;
+    }
+
     const resolvedId = getProposalKey(proposal) || proposalIdAttr;
 
     // A list click only PREVIEWS the proposal: pan/zoom the map to it (framed in the visible area,
@@ -984,7 +992,14 @@ async function handleProposalListDetailsClick(event) {
         }
     }
     if (!proposal) return;
+    await openListedProposal(proposal, proposalId, 'details');
+}
 
+// Opens a listed proposal's panel and closes the list: its Details button ('details'), and a row tap
+// on a phone ('compact'). The map is centred on it only when the list covered the map, where no
+// preview has framed it.
+async function openListedProposal(proposal, proposalId, presentation) {
+    const centerOnProposal = !!window.MapShell?.coversMap?.();
     if (document.body.classList.contains('three-mode-active')) {
         if (typeof window.requestMapMode !== 'function') return;
         try { await window.requestMapMode('2d'); } catch (error) {
@@ -996,10 +1011,10 @@ async function handleProposalListDetailsClick(event) {
 
     const resolvedId = getProposalKey(proposal) || proposalId;
     if (typeof openProposalFromList === 'function') {
-        openProposalFromList(resolvedId, { proposal, centerOnProposal: false, closeSheets: true, presentation: 'details' });
+        openProposalFromList(resolvedId, { proposal, centerOnProposal, closeSheets: true, presentation });
     } else if (typeof selectAndHighlightProposal === 'function') {
         closeProposalList();
-        selectAndHighlightProposal(resolvedId, null, false, true, false, { presentation: 'details' });
+        selectAndHighlightProposal(resolvedId, null, false, true, false, { presentation });
     }
 }
 
@@ -1085,16 +1100,35 @@ if (typeof document !== 'undefined') {
     document.addEventListener('mapshell:sheetclosed', handleProposalSheetClosed);
 }
 
-// fitBounds padding that keeps content in the VISIBLE map, clear of whichever right/bottom-docked
-// proposal panel is currently covering it: the list panel while browsing, or the details panel once a
-// proposal is selected. That side is padded out (right ~third / 400px on desktop, lower half on
-// mobile). Returns a plain {paddingTopLeft, paddingBottomRight} for fitBounds — a symmetric margin
-// when neither panel is open. Shared by fit-all-on-open, the preview zoom, and proposal selection.
+// The fitBounds padding that frames content in the map a panel leaves visible. A panel with room
+// beside it (the details panel docked right, the list sheet centred over the dock) pads out its own
+// side and everything past it, so content lands on the wider free side; a panel as wide as the map
+// (the details card on a phone) pads out everything below its top edge. A panel that leaves less
+// than MIN_FREE_PX anywhere covers the map (the list on a phone) and pads nothing: the framing is
+// for when it is gone. rect is a DOMRect-like box, viewport { width, height }. Pure.
+function proposalPanelFitPadding(rect, viewport, margin = 40) {
+    const MIN_FREE_PX = 120;
+    const padding = { paddingTopLeft: [margin, margin], paddingBottomRight: [margin, margin] };
+    if (!rect || !(rect.width > 0) || !(rect.height > 0)) return padding;
+    const freeLeft = rect.left;
+    const freeRight = viewport.width - rect.right;
+    if (Math.max(freeLeft, freeRight) >= MIN_FREE_PX) {
+        if (freeLeft >= freeRight) padding.paddingBottomRight = [Math.round(viewport.width - rect.left) + margin, margin];
+        else padding.paddingTopLeft = [Math.round(rect.right) + margin, margin];
+    } else if (rect.top >= MIN_FREE_PX) {
+        padding.paddingBottomRight = [margin, Math.round(viewport.height - rect.top) + margin];
+    }
+    return padding;
+}
+
+// fitBounds padding that keeps content in the VISIBLE map, clear of whichever proposal panel is
+// currently covering it: the share-plan panel, the list sheet while browsing, or the details panel
+// once a proposal is selected (proposalPanelFitPadding decides which side). Returns a plain
+// {paddingTopLeft, paddingBottomRight} for fitBounds — a symmetric margin when no panel is open.
+// Shared by fit-all-on-open, the preview zoom, and proposal selection.
 function getProposalPanelFitPadding(margin = 40) {
-    let paddingTopLeft = [margin, margin];
-    let paddingBottomRight = [margin, margin];
+    let rect = null;
     try {
-        let rect = null;
         // The share-plan panel exists in the DOM only while open, so presence means visible.
         const sharePanel = document.querySelector('.share-plan-panel-content');
         const listModal = document.querySelector('.proposal-list-modal');
@@ -1107,19 +1141,15 @@ function getProposalPanelFitPadding(margin = 40) {
             const details = document.getElementById('proposal-details-panel');
             if (details && details.classList.contains('visible')) rect = details.getBoundingClientRect();
         }
-        if (rect && rect.width > 0 && rect.height > 0) {
-            const docksBottom = rect.top > window.innerHeight * 0.4; // bottom dock (mobile)
-            if (docksBottom) paddingBottomRight = [margin, Math.round(rect.height) + margin];
-            else paddingBottomRight = [Math.round(rect.width) + margin, margin];
-        }
-    } catch (_) { }
-    return { paddingTopLeft, paddingBottomRight };
+    } catch (_) { rect = null; }
+    return proposalPanelFitPadding(rect, { width: window.innerWidth, height: window.innerHeight }, margin);
 }
 
 // Frame every currently-applied proposal in one view — used when the list opens so the user starts
 // from an overview. Bounds come from each proposal's own geometry (resolveStandaloneProposalFocusBounds),
 // with a parcel-layer fallback, combined into one L.latLngBounds. The side the panel covers is padded
-// so nothing is framed behind it (right third on desktop, lower half on mobile).
+// so nothing is framed behind it (beside the list sheet on desktop; on a phone the list covers the
+// map, so the overview is framed for when it closes).
 function fitMapToAppliedProposals() {
     if (typeof map === 'undefined' || !map || typeof L === 'undefined') return false;
     const all = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
