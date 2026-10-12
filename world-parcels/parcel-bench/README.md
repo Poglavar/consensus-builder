@@ -176,4 +176,6 @@ The Köppen raster: `koppen_geiger_tif.zip` (131 MB) from the figshare record ab
 
 Done 2026-10-12: scorer with 19 behavioural tests, ledger, Zagreb manifest frozen, rules baseline recorded on both splits, practice-region donors computed for all researched cities, GPU kit written, layered model v0 built with OSM sidecars for all 96 training tiles and an end-to-end CPU smoke test (train, resume, evaluate-only).
 
-Next: run v0 on the rented GPU and record its selection and final rows against the baseline; start the learning curve; add the second Croatian city.
+v0 milestone (2026-10-12, RTX 4090 on Vast.ai, 30 epochs in about two minutes): selection parcel F1 0.196 versus the baseline's 0.130; final split, scored once, parcel F1 0.253 versus 0.176, precision 0.290 versus 0.253, recall 0.225 versus 0.135, area-weighted recall 0.227 versus 0.124, boundary F1 0.458 versus 0.430. A 200-epoch run of the same recipe did not beat it on selection (0.189), so training length is not the lever; data is. Rows are in `results.jsonl`.
+
+Next: the learning curve (same recipe, more tiles from more regions) and the second Croatian city.
