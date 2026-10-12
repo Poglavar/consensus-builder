@@ -98,7 +98,10 @@ export function assessForcedQueryEvidence({ requests, expectedIds, returnedIds, 
     const expected = [...expectedIds].sort();
     const returned = [...returnedIds].sort();
     const sameIds = JSON.stringify(expected) === JSON.stringify(returned);
-    const records = Array.isArray(requests) ? requests : [];
+    // Only a request the provider answered read anything: a dropped connection the adapter sent
+    // again is one read, not a repeated page.
+    const records = (Array.isArray(requests) ? requests : [])
+        .filter(request => Number.isSafeInteger(request.httpStatus) && request.httpStatus >= 200 && request.httpStatus < 300);
     // Single-equality reads end each exact ID with one singleton objectIds geometry request too.
     if (mode === 'object-ids' || mode === 'single-equality') {
         const objectIdRequests = records.filter(request => request.idListParam === 'objectIds' && request.idListCount === 1);
@@ -253,6 +256,9 @@ export function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
                 requestRecord.timeout = signal.aborted;
                 requestRecord.errorType = typeof error?.name === 'string' ? error.name : 'Error';
                 if (typeof error?.code === 'string') requestRecord.errorCode = error.code;
+                // Node's fetch reports every network failure as "fetch failed"; the cause's code
+                // (ECONNRESET, EAI_AGAIN, UND_ERR_SOCKET, ...) tells a provider fault from our own.
+                if (typeof error?.cause?.code === 'string') requestRecord.causeCode = error.cause.code;
                 throw error;
             }
         } catch (error) {

@@ -36,7 +36,7 @@ test('preserves equal outlines under different canonical IDs for the independent
 
 test('accepts page-size-one offset-zero requests when native predicates differ', () => {
     const evidence = assessForcedQueryEvidence({
-        requests:[{ queryHash:'native-query-a', pageLimit:1, offset:0 }, { queryHash:'native-query-b', pageLimit:1, offset:0 }],
+        requests:[{ queryHash:'native-query-a', pageLimit:1, offset:0, httpStatus:200 }, { queryHash:'native-query-b', pageLimit:1, offset:0, httpStatus:200 }],
         expectedIds:['SRC-123','SRC-456'], returnedIds:['SRC-123','SRC-456'], complete:true
     });
     assert.equal(evidence.passed, true);
@@ -46,17 +46,29 @@ test('accepts page-size-one offset-zero requests when native predicates differ',
 
 test('rejects a repeated page-size-one predicate at the same offset', () => {
     const evidence = assessForcedQueryEvidence({
-        requests:[{ queryHash:'same-native-query', pageLimit:1, offset:0 }, { queryHash:'same-native-query', pageLimit:1, offset:0 }],
+        requests:[{ queryHash:'same-native-query', pageLimit:1, offset:0, httpStatus:200 }, { queryHash:'same-native-query', pageLimit:1, offset:0, httpStatus:200 }],
         expectedIds:['SRC-123','SRC-456'], returnedIds:['SRC-123','SRC-456'], complete:true
     });
     assert.equal(evidence.passed, false);
     assert.equal(evidence.duplicatePageRequests, 1);
 });
 
+test('a page the provider dropped and the adapter sent again is one read, not a repeated page', () => {
+    const page = { queryHash:'same-native-query', pageLimit:1, offset:0 };
+    const evidence = assessForcedQueryEvidence({
+        requests:[{ ...page, errorType:'TypeError', causeCode:'ECONNRESET' }, { ...page, httpStatus:502 }, { ...page, httpStatus:200 },
+            { queryHash:'native-query-b', pageLimit:1, offset:0, httpStatus:200 }],
+        expectedIds:['SRC-123','SRC-456'], returnedIds:['SRC-123','SRC-456'], complete:true
+    });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.featurePageRequests, 2);
+    assert.equal(evidence.duplicatePageRequests, 0);
+});
+
 test('accepts ArcGIS singleton object-ID requests only with a complete manifest and exact returned IDs', () => {
     const requests = [
-        { queryHash:'object-id-a', idListParam:'objectIds', idListCount:1 },
-        { queryHash:'object-id-b', idListParam:'objectIds', idListCount:1 }
+        { queryHash:'object-id-a', idListParam:'objectIds', idListCount:1, httpStatus:200 },
+        { queryHash:'object-id-b', idListParam:'objectIds', idListCount:1, httpStatus:200 }
     ];
     const evidence = assessForcedQueryEvidence({ requests, expectedIds:['SRC-123','SRC-456'],
         returnedIds:['SRC-123','SRC-456'], complete:true, mode:'object-ids' });
@@ -101,7 +113,7 @@ test('single-equality exact reads are judged by their singleton objectIds geomet
     const requests = [
         { queryHash:'count-a' }, { queryHash:'ids-a' }, { queryHash:'oid-1', idListParam:'objectIds', idListCount:1 },
         { queryHash:'count-b' }, { queryHash:'ids-b' }, { queryHash:'oid-2', idListParam:'objectIds', idListCount:1 }
-    ];
+    ].map(request => ({ ...request, httpStatus:200 }));
     const evidence = assessForcedQueryEvidence({ requests, expectedIds:['N-1','N-2'], returnedIds:['N-1','N-2'], complete:true, mode:'single-equality' });
     assert.equal(evidence.passed, true);
     assert.equal(evidence.kind, 'single-equality-manifest');
@@ -119,6 +131,17 @@ test('a cursor-paged request is a distinct query identity', async () => {
     assert.equal(new Set(state.requests.map(request => request.queryHash)).size, 3);
     const evidence = assessForcedQueryEvidence({ requests: state.requests, expectedIds:['A','B','C'], returnedIds:['A','B','C'], complete:true });
     assert.equal(evidence.passed, true);
+});
+
+test('a network failure records the cause code Node\'s fetch hides behind "fetch failed"', async () => {
+    const state = { requests: [] };
+    globalThis.__qualificationOriginalFetch = async () => { throw new TypeError('fetch failed', { cause: Object.assign(new Error('getaddrinfo EAI_AGAIN'), { code: 'EAI_AGAIN' }) }); };
+    const fetch = makeSafeFetch({ state, stage: 'sampling' });
+    await assert.rejects(fetch('https://api.example/collections/parcels/items?limit=1'), /fetch failed/);
+    delete globalThis.__qualificationOriginalFetch;
+    assert.equal(state.requests.length, 1);
+    assert.equal(state.requests[0].errorType, 'TypeError');
+    assert.equal(state.requests[0].causeCode, 'EAI_AGAIN');
 });
 
 test('dense cities shrink the cell only for sources that read one parcel per request or worse', () => {

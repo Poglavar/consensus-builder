@@ -5,20 +5,20 @@
     "asOf": "2026-10-12",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 1800,
+    "cityCount": 1802,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 1723,
+    "checkedCityCount": 1725,
     "uncheckedCityCount": 77,
-    "cityRegistryFoundCount": 1375,
-    "verifiedCitySampleCount": 634,
+    "cityRegistryFoundCount": 1377,
+    "verifiedCitySampleCount": 636,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 1526,
-    "growthMatchedCount": 644,
+    "populationMatchedCount": 1528,
+    "growthMatchedCount": 646,
     "checkedCitiesMissingDate": 74,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 560,
+    "configuredAppCityCount": 561,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -11136,6 +11136,65 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3344",
+      "name": "Bełchatów",
+      "country": "Poland",
+      "countryCode": "PL",
+      "latitude": 51.3600738693611,
+      "longitude": 19.3733696862117,
+      "registryCityIds": [
+        "wup2025:3344"
+      ],
+      "appCityIds": [
+        "belchatow"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 3344,
+      "wupName": "Bełchatów",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 51803,
+      "population2025": 51141,
+      "annualGrowthPct2015To2025": -0.128615,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": "2026-10-12",
+      "checkedDateEvidence": {
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "pl-gugik-egib-wfs"
+      ],
+      "evidenceUrls": [
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3344/qualification.json",
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.36007&mlon=19.37337#map=12/51.36007/19.37337",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.36007%2C19.37337",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4497",
       "name": "Belém",
       "country": "Brazil",
@@ -12816,10 +12875,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -12828,15 +12887,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3397/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3397/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=49.81788&mlon=19.04233#map=12/49.81788/19.04233",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.81788%2C19.04233",
@@ -19335,10 +19397,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -19347,15 +19409,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4394/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4394/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.13430&mlon=23.47759#map=12/51.13430/23.47759",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.13430%2C23.47759",
@@ -23292,6 +23357,65 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-13.52896&mlon=-71.95491#map=12/-13.52896/-71.95491",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-13.52896%2C-71.95491",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:3002",
+      "name": "Częstochowa",
+      "country": "Poland",
+      "countryCode": "PL",
+      "latitude": 50.8076252950718,
+      "longitude": 19.1134120802074,
+      "registryCityIds": [
+        "wup2025:3002"
+      ],
+      "appCityIds": [
+        "czestochowa"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 3002,
+      "wupName": "Częstochowa",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 172584,
+      "population2025": 164337,
+      "annualGrowthPct2015To2025": -0.489649,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": "2026-10-12",
+      "checkedDateEvidence": {
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "pl-gugik-egib-wfs"
+      ],
+      "evidenceUrls": [
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3002/qualification.json",
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.80763&mlon=19.11341#map=12/50.80763/19.11341",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.80763%2C19.11341",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -28899,10 +29023,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -28911,15 +29035,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2620/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2620/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.16686&mlon=19.41031#map=12/54.16686/19.41031",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.16686%2C19.41031",
@@ -28958,10 +29085,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -28970,15 +29097,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4029/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4029/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.82348&mlon=22.35767#map=12/53.82348/22.35767",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.82348%2C22.35767",
@@ -32583,10 +32713,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -32595,15 +32725,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/1935/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/1935/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.53220&mlon=18.50763#map=12/54.53220/18.50763",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.53220%2C18.50763",
@@ -33333,10 +33466,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -33345,15 +33478,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2881/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2881/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.29748&mlon=18.67267#map=12/50.29748/18.67267",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.29748%2C18.67267",
@@ -33392,10 +33528,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -33404,15 +33540,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/1673/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/1673/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.53444&mlon=17.60643#map=12/52.53444/17.60643",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.53444%2C17.60643",
@@ -33786,10 +33925,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -33798,15 +33937,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/399/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/399/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.74294&mlon=15.23894#map=12/52.74294/15.23894",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.74294%2C15.23894",
@@ -34351,10 +34493,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -34363,15 +34505,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2549/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2549/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.47882&mlon=18.75711#map=12/53.47882/18.75711",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.47882%2C18.75711",
@@ -41050,10 +41195,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -41062,15 +41207,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2172/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2172/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.79023&mlon=18.25906#map=12/52.79023/18.25906",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.79023%2C18.25906",
@@ -42752,10 +42900,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -42764,15 +42912,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2818/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2818/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=49.95183&mlon=18.59084#map=12/49.95183/18.59084",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.95183%2C18.59084",
@@ -45748,10 +45899,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -45760,15 +45911,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2249/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2249/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.75494&mlon=18.08332#map=12/51.75494/18.08332",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.75494%2C18.08332",
@@ -48691,10 +48845,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -48703,15 +48857,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3758/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3758/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.87508&mlon=20.62754#map=12/50.87508/20.62754",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.87508%2C20.62754",
@@ -49957,10 +50114,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -49969,15 +50126,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/685/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/685/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.19411&mlon=16.19021#map=12/54.19411/16.19021",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.19411%2C16.19021",
@@ -53144,10 +53304,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -53156,15 +53316,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3710/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3710/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.40397&mlon=20.92527#map=12/52.40397/20.92527",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.40397%2C20.92527",
@@ -53203,10 +53366,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -53215,15 +53378,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/937/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/937/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.20585&mlon=16.17412#map=12/51.20585/16.17412",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.20585%2C16.17412",
@@ -53787,10 +53953,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -53799,15 +53965,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/1275/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/1275/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.84278&mlon=16.57730#map=12/51.84278/16.57730",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.84278%2C16.57730",
@@ -55724,10 +55893,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -55736,15 +55905,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3986/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3986/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.17140&mlon=22.06469#map=12/53.17140/22.06469",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.17140%2C22.06469",
@@ -56877,10 +57049,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -56889,15 +57061,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/816/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/816/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.39799&mlon=16.19639#map=12/51.39799/16.19639",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.39799%2C16.19639",
@@ -56936,10 +57111,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -56948,15 +57123,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4280/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4280/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.24117&mlon=22.55180#map=12/51.24117/22.55180",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.24117%2C22.55180",
@@ -69864,10 +70042,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -69876,15 +70054,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3897/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3897/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=49.61405&mlon=20.69990#map=12/49.61405/20.69990",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.61405%2C20.69990",
@@ -70819,10 +71000,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -70831,15 +71012,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3502/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3502/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.76657&mlon=20.49783#map=12/53.76657/20.49783",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.76657%2C20.49783",
@@ -71135,10 +71319,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -71147,15 +71331,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2401/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2401/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.66817&mlon=17.94041#map=12/50.66817/17.94041",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.66817%2C17.94041",
@@ -71673,10 +71860,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -71685,15 +71872,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2014/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2014/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.64974&mlon=17.81381#map=12/51.64974/17.81381",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.64974%2C17.81381",
@@ -72334,10 +72524,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -72346,15 +72536,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3061/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3061/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.66100&mlon=19.35343#map=12/51.66100/19.35343",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.66100%2C19.35343",
@@ -74280,10 +74473,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -74292,15 +74485,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/1167/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/1167/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.15137&mlon=16.74643#map=12/53.15137/16.74643",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.15137%2C16.74643",
@@ -74449,10 +74645,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -74461,15 +74657,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3449/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3449/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.40867&mlon=19.68362#map=12/51.40867/19.68362",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.40867%2C19.68362",
@@ -74674,10 +74873,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -74686,15 +74885,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3289/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3289/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.54310&mlon=19.71955#map=12/52.54310/19.71955",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.54310%2C19.71955",
@@ -76225,10 +76427,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -76237,15 +76439,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4318/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4318/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=49.78657&mlon=22.77208#map=12/49.78657/22.77208",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.78657%2C22.77208",
@@ -77840,10 +78045,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -77852,15 +78057,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3851/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3851/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.39646&mlon=21.15265#map=12/51.39646/21.15265",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.39646%2C21.15265",
@@ -80480,10 +80688,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -80492,15 +80700,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2754/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2754/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.09918&mlon=18.53838#map=12/50.09918/18.53838",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.09918%2C18.53838",
@@ -80539,10 +80750,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -80551,15 +80762,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4199/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4199/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.03207&mlon=22.00396#map=12/50.03207/22.00396",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.03207%2C22.00396",
@@ -87109,10 +87323,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -87121,15 +87335,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4072/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4072/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.16569&mlon=22.27671#map=12/52.16569/22.27671",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.16569%2C22.27671",
@@ -87988,10 +88205,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -88000,15 +88217,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/1053/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/1053/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.46370&mlon=17.02132#map=12/54.46370/17.02132",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.46370%2C17.02132",
@@ -88970,10 +89190,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -88982,15 +89202,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4157/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4157/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.56643&mlon=22.05682#map=12/50.56643/22.05682",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.56643%2C22.05682",
@@ -89029,10 +89252,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -89041,15 +89264,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/241/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/241/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.33823&mlon=15.03056#map=12/53.33823/15.03056",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.33823%2C15.03056",
@@ -90319,10 +90545,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -90331,15 +90557,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4115/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4115/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.10431&mlon=22.93310#map=12/54.10431/22.93310",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.10431%2C22.93310",
@@ -90688,10 +90917,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -90700,15 +90929,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/71/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/71/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.43531&mlon=14.53505#map=12/53.43531/14.53505",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.43531%2C14.53505",
@@ -92227,10 +92459,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -92239,15 +92471,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3942/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3942/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.01649&mlon=20.98777#map=12/50.01649/20.98777",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.01649%2C20.98777",
@@ -92574,10 +92809,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -92586,15 +92821,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2325/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2325/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.09084&mlon=18.78434#map=12/54.09084/18.78434",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.09084%2C18.78434",
@@ -94452,10 +94690,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -94464,15 +94702,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3555/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3555/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.53402&mlon=20.01356#map=12/51.53402/20.01356",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.53402%2C20.01356",
@@ -94963,10 +95204,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -94975,15 +95216,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2476/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2476/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.02459&mlon=18.62125#map=12/53.02459/18.62125",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.02459%2C18.62125",
@@ -96062,10 +96306,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -96074,15 +96318,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3178/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3178/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.11884&mlon=18.98718#map=12/50.11884/18.98718",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.11884%2C18.98718",
@@ -98931,10 +99178,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -98943,15 +99190,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/3660/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/3660/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.22292&mlon=21.00082#map=12/52.22292/21.00082",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.22292%2C21.00082",
@@ -99226,10 +99476,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -99238,15 +99488,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/1763/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/1763/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.60540&mlon=18.23918#map=12/54.60540/18.23918",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.60540%2C18.23918",
@@ -99756,10 +100009,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -99768,15 +100021,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/2687/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/2687/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.65059&mlon=19.06267#map=12/52.65059/19.06267",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.65059%2C19.06267",
@@ -99995,10 +100251,10 @@
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-09",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-10-09",
-        "path": "research/overnight-followon-2026-10-09/city-1580-wroclaw.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -100007,19 +100263,22 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
         "https://geoportal.wroclaw.pl/mapy/wlasnosci/",
         "https://bip.zgkikm.wroc.pl/zgk/ogloszenia-i-komunikaty/22289%2CInformacja-o-dostosowaniu-bazy-danych-ewidencji-gruntow-i-budynkow.html",
         "https://gis.um.wroc.pl/portal_srv/rest/services/Działki/MapServer/0",
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/1580/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/1580/qualification.json",
         "research/overnight-followon-2026-10-09/city-1580-wroclaw.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.10522&mlon=17.02268#map=12/51.10522/17.02268",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.10522%2C17.02268",
@@ -103326,10 +103585,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -103338,15 +103597,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/4356/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/4356/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.72177&mlon=23.26096#map=12/50.72177/23.26096",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.72177%2C23.26096",
@@ -104427,10 +104689,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-09-29",
+      "checkedDate": "2026-10-12",
       "checkedDateEvidence": {
-        "date": "2026-09-29",
-        "path": "world-parcels/research/countries/PL.json",
+        "date": "2026-10-12",
+        "path": "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
@@ -104439,15 +104701,18 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "pl-gugik-uldk"
+        "pl-gugik-uldk",
+        "pl-gugik-egib-wfs"
       ],
       "evidenceUrls": [
-        "https://uldk.gugik.gov.pl/"
+        "https://uldk.gugik.gov.pl/",
+        "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-12-round2/544/qualification.json",
+        "world-parcels/research/qualification-2026-10-12-pl-egib/544/qualification.json",
         "world-parcels/research/countries/PL.json",
-        "research/countries/PL-adapter-2026-10-12.json"
+        "world-parcels/research/countries/PL-egib-wfs-2026-10-12.json",
+        "research/countries/PL-egib-wfs-2026-10-12.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.93732&mlon=15.50236#map=12/51.93732/15.50236",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.93732%2C15.50236",
@@ -111448,8 +111713,8 @@
       "population": 38140910,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 56,
-      "citiesWithRegistry": 56,
+      "citiesChecked": 58,
+      "citiesWithRegistry": 58,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,

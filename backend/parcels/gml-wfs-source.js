@@ -58,7 +58,9 @@ const PROFILES = Object.freeze({
         // whole matched set states numberMatched (verified 2026-10-12), so a cell usually costs
         // one request instead of count + page + recount; larger and empty sets report "unknown".
         // Its CountDefault is 1000: a 3x3 block of city-centre cells (75-153 parcels) fits one page.
-        version: '2.0.0', schema: POLAND_EGIB_GML_SCHEMA, pageMatchCount: true, maxPageSize: 1000
+        // It resets about 1% of connections before answering (ECONNRESET; 2026-10-12: 1 of 90
+        // relayed block reads, 14 of ~2,900 qualifier requests), so such a read is sent once more.
+        version: '2.0.0', schema: POLAND_EGIB_GML_SCHEMA, pageMatchCount: true, maxPageSize: 1000, transportRetries: 1
     }),
     // Official capabilities declare ImplementsResultPaging FALSE. Fetch the
     // entire bounded match set once; never infer completeness from a short page.
@@ -190,6 +192,7 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
     const maxTotalResponseBytes = descriptor.maxTotalResponseBytes ?? 8 * 1024 * 1024;
     const timeoutMs = descriptor.timeoutMs ?? 12000;
     const profile = PROFILES[descriptor.id];
+    const dropped = new WeakSet();
 
     function makeParams({ filter, resourceIds, bbox, resultType, count, startIndex }) {
         return new URLSearchParams({
@@ -245,7 +248,17 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         } finally { reader?.releaseLock(); }
     }
 
+    // A read the provider dropped before answering (no HTTP response, or the relay's 502 for one)
+    // is sent again when the profile names transportRetries; every other failure stands.
     async function request(params, budget) {
+        for (let retries = profile.transportRetries ?? 0; ; retries--) {
+            try { return await attempt(params, budget); } catch (error) {
+                if (retries <= 0 || !dropped.has(error)) throw error;
+            }
+        }
+    }
+
+    async function attempt(params, budget) {
         let remaining = budget.deadline - Date.now();
         if (remaining <= 0) fail('Parcel WFS operation timed out.', 504);
         if (++budget.requests > MAX_OPERATION_REQUESTS) fail('Parcel WFS operation exceeds the request limit.');
@@ -261,7 +274,11 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
                 signal, redirect: 'error', headers: { Accept: 'application/gml+xml; version=3.2, application/xml, text/xml' }
             });
             if (Date.now() >= budget.deadline || signal.aborted) fail('Parcel WFS operation timed out.', 504);
-            if (!response.ok) throw providerHttpError(response);
+            if (!response.ok) {
+                const error = providerHttpError(response);
+                if (response.status === 502) dropped.add(error);
+                throw error;
+            }
             const contentType = response.headers?.get?.('content-type') || '';
             if (contentType && !/(?:xml|gml)/i.test(contentType)) fail('Parcel WFS returned a non-XML response.');
             const body = await readBody(response, budget);
@@ -270,7 +287,9 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         } catch (error) {
             if (error.status) throw error;
             if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error.name)) fail('Parcel WFS request timed out.', 504);
-            fail('Parcel WFS is unavailable.');
+            const unavailable = upstreamError('Parcel WFS is unavailable.');
+            dropped.add(unavailable);
+            throw unavailable;
         }
     }
 

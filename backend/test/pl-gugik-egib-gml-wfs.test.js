@@ -81,6 +81,39 @@ test('an absent ID is not proven by a page that leaves the count unknown', async
     assert.ok(requests.some(u => u.searchParams.get('resultType') === 'hits'));
 });
 
+// GUGiK resets about 1% of connections before answering; the relay reports such a read as 502.
+function flaky(failures, ids = [ID]) {
+    const { fetchImpl: answer, requests } = transport(ids);
+    const queue = [...failures];
+    const fetchImpl = async (url, init) => {
+        const next = queue.shift();
+        if (next === 'reset') { requests.push(new URL(url)); throw new TypeError('fetch failed', { cause: { code: 'ECONNRESET' } }); }
+        if (Number.isInteger(next)) { requests.push(new URL(url)); return new Response('{"error":"Parcel provider is unavailable."}', { status: next }); }
+        return answer(url, init);
+    };
+    return { fetchImpl, requests };
+}
+
+test('a read GUGiK dropped before answering is sent once more', async () => {
+    for (const failure of ['reset', 502]) {
+        const { fetchImpl, requests } = flaky([failure]);
+        const result = await createGmlWfsParcelSource(descriptor, { fetchImpl }).queryBounds([22.705, 53.862, 22.715, 53.866]);
+        assert.equal(requests.length, 2);
+        assert.deepEqual(result.features.map(feature => feature.id), [`${PREFIX}${ID}`]);
+    }
+    const twice = flaky(['reset', 'reset']);
+    await assert.rejects(createGmlWfsParcelSource(descriptor, { fetchImpl: twice.fetchImpl }).queryBounds([22.705, 53.862, 22.715, 53.866]),
+        error => error.code === 'parcel-source-unavailable' && error.upstreamStatus === undefined);
+    assert.equal(twice.requests.length, 2);
+    // An answer is never repeated: a refusal or an overloaded service stands.
+    for (const status of [403, 503]) {
+        const answered = flaky([status]);
+        await assert.rejects(createGmlWfsParcelSource(descriptor, { fetchImpl: answered.fetchImpl }).queryBounds([22.705, 53.862, 22.715, 53.866]),
+            error => error.upstreamStatus === status);
+        assert.equal(answered.requests.length, 1);
+    }
+});
+
 test('only this profile may read pages of up to 1000 rows', () => {
     assert.doesNotThrow(() => createGmlWfsParcelSource({ ...descriptor, pageSize: 500, maxResponseBytes: 2 * 1024 * 1024 }, { fetchImpl: async () => {} }));
     assert.throws(() => createGmlWfsParcelSource({ ...descriptor, pageSize: 1001 }, { fetchImpl: async () => {} }), /Invalid GML WFS/);

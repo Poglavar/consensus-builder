@@ -1,0 +1,55 @@
+{
+ "city": {
+  "code": "4115",
+  "name": "Suwałki",
+  "point": [
+   22.9331027875897,
+   54.1043061997561
+  ]
+ },
+ "sampleIds": [
+  "PL-EGIB-206301_1.0005.12256"
+ ],
+ "absentId": "PL-EGIB-206301_1.0005.999998",
+ "metricEpsg": "EPSG:32634",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "GUGiK's collective EGiB WFS (mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza), announced on geoportal.gov.pl on 2026-07-16, serves cadastral parcels (ms:dzialki, ID_DZIALKI TERYT identifiers) gathered from the county EGiB WFS services listed in EZiUDP.",
+   "Its parcel identifiers equal ULDK's TERYT parcel IDs for the same parcels (probed in eleven cities on 2026-10-12)."
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "id": "pl-gugik-egib-wfs",
+  "name": "GUGiK collective EGiB WFS (Zbiorcza usługa WFS EGiB) — county cadastral parcels",
+  "adapter": "gml-wfs",
+  "endpoint": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza",
+  "featureType": "ms:dzialki",
+  "version": "2.0.0",
+  "idField": "ID_DZIALKI",
+  "geometryField": "geom",
+  "responseCrs": "EPSG:2180",
+  "idType": "string",
+  "idPrefix": "PL-EGIB-",
+  "idPattern": "^[0-9]{6}_[0-9]\\.[0-9]{4}\\.(?:AR_[0-9]{1,4}\\.)?[0-9]{1,6}(?:/[0-9]{1,6})?$",
+  "parcelNumberField": "ID_DZIALKI",
+  "outFields": [
+   "ID_DZIALKI"
+  ],
+  "pageSize": 100,
+  "maxFeatures": 1500,
+  "maxBboxKm2": 1,
+  "maxResponseBytes": 1048576,
+  "maxTotalResponseBytes": 8388608,
+  "timeoutMs": 15000,
+  "maxConcurrentQueries": 2,
+  "capabilities": {
+   "areaEnumeration": true
+  },
+  "countryCode": "PL",
+  "metricSrid": 32634,
+  "operator": "Główny Urząd Geodezji i Kartografii (GUGiK); EGiB data maintained by county starosties",
+  "catalogueUrl": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza?SERVICE=WFS&REQUEST=GetCapabilities"
+ }
+}

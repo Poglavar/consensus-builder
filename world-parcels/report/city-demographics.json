@@ -55823,9 +55823,9 @@
         "overnight-followon-1001-1100",
         "app"
       ],
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/1580/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/1580/qualification.json"
     },
     {
       "id": "wup2025:6337",
@@ -61445,9 +61445,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/71/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/71/qualification.json"
     },
     {
       "id": "wup2025:85",
@@ -61637,9 +61637,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/241/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/241/qualification.json"
     },
     {
       "id": "wup2025:267",
@@ -61829,9 +61829,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/399/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/399/qualification.json"
     },
     {
       "id": "wup2025:420",
@@ -61989,9 +61989,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/544/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/544/qualification.json"
     },
     {
       "id": "wup2025:559",
@@ -62117,9 +62117,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/685/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/685/qualification.json"
     },
     {
       "id": "wup2025:763",
@@ -62245,9 +62245,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/816/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/816/qualification.json"
     },
     {
       "id": "wup2025:844",
@@ -62341,9 +62341,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/937/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/937/qualification.json"
     },
     {
       "id": "wup2025:951",
@@ -62469,9 +62469,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/1053/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/1053/qualification.json"
     },
     {
       "id": "wup2025:1075",
@@ -62629,9 +62629,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/1167/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/1167/qualification.json"
     },
     {
       "id": "wup2025:1232",
@@ -62725,9 +62725,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/1275/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/1275/qualification.json"
     },
     {
       "id": "wup2025:1338",
@@ -63141,9 +63141,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/1673/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/1673/qualification.json"
     },
     {
       "id": "wup2025:1688",
@@ -63237,9 +63237,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/1763/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/1763/qualification.json"
     },
     {
       "id": "wup2025:1864",
@@ -63397,9 +63397,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/1935/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/1935/qualification.json"
     },
     {
       "id": "wup2025:1947",
@@ -63493,9 +63493,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2014/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2014/qualification.json"
     },
     {
       "id": "wup2025:2088",
@@ -63621,9 +63621,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2172/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2172/qualification.json"
     },
     {
       "id": "wup2025:2184",
@@ -63781,9 +63781,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2249/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2249/qualification.json"
     },
     {
       "id": "wup2025:2319",
@@ -63877,9 +63877,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2325/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2325/qualification.json"
     },
     {
       "id": "wup2025:2395",
@@ -63941,9 +63941,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2401/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2401/qualification.json"
     },
     {
       "id": "wup2025:2470",
@@ -64037,9 +64037,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2476/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2476/qualification.json"
     },
     {
       "id": "wup2025:2544",
@@ -64101,9 +64101,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2549/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2549/qualification.json"
     },
     {
       "id": "wup2025:2615",
@@ -64165,9 +64165,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2620/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2620/qualification.json"
     },
     {
       "id": "wup2025:2682",
@@ -64229,9 +64229,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2687/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2687/qualification.json"
     },
     {
       "id": "wup2025:2749",
@@ -64325,9 +64325,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2754/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2754/qualification.json"
     },
     {
       "id": "wup2025:2813",
@@ -64421,9 +64421,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2818/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2818/qualification.json"
     },
     {
       "id": "wup2025:2876",
@@ -64485,9 +64485,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/2881/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/2881/qualification.json"
     },
     {
       "id": "wup2025:2937",
@@ -64645,9 +64645,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3061/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3061/qualification.json"
     },
     {
       "id": "wup2025:3115",
@@ -64773,9 +64773,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3178/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3178/qualification.json"
     },
     {
       "id": "wup2025:3230",
@@ -64901,9 +64901,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3289/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3289/qualification.json"
     },
     {
       "id": "wup2025:3340",
@@ -65061,9 +65061,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3397/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3397/qualification.json"
     },
     {
       "id": "wup2025:3446",
@@ -65157,9 +65157,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3449/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3449/qualification.json"
     },
     {
       "id": "wup2025:3499",
@@ -65221,9 +65221,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3502/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3502/qualification.json"
     },
     {
       "id": "wup2025:3552",
@@ -65317,9 +65317,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3555/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3555/qualification.json"
     },
     {
       "id": "wup2025:3605",
@@ -65445,9 +65445,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3660/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3660/qualification.json"
     },
     {
       "id": "wup2025:3707",
@@ -65541,9 +65541,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3710/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3710/qualification.json"
     },
     {
       "id": "wup2025:3756",
@@ -65605,9 +65605,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3758/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3758/qualification.json"
     },
     {
       "id": "wup2025:3805",
@@ -65701,9 +65701,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3851/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3851/qualification.json"
     },
     {
       "id": "wup2025:3895",
@@ -65765,9 +65765,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3897/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3897/qualification.json"
     },
     {
       "id": "wup2025:3926",
@@ -65829,9 +65829,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3942/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3942/qualification.json"
     },
     {
       "id": "wup2025:3984",
@@ -65893,9 +65893,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/3986/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3986/qualification.json"
     },
     {
       "id": "wup2025:4027",
@@ -65957,9 +65957,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4029/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4029/qualification.json"
     },
     {
       "id": "wup2025:4056",
@@ -66021,9 +66021,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4072/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4072/qualification.json"
     },
     {
       "id": "wup2025:4115",
@@ -66053,9 +66053,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4115/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4115/qualification.json"
     },
     {
       "id": "wup2025:4157",
@@ -66085,9 +66085,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4157/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4157/qualification.json"
     },
     {
       "id": "wup2025:4197",
@@ -66149,9 +66149,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4199/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4199/qualification.json"
     },
     {
       "id": "wup2025:4238",
@@ -66213,9 +66213,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4280/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4280/qualification.json"
     },
     {
       "id": "wup2025:4318",
@@ -66245,9 +66245,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4318/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4318/qualification.json"
     },
     {
       "id": "wup2025:4354",
@@ -66309,9 +66309,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4356/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4356/qualification.json"
     },
     {
       "id": "wup2025:4394",
@@ -66341,9 +66341,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "pl-gugik-uldk",
+      "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/4394/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/4394/qualification.json"
     },
     {
       "id": "wup2025:4430",
@@ -67816,6 +67816,70 @@
       "parcelSourceId": "us-ma-massgis-l3-tax-parcels",
       "parcelQualification": "technical-qualified-bounded",
       "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-round2/8523/qualification.json"
+    },
+    {
+      "id": "wup2025:3002",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Częstochowa",
+      "countryCode": "PL",
+      "latitude": 50.8076252950718,
+      "longitude": 19.1134120802074,
+      "wupLatitude": 50.8076252950718,
+      "wupLongitude": 19.1134120802074,
+      "wupName": "Częstochowa",
+      "wupCityCode": 3002,
+      "appCityIds": [
+        "czestochowa"
+      ],
+      "population2025": 164337,
+      "population2015": 172584,
+      "annualGrowthPct2015To2025": -0.489649,
+      "registryCityIds": [
+        "wup2025:3002"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "pl-gugik-egib-wfs",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3002/qualification.json"
+    },
+    {
+      "id": "wup2025:3344",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Bełchatów",
+      "countryCode": "PL",
+      "latitude": 51.3600738693611,
+      "longitude": 19.3733696862117,
+      "wupLatitude": 51.3600738693611,
+      "wupLongitude": 19.3733696862117,
+      "wupName": "Bełchatów",
+      "wupCityCode": 3344,
+      "appCityIds": [
+        "belchatow"
+      ],
+      "population2025": 51141,
+      "population2015": 51803,
+      "annualGrowthPct2015To2025": -0.128615,
+      "registryCityIds": [
+        "wup2025:3344"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "pl-gugik-egib-wfs",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3344/qualification.json"
     }
   ],
   "wikipediaLookupErrors": [

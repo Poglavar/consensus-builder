@@ -3882,6 +3882,8 @@
     },
     "city": {
         "labels": {
+            "czestochowa": "Częstochowa, Пољска",
+            "belchatow": "Bełchatów, Пољска",
             "aachen": "Aachen, Немачка",
             "szczecin": "Szczecin, Пољска",
             "liepaja": "Liepaja, Летонија",

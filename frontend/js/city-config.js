@@ -8223,7 +8223,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4353064484097, 14.5350485616163], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.4353064484097, 14.5350485616163], fallbackDataset: [14.5350485616163, 53.4353064484097] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         liepaja: {
@@ -8277,7 +8277,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3382279105169, 15.030564201468], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.3382279105169, 15.030564201468], fallbackDataset: [15.030564201468, 53.3382279105169] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tartu: {
@@ -8331,7 +8331,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7429409230698, 15.2389393766615], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.7429409230698, 15.2389393766615], fallbackDataset: [15.2389393766615, 52.7429409230698] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         daugavpils: {
@@ -8376,7 +8376,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9373160500613, 15.5023625952977], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9373160500613, 15.5023625952977], fallbackDataset: [15.5023625952977, 51.9373160500613] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         panevezys: {
@@ -8421,7 +8421,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.19411056018, 16.1902100834576], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.19411056018, 16.1902100834576], fallbackDataset: [16.1902100834576, 54.19411056018] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         palmerston_north: {
@@ -8457,7 +8457,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3979869466992, 16.1963940635763], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3979869466992, 16.1963940635763], fallbackDataset: [16.1963940635763, 51.3979869466992] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         netanya: {
@@ -8493,7 +8493,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2058512284457, 16.1741221611038], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2058512284457, 16.1741221611038], fallbackDataset: [16.1741221611038, 51.2058512284457] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chania: {
@@ -8529,7 +8529,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.4636975832782, 17.0213199178476], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.4636975832782, 17.0213199178476], fallbackDataset: [17.0213199178476, 54.4636975832782] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rehovot: {
@@ -8574,7 +8574,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1513682979439, 16.7464328052244], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.1513682979439, 16.7464328052244], fallbackDataset: [16.7464328052244, 53.1513682979439] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         glenfield: {
@@ -8601,7 +8601,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8427843893659, 16.5773027600746], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.8427843893659, 16.5773027600746], fallbackDataset: [16.5773027600746, 51.8427843893659] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         otumoetai: {
@@ -8700,7 +8700,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1052197969447, 17.0226844994164], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1052197969447, 17.0226844994164], fallbackDataset: [17.0226844994164, 51.1052197969447] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rosh_haayin: {
@@ -8727,7 +8727,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5344430787909, 17.6064312677703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5344430787909, 17.6064312677703], fallbackDataset: [17.6064312677703, 52.5344430787909] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kafr_yasif: {
@@ -8754,7 +8754,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.6054036640665, 18.2391802227089], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.6054036640665, 18.2391802227089], fallbackDataset: [18.2391802227089, 54.6054036640665] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         beersheba: {
@@ -8799,7 +8799,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.5322041862711, 18.5076341710355], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.5322041862711, 18.5076341710355], fallbackDataset: [18.5076341710355, 54.5322041862711] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         taibe: {
@@ -8826,7 +8826,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6497384459528, 17.8138050881419], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6497384459528, 17.8138050881419], fallbackDataset: [17.8138050881419, 51.6497384459528] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         munster: {
@@ -8862,7 +8862,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7902336993022, 18.2590588435053], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.7902336993022, 18.2590588435053], fallbackDataset: [18.2590588435053, 52.7902336993022] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         modiin_maccabim_reut: {
@@ -8907,7 +8907,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7549404064184, 18.0833173060179], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7549404064184, 18.0833173060179], fallbackDataset: [18.0833173060179, 51.7549404064184] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bussum: {
@@ -8934,7 +8934,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.0908371715605, 18.7843364944908], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.0908371715605, 18.7843364944908], fallbackDataset: [18.7843364944908, 54.0908371715605] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hilversum: {
@@ -8952,7 +8952,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.6681692860732, 17.9404125955347], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.6681692860732, 17.9404125955347], fallbackDataset: [17.9404125955347, 50.6681692860732] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         almere: {
@@ -8979,7 +8979,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0245852712266, 18.6212481126872], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.0245852712266, 18.6212481126872], fallbackDataset: [18.6212481126872, 53.0245852712266] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zeist: {
@@ -8997,7 +8997,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4788249167263, 18.7571110836073], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.4788249167263, 18.7571110836073], fallbackDataset: [18.7571110836073, 53.4788249167263] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         s_hertogenbosch: {
@@ -9015,7 +9015,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.1668551128978, 19.4103120545885], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.1668551128978, 19.4103120545885], fallbackDataset: [19.4103120545885, 54.1668551128978] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         amersfoort: {
@@ -9033,7 +9033,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6505942526297, 19.0626658622382], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6505942526297, 19.0626658622382], fallbackDataset: [19.0626658622382, 52.6505942526297] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lelystad: {
@@ -9060,7 +9060,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.099180479429, 18.5383788655106], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.099180479429, 18.5383788655106], fallbackDataset: [18.5383788655106, 50.099180479429] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         eindhoven: {
@@ -9087,7 +9087,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.9518257086113, 18.5908434066578], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.9518257086113, 18.5908434066578], fallbackDataset: [18.5908434066578, 49.9518257086113] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         oss: {
@@ -9105,7 +9105,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.2974825733379, 18.6726701509765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.2974825733379, 18.6726701509765], fallbackDataset: [18.6726701509765, 50.2974825733379] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         veenendaal: {
@@ -9150,7 +9150,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6609967628735, 19.3534282663508], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6609967628735, 19.3534282663508], fallbackDataset: [19.3534282663508, 51.6609967628735] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leeuwarden: {
@@ -9186,7 +9186,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.1188429468754, 18.987175031002], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.1188429468754, 18.987175031002], fallbackDataset: [18.987175031002, 50.1188429468754] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         maastricht: {
@@ -9222,7 +9222,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5430998887522, 19.7195485490596], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5430998887522, 19.7195485490596], fallbackDataset: [19.7195485490596, 52.5430998887522] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         apeldoorn: {
@@ -9267,7 +9267,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.8178778643515, 19.0423255904236], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.8178778643515, 19.0423255904236], fallbackDataset: [19.0423255904236, 49.8178778643515] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         heerlen: {
@@ -9294,7 +9294,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4086733870137, 19.6836162711193], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4086733870137, 19.6836162711193], fallbackDataset: [19.6836162711193, 51.4086733870137] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         deventer: {
@@ -9312,7 +9312,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7665732876546, 20.4978271160328], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.7665732876546, 20.4978271160328], fallbackDataset: [20.4978271160328, 53.7665732876546] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         groningen: {
@@ -9339,7 +9339,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5340194073462, 20.0135606379077], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5340194073462, 20.0135606379077], fallbackDataset: [20.0135606379077, 51.5340194073462] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         almelo: {
@@ -9375,7 +9375,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2229170530915, 21.0008161096485], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2229170530915, 21.0008161096485], fallbackDataset: [21.0008161096485, 52.2229170530915] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         enschede: {
@@ -9402,7 +9402,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4039665953965, 20.9252703477092], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4039665953965, 20.9252703477092], fallbackDataset: [20.9252703477092, 52.4039665953965] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         heidelberg: {
@@ -9420,7 +9420,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8750758566059, 20.6275441266407], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8750758566059, 20.6275441266407], fallbackDataset: [20.6275441266407, 50.8750758566059] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wolomin: {
@@ -9447,7 +9447,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3964628828514, 21.1526507651136], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3964628828514, 21.1526507651136], fallbackDataset: [21.1526507651136, 51.3964628828514] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hanau: {
@@ -9465,7 +9465,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.6140452924349, 20.6998999214814], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.6140452924349, 20.6998999214814], fallbackDataset: [20.6998999214814, 49.6140452924349] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         davis: {
@@ -9483,7 +9483,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.0164917071665, 20.9877709077343], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.0164917071665, 20.9877709077343], fallbackDataset: [20.9877709077343, 50.0164917071665] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sindelfingen: {
@@ -9501,7 +9501,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1714002876591, 22.0646901929271], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.1714002876591, 22.0646901929271], fallbackDataset: [22.0646901929271, 53.1714002876591] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gerlingen: {
@@ -9519,7 +9519,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.8234849792281, 22.3576680534356], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.8234849792281, 22.3576680534356], fallbackDataset: [22.3576680534356, 53.8234849792281] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         madera: {
@@ -9537,7 +9537,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1656867656902, 22.2767061227765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1656867656902, 22.2767061227765], fallbackDataset: [22.2767061227765, 52.1656867656902] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         suwalki: {
@@ -9546,7 +9546,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.1043061997561, 22.9331027875897], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.1043061997561, 22.9331027875897], fallbackDataset: [22.9331027875897, 54.1043061997561] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         stalowa_wola: {
@@ -9555,7 +9555,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.5664297325734, 22.0568167437462], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.5664297325734, 22.0568167437462], fallbackDataset: [22.0568167437462, 50.5664297325734] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kassel: {
@@ -9573,7 +9573,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.0320723876861, 22.0039593163143], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.0320723876861, 22.0039593163143], fallbackDataset: [22.0039593163143, 50.0320723876861] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         heilbronn: {
@@ -9591,7 +9591,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2411675205158, 22.5517979898529], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2411675205158, 22.5517979898529], fallbackDataset: [22.5517979898529, 51.2411675205158] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         przemysl: {
@@ -9600,7 +9600,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.7865703940357, 22.7720844417991], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.7865703940357, 22.7720844417991], fallbackDataset: [22.7720844417991, 49.7865703940357] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         reutlingen: {
@@ -9618,7 +9618,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7217702281141, 23.2609637553334], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7217702281141, 23.2609637553334], fallbackDataset: [23.2609637553334, 50.7217702281141] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chelm: {
@@ -9627,7 +9627,7 @@
             currency: { locale: 'pl-PL', code: 'PLN' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1343001957731, 23.4775917479072], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1343001957731, 23.4775917479072], fallbackDataset: [23.4775917479072, 51.1343001957731] },
-            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         constance: {
@@ -10051,6 +10051,24 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.4692858620628, -70.9553412983168], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.4692858620628, -70.9553412983168], fallbackDataset: [-70.9553412983168, 42.4692858620628] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        czestochowa: {
+            id: 'czestochowa', wupCityCode: '3002',
+            label: translateCityText('city.labels.czestochowa', 'Częstochowa, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8076252950718, 19.1134120802074], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8076252950718, 19.1134120802074], fallbackDataset: [19.1134120802074, 50.8076252950718] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        belchatow: {
+            id: 'belchatow', wupCityCode: '3344',
+            label: translateCityText('city.labels.belchatow', 'Bełchatów, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3600738693611, 19.3733696862117], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3600738693611, 19.3733696862117], fallbackDataset: [19.3733696862117, 51.3600738693611] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
     };
