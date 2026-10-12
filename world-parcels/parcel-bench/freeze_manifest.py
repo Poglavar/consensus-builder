@@ -14,6 +14,15 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 DEFAULT_SOURCE = HERE.parent / 'guess-spike' / 'output' / 'parcel-expanded-check' / 'dataset' / 'manifest.json'
 SMOKE_TILES = ('tile_2971_33018', 'tile_2980_33040')
+RIGHTS = ('Croatian public-sector data (City of Zagreb CDOF 2022; state DOF likewise), paid by the taxpayer and free for '
+          'research use including model training; verified by the project owner on 2026-10-12')
+LEGAL = 'civil law; Austro-Hungarian (Franciscan) cadastre lineage, DKP via OSS WFS'
+CITIES = {
+    'zagreb': {'slug': 'zagreb', 'name': 'Zagreb', 'country_code': 'HR', 'geonames_id': 3186886, 'legal_tradition': LEGAL,
+               'imagery_rights': RIGHTS},
+    'split': {'slug': 'split', 'name': 'Split', 'country_code': 'HR', 'geonames_id': 3190261, 'legal_tradition': LEGAL,
+              'imagery_rights': RIGHTS},
+}
 RULES = (
     'selection tiles choose checkpoints, thresholds and cleanup; final tiles are scored once per milestone '
     'and every final score is recorded in the ledger with its recipe hash',
@@ -48,7 +57,8 @@ def freeze(source: Path, city: dict, koppen_class: str | None):
         by_split[sample['split']].append(tile_record(sample, block_of.get(sample['id'], {})))
     for records in by_split.values():
         records.sort(key=lambda record: record['id'])
-    exhausted = sorted(set(manifest['exclusions'].get('prior_tile_ids', [])) | set(SMOKE_TILES))
+    smoke = SMOKE_TILES if city['slug'] == 'zagreb' else ()
+    exhausted = sorted(set(manifest['exclusions'].get('prior_tile_ids', [])) | set(smoke))
     try:
         source_path = str(source.resolve().relative_to(HERE.parent.resolve()))
     except ValueError:
@@ -90,13 +100,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, default=DEFAULT_SOURCE, help='spike dataset manifest.json')
     parser.add_argument('--output', type=Path, default=HERE / 'manifests' / 'zagreb-v1.json')
+    parser.add_argument('--city', default='zagreb', choices=sorted(CITIES), help='which city block to freeze')
     parser.add_argument('--koppen-class', help='Köppen-Geiger class of the city, e.g. Cfa')
     parser.add_argument('--force', action='store_true', help='overwrite an existing frozen manifest')
     parser.add_argument('--run', action='store_true', help='actually write; without it, print what would be frozen')
     args = parser.parse_args(argv)
-    city = {'slug': 'zagreb', 'name': 'Zagreb', 'country_code': 'HR', 'geonames_id': 3186886,
-            'legal_tradition': 'civil law; Austro-Hungarian (Franciscan) cadastre lineage, DKP via OSS WFS',
-            'imagery_rights': 'City of Zagreb CDOF 2022 WMS is publicly viewable; redistribution terms unverified'}
+    city = dict(CITIES[args.city])
+    if args.city != 'zagreb' and args.output == HERE / 'manifests' / 'zagreb-v1.json':
+        args.output = HERE / 'manifests' / f"{city['slug']}-v1.json"
     frozen = freeze(args.source, city, args.koppen_class)
     summary = {split: len(frozen['splits'][split]['tiles']) for split in frozen['splits']}
     summary['training_pool'] = len(frozen['training_pool']['tiles'])

@@ -14,7 +14,7 @@
   "city": {
     "country_code": "HR",
     "geonames_id": 3186886,
-    "imagery_rights": "City of Zagreb CDOF 2022 WMS is publicly viewable; redistribution terms unverified",
+    "imagery_rights": "Croatian public-sector data (City of Zagreb CDOF 2022; state DOF likewise), paid by the taxpayer and free for research use including model training; verified by the project owner on 2026-10-12",
     "legal_tradition": "civil law; Austro-Hungarian (Franciscan) cadastre lineage, DKP via OSS WFS",
     "name": "Zagreb"
   },
@@ -76,7 +76,7 @@
   },
   "frozen_at": "2026-10-12T11:14:35+00:00",
   "imagery": {
-    "rights": "City of Zagreb CDOF 2022 WMS is publicly viewable; redistribution terms unverified",
+    "rights": "Croatian public-sector data (City of Zagreb CDOF 2022; state DOF likewise), paid by the taxpayer and free for research use including model training; verified by the project owner on 2026-10-12",
     "source": "local CDOF 2022 RGB tiles",
     "year": "2022"
   },

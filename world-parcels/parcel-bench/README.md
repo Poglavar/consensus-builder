@@ -103,13 +103,21 @@ Layered-model protocol: inputs are RGB plus OSM road and building channels (miss
 
 ## Growing the benchmark
 
-Adding a city: open cadastre with a stable id and a known snapshot date; imagery whose terms allow training use, with a known acquisition date within a year or two of the cadastre; a metric CRS; tiles of at least 300 m; four density strata; blocks separated by at least 500 m; source ids disjoint across splits; a `practice_region` block (country, Köppen class, legal tradition). The exporter from the spike (`prepare_sam3_expanded.py`) already does the Zagreb half of this; a second city needs an imagery adapter and the same screens.
+Adding a city: open cadastre with a stable id and a known snapshot date; imagery whose terms allow training use, with a known acquisition date within a year or two of the cadastre; a metric CRS; tiles of at least 300 m; four density strata; blocks separated by at least 500 m; source ids disjoint across splits; a `practice_region` block (country, Köppen class, legal tradition). The exporter from the spike (`prepare_sam3_expanded.py`) did the Zagreb half of this; `export_city.py` now does it for any Croatian city from a WMS orthophoto and the countrywide parcel table (pre-screen of the tile grid in the database, watermark-free 3×3 block fetches into a tile cache, the pool screens, held-out 2×2 blocks per stratum 500 m apart with disjoint parcel ids, the rest as training pool, a spike-format manifest that `freeze_manifest.py --city <slug>` freezes). Croatian government imagery (City of Zagreb CDOF, the state DOF) is public-sector data free for research use including model training, verified by the project owner on 2026-10-12, so a second Croatian city needs only the imagery adapter, not a rights check.
 
 Candidate order, by practice-region value and data availability (candidates, not decisions):
 
 1. A second Croatian city (Split or Osijek): same country as Zagreb, same DKP source, state DOF imagery; the within-country transfer test.
 2. A European donor with fully open imagery and cadastre: France (IGN BD ORTHO + Etalab PCI), Spain (PNOA + Catastro INSPIRE) or the Netherlands; a same-class, cross-country test.
 3. A tropical or arid donor, because that is where 71 of the 128 uncovered top-200 targets sit and where covered cities are fewest: South Africa (erven), Rwanda (21 region-wide districts), Bogotá, São Paulo or an Indian state map. Imagery rights are the gate; open high-resolution imagery is rare outside Europe, North America and Australia.
+
+## Training pool v2: `manifests/zagreb-pool-v2.json`
+
+The learning curve needs far more training tiles than the frozen manifest's 96, drawn by one rule rather than by the spike's block design. `export_pool.py` builds them from the same CDOF 2022 tile grid (the parking repo's JPEG tile cache: 3,002 tiles, 1024 px, quality 85, the same pixels as the spike's GeoTIFF export) and the current parcel table, applying the spike's tile screens (5..160 clipped parcels, cadastre coverage ≥ 80%, overlapping parcel area ≤ 5%, no no-data pixels) and the benchmark's separation rules (≥ 500 m from every selection and final tile, no parcel source id shared with them, exhausted spike tiles left out). The frozen 96 training-pool tiles and the 32 held-out tiles are hard-linked from the spike dataset unchanged and hash-verified, so the pool dataset is a superset of the frozen one and `train.py --pool` replaces the training pool without touching the held-out splits. `--train-tiles N --seed S` then draws a seeded nested random subset (the first N of one permutation per seed), which is what a learning curve needs.
+
+Result (2026-10-12): 2,143 tiles with 79,336 clipped parcel instances (25× the frozen pool's 3,121), by stratum low 340 / medium 489 / high 596 / dense 718; the closest pool tile to a held-out tile is 554 m away. Rejected: 432 within 500 m of a held-out tile, 362 by parcel count, 15 sharing a parcel id with a held-out tile, 18 exhausted. The tracked manifest carries every tile's bbox, parcel count, stratum and image/truth hashes; the dataset itself (444 MB) stays in the ignored `output/pool/zagreb-pool-v2/dataset` and the exporter rebuilds it in two minutes from the cache and the database.
+
+Rights: Croatian government imagery (City of Zagreb CDOF, the state DOF) is public-sector data free for research use including model training, verified by the project owner on 2026-10-12; the earlier "redistribution terms unverified" caveat is withdrawn.
 
 ## Layered model v0: `layered/`
 
@@ -123,10 +131,12 @@ The first learned model built to the principles above. It never replaces the rul
 - **Targets** (`layered/targets.py`): parcel boundary (tile-edge band cleared, as in the scorer), parcel interior,
   and distance-to-boundary clipped at 12 m. **Model** (`layered/model.py`): a pretrained timm encoder with a
   light U-Net decoder; `convnext_tiny` by default, any timm encoder works.
-- **Reconstruction** (`layered/reconstruct.py`): the baseline's OSM seeds and road/water barriers, with the
-  predicted boundary probability as the crossing cost in the same shortest-path partition, optional extra seeds
-  from predicted interiors that hold no building (empty lots), optional hard barrier above a threshold.
-  Threshold and options are chosen on the selection split only.
+- **Reconstruction** (`layered/reconstruct.py`): the baseline's OSM seeds and road/water barriers plus extra seeds
+  from predicted interiors that hold no building (empty lots). Frozen on 2026-10-12 to a watershed that floods the
+  predicted distance-to-boundary map from the seeds and merges regions under 120 m² into their largest neighbour;
+  the first recipe's shortest-path partition with the boundary probability as crossing cost, and a hard barrier
+  above a threshold, remain selectable. Threshold and options are chosen on the selection split only
+  (`layered/recon_study.py` re-runs any finished run's saved probability maps under named variants).
 - **Training** (`layered/train.py`): AdamW, cosine schedule, mixed precision on CUDA, flips and rotations,
   checkpoint every epoch, `--resume`, a step journal, selection by parcel F1 through `score.py`, the final split
   only through `--evaluate-only --split final`. `--smoke` runs the whole path on two tiles on a CPU in seconds.
@@ -172,10 +182,51 @@ $PY $B/practice_regions.py --koppen koppen/1991_2020/koppen_geiger_0p1.tif --leg
 
 The Köppen raster: `koppen_geiger_tif.zip` (131 MB) from the figshare record above; only `1991_2020/koppen_geiger_0p1.tif` and `legend.txt` are needed. Generated predictions and scores go under the ignored `output/`.
 
+Pool v2, learning curve and OSM-withheld diagnostics:
+
+```sh
+$PY $B/export_pool.py --run                      # laptop: JPEG tile cache + local geodata DB, two minutes, resumable
+# on the box, one lane per seed (the tile cache is shared and written atomically):
+#   gpu/job.sh start curve-s1 bash world-parcels/parcel-bench/gpu/curve.sh \
+#     world-parcels/parcel-bench/manifests/zagreb-pool-v2.json data/dataset runs/curve "96 200 400 800 1600" "1" --workers 3 --eval-workers 4
+gpu/sync.sh pull <ssh-url> curve && $PY $B/layered/curve_summary.py --ledger-add   # table + one ledger row per run
+$PY $B/layered/train.py --run --evaluate-only --split selection --osm-mode none --dataset $DS --output <run>   # or model-blank
+```
+
 ## Status
 
 Done 2026-10-12: scorer with 19 behavioural tests, ledger, Zagreb manifest frozen, rules baseline recorded on both splits, practice-region donors computed for all researched cities, GPU kit written, layered model v0 built with OSM sidecars for all 96 training tiles and an end-to-end CPU smoke test (train, resume, evaluate-only).
 
-v0 milestone (2026-10-12, RTX 4090 on Vast.ai, 30 epochs in about two minutes): selection parcel F1 0.196 versus the baseline's 0.130; final split, scored once, parcel F1 0.253 versus 0.176, precision 0.290 versus 0.253, recall 0.225 versus 0.135, area-weighted recall 0.227 versus 0.124, boundary F1 0.458 versus 0.430. A 200-epoch run of the same recipe did not beat it on selection (0.189), so training length is not the lever; data is. Rows are in `results.jsonl`.
+Milestone 1 (2026-10-12, RTX 4090 on Vast.ai, 30 epochs in about two minutes): selection parcel F1 0.196 versus the baseline's 0.130; final split, scored once, parcel F1 0.253 versus 0.176, precision 0.290 versus 0.253, recall 0.225 versus 0.135, area-weighted recall 0.227 versus 0.124, boundary F1 0.458 versus 0.430. A 200-epoch run of the same recipe did not beat it on selection (0.189), so training length is not the lever; data is. Rows are in `results.jsonl`.
 
-Next: the learning curve (same recipe, more tiles from more regions) and the second Croatian city.
+OSM dependence of the v0 checkpoint (2026-10-12, selection split, ledger rows `…-osm-model-blank` and `…-osm-none`): with the model's OSM input channels zeroed the result is unchanged (parcel F1 0.196, area-weighted recall 0.239 versus 0.234), so the model reads the imagery, not the OSM layers. With no OSM at all (no building seeds, no road or water barriers, predicted interiors as the only seeds) it reaches parcel F1 0.120, precision 0.266, area-weighted recall 0.221 and boundary F1 0.301, against the OSM rules baseline's 0.130 / 0.234 / 0.119 / 0.335, which cannot run at all without OSM buildings. For a city without OSM footprints the learned model alone is already about the baseline with twice its area-weighted recall; recall of small parcels (0.077) is what it loses.
+
+Learning curve (2026-10-12): `gpu/curve.sh` runs the v0 recipe unchanged (convnext_tiny, 512 px, 30 epochs, selection eval every 2 epochs, checkpoint chosen by selection parcel F1) on seeded nested random subsets of pool v2 of 96, 200, 400, 800 and 1,600 tiles, three seeds each (the seed sets both the subset and the initialisation), three lanes in parallel on one RTX 4090 at about 42 tiles/s per lane. Every run gets a ledger row (`layered/curve_summary.py --ledger-add`, method `layered-v0-convnext_tiny-30ep-n<N>`); the summary table is `output/runs/curve/curve.md`. Results (selection split, 16 tiles, 544 references; mean over three seeds, min–max in brackets; about 85 minutes of one RTX 4090 for all fifteen runs):
+
+| Training tiles | Seeds | Parcel F1 mean (min–max) | Precision | Recall | Area-weighted recall | Boundary F1 | Best epochs |
+|---:|---:|---|---:|---:|---:|---:|---|
+| 96 | 3 | 0.196 (0.187–0.207) | 0.238 | 0.166 | 0.218 | 0.384 | 18, 26, 26 |
+| 200 | 3 | 0.210 (0.206–0.213) | 0.257 | 0.177 | 0.257 | 0.397 | 22, 16, 10 |
+| 400 | 3 | 0.210 (0.203–0.222) | 0.245 | 0.183 | 0.230 | 0.411 | 18, 22, 4 |
+| 800 | 3 | 0.209 (0.200–0.222) | 0.246 | 0.181 | 0.224 | 0.427 | 24, 20, 28 |
+| 1600 | 3 | 0.224 (0.219–0.231) | 0.267 | 0.192 | 0.240 | 0.440 | 26, 20, 22 |
+
+The curve rises, but slowly: 16× the data lifts parcel F1 by 0.03 (0.196 → 0.224) with a flat stretch from 200 to 800 tiles, while boundary F1 rises at every doubling (0.384 → 0.440) and recall with it. The pixel model keeps learning from more Zagreb tiles; the instance metric lags because reconstruction turns better boundary maps into whole parcels inefficiently, and because part of the reference boundary is invisible in imagery (the visibility audit of the selection references, still to do, would put a number on that ceiling). Seed spread is about 0.02 on this split, so single runs cannot be compared: the first milestone's 0.196 sits inside the 96-tile spread.
+
+Milestone 2 (2026-10-12, final split scored once, for the best selection run only: 1,600 tiles, seed 2, recipe ca0f60e2): parcel F1 0.302 versus 0.253 (milestone 1) and 0.176 (baseline); precision 0.331, recall 0.277, area-weighted recall 0.344 versus 0.227, interior recall 0.403 versus 0.299, boundary F1 0.523 versus 0.458; 478 predictions for 570 references. Weights in the ignored `output/runs/curve/n1600-s2/best.pt`.
+
+Reconstruction study (2026-10-12, `layered/recon_study.py` on the saved selection probability maps of the 1,600-tile seed-2 run, 50 named variants in three rounds, selection split only): the shortest-path partition was the bottleneck. Flooding the predicted distance map with a watershed from the same seeds lifts parcel F1 from 0.231 to 0.274; merging regions under 120 m² into their largest neighbour adds precision for 0.294 (precision 0.382, recall 0.239, area-weighted recall 0.355, interior recall 0.332). Thresholds, crossing-cost weights, a 512 px grid and seed-area rules moved the partition by at most 0.02; hard barriers halve the score; without interior seeds recall collapses (0.131). Re-scoring every curve run's saved maps shows the gain is systematic and makes the curve monotonic:
+
+| Training tiles | Partition (old recipe) mean | Watershed (frozen) mean (min–max) | Watershed area-weighted recall mean |
+|---:|---:|---|---:|
+| 96 | 0.196 | 0.222 (0.209–0.244) | 0.240 |
+| 200 | 0.210 | 0.237 (0.229–0.249) | 0.289 |
+| 400 | 0.202 | 0.245 (0.235–0.256) | 0.276 |
+| 800 | 0.209 | 0.266 (0.255–0.281) | 0.320 |
+| 1600 | 0.224 | 0.283 (0.265–0.294) | 0.339 |
+
+Milestone 3 (2026-10-12, same weights as milestone 2, reconstruction frozen to the watershed before one final scoring, recipe a87fb45b): final parcel F1 0.347 versus 0.302 (milestone 2), 0.253 (milestone 1) and 0.176 (baseline); precision 0.410, recall 0.302, area-weighted recall 0.361, interior recall 0.436, boundary F1 0.587; 420 predictions for 570 references. Run dir `output/runs/n1600-s2-watershed` (weights hard-linked from the curve run).
+
+Resolution control (2026-10-12, selection split, ledger row `…-n1600-watershed-gsd0.5`): the same weights and recipe with the Zagreb imagery box-downsampled to 0.5 m and back score parcel F1 0.239 against 0.294, precision 0.334, boundary F1 0.474. The model's own input grid is 0.3 m, so a city served at 0.5 m (the DGU DOF5) starts about 0.055 lower for resolution alone, and a transfer result on such a city is read against 0.239, not 0.294.
+
+Next: (1) the second Croatian city, Split, from the DGU DOF 2023/24 WMS (`export_city.py`; the anonymous service watermarks the centre of every image, so tiles are cut from 3×3 requests and the centre tile is never kept; native 0.5 m against Zagreb's 0.15 m, so the resolution effect is measured separately by degrading Zagreb tiles): zero-shot transfer of the Zagreb model, then training with Split tiles added; (2) the visibility audit of the selection references, to bound the ceiling; (3) Ljubljana and a Spanish Csa city to separate legal tradition from climate.

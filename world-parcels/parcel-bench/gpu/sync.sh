@@ -28,8 +28,9 @@ case "$cmd" in
   pull)
     run="${3:-}"; [ -n "$run" ] || { echo "usage: sync.sh pull <ssh-url> <run-name> [--with-weights]" >&2; exit 2; }
     mkdir -p "$BENCH/output/runs/$run"
-    if [ "${4:-}" = "--with-weights" ]; then rs "$target:$ROOT_REMOTE/runs/$run/" "$BENCH/output/runs/$run/"
-    else rs --exclude '*.pt' "$target:$ROOT_REMOTE/runs/$run/" "$BENCH/output/runs/$run/"; fi
+    # The per-tile npz cache (runs/<name>/cache/) is rebuilt anywhere in minutes and never comes back.
+    if [ "${4:-}" = "--with-weights" ]; then rs --exclude 'cache/' "$target:$ROOT_REMOTE/runs/$run/" "$BENCH/output/runs/$run/"
+    else rs --exclude 'cache/' --exclude '*.pt' "$target:$ROOT_REMOTE/runs/$run/" "$BENCH/output/runs/$run/"; fi
     echo "pulled to $BENCH/output/runs/$run" ;;
   *) sed -n '2,7p' "$0"; exit 2 ;;
 esac

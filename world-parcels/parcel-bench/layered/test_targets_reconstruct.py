@@ -55,12 +55,37 @@ class ReconstructTests(unittest.TestCase):
     def left_width(self, labels):
         return int((labels[32, :] == 1).sum())
 
+    def test_watershed_on_the_distance_map_splits_at_its_valley(self):
+        """The frozen recipe: flooding 1 - distance from the two building seeds meets at the predicted boundary."""
+        boundary = np.zeros((64, 64), np.float32)
+        boundary[:, 20] = 1.0
+        distance = targets.distance_target(boundary > 0.5, 1.0, 12.0)
+        collection, labels = reconstruct.reconstruct(boundary, np.ones_like(boundary), self.OSM, BBOX,
+                                                     distance_prob=distance, interior_seeds=False)
+        self.assertEqual(len(collection['features']), 2)
+        self.assertIn(self.left_width(labels), (20, 21))
+        self.assertEqual(collection['features'][0]['properties']['method'], 'osm-seeds+learned-distance-watershed')
+        with self.assertRaises(ValueError):
+            reconstruct.reconstruct(boundary, np.ones_like(boundary), self.OSM, BBOX, interior_seeds=False)
+
+    def test_small_regions_merge_into_their_largest_neighbour(self):
+        labels = np.ones((20, 20), np.int32)
+        labels[:, 10:] = 2
+        labels[9:11, 9:11] = 3      # a 4 px speck across the border, touching 1 and 2 equally; 1 wins the tie
+        labels[0:2, 18:20] = 4      # a 4 px speck touching only label 2
+        out = reconstruct.drop_small_regions(labels, min_px=10)
+        self.assertEqual(set(np.unique(out)), {1, 2})
+        self.assertEqual(int(out[0, 19]), 2)
+        self.assertEqual(reconstruct.drop_small_regions(labels, min_px=4).tolist(), labels.tolist())
+
     def test_boundary_cost_moves_the_split(self):
         flat = np.zeros((64, 64), np.float32)
-        no_line, labels_flat = reconstruct.reconstruct(flat, np.ones_like(flat), self.OSM, BBOX, interior_seeds=False)
+        no_line, labels_flat = reconstruct.reconstruct(flat, np.ones_like(flat), self.OSM, BBOX, interior_seeds=False,
+                                                       method='partition', min_region_m2=0)
         line = flat.copy()
         line[:, 19:22] = 1.0
-        with_line, labels_line = reconstruct.reconstruct(line, np.ones_like(flat), self.OSM, BBOX, interior_seeds=False)
+        with_line, labels_line = reconstruct.reconstruct(line, np.ones_like(flat), self.OSM, BBOX, interior_seeds=False,
+                                                         method='partition', min_region_m2=0)
         self.assertEqual(len(no_line['features']), 2)
         self.assertEqual(len(with_line['features']), 2)
         self.assertGreater(self.left_width(labels_flat), 28)
@@ -69,8 +94,8 @@ class ReconstructTests(unittest.TestCase):
     def test_hard_barrier_splits_exactly_at_the_line(self):
         line = np.zeros((64, 64), np.float32)
         line[:, 20] = 1.0
-        _, labels = reconstruct.reconstruct(line, np.ones_like(line), self.OSM, BBOX, interior_seeds=False,
-                                            hard_barrier=True)
+        _, labels = reconstruct.reconstruct(line, np.ones_like(line), self.OSM, BBOX, distance_prob=np.ones_like(line),
+                                            interior_seeds=False, hard_barrier=True)
         self.assertEqual(self.left_width(labels), 20)
         self.assertEqual(int(labels[32, 20]), 0)
 
@@ -81,8 +106,9 @@ class ReconstructTests(unittest.TestCase):
         interior = np.ones_like(boundary)
         osm = {'buildings': [feature(rect(5, 5, 15, 15), {'osm_id': 'a'}), feature(rect(49, 5, 59, 15), {'osm_id': 'b'})],
                'roads': [], 'water': []}
-        without, _ = reconstruct.reconstruct(boundary, interior, osm, BBOX, interior_seeds=False)
-        with_seeds, labels = reconstruct.reconstruct(boundary, interior, osm, BBOX, interior_seeds=True)
+        distance = targets.distance_target(boundary > 0.5, 1.0, 12.0)
+        without, _ = reconstruct.reconstruct(boundary, interior, osm, BBOX, distance_prob=distance, interior_seeds=False)
+        with_seeds, labels = reconstruct.reconstruct(boundary, interior, osm, BBOX, distance_prob=distance, interior_seeds=True)
         self.assertEqual(len(without['features']), 2)
         self.assertEqual(len(with_seeds['features']), 3)
         self.assertEqual(int(labels[5, 10]), 3)  # the top-left lot (row 5 = y 59) is the new parcel

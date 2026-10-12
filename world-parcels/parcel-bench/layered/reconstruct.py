@@ -1,22 +1,28 @@
 #!/usr/bin/env python3
 """Deterministic reconstruction for the layered model. Seeds and barriers are exactly the rules baseline's
-(OSM buildings, roads, water). The model contributes a boundary probability used as a crossing cost in the
-same multi-source shortest-path partition, optionally as a hard barrier above a threshold, and optionally
-extra seeds from predicted parcel interiors that hold no building (empty lots). Output is GeoJSON the
+(OSM buildings, roads, water), plus optional seeds from predicted parcel interiors that hold no building (empty
+lots). The frozen recipe since 2026-10-12 floods the predicted distance-to-boundary map from the seeds with a
+watershed and merges regions under 120 m² into their largest neighbour (selection parcel F1 0.231 -> 0.294 on the
+1,600-tile run; see layered/recon_study.py). The earlier multi-source shortest-path partition with the boundary
+probability as crossing cost, and a hard barrier above a threshold, remain selectable. Output is GeoJSON the
 benchmark scorer reads; fragments of one seed region are merged into one feature, as the baseline counts them."""
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
+import cv2
 import numpy as np
 from scipy.ndimage import binary_dilation, label as connected_components
+from skimage.segmentation import watershed
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent.parent / 'guess-spike'))
 from guess import draw_polygon, draw_roads, draw_water, partition, vectorize  # noqa: E402
 
-METHOD = 'osm-seeds+learned-boundary-cost'
+METHODS = {'partition': 'osm-seeds+learned-boundary-cost', 'watershed': 'osm-seeds+learned-distance-watershed'}
+METHOD = METHODS['partition']
+RECON_DEFAULTS = {'method': 'watershed', 'cost': 'distance', 'min_region_m2': 120.0, 'min_area_m2': 40.0, 'keep_out_px': 2}
 
 
 def merge_by_seed(collection):
@@ -60,19 +66,52 @@ def add_interior_seeds(seeds, barrier, boundary_prob, interior_prob, threshold, 
     return out
 
 
-def reconstruct(boundary_prob, interior_prob, osm_input, bbox, *, threshold=0.5, interior_seeds=True,
-                hard_barrier=False, edge_weight=8.0, min_area_m2=40.0, tile_id='tile'):
-    """Return (GeoJSON FeatureCollection, label raster) for one tile."""
+def drop_small_regions(labels, min_px):
+    """Regions below min_px pixels go to the label (background included) that touches them most."""
+    out = labels.copy()
+    for value in np.unique(labels):
+        if value == 0:
+            continue
+        member = labels == value
+        if member.sum() >= min_px:
+            continue
+        ring = cv2.dilate(member.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool) & ~member
+        neighbours = labels[ring]
+        neighbours = neighbours[neighbours != value]
+        if neighbours.size:
+            out[member] = np.bincount(neighbours).argmax()
+    return out
+
+
+def reconstruct(boundary_prob, interior_prob, osm_input, bbox, *, distance_prob=None, threshold=0.5, interior_seeds=True,
+                hard_barrier=False, edge_weight=8.0, min_area_m2=RECON_DEFAULTS['min_area_m2'], tile_id='tile',
+                method=RECON_DEFAULTS['method'], cost=RECON_DEFAULTS['cost'],
+                min_region_m2=RECON_DEFAULTS['min_region_m2'], keep_out_px=RECON_DEFAULTS['keep_out_px']):
+    """Return (GeoJSON FeatureCollection, label raster) for one tile. distance_prob is the model's distance-to-boundary
+    map in [0, 1] (0 on a boundary), required by the default watershed on cost='distance'."""
     size = boundary_prob.shape[0]
     metres_per_px = (bbox[2] - bbox[0]) / size
     seeds, barrier = baseline_seeds(osm_input, bbox, size)
     if interior_seeds:
         seeds = add_interior_seeds(seeds, barrier, boundary_prob, interior_prob, threshold,
-                                   int(min_area_m2 / metres_per_px ** 2))
+                                   int(min_area_m2 / metres_per_px ** 2), keep_out_px=keep_out_px)
     if not seeds.any():
         return {'type': 'FeatureCollection', 'features': []}, np.zeros_like(seeds)
     if hard_barrier:
         barrier = barrier | ((boundary_prob >= threshold) & (seeds == 0))
-    labels = partition(seeds, barrier, boundary_prob.astype(np.float32), edge_weight)
+    if method == 'watershed':
+        if cost == 'distance':
+            if distance_prob is None:
+                raise ValueError('watershed on the distance map needs distance_prob')
+            surface = (1.0 - distance_prob).astype(np.float32)
+        else:
+            surface = boundary_prob.astype(np.float32)
+        labels = watershed(surface, markers=seeds, mask=~barrier)
+    elif method == 'partition':
+        labels = partition(seeds, barrier, boundary_prob.astype(np.float32), edge_weight)
+    else:
+        raise ValueError(f'unknown reconstruction method {method}')
     labels[barrier] = 0
-    return merge_by_seed(vectorize(labels, bbox, METHOD, None, tile_id)), labels
+    if min_region_m2:
+        labels = drop_small_regions(labels, int(min_region_m2 / metres_per_px ** 2))
+    return merge_by_seed(vectorize(labels, bbox, METHODS[method], None, tile_id)), labels
