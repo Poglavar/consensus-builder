@@ -52,6 +52,15 @@ describe('LR publication commitment', () => {
         expect(memberHash(row)).toBe(expected);
     });
 
+    it('accepts the browser upload, which carries the full-length prefixed fingerprint', async () => {
+        const { app } = appFixture();
+        const body = proposal();
+        body.effectHash = deal.fingerprint(body);
+        expect(body.effectHash.length).toBeGreaterThan(64);
+        const res = await request(app).post('/proposals').send(body);
+        expect(res.status).toBe(201);
+    });
+
     it.each([
         ['invalid owner shares', body => { body.reparcellization.polygons[0].owners[0].share = 0.1; }],
         ['missing owner', body => { delete body.reparcellization.polygons[0].owners; }],

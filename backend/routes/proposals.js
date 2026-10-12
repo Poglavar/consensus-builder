@@ -417,7 +417,8 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         // Which cadastre frame the stamps were measured against ({ capturedAt }) — D5/§11.
         cadastreFrame: { required: false, validate: validators.optional(validators.plainObject({ label: 'cadastreFrame' })) },
         // Hash of the published EFFECT (footprint + per-parcel cession); acceptances bind to it.
-        effectHash: { required: false, validate: validators.optional(validators.string({ maxLength: 64, label: 'effectHash', disallowControlChars: true })) },
+        // Room for a scheme prefix: a readjustment's is `lr2-sha256:` + 64 hex (75 characters).
+        effectHash: { required: false, validate: validators.optional(validators.string({ maxLength: 128, label: 'effectHash', disallowControlChars: true })) },
         acceptedParcelIds: { required: false, validate: validators.optional(stringArrayValidator('acceptedParcelIds'), { nullValue: [] }) },
         ownerAcceptances: { required: false, validate: validators.optional(validators.plainObject({ label: 'ownerAcceptances' }), { nullValue: {} }) },
         roadProposal: { required: false, validate: validators.optional(validators.plainObject({ label: 'roadProposal' })) },
