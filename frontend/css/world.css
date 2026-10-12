@@ -856,28 +856,13 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     display: none;
 }
 
-/* Explore banner: top-centre, under the search box row. */
+/* Explore banner: a warning section of the shared banner card (css/primitives.css .cb-banner). */
 .explore-banner {
-    position: absolute;
-    top: calc(var(--map-shell-edge, 10px) + var(--map-search-height, 44px) + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px 12px;
-    box-sizing: border-box;
-    width: max-content;
-    max-width: min(560px, calc(100vw - 32px));
-    padding: 10px 40px 10px 14px;
-    border: 1px solid rgba(255, 194, 75, 0.55);
-    border-radius: 12px;
-    background: rgba(255, 251, 235, 0.97);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
-    color: #3f2d06;
-    font-size: 13px;
-    line-height: 1.4;
+    padding-right: 40px;
 }
 
 .explore-banner__text {

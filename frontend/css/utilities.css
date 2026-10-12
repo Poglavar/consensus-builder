@@ -627,26 +627,15 @@ button.status-log-message {
     }
 }
 
-/* Floating status toast: the latest status line, always visible. Small and out of the way: centred
-   one row above the bottom row of floating buttons (Proposals/Tools/Activity), single
-   line, and click-through. The full status bar and its log are in the Activity sheet. */
+/* Status line (ephemerals.md): what the app is doing now, replaced never stacked, gone when idle.
+   Centred one row above the dock and click-through; the look is .cb-toast--status
+   (css/primitives.css). The full status bar and its log are in the Activity sheet. */
 .floating-status {
     position: absolute;
     left: 50%;
     bottom: var(--map-shell-bottom-clearance);
     transform: translateX(-50%);
-    z-index: 990;
-    max-width: min(480px, calc(100vw - 2 * (var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap))));
-    padding: 3px 10px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-    font-size: 12px;
-    line-height: 1.4;
-    color: #374151;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    z-index: var(--cb-z-map-chrome);
     pointer-events: none;
 }
 
@@ -654,10 +643,11 @@ button.status-log-message {
     display: none;
 }
 
-/* Keep live counters visible after long council names, including on narrow phones. */
-.floating-status.has-progress {
-    white-space: normal;
-    text-align: center;
+/* Quiet for a while and nothing running: the line fades away until the next word. */
+.floating-status.is-idle {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s;
 }
 
 .share-proposal-container {
@@ -2045,78 +2035,31 @@ button.status-log-message {
     text-align: center;
 }
 
-/* Ephemeral Messages */
+/* Notices (ephemerals.md): an outcome, one pill at a time (js/ui/notice-queue.js), top centre
+   under the top row of controls, above anything the notice may answer. The look is .cb-toast
+   (css/primitives.css); only the entrance and exit live here. */
 #ephemeral-message-container {
     position: absolute;
-    /* Relative to map-container */
-    top: 20px;
+    top: calc(var(--map-shell-top-clearance) + var(--cb-banner-stack-height, 0px));
     left: 50%;
     transform: translateX(-50%);
-    z-index: 14000;
-    /* Above modals (modals are 13000) */
+    z-index: var(--cb-z-toast);
     display: flex;
     flex-direction: column;
     align-items: center;
     pointer-events: none;
-    /* Allow clicks to pass through the container itself */
 }
 
 .ephemeral-message {
-    background: rgba(29, 113, 184, 0.95);
-    /* Bluish background */
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 14px;
-    padding: 10px 18px;
-    border-radius: 20px;
-    /* Pill shape */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
     opacity: 0;
-    transform: translateY(-20px);
-    max-height: 0;
-    margin: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    overflow: hidden;
-    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
-    pointer-events: all;
-    /* Re-enable pointer events for the message itself */
-    white-space: nowrap;
+    transform: translateY(-12px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: auto;
 }
 
 .ephemeral-message.visible {
     opacity: 1;
     transform: translateY(0);
-    max-height: 50px;
-    /* Should be enough for one line of text */
-    margin: 0 0 10px 0;
-    /* Creates space between stacked messages */
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-/* Compact acknowledgement shared by click-to-copy values. */
-.copy-feedback-toast {
-    position: fixed;
-    left: 50%;
-    bottom: 34px;
-    z-index: 100001;
-    transform: translate(-50%, 5px);
-    padding: 4px 9px;
-    border-radius: 999px;
-    background: rgba(20, 22, 28, 0.9);
-    color: #fff;
-    font: 600 11px/1.2 system-ui, sans-serif;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 120ms ease, transform 120ms ease;
-}
-
-.copy-feedback-toast.visible {
-    opacity: 1;
-    transform: translate(-50%, 0);
 }
 
 .takeover-buttons .btn {
@@ -2574,40 +2517,11 @@ button.status-log-message {
         touch-action: manipulation;
     }
 
-    /* Ephemeral messages mobile responsiveness */
+    /* Notices span the phone minus the gutters (the .cb-toast cap already allows for them). */
     #ephemeral-message-container {
-        left: 15px;
-        right: 15px;
+        left: var(--cb-space-4);
+        right: var(--cb-space-4);
         transform: none;
-        width: auto;
-        max-width: calc(100vw - 30px);
-    }
-
-    .ephemeral-message {
-        white-space: normal;
-        /* Allow text wrapping */
-        word-wrap: break-word;
-        word-break: break-word;
-        max-width: 100%;
-        text-align: center;
-        font-size: 13px;
-        padding: 10px 14px;
-        /* Reduce padding for tighter appearance */
-        line-height: 1.3;
-        /* Tighter line spacing */
-        border-radius: 16px;
-        /* Slightly less rounded for mobile */
-    }
-
-    .ephemeral-message.visible {
-        max-height: 80px;
-        /* Limit maximum height to prevent excessive thickness */
-        min-height: auto;
-        /* Remove minimum height override */
-        padding-top: 10px;
-        /* Override desktop transition padding */
-        padding-bottom: 10px;
-        /* Override desktop transition padding */
     }
 }
 

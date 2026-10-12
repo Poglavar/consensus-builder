@@ -29,7 +29,7 @@
             if (document.getElementById('cb-multitab-banner')) return;
             const banner = document.createElement('div');
             banner.id = 'cb-multitab-banner';
-            banner.className = 'cb-multitab-banner';
+            banner.className = 'cb-multitab-banner cb-banner cb-banner--warning';
             banner.setAttribute('role', 'alert');
 
             const message = document.createElement('span');
@@ -49,7 +49,11 @@
 
             banner.appendChild(message);
             banner.appendChild(dismiss);
-            (document.body || document.documentElement).appendChild(banner);
+            // The shared banner card (js/ui/banner-stack.js; ephemerals.md), else the page itself.
+            const stackApi = scope.__BannerStack;
+            if (!(stackApi && typeof stackApi.mount === 'function' && stackApi.mount(banner))) {
+                (document.body || document.documentElement).appendChild(banner);
+            }
 
             try {
                 if (scope.i18n && typeof scope.i18n.applyTranslations === 'function') {
@@ -136,6 +140,8 @@
         const banner = document.getElementById('cb-multitab-banner');
         if (!container) return;
         if (!banner) { container.style.removeProperty('top'); return; }
+        // In the shared banner card the stack's own height already keeps the notices below it.
+        if (typeof banner.closest === 'function' && banner.closest('.cb-banner-stack')) { container.style.removeProperty('top'); return; }
         const host = container.offsetParent || document.getElementById('map-container');
         const hostTop = host ? host.getBoundingClientRect().top : 0;
         const clearance = Math.round(banner.getBoundingClientRect().bottom - hostTop) + 12;

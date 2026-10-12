@@ -699,6 +699,12 @@ function clearProposalOwnParcelInfo(expectedParcelIds = null) {
 // card, collapsed to its header so the proposal stays the primary surface. Proposals that currently
 // produce no parcel and those that create many (reparcellization) open nothing here.
 function showOwnParcelInfoForProposal(proposal) {
+    // 3D is a viewing mode: the details card does not open there (showProposalInfo bails out), so
+    // a collapsed parcel row would be the leftover of a selection the card has already dropped.
+    if (typeof document !== 'undefined' && document.body?.classList?.contains('three-mode-active')) {
+        clearProposalOwnParcelInfo();
+        return;
+    }
     const resolver = window.ProposalOwnParcel;
     const showPanel = window.Parcels?.uiParcelPanel?.showParcelInfoPanel || window.showParcelInfoPanel;
     if (!resolver || typeof showPanel !== 'function') {
@@ -754,6 +760,10 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     if (window.sharePlanMode) return;
 
     const resolvedId = resolveProposalIdKey(proposalIdOrHash);
+    // 3D is a viewing mode: the 2D card cannot open there, and the scene is the visible UI of the
+    // selection, so the card is not asked for and the no-visible-UI safety net below stands down.
+    const in3D = typeof window.isThreeModeActive === 'function' && window.isThreeModeActive();
+    const detailsWanted = showDetails && !in3D;
 
     const proposal = getProposalByIdOrHash(resolvedId);
     if (!proposal) {
@@ -773,7 +783,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     if (alreadySelected && !shouldCenter) {
         window.currentlyHighlightedProposal = proposal;
         window.selectedParcelInProposal = parcelId;
-        if (showDetails) {
+        if (detailsWanted) {
             showProposalInfo(proposal, parcelId, null, panelOptions);
             showOwnParcelInfoForProposal(proposal);
         } else {
@@ -808,7 +818,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     window.selectedParcelInProposal = parcelId;
 
     // Show proposal info immediately (no visual changes yet)
-    if (showDetails) {
+    if (detailsWanted) {
         showProposalInfo(proposal, parcelId, null, panelOptions);
         showOwnParcelInfoForProposal(proposal);
     } else {
@@ -829,7 +839,12 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         updateProposalLayer();
     }
 
-    if (shouldCenter) {
+    if (shouldCenter && in3D && typeof window.focusThreeModeOnProposals === 'function') {
+        // The 2D map is frozen under the scene; a Leaflet fit would move nothing the reader sees.
+        window.isApplyingProposalHighlights = false;
+        window.focusThreeModeOnProposals([proposalKey]);
+        applyProposalHighlights();
+    } else if (shouldCenter) {
         // Center map first, then apply overlays when movement is complete
         const parcelIdsForCentering = (() => {
             // Use only this formation's current derived parcels; records have no proposal family.
@@ -905,7 +920,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
 
     // Safety: if proposal UI isn't actually visible, clear any proposal-specific visuals
     try {
-        if (!keepHighlightsWithoutUi && typeof isProposalUIActive === 'function' && !isProposalUIActive()) {
+        if (!keepHighlightsWithoutUi && !in3D && typeof isProposalUIActive === 'function' && !isProposalUIActive()) {
             clearProposalHighlights();
             clearProposalInfoHoverOverlay();
         }

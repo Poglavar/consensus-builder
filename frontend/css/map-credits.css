@@ -1,4 +1,7 @@
-/* Provider credits stay legible on the map; detailed data and software credits live in Settings. */
+/* The basemap credit stays legible on the map (its licence asks for it); the city's data and
+   software credits live under Settings → Information.
+   No box: the text sits straight on the map with a halo, in the row right above the dock, the row
+   the scale bar shares from the other corner (css/map.css). */
 .map-credits-control {
     display: flex;
     flex-wrap: wrap;
@@ -7,8 +10,9 @@
     max-width: calc(100vw - 20px);
     padding: 3px 6px;
     margin: 0;
-    background: var(--cb-surface);
+    background: transparent;
     color: var(--cb-text);
+    text-shadow: var(--cb-text-halo);
     font: var(--cb-text-sm)/var(--cb-leading) var(--cb-font-sans);
 }
 

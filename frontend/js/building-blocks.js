@@ -3665,10 +3665,12 @@ function enterManualMode() {
     generateManualBuilding();
 }
 
-function exitToParametricMode() {
-    const proceed = (typeof window !== 'undefined' && typeof window.confirm === 'function')
-        ? window.confirm(translateBuildingText('blockify.modal.manual.confirmReset', 'Discard manual edits and go back to the sliders?'))
-        : true;
+async function exitToParametricMode() {
+    const question = translateBuildingText('blockify.modal.manual.confirmReset', 'Discard manual edits and go back to the sliders?');
+    // The app's own dialog, with the browser's as the last resort (ephemerals.md).
+    const proceed = (typeof window !== 'undefined' && typeof window.showStyledConfirm === 'function')
+        ? await window.showStyledConfirm(question)
+        : ((typeof window !== 'undefined' && typeof window.confirm === 'function') ? window.confirm(question) : true);
     if (!proceed) return;
     blockifyMode = 'parametric';
     blockifyPendingVertexActionIndex = null;

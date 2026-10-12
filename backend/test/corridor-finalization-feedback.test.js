@@ -15,7 +15,7 @@
 // pinned against the source. A refactor that moves the dismissal back before the create would keep
 // every behavioural test green while restoring the blank map.
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -193,40 +193,48 @@ describe('the indicator itself', () => {
         return roadSource.slice(start, roadSource.indexOf('// True while any corridor re-apply', start));
     })();
 
-    function element(className) {
-        return { className, children: [], parentNode: null, textContent: '', appendChild(child) { this.children.push(child); } };
-    }
-
+    // The apply is said by the status line (ephemerals.md): the label once the short delay has run
+    // out, and a status activity held for as long as the apply lasts.
     beforeEach(() => {
-        const host = element('host');
-        host.removeChild = child => { host.children = host.children.filter(c => c !== child); child.parentNode = null; };
+        vi.useFakeTimers();
         const classes = new Set();
+        const release = vi.fn();
         env = {
-            host,
             classes,
-            document: {
-                body: { classList: { add: c => classes.add(c), remove: c => classes.delete(c) } },
-                createElement: () => element('')
-            }
+            release,
+            window: { updateStatus: vi.fn(), beginStatusActivity: vi.fn(() => release) },
+            document: { body: { classList: { add: c => classes.add(c), remove: c => classes.delete(c) } } }
         };
-        env.document.body.appendChild = child => { host.children.push(child); child.parentNode = host; };
         // eslint-disable-next-line no-new-func
-        indicator = new Function('document', 'map', 'translateRoadText',
+        indicator = new Function('document', 'map', 'translateRoadText', 'window',
             `${source}; return { begin: beginApplyIndicator, end: endApplyIndicator };`
-        )(env.document, { getContainer: () => host }, (key, fallback) => fallback);
-        host.appendChild = child => { host.children.push(child); child.parentNode = host; };
+        )(env.document, {}, (key, fallback) => fallback, env.window);
     });
 
-    const shown = () => env.host.children.length;
+    afterEach(() => { vi.useRealTimers(); });
 
-    it('shows the label it is given', () => {
+    const settle = () => vi.advanceTimersByTime(150);
+    const held = () => env.window.beginStatusActivity.mock.calls.length - env.release.mock.calls.length;
+
+    it('says the label it is given on the status line', () => {
         indicator.begin('Building the track…');
-        expect(env.host.children[0].children.map(c => c.textContent).join('')).toBe('Building the track…');
+        settle();
+        expect(env.window.updateStatus).toHaveBeenCalledWith('Building the track…', { transient: true });
+        expect(env.window.beginStatusActivity).toHaveBeenCalledTimes(1);
     });
 
     it('falls back to the generic apply label when given none', () => {
         indicator.begin();
-        expect(env.host.children[0].children.map(c => c.textContent).join('')).toBe('Applying…');
+        settle();
+        expect(env.window.updateStatus).toHaveBeenCalledWith('Applying…', { transient: true });
+    });
+
+    it('a quick apply never reaches the status line', () => {
+        indicator.begin('x');
+        indicator.end();
+        settle();
+        expect(env.window.updateStatus).not.toHaveBeenCalled();
+        expect(env.window.beginStatusActivity).not.toHaveBeenCalled();
     });
 
     it('marks the document busy so the pointer says so too', () => {
@@ -237,22 +245,24 @@ describe('the indicator itself', () => {
     it('stays up until the last overlapping claim ends', () => {
         indicator.begin('x');
         indicator.begin('y');
+        settle();
         indicator.end();
-        expect(shown()).toBe(1);
+        expect(held()).toBe(1);
         expect(env.classes.has('corridor-busy')).toBe(true);
         indicator.end();
-        expect(shown()).toBe(0);
+        expect(held()).toBe(0);
         expect(env.classes.has('corridor-busy')).toBe(false);
     });
 
     it('never leaves the pointer busy after an unbalanced end', () => {
         indicator.begin('x');
+        settle();
         indicator.end();
         indicator.end();
         expect(env.classes.has('corridor-busy')).toBe(false);
         indicator.begin('x');
         indicator.end();
-        expect(shown()).toBe(0);
+        expect(held()).toBe(0);
     });
 });
 

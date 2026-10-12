@@ -223,7 +223,7 @@ describe('building failure banner', () => {
         settings.reportFailure(global, 'buildings failed', 'building', firstRetry);
         settings.reportFailure(global, 'buildings still failing', 'building', latestRetry);
         // Both warnings stay compact in the corner; parcel recovery owns the detailed choices.
-        const stack = document.getElementById('source-status-stack');
+        const stack = document.getElementById('cb-banner-stack');
         expect(document.getElementById('parcel-source-status').parent).toBe(stack);
         expect(stack.children.map(node => node.id)).toEqual(['parcel-source-status', 'building-source-status']);
         const banner = document.getElementById('building-source-status');

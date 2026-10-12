@@ -76,7 +76,8 @@ describe('session ground on the World’s Fair branch', () => {
         const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
         try {
             await expect(window.fetchParcelDataReported(undefined, 'initial map load')).resolves.toBeNull();
-            expect(window.updateStatus).toHaveBeenLastCalledWith('Cadastral ground failed to load: Failed to fetch');
+            // Logged for the Activity log; the banner carries it, so the status line is not asked to.
+            expect(window.updateStatus).toHaveBeenLastCalledWith('Cadastral ground failed to load: Failed to fetch', { floating: false });
             expect(errors).toHaveBeenCalled();
         } finally {
             errors.mockRestore();

@@ -465,14 +465,20 @@
         }
     }
 
+    // The app's own dialog, with the browser's as the last resort (ephemerals.md).
+    function sayAlert(message) {
+        if (typeof window.showStyledAlert === 'function') window.showStyledAlert(message);
+        else alert(message);
+    }
+
     function openOverlay() {
         if (!window.isThreeModeActive || !window.isThreeModeActive()) {
-            alert(t('threeMode.ai.need3d', 'Enter 3D mode first to render the scene.'));
+            sayAlert(t('threeMode.ai.need3d', 'Enter 3D mode first to render the scene.'));
             return;
         }
         const image = (typeof window.captureThreeSceneDataURL === 'function') ? window.captureThreeSceneDataURL() : null;
         if (!image) {
-            alert(t('threeMode.ai.captureFailed', 'Could not capture the 3D scene.'));
+            sayAlert(t('threeMode.ai.captureFailed', 'Could not capture the 3D scene.'));
             return;
         }
         // Height map (grayscale, white = tallest) — the exact-heights signal. Optional: if it fails

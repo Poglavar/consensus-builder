@@ -96,23 +96,25 @@ body:has(#selection-tray) .floating-status {
     bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
 }
 
-/* The scale bar stays above the toast, which the tray has lifted a row. */
-body:has(#selection-tray) .leaflet-bottom.leaflet-right .leaflet-control-scale {
-    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + 2 * var(--map-shell-gap) + 24px);
-}
-
 /* A panel docked on the right (the parcel panel after Propose) takes the right column; the tray
    stays in its row and centres on the map that is left of the panel. */
 @media (min-width: 768px) {
     body:has(.right-dock-panel.visible) .map-shell-slot--tray {
         left: calc((100% - var(--right-dock-width) - 2 * var(--right-dock-gap)) / 2);
     }
+
+    /* On a wide map the tray shares the row above the dock with the credits and the scale bar
+       (css/map.css); a long tray would run into the scale bar, so the tray wins, as a docked
+       panel does. On a phone the tray sits one row higher and the scale bar stays. */
+    body:has(#selection-tray) .leaflet-control-scale {
+        display: none;
+    }
 }
 
 /* Phones: between the left edge and the right-hand button column; icons only. */
 @media (max-width: 767.98px) {
-    /* The row above the bottom bar, full width (the toast and the scale bar step up over it as on
-       wider screens). */
+    /* The row above the bottom bar, full width (the toast steps up over it; the credits and the
+       scale bar keep the row below). */
     .map-shell-slot--tray {
         left: var(--map-shell-edge);
         right: var(--map-shell-edge);

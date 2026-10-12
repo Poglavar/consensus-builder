@@ -87,11 +87,27 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   contests by money, and filters All · Open · Settled · Mine. On desktop it is wider than the
   control sheets and centred on its dock button.
 
+## Messages
+
+- Three families, one typography (`ephemerals.md`; `.cb-toast` in css/primitives.css): a
+  **notice** announces an outcome, top centre under the top row, dark pill with `success` /
+  `warning` / `error` colours, one at a time (`showEphemeralMessage(message, duration, type)`); the
+  **status line** says what the app is doing now, above the dock, light pill with a spinner while
+  anything is busy, fading out when idle (`updateStatus`, `beginStatusActivity`); a **banner** is a
+  persistent notice with an action, a section of the one card under the top row
+  (`js/ui/banner-stack.js`, `.cb-banner`). Every floating message is `--cb-text-md`, wraps to at
+  most three lines and never exceeds 480px (560px for the banner card). Nothing else floats a
+  message of its own.
+
 ## Phone layout
 
-- The bottom dock is a labelled bar (Proposals · Bets · Activity) across the width in every view. Its
-  height is `--map-shell-bar-height`; `--map-shell-bottom-clearance` keeps the tray, toast and scale
-  above it.
+- The bottom dock is Proposals · Bets · Activity. On a phone it is a labelled bar across the width
+  in every view, a veil the map shows through (`--cb-glass-veil`, blurred; its buttons are
+  transparent at rest); on a wide map it is three pills centred on the bottom edge, the same chrome
+  as the top-right cluster, so the map keeps its bottom edge. Its height is `--map-shell-bar-height`
+  in both shapes; `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
+  the scale bar are set straight on the map with a text halo (`--cb-text-halo`) and no boxes: on a
+  phone in the row right above the bar, on a wide map in the pills' own row, from the corners.
 - Sheets open above the bottom dock, which stays reachable while a sheet is open. On phones they
   use the full available width and stop above the dock.
 

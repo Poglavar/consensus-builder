@@ -145,7 +145,6 @@
     },
     "mapCredits": {
         "title": "Izvori i softver",
-        "open": "Izvori",
         "basemap": "Mapa",
         "parcel": "Izvor parcela za {{city}}",
         "software": "Softver otvorenog koda",
@@ -4338,6 +4337,8 @@
     },
     "ephemeral": {
         "messages": {
+            "agent_location_unavailable": "Nije moguće otići na {{action}} agenta {{agent}}: podaci o parcelama još nisu učitani.",
+            "minted_parcels_failed": "Iskovane parcele nisu mogle da se učitaju: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Nije moguće primeniti predlog zgrade, nedostaju pretci: {{missing}}",
             "cannot_apply_proposal_missing_parents": "Nije moguće primeniti predlog, nedostaju pretci: {{missing}}",
             "proposal_conflict_title": "Sukob predloga — ista geografija",

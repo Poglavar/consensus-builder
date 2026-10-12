@@ -41,6 +41,48 @@ it('updates both status displays with live progress without filling the session 
     expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tLoading parcels\n12:00\tLoaded parcels');
 });
 
+it('a notice logs its line without taking over the status line', () => {
+    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: 'Loading parcels', parentElement: {
+        classList: { toggle() {} }
+    } } };
+    const context = vm.createContext({ window: {}, document: {
+        readyState: 'loading', addEventListener() {}, getElementById: id => elements[id] || null
+    }, CbFormat: { formatTime: () => '12:00' } });
+    vm.runInContext(ui, context);
+    context.window.updateStatus('Applied 22 proposals.', { floating: false });
+    expect(elements.status.textContent).toBe('Applied 22 proposals.');
+    expect(elements['floating-status-text'].textContent).toBe('Loading parcels');
+    expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tApplied 22 proposals.');
+});
+
+it('the status line shows a spinner while something is busy and idles out after a quiet spell', () => {
+    const classes = new Set();
+    const parent = { classList: {
+        add: n => classes.add(n), remove: n => classes.delete(n),
+        toggle(n, on) { if (on) classes.add(n); else classes.delete(n); }
+    } };
+    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: '', parentElement: parent } };
+    const timers = [];
+    const context = vm.createContext({ window: {}, document: {
+        readyState: 'loading', addEventListener() {}, getElementById: id => elements[id] || null, querySelector: () => null
+    }, CbFormat: { formatTime: () => '12:00' },
+    setTimeout: (fn, ms) => { timers.push({ fn, ms }); return timers.length; },
+    clearTimeout: id => { if (timers[id - 1]) timers[id - 1].fn = null; } });
+    vm.runInContext(ui, context);
+    const release = context.window.beginStatusActivity();
+    expect(classes.has('is-busy')).toBe(true);
+    context.window.updateStatus('Loading buildings…', { transient: true });
+    expect(timers.filter(t => t.fn && t.ms === 8000)).toHaveLength(0);
+    release();
+    expect(classes.has('is-busy')).toBe(false);
+    const idle = timers.filter(t => t.fn && t.ms === 8000);
+    expect(idle).toHaveLength(1);
+    idle[0].fn();
+    expect(classes.has('is-idle')).toBe(true);
+    context.window.updateStatus('Loaded parcels');
+    expect(classes.has('is-idle')).toBe(false);
+});
+
 describe('selecting text does not close the log', () => {
     const handler = ui.slice(
         ui.indexOf('    if (statusBar) {\n        let pressedAt = null;'),

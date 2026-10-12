@@ -1,4 +1,4 @@
-// Headless contract tests for the shared click-to-copy helper and its compact acknowledgement.
+// Headless contract tests for the shared click-to-copy helper and its acknowledgement, a short notice.
 
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -21,6 +21,9 @@ function createElement(tagName) {
             contains: name => classes.has(name)
         },
         setAttribute: vi.fn(),
+        addEventListener: vi.fn(),
+        children: [],
+        appendChild(child) { this.children.push(child); child.parentNode = this; },
         focus: vi.fn(),
         select: vi.fn(),
         setSelectionRange: vi.fn(),
@@ -61,7 +64,14 @@ function loadCopyHelper({ clipboard, copiedLabel = 'Copied', execCommandResult =
         console: { warn: vi.fn() }
     });
 
-    return { window, document, elements, created, setTimeout };
+    // The notice the copy helper shows: the one pill inside the notice container.
+    const notice = () => harnessNotice(elements);
+    return { window, document, elements, created, setTimeout, notice };
+}
+
+function harnessNotice(elements) {
+    const container = elements.get('ephemeral-message-container');
+    return container && container.children.length ? container.children[container.children.length - 1] : null;
 }
 
 describe('copyTextWithFeedback', () => {
@@ -71,9 +81,10 @@ describe('copyTextWithFeedback', () => {
 
         await expect(harness.window.copyTextWithFeedback('seat grounded=true tiles=51')).resolves.toBe(true);
         expect(clipboard.writeText).toHaveBeenCalledWith('seat grounded=true tiles=51');
-        expect(harness.elements.get('copy-feedback-toast').textContent).toBe('Copiado');
-        expect(harness.elements.get('copy-feedback-toast').classList.contains('visible')).toBe(true);
-        expect(harness.setTimeout).toHaveBeenCalledWith(expect.any(Function), 1100);
+        expect(harness.notice().textContent).toBe('Copiado');
+        expect(harness.notice().className).toContain('cb-toast--notice');
+        expect(harness.notice().classList.contains('visible')).toBe(true);
+        expect(harness.setTimeout).toHaveBeenCalledWith(expect.any(Function), 1400);
     });
 
     it('falls back to a temporary textarea when Clipboard API is unavailable', async () => {

@@ -487,24 +487,23 @@ function collectParcelsIntersectingFootprint(footprintGeometry) {
 // CSS) — road-node-edit suspends its handles until the transaction settles. The CSS animation-delay means a fast
 // edit removes it before it ever becomes visible, so only genuinely slow applies flash the spinner.
 let corridorApplyIndicatorCount = 0;
-let corridorApplyIndicatorEl = null;
+let corridorApplyIndicatorTimer = null;
+let corridorApplyIndicatorRelease = null;
 function beginApplyIndicator(labelText) {
     corridorApplyIndicatorCount += 1;
-    if (corridorApplyIndicatorEl || typeof document === 'undefined') return;
-    const host = (typeof map !== 'undefined' && map && typeof map.getContainer === 'function') ? map.getContainer() : document.body;
-    if (!host) return;
-    const el = document.createElement('div');
-    el.className = 'corridor-apply-indicator';
-    const spinner = document.createElement('div');
-    spinner.className = 'corridor-apply-indicator__spinner';
-    const label = document.createElement('span');
-    label.textContent = labelText || ((typeof translateRoadText === 'function')
+    if (corridorApplyIndicatorTimer || corridorApplyIndicatorRelease || typeof document === 'undefined') return;
+    const label = labelText || ((typeof translateRoadText === 'function')
         ? translateRoadText('panel.road.applyingEdit', 'Applying…')
         : 'Applying…');
-    el.appendChild(spinner);
-    el.appendChild(label);
-    host.appendChild(el);
-    corridorApplyIndicatorEl = el;
+    // Only a genuinely slow apply reaches the status line (ephemerals.md): a quick edit ends
+    // before the delay runs out.
+    corridorApplyIndicatorTimer = setTimeout(() => {
+        corridorApplyIndicatorTimer = null;
+        if (corridorApplyIndicatorCount <= 0) return;
+        const scope = (typeof window !== 'undefined') ? window : {};
+        if (typeof scope.updateStatus === 'function') scope.updateStatus(label, { transient: true });
+        corridorApplyIndicatorRelease = (typeof scope.beginStatusActivity === 'function') ? scope.beginStatusActivity() : () => {};
+    }, 150);
     // The pointer is where the user is looking, so it carries the same news: the whole document goes
     // busy, which survives exitRoadDrawingMode() clearing the map container's inline cursor.
     try { document.body?.classList.add('corridor-busy'); } catch (_) { }
@@ -512,10 +511,8 @@ function beginApplyIndicator(labelText) {
 function endApplyIndicator() {
     corridorApplyIndicatorCount = Math.max(0, corridorApplyIndicatorCount - 1);
     if (corridorApplyIndicatorCount > 0) return;
-    if (corridorApplyIndicatorEl && corridorApplyIndicatorEl.parentNode) {
-        corridorApplyIndicatorEl.parentNode.removeChild(corridorApplyIndicatorEl);
-    }
-    corridorApplyIndicatorEl = null;
+    if (corridorApplyIndicatorTimer) { clearTimeout(corridorApplyIndicatorTimer); corridorApplyIndicatorTimer = null; }
+    if (corridorApplyIndicatorRelease) { corridorApplyIndicatorRelease(); corridorApplyIndicatorRelease = null; }
     try { document.body?.classList.remove('corridor-busy'); } catch (_) { }
 }
 if (typeof window !== 'undefined') {

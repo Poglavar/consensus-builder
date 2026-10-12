@@ -1334,12 +1334,13 @@ window.updateGameSectionTitle = updateGameSectionTitle;
  * Reset the entire game state. If autoReinit is true the game will be initialised again automatically.
  * @param {boolean} autoReinit - Whether to run initializeGame() right after the reset completes.
  */
-function resetGameState(autoReinit = false) {
+async function resetGameState(autoReinit = false) {
     const message = autoReinit
         ? translateGameText('gameDialogs.newGameConfirm', 'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.')
         : translateGameText('gameDialogs.resetConfirm', 'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.');
 
-    const confirmed = confirm(message);
+    // The app's own dialog, with the browser's as the last resort (ephemerals.md).
+    const confirmed = (typeof window.showStyledConfirm === 'function') ? await window.showStyledConfirm(message) : confirm(message);
     if (!confirmed) return;
 
     // Preserve the current user-controlled agent (if any) so the player keeps their identity.

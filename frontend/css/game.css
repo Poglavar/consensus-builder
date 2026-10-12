@@ -963,32 +963,4 @@
         font-size: 10px !important;
         padding: 2px 5px !important;
     }
-    
-    /* Ephemeral messages mobile responsiveness */
-    #ephemeral-message-container {
-        left: 15px;
-        right: 15px;
-        transform: none;
-        width: auto;
-        max-width: calc(100vw - 30px);
-    }
-    
-    .ephemeral-message {
-        white-space: normal; /* Allow text wrapping */
-        word-wrap: break-word;
-        word-break: break-word;
-        max-width: 100%;
-        text-align: center;
-        font-size: 13px;
-        padding: 10px 14px; /* Reduce padding for tighter appearance */
-        line-height: 1.3; /* Tighter line spacing */
-        border-radius: 16px; /* Slightly less rounded for mobile */
-    }
-    
-    .ephemeral-message.visible {
-        max-height: 80px; /* Limit maximum height to prevent excessive thickness */
-        min-height: auto; /* Remove minimum height override */
-        padding-top: 10px; /* Override desktop transition padding */
-        padding-bottom: 10px; /* Override desktop transition padding */
-    }
 }

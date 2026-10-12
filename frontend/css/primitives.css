@@ -179,22 +179,117 @@ textarea {
 }
 
 /* ---- Toast ----
-   One look for every transient message: a dark pill, centred. The two mounts today
-   (#floating-status and .ephemeral-message) both take this class. */
+   One typography for every floating message (ephemerals.md): a centred pill that wraps to at
+   most three lines and never grows past 480px, on every width. The families differ in colour and
+   place only: a notice (an outcome, top centre, auto-dismiss; js/ui-helpers.js
+   showEphemeralMessage) is the dark pill with success / warning / error variants; the status
+   line (what is happening now, above the dock; #floating-status) is the light one. */
 .cb-toast {
-    display: inline-block;
-    max-width: min(520px, calc(100vw - 2 * var(--cb-space-4)));
-    padding: 6px 14px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    box-sizing: border-box;
+    max-width: min(480px, calc(100vw - 2 * var(--cb-space-4)));
+    padding: var(--cb-space-2) var(--cb-space-4);
     border-radius: var(--cb-radius-pill);
     background: var(--cb-inverse);
     color: var(--cb-inverse-ink);
-    box-shadow: var(--cb-shadow-md);
+    box-shadow: var(--cb-shadow-sm);
     font-family: var(--cb-font-sans);
-    font-size: var(--cb-text-sm);
+    font-size: var(--cb-text-md);
     line-height: var(--cb-leading);
-    white-space: nowrap;
+    text-align: center;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
+}
+
+.cb-toast--success { background: var(--cb-success); }
+.cb-toast--warning { background: var(--cb-warning); }
+.cb-toast--error { background: var(--cb-danger); }
+
+.cb-toast--status {
+    background: var(--cb-glass);
+    color: var(--cb-text);
+}
+
+/* The status line's spinner: shown while anything holds a status activity (js/ui-helpers.js). */
+.cb-toast__spinner {
+    display: none;
+    width: 12px;
+    height: 12px;
+    margin-right: var(--cb-space-2);
+    vertical-align: -2px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: cb-toast-spin 0.8s linear infinite;
+}
+
+.cb-toast.is-busy .cb-toast__spinner {
+    display: inline-block;
+}
+
+@keyframes cb-toast-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cb-toast__spinner { animation: none; }
+}
+
+/* ---- Banner ----
+   Persistent notices that need an action (ephemerals.md): source failures, the other-tab lock, the
+   explore banner. They mount in one stack (js/ui/banner-stack.js) that reads as ONE card under the
+   top row of controls, each banner a section divided from the next: a 560px card centred on a wide
+   map, the width minus the gutters on a phone. Notices sit below it (--cb-banner-stack-height). */
+.cb-banner-stack {
+    position: absolute;
+    top: var(--map-shell-top-clearance);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--cb-z-notice);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: min(560px, calc(100vw - 2 * var(--cb-space-4)));
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-lg);
+    overflow: hidden;
+}
+
+.cb-banner-stack:empty {
+    display: none;
+}
+
+.cb-banner {
+    position: relative;
+    box-sizing: border-box;
+    padding: var(--cb-space-3) var(--cb-space-4);
+    color: var(--cb-text);
+    font-family: var(--cb-font-sans);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+    overflow-wrap: anywhere;
+}
+
+.cb-banner + .cb-banner {
+    border-top: 1px solid var(--cb-line);
+}
+
+.cb-banner--warning {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.cb-banner p {
+    margin: 0;
+}
+
+.cb-banner .btn {
+    margin: var(--cb-space-2) var(--cb-space-2) 0 0;
 }
 
 /* ---- Lifecycle / status badge ----

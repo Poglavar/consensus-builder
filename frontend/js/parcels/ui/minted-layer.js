@@ -275,8 +275,10 @@
         } catch (error) {
             console.error('Error fetching minted parcels:', error);
             const errorMessage = error?.message || String(error);
-            if (global.showToast && typeof global.showToast === 'function') {
-                global.showToast(`Failed to load minted parcels: ${errorMessage}`, 'error');
+            const key = 'ephemeral.messages.minted_parcels_failed';
+            const translated = typeof global.i18n?.t === 'function' ? global.i18n.t(key, { error: errorMessage }) : null;
+            if (typeof global.showEphemeralMessage === 'function') {
+                global.showEphemeralMessage(translated && translated !== key ? translated : `Minted parcels could not be loaded: ${errorMessage}`, 6000, 'error');
             }
         } finally {
             state.fetchInProgress = false;

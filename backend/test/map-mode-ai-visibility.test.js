@@ -27,7 +27,7 @@ function update(mode) {
         PhotorealMode: { isActive: () => mode === 'photo', isLoading: () => false }
     };
     const document = { getElementById: id => buttons.get(id) || null };
-    const paint = new Function('window', 'document', 'threeI18n', 'isActive', 'isTransitioning3D', 'renderingOverlayEl',
+    const paint = new Function('window', 'document', 'threeI18n', 'isActive', 'isTransitioning3D', 'renderingStatusRelease',
         `${functionSource}; return updateModeButtonStates;`)(window, document, (_key, fallback) => fallback,
         mode !== '2d', false, null);
     paint();

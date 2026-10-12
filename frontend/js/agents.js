@@ -1367,7 +1367,8 @@ async function showAgentDialog(agentId, options = {}) {
     const onClose = typeof safeOptions.onClose === 'function' ? safeOptions.onClose : null;
     const agent = agentStorage.getAgent(agentId);
     if (!agent) {
-        alert(translateText('agentDialog.agentNotFound', 'Agent not found.'));
+        const missing = translateText('agentDialog.agentNotFound', 'Agent not found.');
+        if (typeof window.showStyledAlert === 'function') window.showStyledAlert(missing); else alert(missing);
         return;
     }
 

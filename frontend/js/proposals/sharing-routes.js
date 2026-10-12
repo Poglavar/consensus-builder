@@ -1976,9 +1976,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         const frameAppliedProposals = async (proposalIdToFocus) => {
             if (!proposalIdToFocus || typeof map === 'undefined' || !map) return;
             try {
-                const bounds = calculateBoundsForLastAppliedProposal(proposalIdToFocus);
-                if (bounds && bounds.isValid && bounds.isValid()) {
-                    map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
+                const in3D = typeof window.isThreeModeActive === 'function' && window.isThreeModeActive();
+                if (in3D && typeof window.focusThreeModeOnProposals === 'function') {
+                    window.focusThreeModeOnProposals([proposalIdToFocus]);
+                } else if (!in3D) {
+                    const bounds = calculateBoundsForLastAppliedProposal(proposalIdToFocus);
+                    if (bounds && bounds.isValid && bounds.isValid()) {
+                        map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
+                    }
                 }
                 if (typeof focusProposalDetails === 'function') {
                     await focusProposalDetails(proposalIdToFocus, {
@@ -2431,7 +2436,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         );
         console.log('[handleSharedPlanRoute] Centering on proposal:', lastProposalId);
 
-        if (lastProposalId && typeof map !== 'undefined' && map) {
+        if (lastProposalId && typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()
+            && typeof window.focusThreeModeOnProposals === 'function') {
+            // The scene is up and the 2D map frozen under it: take the camera there instead.
+            window.focusThreeModeOnProposals([lastProposalId]);
+        } else if (lastProposalId && typeof map !== 'undefined' && map) {
             try {
                 const beforeCenter = (typeof map.getCenter === 'function') ? map.getCenter() : null;
                 const beforeZoom = (typeof map.getZoom === 'function') ? map.getZoom() : null;

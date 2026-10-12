@@ -1,4 +1,5 @@
-// Compact provider attribution on the map, with city data and software credits in Information.
+// Compact provider attribution on the map (the basemap licences require it), with the city's data
+// and software credits under Settings → Information → "Sources & software".
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -102,14 +103,6 @@
             softwareList.className = 'map-credits-software';
             software.forEach(([name, url]) => softwareList.appendChild(makeLink(name, url)));
         }
-        function open(event) {
-            event?.preventDefault();
-            renderDetails();
-            root.MapShell.revealSection('info');
-            const heading = doc.getElementById('map-credits-title');
-            heading.scrollIntoView({ block: 'start' });
-            heading.focus({ preventScroll: true });
-        }
         const control = root.L.control({ position: 'bottomleft' });
         let container;
         function renderControl() {
@@ -118,12 +111,6 @@
             providerCredits(root.BasemapManager.getCurrentBasemapKey()).forEach(([name, url]) => {
                 container.appendChild(makeLink(name, url));
             });
-            const sourceLink = doc.createElement('a');
-            sourceLink.href = '#map-credits-title';
-            sourceLink.textContent = tr('open', 'Sources');
-            sourceLink.setAttribute('aria-label', tr('title', 'Sources & software'));
-            sourceLink.addEventListener('click', open);
-            container.appendChild(sourceLink);
             renderDetails();
         }
         control.onAdd = () => {
@@ -136,11 +123,11 @@
         control.addTo(map);
         map.on('basemapchange', renderControl);
         root.i18n?.onChange(renderControl);
-        // Settings can be opened without the map's Sources link (including in 3D).
+        // The details render when Settings opens (the map control carries only the basemap credit).
         doc.addEventListener('mapshell:sheetopened', event => {
             if (event.detail?.id === 'settings-sheet') renderDetails();
         });
-        return { open, refresh: renderControl };
+        return { refresh: renderControl };
     }
     return Object.freeze({ install, creditParts, parcelCredits, providerCredits });
 });

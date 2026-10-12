@@ -476,39 +476,15 @@ class AgentBubbleManager {
      * @param {Object} bubbleData - Bubble data
      */
     showBubbleErrorNotification(bubbleData) {
-        // Create a temporary notification
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff6b6b;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 10001;
-            max-width: 350px;
-            font-size: 14px;
-            line-height: 1.4;
-        `;
-
-        notification.innerHTML = `
-            <div style="font-weight: 600; margin-bottom: 5px;">⚠️ Location Unavailable</div>
-            <div>Cannot navigate to ${bubbleData.agentName}'s ${bubbleData.action}.</div>
-            <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">
-                This can happen after browser reload when parcel data is not fully loaded.
-            </div>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 5000);
+        // An error notice like every other (ephemerals.md): the parcel data behind the bubble's
+        // location is not loaded yet, which happens right after a reload.
+        const key = 'ephemeral.messages.agent_location_unavailable';
+        const params = { agent: bubbleData.agentName, action: bubbleData.action };
+        const translated = typeof window.i18n?.t === 'function' ? window.i18n.t(key, params) : null;
+        const text = translated && translated !== key ? translated
+            : `Cannot go to ${bubbleData.agentName}'s ${bubbleData.action}: the parcel data is not loaded yet.`;
+        if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(text, 5000, 'error');
+        else console.warn(`[${new Date().toISOString()}] [agent-bubbles] ${text}`);
     }
 
     /**

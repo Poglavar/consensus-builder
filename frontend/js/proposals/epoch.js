@@ -423,7 +423,8 @@
             await setEpoch(proposal, cilj);   // sam precrta listu s novom godinom
         } catch (err) {
             console.error('[epoch] spremanje s kartice nije uspjelo:', err);
-            alert(t('modal.roadWidth.proposalList.epoch.saveError', 'Failed to save the epoch.'));
+            const failed = t('modal.roadWidth.proposalList.epoch.saveError', 'Failed to save the epoch.');
+            if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') window.showStyledAlert(failed); else alert(failed);
             renderList();                     // vrati izbornik na stvarno spremljenu godinu
         }
     }

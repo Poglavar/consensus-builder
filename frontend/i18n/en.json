@@ -145,7 +145,6 @@
     },
     "mapCredits": {
         "title": "Sources & software",
-        "open": "Sources",
         "basemap": "Map",
         "parcel": "Parcel source for {{city}}",
         "software": "Open-source software",
@@ -4298,6 +4297,8 @@
     },
     "ephemeral": {
         "messages": {
+            "agent_location_unavailable": "Cannot go to {{agent}}'s {{action}}: the parcel data is not loaded yet.",
+            "minted_parcels_failed": "Minted parcels could not be loaded: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Can't apply building proposal, prerequisite parcels are missing: {{missing}}",
             "cannot_apply_proposal_missing_parents": "Can't apply proposal, prerequisite parcels are missing: {{missing}}",
             "proposal_conflict_title": "Proposal conflict — same geography",

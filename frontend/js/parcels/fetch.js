@@ -636,7 +636,8 @@
         const message = error && error.message ? error.message : String(error || 'unknown error');
         console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
         const userMessage = parcelFailureMessage(error);
-        global.updateStatus?.(userMessage);
+        // The banner says it (ephemerals.md); the status log keeps the line without the status line repeating it.
+        global.updateStatus?.(userMessage, { floating: false });
         global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
     }
 

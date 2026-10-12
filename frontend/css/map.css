@@ -81,15 +81,21 @@ body {
 #mode-2d-toggle.map-mode-toggle { top: var(--map-mode-slot-2); }
 #mode-3d-toggle.map-mode-toggle { top: var(--map-mode-slot-3); }
 
-/* The scale bar sits in the lower right, above the bottom row of shell buttons and the status
-   toast's row over it (a long toast on a phone spans the width; --map-shell-* in css/map-shell.css).
-   The mode strip owns the lower left. Placed against the corner rather than stacked over the
-   attribution, so a two-line attribution on a phone cannot push it into the buttons. */
-.leaflet-bottom.leaflet-right .leaflet-control-scale {
-    position: absolute;
-    right: var(--map-shell-edge);
-    bottom: 32px;
-    margin: 0;
+/* The scale bar sits in the lower right, in the row right above the dock, the row the credits take
+   from the lower left (both Leaflet corners sit at --map-visible-bottom; css/map-shell.css). The
+   status toast is centred in that row on desktop and one row up on a phone, where it spans the
+   width. No box: a dark bar and its label with a halo, straight on the map. */
+/* Leaflet gives the scale bar a 5px margin where every other control gets 10px; the credits keep
+   Leaflet's 10px, so the two share one bottom edge. */
+.leaflet-bottom .leaflet-control-scale {
+    margin-bottom: 10px;
+}
+
+.leaflet-control-scale-line {
+    background: transparent;
+    border-color: var(--cb-text);
+    color: var(--cb-text);
+    text-shadow: var(--cb-text-halo);
 }
 
 /* The scale bar measures the flat 2D map. Over the perspective model/photo views it is simply
@@ -309,46 +315,6 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     flex: 1;
     min-width: 0;
     max-width: 145px;
-}
-
-/* Loading badge for city meshes and uploaded glTF models, mirroring the photoreal pill. */
-#three-container .three-mode-buildings-loader {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 12px;
-    background: rgba(0, 0, 0, 0.72);
-    color: #fff;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    pointer-events: none;
-    z-index: 11;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.15s ease;
-}
-
-#three-container .three-mode-buildings-loader.is-visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-#three-container .three-mode-loader-spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: three-mode-spin 0.7s linear infinite;
-}
-
-@keyframes three-mode-spin {
-    to { transform: rotate(360deg); }
 }
 
 /* Left-side parcel value panel (shown when a parcel is isolated/clicked in 3D). */
@@ -874,14 +840,6 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
         flex: 1 1 auto;
         width: auto;
         height: 38px;
-    }
-
-    /* Keep the loading badge clear of the shared top controls and bottom navigation. */
-    #three-container .three-mode-buildings-loader {
-        top: auto;
-        bottom: calc(var(--map-shell-dock-height) + var(--cb-space-3));
-        left: 50%;
-        transform: translateX(-50%);
     }
 }
 

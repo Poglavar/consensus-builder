@@ -1,5 +1,4 @@
 let statusHighlightTimeout = null;
-let copyFeedbackTimeout = null;
 let statusLog = [];
 let isStatusExpanded = false;
 
@@ -40,11 +39,13 @@ function updateStatus(message, options = {}) {
         statusSpan.textContent = message;
     }
 
-    // Also update floating status (visible when sidebar is closed)
-    const floatingStatusText = document.getElementById('floating-status-text');
+    // Also update floating status (visible when sidebar is closed). A notice logs here but does
+    // not take over the status line: the two would say the same thing top and bottom at once.
+    const floatingStatusText = options.floating === false ? null : document.getElementById('floating-status-text');
     if (floatingStatusText) {
         floatingStatusText.textContent = message;
         floatingStatusText.parentElement?.classList.toggle('has-progress', options.transient === true);
+        touchFloatingStatus();
     }
 }
 
@@ -288,6 +289,29 @@ if (typeof window !== 'undefined') window.yieldToBrowser = yieldToBrowser;
 // busy" without knowing whether anything else is.
 let statusActivityHolders = 0;
 
+// The floating status line (ephemerals.md): the latest line, a spinner while anything is busy, and
+// gone on its own once nothing has been said for a while and nothing is running.
+const STATUS_IDLE_MS = 8000;
+let statusIdleTimer = null;
+
+function floatingStatusHost() {
+    const text = document.getElementById('floating-status-text');
+    const host = text && text.parentElement;
+    return host && host.classList && typeof host.classList.add === 'function' ? host : null;
+}
+
+function touchFloatingStatus() {
+    const host = floatingStatusHost();
+    if (!host) return;
+    host.classList.remove('is-idle');
+    if (statusIdleTimer && typeof clearTimeout === 'function') { clearTimeout(statusIdleTimer); statusIdleTimer = null; }
+    if (statusActivityHolders > 0 || typeof setTimeout !== 'function') return;
+    statusIdleTimer = setTimeout(() => {
+        statusIdleTimer = null;
+        if (statusActivityHolders === 0) host.classList.add('is-idle');
+    }, STATUS_IDLE_MS);
+}
+
 function statusActivitySpinner() {
     const statusBar = document.querySelector('.status-bar');
     if (!statusBar) return null;
@@ -305,6 +329,9 @@ function beginStatusActivity() {
     statusActivityHolders += 1;
     const spinner = statusActivitySpinner();
     if (spinner) spinner.classList.add('is-active');
+    const host = floatingStatusHost();
+    if (host) host.classList.add('is-busy');
+    touchFloatingStatus();
     return () => endStatusActivity();
 }
 
@@ -313,6 +340,9 @@ function endStatusActivity() {
     if (statusActivityHolders > 0) return;
     const spinner = statusActivitySpinner();
     if (spinner) spinner.classList.remove('is-active');
+    const host = floatingStatusHost();
+    if (host) host.classList.remove('is-busy');
+    touchFloatingStatus();
 }
 
 // The Copy all and Open log buttons, created on first expand and reused. Built here rather than in
@@ -405,76 +435,60 @@ function applyStatusBarHighlight() {
     }
 }
 
-function showEphemeralMessage(message, duration = 5000) {
-    // An ephemeral message fades out and is gone. That is fine for a confirmation, and wrong for
-    // anything the user may need to read twice — "4 proposals removed: …" names records that are no
-    // longer on the map, and if you looked away you cannot get the list back. So every ephemeral
-    // message also goes through the status bar, which keeps the last 100 entries and can be
-    // expanded. The toast stays the thing that catches the eye; the log is what survives.
-    try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
+// ---- Notices (ephemerals.md) ----
+// A notice announces an outcome and goes away: one pill at a time, top centre, the look of
+// .cb-toast with a variant per type. It is also written to the status LOG (not the status line):
+// "4 proposals removed: …" names records that are no longer on the map, and if you looked away you
+// cannot get the list back from a pill that has gone; the log keeps it.
+const NOTICE_VARIANTS = { info: 'notice', success: 'success', warning: 'warning', error: 'error' };
+const NOTICE_EXIT_MS = 400;
+let noticeQueue = null;
 
+function noticeContainer() {
     let container = document.getElementById('ephemeral-message-container');
-
-    // Create container if it doesn't exist
     if (!container) {
         container = document.createElement('div');
         container.id = 'ephemeral-message-container';
-
+        container.setAttribute('aria-live', 'polite');
         const mapContainer = document.getElementById('map-container');
-        if (mapContainer) {
-            mapContainer.appendChild(container);
-        } else {
-            document.body.appendChild(container);
-        }
+        (mapContainer || document.body).appendChild(container);
     }
-
-    const messageEl = document.createElement('div');
-    messageEl.className = 'ephemeral-message';
-    messageEl.textContent = message;
-
-    // Add to container
-    container.appendChild(messageEl);
-
-    // Animate in by adding the 'visible' class after a short delay
-    requestAnimationFrame(() => {
-        messageEl.classList.add('visible');
-    });
-
-    // Set timeout to animate out and remove
-    setTimeout(() => {
-        messageEl.classList.remove('visible');
-
-        // Remove the element from DOM after the transition ends
-        messageEl.addEventListener('transitionend', (e) => {
-            // Check to ensure the element is still in the DOM and the event is for opacity
-            if (e.propertyName === 'opacity' && messageEl.parentNode) {
-                messageEl.remove();
-            }
-        });
-    }, duration);
+    return container;
 }
 
-function showCopyFeedback(message) {
-    let feedback = document.getElementById('copy-feedback-toast');
-    if (!feedback) {
-        feedback = document.createElement('div');
-        feedback.id = 'copy-feedback-toast';
-        feedback.className = 'copy-feedback-toast';
-        feedback.setAttribute('role', 'status');
-        feedback.setAttribute('aria-live', 'polite');
-        feedback.setAttribute('aria-atomic', 'true');
-        document.body.appendChild(feedback);
+function presentNotice(entry) {
+    const variant = NOTICE_VARIANTS[entry.type] || NOTICE_VARIANTS.info;
+    const messageEl = document.createElement('div');
+    messageEl.className = `ephemeral-message cb-toast cb-toast--${variant}`;
+    messageEl.setAttribute('role', variant === 'error' ? 'alert' : 'status');
+    messageEl.textContent = entry.message;
+    noticeContainer().appendChild(messageEl);
+    requestAnimationFrame(() => messageEl.classList.add('visible'));
+    return messageEl;
+}
+
+function retireNotice(messageEl) {
+    if (!messageEl) return;
+    messageEl.classList.remove('visible');
+    // Gone after its exit transition; the timer covers a reduced-motion page where none runs.
+    setTimeout(() => { if (messageEl.parentNode) messageEl.remove(); }, NOTICE_EXIT_MS);
+}
+
+function showEphemeralMessage(message, duration = 5000, type = 'info') {
+    try { if (typeof updateStatus === 'function') updateStatus(message, { floating: false }); } catch (_) { }
+    const entry = { message, duration, type };
+    if (!noticeQueue && typeof __NoticeQueue !== 'undefined' && typeof __NoticeQueue.createNoticeQueue === 'function') {
+        noticeQueue = __NoticeQueue.createNoticeQueue({ show: presentNotice, hide: retireNotice });
     }
+    if (noticeQueue) return noticeQueue.push(entry);
+    const messageEl = presentNotice(entry);
+    setTimeout(() => retireNotice(messageEl), duration);
+    return true;
+}
 
-    feedback.textContent = message;
-    feedback.classList.remove('visible');
-    requestAnimationFrame(() => feedback.classList.add('visible'));
-
-    if (copyFeedbackTimeout) clearTimeout(copyFeedbackTimeout);
-    copyFeedbackTimeout = setTimeout(() => {
-        feedback.classList.remove('visible');
-        copyFeedbackTimeout = null;
-    }, 1100);
+// "Copied": a short notice, the same pill as every other outcome.
+function showCopyFeedback(message) {
+    showEphemeralMessage(message, 1400);
 }
 
 function fallbackCopyText(value) {

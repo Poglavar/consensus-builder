@@ -863,8 +863,8 @@ test.describe('Capture how-to screenshots', () => {
             }
           }
         }
-        const chip = document.querySelector('.photoreal-tile-loader');
-        return { loaded, pending, processing, chip: !!chip && chip.classList.contains('visible') };
+        const chip = document.getElementById('floating-status');
+        return { loaded, pending, processing, chip: !!chip && chip.classList.contains('is-busy') };
       });
       let settled = 0;
       let last: any = null;
@@ -880,7 +880,7 @@ test.describe('Capture how-to screenshots', () => {
       // spinner in the figure would be the misleading thing.
       if ((await tileState()).chip) {
         console.log('  note: photoreal tile chip still shown after tilesLoaded — removing it for the shot');
-        await page.evaluate(() => document.querySelector('.photoreal-tile-loader')?.classList.remove('visible'));
+        await page.evaluate(() => document.getElementById('floating-status')?.classList.remove('is-busy'));
       }
       await page.evaluate(() => document.querySelector('.photoreal-rotate-hint')?.remove());
       await cleanChrome();

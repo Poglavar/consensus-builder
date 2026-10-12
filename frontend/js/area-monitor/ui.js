@@ -640,17 +640,9 @@
 
     // --- Utils ---
 
+    // An outcome goes out as a notice like every other (ephemerals.md).
     function showToast(message) {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-            background: #333; color: #fff; padding: 10px 20px; border-radius: 8px;
-            font-size: 13px; z-index: 20000; pointer-events: none;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3500);
+        if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 3500);
     }
 
     function escapeAttr(str) {

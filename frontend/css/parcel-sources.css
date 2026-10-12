@@ -18,29 +18,11 @@
 .parcel-source-settings .btn, .source-status .btn { margin: .5rem .4rem 0 0; }
 .parcel-source-settings a { color: var(--cb-primary); }
 .parcel-source-settings [hidden] { display: none; }
-/* Compact warnings reopen recovery after dismissal. The dialog itself owns the full choices. */
-.source-status-stack {
-    position: fixed;
-    z-index: var(--cb-z-notice);
-    right: 1rem;
-    bottom: 4.5rem;
-    width: min(30rem, calc(100vw - 2rem));
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-2);
-}
-body.site-intro-open .source-status-stack,
+/* Compact warnings reopen recovery after dismissal; they are sections of the shared banner card
+   (css/primitives.css .cb-banner). The dialog itself owns the full choices. */
+body.site-intro-open .cb-banner-stack,
 body.ground-fallback-open #parcel-source-status {
     display: none;
-}
-.source-status {
-    box-sizing: border-box;
-    padding: 1rem;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-lg);
-    color: var(--cb-text);
-    background: var(--cb-surface);
-    box-shadow: var(--cb-shadow-lg);
 }
 .source-status__message { margin: 0; line-height: 1.5; }
 .parcel-source-formats { margin: 0; font-family: var(--cb-font-sans); color: var(--cb-text); background: var(--cb-bg); line-height: var(--cb-leading); }

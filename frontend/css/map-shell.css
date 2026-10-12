@@ -10,10 +10,14 @@
     --map-shell-button-size: 40px;
     /* Navigation owns the bottom edge. Credits occupy the map above it. */
     --map-shell-bottom: 0px;
-    /* The bottom row is a labelled bar (Proposals · Bets · Activity), this tall. */
-    --map-shell-bar-height: 52px;
+    /* The bottom row is Proposals · Bets · Activity: three pills centred on the bottom edge on a
+       wide map, a labelled bar across the width on a phone (the phone block below). Its height
+       drives the clearance ladder (toast, tray, sheets, docked panels), whichever shape it takes. */
+    --map-shell-bar-height: var(--map-shell-button-size);
     --map-shell-dock-height: calc(var(--map-shell-bar-height) + var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
-    --map-visible-bottom: var(--map-shell-dock-height);
+    /* The Leaflet corners (credits, scale bar) share the pills' row on a wide map and sit above
+       the bar on a phone. */
+    --map-visible-bottom: 0px;
     /* The rows the floating chrome occupies. A docked panel (parcel, proposal, road, block) starts
        below the top row and ends above the bottom row, so no control moves when a panel opens. */
     --map-shell-top-clearance: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
@@ -53,26 +57,20 @@
     right: var(--map-shell-edge);
 }
 
+/* Wide map: three pills on the bottom edge, the same chrome as the top-right cluster, so the map
+   keeps its bottom edge and the credits and scale bar share the row from the corners. */
 .map-shell-cluster--bottom-right {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    min-height: var(--map-shell-dock-height);
-    box-sizing: border-box;
-    padding: var(--cb-space-1) var(--map-shell-edge) calc(var(--cb-space-1) + env(safe-area-inset-bottom, 0px));
+    bottom: var(--map-shell-edge);
+    left: 50%;
+    transform: translateX(-50%);
     align-items: center;
     justify-content: center;
-    background: var(--cb-glass);
-    border-top: 1px solid var(--cb-line);
 }
 
 .map-shell-cluster--bottom-right .map-shell-button--labelled {
-    flex: 1 1 0;
-    max-width: 200px;
+    flex: 0 0 auto;
     height: var(--map-shell-bar-height);
-    border-radius: var(--cb-radius-md);
-    border-color: transparent;
-    box-shadow: none;
+    border-radius: var(--cb-radius-pill);
 }
 
 .map-utility-button {
@@ -1079,15 +1077,27 @@ body.app-loading .map-shell-cluster {
 
     /* A labelled bar along the bottom (docs/design-language.md): three equal buttons, icon over
        label, instead of an icon-only column with a floating count. The bottom clearance grows with
-       it so the toast, the tray and the scale bar sit above the bar. */
+       it so the toast and the tray sit above the bar, and the credits and scale bar take the row
+       between. */
     :root {
+        --map-shell-bar-height: 52px;
+        --map-visible-bottom: var(--map-shell-dock-height);
         --map-shell-bottom-clearance: calc(var(--map-shell-dock-height) + var(--cb-control-height) + var(--map-shell-gap));
     }
 
     .map-shell-cluster--bottom-right {
+        bottom: 0;
         left: 0;
         right: 0;
+        transform: none;
         flex-direction: row;
+        min-height: var(--map-shell-dock-height);
+        box-sizing: border-box;
+        padding: var(--cb-space-1) var(--map-shell-edge) calc(var(--cb-space-1) + env(safe-area-inset-bottom, 0px));
+        /* A veil, not a wall: the map shows through, blurred so the labels stay legible over busy tiles. */
+        background: var(--cb-glass-veil);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid var(--cb-line);
     }
 
     .map-shell-cluster--bottom-right .map-shell-button--labelled {
@@ -1099,6 +1109,11 @@ body.app-loading .map-shell-cluster {
         justify-content: center;
         gap: 2px;
         padding: 4px 6px;
+        border-radius: var(--cb-radius-md);
+        border-color: transparent;
+        /* Transparent at rest so the veil is what one sees; hover and the active state keep their fills. */
+        background: transparent;
+        box-shadow: none;
     }
 
     .map-shell-cluster--bottom-right .map-shell-button-label {

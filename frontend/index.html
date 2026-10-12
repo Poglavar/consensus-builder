@@ -318,8 +318,8 @@
 
         <!-- Floating status toast: the latest status line, always visible, small and out of the way.
              The full status bar and its log live in the Activity sheet. -->
-        <div id="floating-status" class="floating-status">
-            <span id="floating-status-text"></span>
+        <div id="floating-status" class="floating-status cb-toast cb-toast--status">
+            <span class="cb-toast__spinner" aria-hidden="true"></span><span id="floating-status-text"></span>
         </div>
 
         <!-- ===== Floating map shell (js/ui/map-shell.js, css/map-shell.css) =====
@@ -1621,6 +1621,7 @@
         window.writeVersionedLocalScripts([
             'js/optional-tools-loader.js',
             'js/shared-utils.js',
+            'js/ui/banner-stack.js',
             'js/ui/modal-escape.js',
             'js/persistent-storage.js',
             'js/i18n.js',
@@ -1924,6 +1925,7 @@
             'js/proposals/grain-score.js',
             'js/proposals/plan-stats.js',
             'js/parcel-coverage-debug.js',
+            'js/ui/notice-queue.js',
             'js/ui-helpers.js',
             'js/lens.js',
             'js/lens-picker.js',

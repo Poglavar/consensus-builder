@@ -231,8 +231,9 @@
         global.document.body.append(dialog); dialog.showModal(); input.focus();
         return dialog;
     }
-    // The failure banners, one per kind, stay compact in the corner stack. Parcel choices live in the
-    // ground fallback dialog; building failures retain their own retry/source actions.
+    // The failure banners, one per kind, are sections of the shared banner card (ephemerals.md): both
+    // failing at once reads as one card with one line per source. Parcel choices live in the ground
+    // fallback dialog; building failures retain their own retry/source actions.
     const BANNERS = {
         parcel: { id: 'parcel-source-status', choose: ['groundFallback.reopen', 'Choose how to continue'] },
         building: { id: 'building-source-status', retry: ['buildingSources.retry', 'Retry buildings'], choose: ['buildingSources.title', 'Choose a building source'],
@@ -244,10 +245,8 @@
         const spec = BANNERS[kind] || BANNERS.parcel;
         let banner = doc.getElementById(spec.id);
         if (!banner) {
-            let stack = doc.getElementById('source-status-stack');
-            if (!stack) { stack = doc.createElement('div'); stack.id = 'source-status-stack'; stack.className = 'source-status-stack'; doc.body.append(stack); }
             banner = doc.createElement('aside'); banner.id = spec.id;
-            banner.className = 'source-status'; banner.setAttribute('role', 'status');
+            banner.className = 'source-status cb-banner'; banner.setAttribute('role', 'status');
             const text = doc.createElement('p'); text.className = 'source-status__message'; banner.append(text);
             const button = ([key, fallback], action) => {
                 const node = doc.createElement('button'); node.type = 'button'; node.className = 'btn btn-secondary';
@@ -261,7 +260,13 @@
                 button(spec.choose, () => open(global, kind));
             }
             button(['parcelSources.dismiss', 'Dismiss source warning'], () => banner.remove());
-            stack.append(banner);
+            // The shared banner card (js/ui/banner-stack.js); a bare document gets a plain stack.
+            const stackApi = global.__BannerStack;
+            if (!(stackApi && typeof stackApi.mount === 'function' && stackApi.mount(banner))) {
+                let stack = doc.getElementById('cb-banner-stack');
+                if (!stack) { stack = doc.createElement('div'); stack.id = 'cb-banner-stack'; stack.className = 'cb-banner-stack'; doc.body.append(stack); }
+                stack.append(banner);
+            }
         }
         banner.querySelector('p').textContent = message;
         if (typeof retry === 'function') banner.retry = retry;

@@ -166,9 +166,10 @@
     let sceneTreeLoadGeometry = null; // preserves the existing tree query scope, but freezes its anchor
     let sceneTreeLoadGeometrySource = 'camera';
     let focusProposalIds = null; // Set of proposalIds to frame on 3D entry (shared-link focus), or null for all
-    let renderingOverlayEl = null; // transient overlay while 3D initializes
+    let renderingStatusRelease = null; // the status line's hold while 3D initialises (ephemerals.md)
     let isTransitioning3D = false; // avoid double-activation
-    let buildingsLoaderEl = null; // in-view "loading buildings" badge
+    let buildingsLoaderRelease = null; // the status line's hold while built buildings load
+    let buildingsLoaderText = '';
     let pendingModelLoads = 0; // count of uploaded glTF models still downloading
 
     // URL-driven entry: optionally start a gentle camera rotation until the user interacts.
@@ -247,7 +248,7 @@
             const pendingMode = window.__pending3DMode;
             const photoLoading = pendingMode === 'photo'
                 || !!(window.PhotorealMode && typeof window.PhotorealMode.isLoading === 'function' && window.PhotorealMode.isLoading());
-            const modelLoading = (pendingMode === 'model' || isTransitioning3D || !!renderingOverlayEl) && !photoLoading && !rw;
+            const modelLoading = (pendingMode === 'model' || isTransitioning3D || !!renderingStatusRelease) && !photoLoading && !rw;
             const desired = window.__mapModeState?.desired;
             const photoSelected = desired ? desired === 'photo' : rw || photoLoading;
             const modelSelected = desired ? desired === 'model' : !photoSelected && (isActive || modelLoading);
@@ -1124,6 +1125,99 @@
         applyIsolationVisibility(idSet, feats);
         frameIsolatedFeatures(feats);
         notifyIsolationChanged();
+    }
+
+    // A proposal opened from a list, a link, a search or the activity feed while the scene is up:
+    // frame its ground where it stands when the scene has it, else the scene has to be rebuilt
+    // around it (three-focus-plan.js decides). Returns the plan's action.
+    function frameProposalsInScene(ids) {
+        const plan = window.__threeFocusPlan;
+        if (!plan || typeof plan.planProposalFocus !== 'function' || !isActive) return 'none';
+        const targets = ids.map(id => {
+            const proposal = resolveProposalForFocus(id);
+            if (!proposal) return null;
+            const parcelIds = Array.from(getProposalParcelIdSet(proposal));
+            const features = parcelIds.map(getParcelFeatureById).filter(Boolean);
+            return { id: String(id), parcelIds, features, siteFeature: parcelIds.length ? null : proposalSiteFeature(proposal) };
+        }).filter(Boolean);
+        let origin = null;
+        try { const ll = xyToLatLng(0, 0); origin = { lat: ll.lat, lng: ll.lng }; } catch (_) { }
+        const decision = plan.planProposalFocus({ targets, originLatLng: origin, radiusM: buildingLoadRadiusM });
+        console.log(`[${new Date().toISOString()}] [3D] focus on ${ids.join(',')}: ${decision.action} (${decision.reason})`);
+        if (decision.action === 'frame') frameIsolatedFeatures(decision.features);
+        return decision.action;
+    }
+
+    function resolveProposalForFocus(id) {
+        const store = window.proposalStorage;
+        return (typeof window.getProposalByIdOrHash === 'function' ? window.getProposalByIdOrHash(id) : null)
+            || ((store && typeof store.getProposal === 'function') ? store.getProposal(id) : null);
+    }
+
+    // Where a proposal stands, for moving the map to it: its loaded parcels, else its own
+    // geometry (buildings, corridor, structure), else its site or stored footprint.
+    function proposalGroundFeatures(proposal) {
+        const feats = [];
+        getProposalParcelIdSet(proposal).forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
+        if (feats.length) return feats;
+        try {
+            const sets = (typeof collectProposalFeatureSets === 'function') ? collectProposalFeatureSets(proposal) : null;
+            (sets?.primaryFeatures || []).forEach(f => { if (f?.geometry) feats.push(f); });
+        } catch (_) { /* a record without derivable geometry */ }
+        if (feats.length) return feats;
+        const site = proposalSiteFeature(proposal);
+        if (site) feats.push(site);
+        else if (proposal.geometry?.type && proposal.geometry.coordinates) feats.push({ type: 'Feature', properties: {}, geometry: proposal.geometry });
+        return feats;
+    }
+
+    // Relocating the scene: the 2D map goes to the proposals first and loads their parcels (the
+    // scene's ground comes from the loaded fabric), then enter3D anchors the new scene on them.
+    async function settleGroundForProposals(ids) {
+        const proposals = ids.map(resolveProposalForFocus).filter(Boolean);
+        const parcelIds = [];
+        proposals.forEach(proposal => parcelIds.push(...getProposalParcelIdSet(proposal)));
+        try {
+            if (parcelIds.length && window.CadastralParcelRepository?.ensureIds) await window.CadastralParcelRepository.ensureIds(parcelIds);
+        } catch (error) { console.warn(`[${new Date().toISOString()}] [3D] ground of ${ids.join(',')} did not load`, error); }
+        if (typeof map === 'undefined' || !map) return;
+        const features = [];
+        proposals.forEach(proposal => features.push(...proposalGroundFeatures(proposal)));
+        const center = window.__threeFocusPlan?.featuresCenter?.(features);
+        if (center) {
+            try {
+                window.suppressCameraMoves = true;
+                map.setView([center.lat, center.lng], Math.max(map.getZoom() || 0, 17), { animate: false });
+            } catch (error) { console.warn(`[${new Date().toISOString()}] [3D] could not move the map to ${ids[0]}`, error); }
+            finally { window.suppressCameraMoves = false; }
+        }
+        try {
+            if (typeof window.fetchParcelData === 'function') await window.fetchParcelData(map.getBounds());
+        } catch (error) { console.warn(`[${new Date().toISOString()}] [3D] parcels around ${ids.join(',')} did not load`, error); }
+    }
+
+    // Entry for the 2D selection path and the share routes (window.focusThreeModeOnProposals):
+    // frames in place, or asks the mode controller to rebuild the scene around the proposals,
+    // which lands in enter3D with the ids as its focus. One rebuild per set of ids at a time.
+    let relocatingFocusKey = null;
+    function focusThreeModeOnProposals(ids) {
+        const list = (Array.isArray(ids) ? ids : [ids]).filter(id => id != null).map(String);
+        if (!isActive || !list.length) return false;
+        if (frameProposalsInScene(list) !== 'relocate') return true;
+        const key = list.join(',');
+        if (relocatingFocusKey === key) return true;
+        if (typeof window.requestMapMode !== 'function') return false;
+        relocatingFocusKey = key;
+        Promise.resolve(window.requestMapMode(realisticLayerActive ? 'photo' : 'model', { focusProposalIds: list }))
+            .then(entered => {
+                // The rebuild drops the selection with the old scene; the proposals stay chosen.
+                if (entered && isActive && typeof window.selectAndHighlightProposal === 'function') {
+                    window.selectAndHighlightProposal(list[0], null, false, false, true);
+                }
+            })
+            .catch(error => console.warn(`[${new Date().toISOString()}] [3D] could not rebuild the scene around ${key}`, error))
+            .finally(() => { if (relocatingFocusKey === key) relocatingFocusKey = null; });
+        return true;
     }
 
     function clearIsolation() {
@@ -6705,9 +6799,18 @@
         parcelClickHandler = handleParcelClick;
         renderer.domElement.addEventListener('click', parcelClickHandler);
         if (!proposalSelectionUnsubscribe && window.ProposalSelection?.subscribe) {
+            // One selection is several writes (clear, select, parcel) and the rebuild below walks
+            // every applied proposal: the writes of one task coalesce into one rebuild.
+            let rebuildQueued = false;
             proposalSelectionUnsubscribe = window.ProposalSelection.subscribe(() => {
-                rebuildProposalInteraction3D();
-                rebuildPlannedReparcellization3D();
+                if (rebuildQueued) return;
+                rebuildQueued = true;
+                Promise.resolve().then(() => {
+                    rebuildQueued = false;
+                    if (!isActive) return;
+                    rebuildProposalInteraction3D();
+                    rebuildPlannedReparcellization3D();
+                });
             });
         }
 
@@ -6721,74 +6824,39 @@
         return ready;
     }
 
+    // "Rendering…" while 3D initialises: the status line with its spinner (ephemerals.md).
     function showRenderingOverlay() {
         try {
-            if (renderingOverlayEl) return;
-            const el = document.createElement('div');
-            el.id = 'three-rendering-overlay';
-            el.textContent = threeI18n('threeMode.overlay.rendering', 'Rendering…');
-            el.style.position = 'fixed';
-            el.style.left = '50%';
-            el.style.top = '50%';
-            el.style.transform = 'translate(-50%, -50%)';
-            el.style.padding = '10px 14px';
-            el.style.background = 'rgba(0,0,0,0.66)';
-            el.style.color = '#fff';
-            el.style.borderRadius = '8px';
-            el.style.fontSize = '16px';
-            el.style.fontWeight = '600';
-            el.style.zIndex = '999999';
-            el.style.pointerEvents = 'none';
-            document.body.appendChild(el);
-            renderingOverlayEl = el;
+            if (renderingStatusRelease) return;
+            if (typeof updateStatus === 'function') updateStatus(threeI18n('threeMode.overlay.rendering', 'Rendering…'), { transient: true });
+            renderingStatusRelease = (typeof beginStatusActivity === 'function') ? beginStatusActivity() : () => {};
         } catch (_) { }
         try { updateModeButtonStates(); } catch (_) { }
     }
 
     function hideRenderingOverlay() {
-        try {
-            if (renderingOverlayEl && renderingOverlayEl.parentNode) {
-                renderingOverlayEl.parentNode.removeChild(renderingOverlayEl);
-            }
-        } catch (_) { }
-        renderingOverlayEl = null;
+        try { if (renderingStatusRelease) renderingStatusRelease(); } catch (_) { }
+        renderingStatusRelease = null;
         try { updateModeButtonStates(); } catch (_) { }
     }
 
-    // A small badge in the 3D view, shown while built buildings are loading: the /buildings/near
-    // fetch (can pull thousands of city meshes) and any uploaded glTF models still downloading.
-    function ensureBuildingsLoaderEl() {
-        if (buildingsLoaderEl && buildingsLoaderEl.parentElement) return buildingsLoaderEl;
-        if (!threeContainer) return null;
-        const el = document.createElement('div');
-        el.className = 'three-mode-buildings-loader';
-        const spinner = document.createElement('span');
-        spinner.className = 'three-mode-loader-spinner';
-        const label = document.createElement('span');
-        label.textContent = threeI18n('threeMode.overlay.loadingBuildings', 'Loading buildings…');
-        const count = document.createElement('span');
-        count.className = 'three-mode-loader-count';
-        el.appendChild(spinner);
-        el.appendChild(label);
-        el.appendChild(count);
-        threeContainer.appendChild(el);
-        buildingsLoaderEl = el;
-        return el;
-    }
-
-    // Visible whenever either source of building loading is in flight (and 3D is active).
+    // The status line says so while built buildings load: the /buildings/near fetch (can pull
+    // thousands of city meshes) and any uploaded glTF models still downloading (ephemerals.md).
     function updateBuildingsLoader() {
         try {
             const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
-            const el = ensureBuildingsLoaderEl();
-            if (!el) return;
-            el.classList.toggle('is-visible', loading);
-            const count = el.querySelector('.three-mode-loader-count');
-            if (count) {
-                // The /near fetch is one request (no incremental total); pending glTF models are
-                // countable, so show that number while any are still downloading.
-                count.textContent = pendingModelLoads > 0 ? String(pendingModelLoads) : '';
+            if (!loading) {
+                if (buildingsLoaderRelease) { buildingsLoaderRelease(); buildingsLoaderRelease = null; }
+                buildingsLoaderText = '';
+                return;
             }
+            // The /near fetch is one request (no incremental total); pending glTF models are
+            // countable, so that number rides along while any are still downloading.
+            const label = threeI18n('threeMode.overlay.loadingBuildings', 'Loading buildings…')
+                + (pendingModelLoads > 0 ? ` (${pendingModelLoads})` : '');
+            if (label !== buildingsLoaderText && typeof updateStatus === 'function') updateStatus(label, { transient: true });
+            buildingsLoaderText = label;
+            if (!buildingsLoaderRelease && typeof beginStatusActivity === 'function') buildingsLoaderRelease = beginStatusActivity();
         } catch (_) { }
     }
 
@@ -7180,7 +7248,18 @@
     }
 
     async function enter3D(options = {}) {
-        if (isActive) return sceneReadyPromise || sceneReady;
+        if (isActive) {
+            // Already up. A request that names proposals (a link, the activity feed, a list) frames
+            // them in place, or rebuilds the scene around them when their ground is not loaded.
+            const focus = Array.isArray(options.focusProposalIds) ? options.focusProposalIds.filter(id => id != null).map(String) : [];
+            if (!focus.length || frameProposalsInScene(focus) !== 'relocate') return sceneReadyPromise || sceneReady;
+            // The scene was built around other ground: leave it, let the 2D map go to the proposals
+            // and load their parcels, then build the scene again around them below.
+            exit3D();
+            showRenderingOverlay();
+            await settleGroundForProposals(focus);
+            if (isActive) return sceneReadyPromise || sceneReady;
+        }
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         const reuse = sceneReady && scene && warmSceneKey === currentSceneKey()
@@ -7948,6 +8027,7 @@
     // Photo view arrives through its own activation, so it asks for the hint itself.
     window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };
+    window.focusThreeModeOnProposals = focusThreeModeOnProposals;
     window.getThree3DGeoView = getGeoCameraView;
     window.setThreeXrayEnabled = setXrayEnabled;
     window.setThreeFloorCutaway = setFloorCutaway;

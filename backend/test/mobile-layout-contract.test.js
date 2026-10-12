@@ -13,6 +13,8 @@ const panelsCss = read('css/panels.css');
 const photorealCss = read('css/photoreal-mode.css');
 const grainCss = read('css/grain-score.css');
 const mapShellCss = read('css/map-shell.css');
+const mapCreditsCss = read('css/map-credits.css');
+const selectionTrayCss = read('css/selection-tray.css');
 const proposalsCss = read('css/proposals.css');
 const proposalDetailsCss = read('css/proposal-details.css');
 const drillUi = read('js/proposals/drill-ui.js');
@@ -143,6 +145,33 @@ describe('3D and photo view', () => {
         expect(parcel).not.toContain('applyIsolationVisibility(');
         const proposal = threeMode.slice(threeMode.indexOf('function isolateProposal('), threeMode.indexOf('function clearIsolation('));
         expect(proposal).toContain('frameIsolatedFeatures(feats)');
+    });
+
+    it('sets the credits and the scale bar straight on the map, in the one row above the dock', () => {
+        // Neither corner control is lifted or boxed: both Leaflet corners already sit at --map-visible-bottom.
+        expect(ruleBody(mapCss, '\\.leaflet-bottom\\.leaflet-right \\.leaflet-control-scale')).toBeNull();
+        expect(ruleBody(selectionTrayCss, 'body:has\\(#selection-tray\\) \\.leaflet-bottom\\.leaflet-right \\.leaflet-control-scale')).toBeNull();
+        expect(ruleBody(mapCss, '\\.leaflet-control-scale-line')).toMatch(/background:\s*transparent/);
+        expect(ruleBody(mapCreditsCss, '\\.map-credits-control')).toMatch(/background:\s*transparent/);
+        // On a phone the dock is a veil whose buttons at rest do not hide it; on a wide map it is
+        // three pills on the bottom edge, with no band across the map.
+        const phone = mediaBlock(mapShellCss, '(max-width: 767.98px)', mapShellCss.indexOf('Phones: bottom sheets'));
+        expect(ruleBody(phone, '\\.map-shell-cluster--bottom-right')).toMatch(/background:\s*var\(--cb-glass-veil\)/);
+        expect(ruleBody(phone, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/background:\s*transparent/);
+        expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right')).not.toMatch(/background/);
+        expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right')).toMatch(/left:\s*50%/);
+        expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/border-radius:\s*var\(--cb-radius-pill\)/);
+    });
+
+    it('stacks persistent banners in one card under the top row and keeps notices below it', () => {
+        const primitives = read('css/primitives.css');
+        expect(ruleBody(primitives, '\\.cb-banner-stack')).toMatch(/top:\s*var\(--map-shell-top-clearance\)/);
+        expect(ruleBody(primitives, '\\.cb-banner \\+ \\.cb-banner')).toMatch(/border-top/);
+        expect(ruleBody(utilitiesCss, '#ephemeral-message-container')).toMatch(/--cb-banner-stack-height/);
+        // Every persistent banner mounts into the card; none keeps its own fixed position.
+        expect(ruleBody(read('css/base.css'), '\\.cb-multitab-banner')).not.toMatch(/position/);
+        expect(ruleBody(read('css/world.css'), '\\.explore-banner')).not.toMatch(/position/);
+        expect(read('css/parcel-sources.css')).not.toMatch(/\.source-status-stack\s*\{/);
     });
 
     it('lifts the view hint clear of the Google attribution, and hides the 2D scale bar', () => {

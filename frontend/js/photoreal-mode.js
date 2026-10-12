@@ -122,10 +122,9 @@
     let lastFrameNow = 0;
     let sinceAnyLoadS = 0;
     let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
-    let statusEl = null;
     let statusRemovalTimer = null;
-    let loaderEl = null;
-    let loaderTextEl = null;
+    let streamingRelease = null; // the status line's hold while tiles stream (ephemerals.md)
+    let streamingText = '';
     let fpsEl = null;
     let seatDebugEl = null;
     let coverEl = null; // opaque loading cover hiding the abstract 3D during a URL-driven rw entry
@@ -174,20 +173,10 @@
         return fallback;
     }
 
-    // ---- small in-container UI (status toast + tile-streaming indicator) ----
+    // A photo view that could not compose is an outcome: an error notice (ephemerals.md).
     function setStatus(msg) {
-        const host = document.getElementById('map-container');
-        if (!host) return;
-        if (!statusEl) {
-            statusEl = document.createElement('div');
-            statusEl.className = 'photoreal-status';
-            statusEl.setAttribute('role', 'status');
-            statusEl.setAttribute('aria-live', 'polite');
-            statusEl.setAttribute('aria-atomic', 'true');
-            host.appendChild(statusEl);
-        }
-        statusEl.textContent = msg || '';
-        statusEl.style.display = msg ? 'block' : 'none';
+        if (!msg) return;
+        if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(msg, 8000, 'error');
     }
 
     // On a URL-driven rw entry, cover the abstract 3D while Google tiles stream, so the view goes
@@ -200,7 +189,7 @@
         coverEl.className = 'photoreal-cover';
         coverEl.innerHTML = '<div class="photoreal-cover-spinner"></div>'
             + '<div class="photoreal-cover-text">'
-            + photorealI18n('threeMode.controls.streamingTiles', 'Loading photorealistic view…') + '</div>';
+            + photorealI18n('threeMode.controls.streamingTiles', 'Streaming 3D tiles…') + '</div>';
         host.appendChild(coverEl);
     }
     function hideCover() {
@@ -214,21 +203,23 @@
         try { if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates(); } catch (_) { }
     }
 
+    function releaseStreaming() {
+        if (streamingRelease) { try { streamingRelease(); } catch (_) { } }
+        streamingRelease = null;
+        streamingText = '';
+    }
+
+    // Tile streaming is said by the status line with its spinner and the live percentage.
     function updateLoader(progress) {
-        const host = containerEl();
-        if (!host) return;
-        if (!loaderEl) {
-            loaderEl = document.createElement('div');
-            loaderEl.className = 'photoreal-tile-loader';
-            loaderEl.innerHTML = '<span class="photoreal-spinner"></span><span>'
-                + photorealI18n('threeMode.controls.streamingTiles', 'Streaming 3D tiles…')
-                + '</span><span class="photoreal-tile-count"></span>';
-            loaderTextEl = loaderEl.querySelector('.photoreal-tile-count');
-            host.appendChild(loaderEl);
-        }
         const show = active && progress < 1;
-        loaderEl.classList.toggle('visible', show);
-        if (show && loaderTextEl) loaderTextEl.textContent = Math.round(progress * 100) + '%';
+        if (show) {
+            const text = photorealI18n('threeMode.controls.streamingTiles', 'Streaming 3D tiles…') + ' ' + Math.round(progress * 100) + '%';
+            if (text !== streamingText && typeof window.updateStatus === 'function') window.updateStatus(text, { transient: true });
+            streamingText = text;
+            if (!streamingRelease && typeof window.beginStatusActivity === 'function') streamingRelease = window.beginStatusActivity();
+        } else {
+            releaseStreaming();
+        }
         // The globe-icon spinner MIRRORS this loader exactly — on while tiles stream (loader visible),
         // off when they finish (loader hidden) — so the two start and stop together. loadProgress is
         // not monotonic (it reaches 1, dips as more tiles queue, then settles), which is why the
@@ -275,10 +266,10 @@
     function removeUiElements() {
         clearTimeout(statusRemovalTimer);
         statusRemovalTimer = null;
-        [statusEl, loaderEl, fpsEl, seatDebugEl, coverEl, attributionEl].forEach(function (el) {
+        [fpsEl, seatDebugEl, coverEl, attributionEl].forEach(function (el) {
             if (el) { try { el.remove(); } catch (_) { } }
         });
-        statusEl = loaderEl = loaderTextEl = fpsEl = seatDebugEl = coverEl = null;
+        fpsEl = seatDebugEl = coverEl = null;
         attributionEl = attributionTextEl = null;
     }
 
@@ -2572,6 +2563,8 @@
     }
 
     function deactivate(options) {
+
+        releaseStreaming();
         options = options || {};
         if (!active && !activating && !internals && !loading) return;
         activationGeneration++;
@@ -2602,7 +2595,6 @@
         if (typeof cacheBytes === 'number' && cacheBytes > RETAIN_TILES_BYTES) hardDisposeTiles();
         else retentionTimer = setTimeout(() => { if (!active && !activating) hardDisposeTiles(); }, RETAIN_TILES_MS);
         if (options.keepStatus) {
-            if (loaderEl) loaderEl.classList.remove('visible');
             clearTimeout(statusRemovalTimer);
             statusRemovalTimer = setTimeout(function () { removeUiElements(); }, 6000);
         } else {

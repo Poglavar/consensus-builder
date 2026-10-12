@@ -326,8 +326,12 @@
         const slot = doc.getElementById('map-search-slot');
         if (!slot || !slot.parentNode) return;
         if (!state.banner) {
-            state.banner = el('div', 'explore-banner', { id: 'explore-banner', role: 'status' });
-            slot.parentNode.insertBefore(state.banner, slot.nextSibling);
+            state.banner = el('div', 'explore-banner cb-banner cb-banner--warning', { id: 'explore-banner', role: 'status' });
+            // The shared banner card (js/ui/banner-stack.js; ephemerals.md), else under the search.
+            const stackApi = global.__BannerStack;
+            if (!(stackApi && typeof stackApi.mount === 'function' && stackApi.mount(state.banner))) {
+                slot.parentNode.insertBefore(state.banner, slot.nextSibling);
+            }
         }
         const banner = state.banner;
         banner.textContent = '';
