@@ -103,6 +103,24 @@ packages and checks OpenCV, NumPy, Pillow, `pdfinfo`, `pdftoppm`, `pdftotext` an
 Tesseract. Install missing system commands through the host's normal package
 management. With no arguments or `--help`, the installer only prints usage.
 
+## Site models on production
+
+Site location, envelopes and plan fitting run locally, where the archive and its
+paid readings live. Production only serves the result: `floor_plan.site_model`
+rows feed the archive page's Sites tab (`/floor-plan-archive/sites` and
+`/floor-plan-archive/site?key=`). After a local `site-models` run:
+
+```sh
+backend/scripts/push-site-models-to-prod.sh        # compare local and prod, change nothing
+backend/scripts/push-site-models-to-prod.sh --run  # replace prod's set in one transaction, read it back
+```
+
+The lookups behind location, `public.overture_address` and
+`public.edozvola_feature`, are defined in cadastre-data `db/`. Production needs
+their rows only if the location stages ever run there; cadastre-data
+`scripts/sync-world-data-to-prod.sh --run --table <name>` copies them. Pushing
+models runs and schedules nothing.
+
 ## Verify; enable only after explicit scheduling approval
 
 ```sh

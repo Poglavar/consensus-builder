@@ -6,7 +6,7 @@ const lang=translations[(params.get('lang')||'en').slice(0,2)]?(params.get('lang
 const tr=key=>translations[lang][key]||translations.en[key]||key,el=id=>document.getElementById(id);
 document.documentElement.lang=lang;document.title=tr('title');document.querySelector('[role=tablist]').setAttribute('aria-label',tr('title'));document.querySelectorAll('[data-i18n]').forEach(node=>node.textContent=tr(node.dataset.i18n));
 for(const [id,key] of [['agency-search','search'],['source-filter','sourceSearch']]){el(id).placeholder=tr(key);el(id).setAttribute('aria-label',tr(key));}
-const backend=(params.get('backend')||location.origin).replace(/\/$/,''),geometry=window.__floorPlanReviewGeometry,renderer=window.__floorPlanReviewRenderer;
+const backend=window.__floorPlanArchiveApi.apiBase(location),geometry=window.__floorPlanReviewGeometry,renderer=window.__floorPlanReviewRenderer;
 let catalogue={buildings:[],sources:[]},building=null,plans=[],agencies=[],mode='2d',map=null;
 let selectionGeneration=0,planGeneration=0,buildingGeneration=0,disposePlan=null,disposeBuilding=null,activeTab='buildings';
 const selected=()=>plans[Number(el('unit').value)];
