@@ -5694,6 +5694,102 @@
       "id": "control-0694c83d29ee9c-1",
       "source": "tx-explorer.html",
       "markup": "<button id=\"tx-filter-clear\" type=\"button\" class=\"tx-button tx-button-ghost\">"
+    },
+    {
+      "id": "control-5e3121f5e97fd0-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-success btn-sm\" data-approval-action=\"review\" data-owner-id=\"${esc(id)}\">"
+    },
+    {
+      "id": "control-bd543bd5355fdd-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-outline-danger btn-sm\" data-approval-action=\"withdraw\" data-owner-id=\"${esc(id)}\">"
+    },
+    {
+      "id": "control-96cc5f36694197-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-outline-primary\" data-approval-action=\"anchor\">"
+    },
+    {
+      "id": "control-dc0e54f134ecb4-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-action=\"verify\">"
+    },
+    {
+      "id": "control-a9b9c524b724bb-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "doc.createElement(tag)",
+      "variants": [
+        {
+          "name": "Close an owner approval dialog",
+          "label": "Close",
+          "classes": [
+            "close-circle-btn"
+          ],
+          "attrs": {
+            "aria-label": "Close"
+          }
+        },
+        {
+          "name": "Cancel owner verification or review",
+          "label": "Cancel",
+          "classes": [
+            "btn"
+          ]
+        },
+        {
+          "name": "Verify the connected wallet with a lens member",
+          "label": "Verify with wallet",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ],
+          "attrs": {
+            "data-approval-verify-submit": ""
+          }
+        },
+        {
+          "name": "Close after owner verification",
+          "label": "Close",
+          "classes": [
+            "btn"
+          ]
+        },
+        {
+          "name": "Open the review for the verified owner",
+          "labelPattern": "^Review and accept as Owner [A-Z]+$",
+          "classes": [
+            "btn",
+            "btn-success"
+          ]
+        },
+        {
+          "name": "Sign the owner acceptance",
+          "labelPattern": "^Accept as Owner [A-Z]+$",
+          "classes": [
+            "btn",
+            "btn-success"
+          ]
+        },
+        {
+          "name": "Verify from an owner review that lacks authority",
+          "label": "Act for an owner",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ]
+        },
+        {
+          "name": "Finish after an owner verification or acceptance",
+          "label": "Done",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "The local button helper builds every dialog control: the close button, Cancel and Verify in Act for an owner, the verified wallet's Close / Review and accept / Done, and Cancel / Accept / Act for an owner / Close in the Accept review and its receipt."
     }
   ],
   "variantExclusions": [

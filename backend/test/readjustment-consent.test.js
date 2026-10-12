@@ -18,6 +18,8 @@ const providerSource = readFileSync(new URL('../../frontend/js/proposals/approva
 const runtimeSource = readFileSync(new URL('../../frontend/js/proposals/approval-runtime.js', import.meta.url), 'utf8');
 const shaSource = readFileSync(new URL('../../frontend/vendor/noble-hashes-1.8.0/sha256.js', import.meta.url), 'utf8');
 const validationSource = readFileSync(new URL('../../frontend/js/reparcellization-validation.js', import.meta.url), 'utf8');
+const reviewSource = readFileSync(new URL('../../frontend/js/proposals/approval-review.js', import.meta.url), 'utf8');
+const panelSource = readFileSync(new URL('../../frontend/js/proposals/approval-panel.js', import.meta.url), 'utf8');
 const geometry = { type: 'Polygon', coordinates: [[[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]]] };
 const signingSecret = 'test-only owner decision key';
 
@@ -80,7 +82,9 @@ function fixture() {
         CbFormat: require('../../frontend/js/format.js'),
         escapeHtml: require('../../frontend/js/shared-utils.js').escapeHtml,
         normalizeParcelId: id => String(id), normalizeParcelIdList: ids => ids.map(String),
-        console: { error: vi.fn(), debug: vi.fn(), warn: vi.fn() }
+        // The Accept review dialog (approval-panel.js) is the user path; it needs no DOM to refuse.
+        document: {}, solanaWalletManager: { on: vi.fn() },
+        console: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
     });
     // The app resolves these browser APIs from window; using the VM global keeps both paths aligned.
     context.window = context;
@@ -92,8 +96,10 @@ function fixture() {
     runInContext(providerSource, context);
     runInContext(runtimeSource, context);
     context.ReparcellizationDeal = deal;
+    runInContext(reviewSource, context);
     runInContext(coreSource, context);
     runInContext(source, context);
+    runInContext(panelSource, context);
     context.autoApplyExecutedProposalToMap = vi.fn();
     context.applyProposalOwnershipTransfer = vi.fn();
 
@@ -199,6 +205,18 @@ describe('fixed readjustment consent', () => {
         expect(html).not.toContain('Bob Example');
         expect(html).not.toContain('<img');
         expect(html).toContain('30.00');
+    });
+
+    it('labels cash offers by the rights snapshot and names a recipient outside it', () => {
+        const { context, proposal } = fixture();
+        // A ledger key that is not an owner in the rights snapshot must not borrow "Owner A".
+        proposal.reparcellization.ownerShares = [
+            { ownerKey: 'owner-b', cashOffer: 20 },
+            { ownerKey: 'Alice Example', cashOffer: 10 }
+        ];
+        const rows = [...context.buildReadjustmentCashReviewHtml(proposal).matchAll(/<li>\s*<span>([^<]*)<\/span>\s*<strong>([^<]*)<\/strong>/g)]
+            .map(match => [match[1], match[2]]);
+        expect(rows).toEqual([['Recipient outside the ownership snapshot', '10.00\u00a0EUR'], ['Owner B', '20.00\u00a0EUR']]);
     });
 
     it('rejects unknown owner slots and invalid deals before opening the wallet flow', async () => {

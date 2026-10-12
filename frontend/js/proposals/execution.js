@@ -76,7 +76,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];
     if (!entries.length) {
-        return usesAbstractProposalApproval(proposal) ? buildAbstractApprovalStatusHtml(proposal) : '';
+        return '';
     }
     const compact = options.compact ? 'owner-acceptance-list compact' : 'owner-acceptance-list';
     const skipParcelPanelFocus = options && options.skipParcelPanelFocus === true;
@@ -219,9 +219,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
 
     const cashReview = proposalRequiresDealConsent(proposal) && (!firstParcel || firstParcel === parcelKey)
         ? buildReadjustmentCashReviewHtml(proposal) : '';
-    const approvalStatus = usesAbstractProposalApproval(proposal) && (!firstParcel || firstParcel === parcelKey)
-        ? buildAbstractApprovalStatusHtml(proposal) : '';
-    return `${cashReview}${approvalStatus}<div class="${compact}" style="width: 100%; box-sizing: border-box;">${recipientRowHtml}${rowsHtml}</div>`;
+    return `${cashReview}<div class="${compact}" style="width: 100%; box-sizing: border-box;">${recipientRowHtml}${rowsHtml}</div>`;
 }
 
 function buildReadjustmentCashReviewHtml(proposal) {
@@ -234,7 +232,13 @@ function buildReadjustmentCashReviewHtml(proposal) {
     if (!deal) return '';
     const ids = [...new Set((proposal.reparcellization.ownerShares || []).filter(owner => !owner.noOwner)
         .map(owner => String(owner.ownerKey).trim()))].sort();
-    const labels = new Map(ids.map(id => [id, window.ProposalApprovalRuntime?.label(id, ids) || `Owner ${ids.indexOf(id) + 1}`]));
+    // With a complete rights snapshot, "Owner A" here is the same owner as in the owner rows, the
+    // Owner acceptance card and the Accept review; a ledger recipient outside it is named as such.
+    const rights = window.ProposalApprovalRuntime?.inspect(proposal);
+    const label = id => (!rights?.ready ? window.ProposalApprovalRuntime?.label(id, ids) || `Owner ${ids.indexOf(id) + 1}`
+        : rights.ownerIds.includes(id) ? window.ProposalApprovalRuntime.label(id, rights.ownerIds)
+            : t('proposalApproval.outsideSnapshot', 'Recipient outside the ownership snapshot'));
+    const labels = new Map(ids.map(id => [id, label(id)]));
     const money = cents => CbFormat.formatMoney(cents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
     const rows = deal.ledger.filter(owner => !owner.noOwner).map(owner => `<li>
         <span>${escapeHtml(String(labels.get(owner.ownerKey) || owner.ownerKey))}</span>
@@ -1062,6 +1066,8 @@ function isProposalApplied(proposal) {
 
 function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
     if (!proposal) return;
+    // The Owner acceptance card (approval-panel.js) carries the tally for approval-setup proposals.
+    if (usesAbstractProposalApproval(proposal)) window.ProposalApprovalPanel.renderCards();
 
     const parcelStatusHtml = buildParcelAcceptanceStatusHtml(proposal);
     const parcelStatusContainer = document.querySelector('.proposal-acceptance-status:not(.owner)');
@@ -1201,29 +1207,15 @@ function usesAbstractProposalApproval(proposal) {
     return !!proposal && (proposalRequiresDealConsent(proposal) || proposal.approvalConfig != null);
 }
 
-function buildAbstractApprovalStatusHtml(proposal) {
-    const t = getProposalI18nHelper();
-    const summary = window.ProposalApprovalRuntime?.summary(proposal, currentConsentBindingHash(proposal));
-    const resolved = summary?.ownershipResolved;
-    const message = resolved
-        ? t('proposalApproval.authorityPending', 'Rights supplied. Approval requires a signer authorized through the selected lens.')
-        : t('proposalApproval.ownershipUnresolved', 'Ownership unresolved. You can design and share this proposal; owner approval needs a complete rights snapshot.');
-    const tally = resolved ? `<p>${escapeHtml(t('proposalApproval.tally', '{{accepted}} / {{total}} owners approved', {
-        accepted: summary.acceptedOwners, total: summary.totalOwners
-    }))}</p><p>${escapeHtml(summary.totalAreaM2 == null
-        ? t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.')
-        : t('proposalApproval.areaTally', '{{accepted}} / {{total}} m² supported', {
-            accepted: summary.acceptedAreaM2, total: summary.totalAreaM2
-        }))}</p>` : '';
-    return `<section class="proposal-approval-status" role="status"><p>${escapeHtml(message)}</p>${tally}</section>`;
-}
-
 // One abstract-owner decision covers all of that owner's interests in this proposal. This local
 // adapter consumes evidence from installed authority providers; uploaded metadata grants nothing.
 async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor, withdraw = false) {
     const t = getProposalI18nHelper();
     const hash = currentConsentBindingHash(proposal);
-    const nft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    // A proposal minted on Solana is decided under its chain identity and anchored with memos
+    // (approval-anchor.js); other chains cannot carry signed owner decisions.
+    const minted = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    const nft = minted && !window.ProposalApprovalAnchor?.chainRef(proposal) ? minted : null;
     const status = typeof getLifecycleStatus === 'function' ? getLifecycleStatus(proposal) : proposal.lifecycleStatus;
     if (nft || !hash || status === 'Cancelled' || status === 'Expired'
         || (!withdraw && status === 'Executed')
@@ -1260,9 +1252,14 @@ async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor
         autoApplyExecutedProposalToMap(proposal);
         applyProposalOwnershipTransfer(proposal);
     }
+    // The signed decision goes to the relay so other browsers can verify and count it; it stays
+    // valid here either way, and the next sync of this proposal retries what did not arrive.
+    const signed = withdraw ? (proposal.ownerApprovalHistory || []).at(-1) : proposal.ownerApprovals?.[result.ownerId];
+    const shared = signed && window.ProposalApprovalRelay ? await window.ProposalApprovalRelay.push(proposal, signed) : { shared: false, code: 'not_published' };
+    if (!shared.shared) console.info(`[${new Date().toISOString()}] [ProposalApproval] decision for ${result.ownerId} kept in this browser: ${shared.code}`);
     return { ownerKey: result.ownerId, ownerAccepted: !withdraw,
         parcelAccepted: result.acceptedParcelIds.includes(String(parcelId)), proposalExecuted: canExecute,
-        parcelNumber: String(parcelId) };
+        parcelNumber: String(parcelId), shared };
 }
 
 function currentProposalOwnerAcceptanceKeys(proposal, entry) {

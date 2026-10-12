@@ -33,18 +33,24 @@
             authorities.set(id, provider);
             return () => authorities.delete(id);
         },
+        // A provider authenticates its own signer for the current profile (the profile itself, or a
+        // wallet it controls); the evidence names that signer, and the receipt records it.
         resolve(proposal, ownerId, actor) {
             if (!actor?.id) return null;
+            const contextHash = root.ProposalApproval.contextHash(proposal);
             for (const [providerId, provider] of authorities) {
-                const evidence = provider.authorize({ proposal, ownerId, actor, contextHash: root.ProposalApproval.contextHash(proposal) });
+                const evidence = provider.authorize({ proposal, ownerId, actor, contextHash });
                 if (evidence?.then) throw new Error('Authority resolvers must use already verified evidence; load it before accepting.');
-                if (root.ProposalApproval.evidenceAllows(proposal, ownerId, actor.id, evidence)) return { providerId, evidence };
+                const actorId = evidence?.authority?.actorId;
+                if (root.ProposalApproval.evidenceAllows(proposal, ownerId, actorId, evidence)) return { providerId, evidence, actorId };
             }
             return null;
         },
         async signDecision(proposal, receipt, actor) {
             const provider = authorities.get(receipt.providerId);
-            if (!provider || actor?.id !== receipt.actorId) throw new Error('No signer is available for this owner decision.');
+            const current = actor?.id ? provider?.authorize({ proposal, ownerId: receipt.ownerId, actor,
+                contextHash: root.ProposalApproval.contextHash(proposal) }) : null;
+            if (!current || current.authority?.actorId !== receipt.actorId) throw new Error('No signer is available for this owner decision.');
             return provider.signDecision({ proposal, actor, receipt, statement: root.ProposalApproval.decisionContent(proposal, receipt) });
         },
         verifyReceipt(proposal, receipt) {

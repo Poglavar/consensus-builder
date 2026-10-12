@@ -34,6 +34,8 @@ import { validateReparcellizationShares, readjustmentDealFingerprint, validateRe
 import { effectHashOf } from '../proposals/effect-hash.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
 import { resolveChainMirror } from '../proposals/chain-mirror.js';
+import { createOwnerDecisionHandlers, createOwnerDecisionStore } from '../proposals/owner-decisions.js';
+import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 
 const require = createRequire(import.meta.url);
 
@@ -1592,6 +1594,20 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
             res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    // Signed owner decisions for proposals with an approval setup, re-verified before they are stored.
+    const ownerDecisions = createOwnerDecisionHandlers({
+        store: mirrorOptions.ownerDecisionStore || createOwnerDecisionStore(pool),
+        ...(mirrorOptions.pinJson ? { pinJson: mirrorOptions.pinJson } : {}),
+        async loadProposal(id) {
+            const result = await pool.query(`SELECT ${FULL_PROPOSAL_COLUMNS} FROM proposal ${oneProposalByIdClause('$1')}`, [id]);
+            return result.rows.length ? serializeProposalRow(result.rows[0]) : null;
+        }
+    });
+    app.get('/proposals/:id/owner-decisions', ownerDecisions.get);
+    app.post('/proposals/:id/owner-decisions', ownerDecisions.post);
+    // Pinning spends the IPFS quota, so it shares the upload routes' per-client limit.
+    app.post('/proposals/:id/owner-decisions/bundle', createUploadRateLimiter(), ownerDecisions.bundle);
 
     app.get('/proposals', async (req, res) => {
         try {

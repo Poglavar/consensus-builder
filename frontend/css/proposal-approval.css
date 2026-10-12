@@ -1,0 +1,265 @@
+/* Owner acceptance for approval-setup proposals (js/proposals/approval-panel.js): the card in
+   Details > Land & ownership and its two dialogs, "Act for an owner" and "Accept as Owner X".
+   Tokens only (docs/design-language.md). */
+
+.approval-card-slot {
+    margin: var(--cb-space-2) 0 var(--cb-space-3);
+}
+
+.approval-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font-size: var(--cb-text-md);
+}
+
+.approval-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    flex-wrap: wrap;
+}
+
+.approval-card__title {
+    margin: 0;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.approval-card__status--passed { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
+.approval-card__status--pending { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
+.approval-card__status--unresolved { background: var(--cb-surface-2); color: var(--cb-text-muted); }
+
+.approval-card__rule,
+.approval-card__outstanding,
+.approval-card__note,
+.approval-card__you-line {
+    margin: 0;
+}
+
+.approval-card__rule,
+.approval-card__note {
+    color: var(--cb-text-muted);
+}
+
+.approval-card__meter {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+}
+
+.approval-card__meter-head {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+}
+
+.approval-card__meter-head strong {
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.approval-card__bar {
+    position: relative;
+    height: var(--cb-space-2);
+    overflow: hidden;
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-surface-3);
+}
+
+.approval-card__fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-success);
+}
+
+.approval-card__need {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.approval-card__co-owned {
+    margin: 0;
+    padding-left: var(--cb-space-4);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.approval-card__chain {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    padding-top: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
+}
+
+.approval-card__chain-line {
+    margin: 0;
+    font-weight: var(--cb-weight-medium);
+}
+
+.approval-card__you {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    padding-top: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
+}
+
+.approval-card__actions,
+.approval-card__verify {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.approval-card__verify small {
+    flex: 1 1 12rem;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.approval-card__accepted {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-1);
+    color: var(--cb-success-soft-ink);
+    font-weight: var(--cb-weight-medium);
+}
+
+.approval-dialog__intro,
+.approval-dialog__status {
+    margin: 0 0 var(--cb-space-3);
+}
+
+.approval-dialog__status {
+    color: var(--cb-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.approval-dialog__status:empty {
+    display: none;
+}
+
+.approval-dialog__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    margin: 0 0 var(--cb-space-3);
+}
+
+.approval-dialog__member {
+    width: 100%;
+}
+
+.approval-review__section {
+    margin: 0 0 var(--cb-space-4);
+}
+
+.approval-review__section h3 {
+    margin: 0 0 var(--cb-space-2);
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.approval-review__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.approval-review__list li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+}
+
+.approval-review__list li span:last-child {
+    text-align: right;
+    color: var(--cb-text-muted);
+}
+
+.approval-review__facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--cb-space-2);
+    margin: var(--cb-space-2) 0 0;
+}
+
+.approval-review__facts div {
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+}
+
+.approval-review__facts dt {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.approval-review__facts dd {
+    margin: 0;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.approval-review__conditions {
+    margin: 0;
+    padding-left: var(--cb-space-4);
+}
+
+.approval-review__sign-note,
+.approval-review__warning {
+    margin: var(--cb-space-2) 0 0;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+}
+
+.approval-review__sign-note {
+    background: var(--cb-info-soft);
+    color: var(--cb-info-soft-ink);
+}
+
+.approval-review__warning {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.approval-review__verdict {
+    font-weight: var(--cb-weight-semibold);
+}
+
+@media (max-width: 767.98px) {
+    .approval-review__list li {
+        flex-direction: column;
+        gap: var(--cb-space-1);
+    }
+
+    .approval-review__list li span:last-child {
+        text-align: left;
+    }
+
+    .approval-review__facts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .approval-card__actions .btn {
+        flex: 1 1 100%;
+    }
+}

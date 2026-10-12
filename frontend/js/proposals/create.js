@@ -1940,7 +1940,10 @@ async function createProposal() {
                             }
                             // An owner offer names an asking price; bids arrive as pledges and donations
                             // from others, so nothing is escrowed from the owner's own wallet at mint.
-                            const escrowAmount = proposal.proposalRole === 'owner-offer' ? 0 : nativeAmount;
+                            // An approval setup escrows nothing on chain: the contract would split it
+                            // equally per parcel, not by the deal's cash terms (land-readjustmend.md §20).
+                            const approvalSetup = window.ProposalApprovalRuntime?.uses(proposal) === true;
+                            const escrowAmount = proposal.proposalRole === 'owner-offer' || approvalSetup ? 0 : nativeAmount;
                             // proposal_nft v3: the site and its binding give site_hash and open_ground
                             // (frontend/js/proposals/site-hash.js). Owners of bound parcels always
                             // consent; open ground (or an empty binding) also needs a lens member's
@@ -1958,7 +1961,8 @@ async function createProposal() {
                                 solAmount: escrowAmount,
                                 imageURI: metadataUri,
                                 lens: solanaLens.keys,
-                                verdictMayExecute: siteArgs.openGround,
+                                approvalSetup,
+                                verdictMayExecute: approvalSetup ? false : siteArgs.openGround,
                                 siteHash: siteArgs.siteHash,
                                 openGround: siteArgs.openGround
                             });

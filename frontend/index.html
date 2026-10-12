@@ -140,7 +140,8 @@
                 'css/ground-fallback.css',
                 'css/urban-blocks.css',
                 'css/urban-blocks-playground.css',
-                'css/proposal-details.css'
+                'css/proposal-details.css',
+                'css/proposal-approval.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -1848,13 +1849,19 @@
             'js/proposals/drill-stack.js',
             'js/proposals/hover-ground.js',
             'vendor/noble-hashes-1.8.0/sha256.js',
+            'vendor/noble-curves-1.2.0/ed25519.js',
             'js/proposals/approval.js',
+            'js/proposals/approval-proof.js',
             'js/proposals/approval-providers.js',
+            'js/proposals/approval-lens-authority.js',
             'js/proposals/approval-runtime.js',
+            'js/proposals/approval-relay.js',
+            'js/proposals/approval-anchor.js',
             'js/reparcellization-ownership.js',
             'js/reparcellization-deal.js',
             'js/reparcellization-validation.js',
             'js/reparcellization-allocation.js',
+            'js/proposals/approval-review.js',
             'js/proposals/ownership-flow.js',
             'js/proposals/cadastre-ancestry.js',
             'js/proposals/claims.js',
@@ -1886,6 +1893,7 @@
             'js/proposals/possibility-timeline.js',
             'js/proposals/parcel-set-relations.js',
             'js/proposals/lens-card.js',
+            'js/proposals/approval-panel.js',
             'js/proposals/parcel-history-card.js',
             'js/proposals/bids-card.js',
             'js/proposals/details-panel.js',

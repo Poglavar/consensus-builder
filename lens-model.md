@@ -5,8 +5,10 @@ stable abstract owner entities. Lens-trusted providers separately establish each
 rights/exact shares and which authenticated actors may act for it. Geometry proposals can be
 created without parcels or ownership information; owner acceptance/voting requires the complete
 relevant rights model. The local proposal model now implements pluggable rights snapshots,
-exact owner/area rules and verified decision providers. Production authority providers and the
-wallet/count-based chain protocol below still need to support that contract. See
+exact owner/area rules and verified decision providers. The reference member can sign the two
+separate facts off chain (`--rights`, `backend/lens/approval.js`) and wallets sign their own
+decisions ([`land-readjustmend.md` §18](land-readjustmend.md#18-lens-backed-owner-authority-and-the-owners-accept-review-2026-10-12));
+the wallet/count-based chain protocol below still needs to support that contract. See also
 [`land-readjustmend.md` §16](land-readjustmend.md#16-pluggable-rights-and-a-separate-approval-setup-2026-10-11).
 
 Design of record for making the proposal lens real on Solana. Written 2026-10-01 against branch

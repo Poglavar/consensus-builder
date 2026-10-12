@@ -176,6 +176,12 @@
                     ? parseSolToLamports(options.ethAmount, 'SOL amount')
                     : parseIntegerBigInt(options.ethAmountWei || 0, 'SOL lamports')));
 
+        // An approval setup is committed in its metadata and decided by signed owner decisions
+        // anchored with memos (approval-anchor.js). The contract cannot count or pay those, so it
+        // gets no escrow and no verdict path that could execute it.
+        if (options.approvalSetup === true && (solAmount > 0n || options.verdictMayExecute === true)) {
+            throw new Error('An approval setup is minted without escrow and without verdict execution.');
+        }
         const lensAddresses = (options.lens || []).map(l => typeof l === 'string' ? l : (l?.address || l?.toString?.())).filter(Boolean);
         // `verdict_may_execute`: only an explicit `true` sets it. A lens member's `executed` verdict
         // may then execute a proposal without per-parcel consent, or clear its open ground; without
@@ -319,6 +325,8 @@
 
     globalScope.SolanaProposalChainBridge = {
         isSupported: () => haveSolanaWeb3(),
+        // proposal-approval/v1 is committed in metadata and its decisions are anchored, not executed.
+        supportsProposalApproval: schema => schema === 'proposal-approval/v1',
         mintProposal,
         contributeToProposal,
         distributeFunds,

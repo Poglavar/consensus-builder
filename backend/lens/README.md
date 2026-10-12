@@ -9,7 +9,8 @@ office, a permit register or an imagery service, that states facts about parcels
 has attested as the owner of a parcel; owners say yes by signing `accept_with_attestations`
 themselves. Lens members never accept proposals. Design of record: `../../lens-model.md`.
 
-This directory is one lens member as a process: one key, one SAS credential, three schemas.
+This directory is one lens member as a process: one key, one SAS credential, three schemas, and
+(with `--rights`) the off-chain facts behind abstract proposal approval, signed with the same key.
 
 | Attestation | Kind | Layout | Who can get it |
 |---|---|---|---|
@@ -29,6 +30,9 @@ This directory is one lens member as a process: one key, one SAS credential, thr
 - `issuers.js`: fake issuer (builds the exact SAS account bytes in memory) and the sas-lib issuer.
 - `store.js`: issued attestations in `consensus.lens_attestation`, or in memory.
 - `pricing.js`: x402 gate for `POST /lens/ownership`, same pattern as the other paid agent routes.
+- `approval.js`: abstract proposal approval (`createApprovalAttester`): checks a proposal's pinned
+  rights snapshot against this member's own registry of abstract owners and signs the rights and
+  authority facts below. Statement formats and verification: `../../frontend/js/proposals/approval-proof.js`.
 - `server.js`: the Express app (`createLensMemberApp`). `run.mjs`: the CLI.
 - DDL: `../routes/lens-member-ddl.sql` (applied by `deploy-backend.sh`).
 - `../evidence/sf-dbi-permits.js`: the first market evidence adapter (San Francisco DBI building
@@ -82,6 +86,12 @@ curl -s -H "x-lens-operator-token: $LENS_OPERATOR_TOKEN" -H 'content-type: appli
 | `POST /lens/verdict {proposalAccount, verdict, evidenceRef, sourceObservedAt}` | header `x-lens-operator-token: $LENS_OPERATOR_TOKEN`; 503 when the token is unset. |
 | `POST /lens/market-evidence {recipeHash, subject, value, eventTime, sourceObservedAt, sourceRef}` | same operator header as verdicts. Times are Unix seconds (integers only). 201 issued, 200 already issued (`reused`), 409 same key with another subject, 422 invalid or too large. |
 | `GET /lens/attestations?parcelUid=&proposalAccount=&owner=&recipeHash=&kind=` | issued attestations from the store; `kind` is `ownership`, `verdict` or `evidence` |
+| `POST /lens/approval/rights {cadastreParcelIds, approvalConfig, lens}` | Needs `--rights`; 503 otherwise. The member recomputes the approval context hash, requires its own key in `lens`, and compares every in-scope parcel with its registry (complete owner list, exact shares, area). 201 `{rights}`: a signed `lens-rights-attestation/v1`. Free; names no wallet. 409 `rights_mismatch` / `area_mismatch` / `not_in_lens`, 404 `unknown_parcel`, 422 `rights_incomplete`. |
+| `POST /lens/approval/challenge {wallet, contextHash}` | `{challenge, message, expiresAt}`; the wallet signs `message` (UTF-8). Valid 5 minutes, single use. |
+| `POST /lens/approval/authority {wallet, challenge, signature, cadastreParcelIds, approvalConfig, lens}` | After the signature verifies: 201 `{rights, authority: [...]}`, one signed `lens-authority-attestation/v1` per in-scope owner the registry lets this wallet act for. 403 `not_authorized` when there is none; the wallet learns no other owner. |
+
+Approval routes accept bodies up to 2 MB (an approval context carries the whole rights snapshot);
+every other route keeps the 32 kB limit and answers 413 above it.
 
 ## Run in dry-run
 
@@ -135,6 +145,48 @@ schema your `--kind` issues exist on chain, and that `--public-url/lens/status` 
 same key, credential and kind; then the proposal picker lists you. The public URL must be https (put
 the process behind any TLS proxy). A refusal is printed with its reason and the member keeps serving,
 so proposers can still paste your key by hand. Re-announcing with new text replaces your entry.
+
+## Proposal approval facts (`--rights`)
+
+A proposal with an approval setup pins a parcel-rights snapshot (abstract owner IDs with exact
+shares). Owners accept for themselves; a lens member only states two separate facts about them,
+each an Ed25519 signature by the member key over a canonical statement:
+
+- **Rights** (`lens-rights-attestation/v1`): for this approval context, the snapshot's in-scope
+  parcels match the member's registry exactly.
+- **Authority** (`lens-authority-attestation/v1`): this wallet may act for this abstract owner in
+  this context. Issued only after the wallet signs a challenge.
+
+Both carry `issuedAt`/`expiresAt` (`--approval-validity-days`, default 7). The owner's decision is
+the wallet's own signature (`ed25519-wallet/v1`); a receipt counts only when all three signatures
+verify and both members are in the proposal's lens. Rights and authority may come from different
+members. A dry run signs with an ephemeral key, which `/lens/status` reports as the member key.
+
+The registry (`lens-rights-registry/v1`) holds no names: opaque owner IDs, exact fractions, areas,
+and which wallets act for which owner. One owner may hold several parcels; one wallet may act for
+several owners.
+
+```json
+{
+  "schema": "lens-rights-registry/v1",
+  "parcels": [
+    { "parcelId": "HR-335550-1/1", "areaM2": 412, "owners": [{ "ownerId": "owner-7f3a", "share": "1/1" }] },
+    { "parcelId": "HR-335550-2/1", "areaM2": 260, "owners": [
+      { "ownerId": "owner-7f3a", "share": "1/2" }, { "ownerId": "owner-c19e", "share": "1/2" }
+    ] }
+  ],
+  "signers": [
+    { "ownerId": "owner-7f3a", "wallet": "<base58 wallet>" },
+    { "ownerId": "owner-c19e", "wallet": "<base58 wallet>" }
+  ]
+}
+```
+
+```bash
+cd backend
+node lens/run.mjs --dry-run --owners /tmp/owners.json --rights /tmp/rights.json --port 3095
+curl -s localhost:3095/lens/status   # .approval: { enabled, parcels, owners, signers, validitySeconds }
+```
 
 ## Privacy
 

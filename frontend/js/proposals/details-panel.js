@@ -368,6 +368,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
     const nftChain = nftInfo && String(nftInfo.chain || nftInfo.chainId || '');
     const isSolanaPledgeProposal = Boolean(isMinted && nftInfo?.tokenId && nftChain.startsWith('solana'));
+    // Donations, pledges and the prediction market settle on the contract's own execution. A minted
+    // approval setup is decided by anchored owner decisions the contract never counts, so it would
+    // never execute: those cards are left out (land-readjustmend.md §20).
+    const chainSettlesProposal = isSolanaPledgeProposal && window.ProposalApprovalRuntime?.uses(fullProposal) !== true;
 
     // ENS line for legacy minted ids and chain mirrors. Mirrors use their
     // canonical proposal id so token ids cannot collide across chains.
@@ -525,7 +529,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         return actions.map(supportButtonHtml).join('');
     };
     let proposalSupportButtonsHtml = '';
-    if (isSolanaPledgeProposal && proposalKey) {
+    if (chainSettlesProposal && proposalKey) {
         proposalSupportButtonsHtml = `<span class="proposal-support-actions" data-proposal-support-actions="${nftInfo.tokenId}">${renderSupportButtons()}</span>`;
     }
 
@@ -922,8 +926,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         })()}
                 </div>
             </div>
-            ${(isSolanaPledgeProposal || proposalOfferHtml.trim()) ? sectionStart('funding', tProposal('panel.proposal.pledge.summary', 'Funding & commitments'), tProposal('panel.proposal.detailsSections.fundingHint', 'Donations, pledges and owner offer')) + proposalOfferHtml : ''}
-            ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
+            ${(chainSettlesProposal || proposalOfferHtml.trim()) ? sectionStart('funding', tProposal('panel.proposal.pledge.summary', 'Funding & commitments'), tProposal('panel.proposal.detailsSections.fundingHint', 'Donations, pledges and owner offer')) + proposalOfferHtml : ''}
+            ${chainSettlesProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">${tProposal('panel.proposal.pledge.onchain', 'On-chain support')}</div>
@@ -945,9 +949,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <a href="https://explorer.solana.com/address/${window.SolanaPledgeClient?.constants?.PROGRAM_ID || '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.programExplorer', 'Funding program')} ↗</a>
                 </div>
             </section>` : ''}
-            ${(isSolanaPledgeProposal || proposalOfferHtml.trim()) ? sectionEnd : ''}
-            ${isSolanaPledgeProposal ? sectionStart('market', tProposal('panel.proposal.detailsSections.market', 'Prediction market'), tProposal('panel.proposal.detailsSections.marketHint', 'Yes / No bets and settlement rules')) : ''}
-            ${isSolanaPledgeProposal ? `<section class="proposal-market-card proposal-market-summary" data-proposal-account="${nftInfo.tokenId}" data-proposal-id="${safeAgentText(fullProposal?.proposalId || '')}" data-proposal-lifecycle="${safeAgentText(supportLifecycle)}" aria-label="Prediction market">
+            ${(chainSettlesProposal || proposalOfferHtml.trim()) ? sectionEnd : ''}
+            ${chainSettlesProposal ? sectionStart('market', tProposal('panel.proposal.detailsSections.market', 'Prediction market'), tProposal('panel.proposal.detailsSections.marketHint', 'Yes / No bets and settlement rules')) : ''}
+            ${chainSettlesProposal ? `<section class="proposal-market-card proposal-market-summary" data-proposal-account="${nftInfo.tokenId}" data-proposal-id="${safeAgentText(fullProposal?.proposalId || '')}" data-proposal-lifecycle="${safeAgentText(supportLifecycle)}" aria-label="Prediction market">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">${tProposal('bets.tagline', 'Bet on cities')}</div>
@@ -981,9 +985,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <a href="https://explorer.solana.com/address/${window.SolanaMarketClient?.constants?.PROGRAM_ID || 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.market.poolProgram', 'Pool program')} ↗</a>
                 </div>
             </section>` : ''}
-            ${isSolanaPledgeProposal ? sectionEnd : ''}
+            ${chainSettlesProposal ? sectionEnd : ''}
             ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHint', 'Parcels: {{count}} · alternatives and acceptance', { count: cadastreParcelIds.length }))}
             ${parcelSetRelationsHtml}
+            ${window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true ? '<div class="approval-card-slot" data-approval-card-slot></div>' : ''}
             ${parcelAcceptancePlaceholder}
             ${ownerAcceptancePlaceholder}
 
@@ -1262,6 +1267,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         setupLazyList('proposal-descendants-list', descendantItemsRemaining, renderDescendantItem);
         // Populate acceptance sections asynchronously to avoid blocking panel open
         populateAcceptanceSectionsAsync(fullProposal || proposal, ownerAcceptanceSummaryFast);
+        // Approval-setup proposals: the Owner acceptance card (proposals/approval-panel.js).
+        const approvalSlot = detailsContent?.querySelector('[data-approval-card-slot]');
+        if (approvalSlot) window.ProposalApprovalPanel.render(approvalSlot, fullProposal || proposal);
         // A published record whose site today's cadastre binds differently gets a notice with
         // Re-bind (binding-drift-panel.js); checked in the background, cached per record.
         try { window.__bindingDriftPanel?.mount(detailsContent, fullProposal || proposal); } catch (error) {
@@ -1332,7 +1340,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Pledge totals are chain state, not proposal metadata. Hydrate after rendering so a slow RPC
     // never delays opening Details, and guard the DOM node in case the user selected another plan.
-    if (isSolanaPledgeProposal && window.SolanaPledgeBridge?.readSummary) {
+    if (chainSettlesProposal && window.SolanaPledgeBridge?.readSummary) {
         Promise.resolve(window.SolanaPledgeBridge.readSummary(nftInfo.tokenId))
             .then(summary => {
                 const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`);
@@ -1389,7 +1397,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             });
     }
 
-    if (isSolanaPledgeProposal && window.OwnerOffer?.mount) window.OwnerOffer.mount(document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`), { proposal: fullProposal, proposalAccount: nftInfo.tokenId });
+    if (chainSettlesProposal && window.OwnerOffer?.mount) window.OwnerOffer.mount(document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`), { proposal: fullProposal, proposalAccount: nftInfo.tokenId });
 
     // Lens card: decoded chain lens + directory names + per-parcel ownership attestation, consent
     // tally and Say yes, plus the permissionless verdict settlement. Hydrated
@@ -1417,7 +1425,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Market reads use the same proposal account and wallet context as pledge hydration, but the
     // market itself is optional: agent runs may open it later. Never make Details wait on RPC.
-    if (isSolanaPledgeProposal && window.SolanaMarketBridge?.readSummary) {
+    if (chainSettlesProposal && window.SolanaMarketBridge?.readSummary) {
         hydrateProposalMarketCard(nftInfo.tokenId, supportLifecycle);
     }
 

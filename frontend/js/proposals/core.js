@@ -1265,9 +1265,10 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    // Owners accept approval-setup proposals only after reviewing what they give and get;
+    // the review dialog asks the wallet to sign (proposals/approval-panel.js).
     if (usesAbstractProposalApproval(proposal)) {
-        const result = await acceptProposal(proposalId, parcelId, ownerKey);
-        if (result) refreshProposalOwnerAcceptanceUI(proposal, parcelId);
+        await window.ProposalApprovalPanel.openReview(proposalId, ownerKey, parcelId);
         return;
     }
 
