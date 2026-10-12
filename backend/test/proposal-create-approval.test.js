@@ -88,12 +88,15 @@ describe('proposal create approval publication boundary', () => {
         expect(preflight).toBeGreaterThan(-1);
         expect(preflight).toBeLessThan(parcelCheck);
 
+        // The upload dialog asks the connected wallet's adapter (only Solana commits an approval
+        // setup), so its guard follows wallet connection but precedes every side effect.
         const uploadHandler = uploadSource.indexOf("mintButton.addEventListener('click'");
-        const approvalGuard = uploadSource.indexOf('window.ProposalApprovalRuntime?.uses(proposal)', uploadHandler);
+        const approvalGuard = uploadSource.indexOf("window.ProposalChainBridge?.supportsProposalApproval?.('proposal-approval/v1') !== true", uploadHandler);
         const walletConnection = uploadSource.indexOf('const walletManager = window.walletManager', uploadHandler);
         const mintRecord = uploadSource.indexOf('window.__mintBinding.prepareForMint(proposal)', uploadHandler);
-        expect(approvalGuard).toBeGreaterThan(uploadHandler);
-        expect(approvalGuard).toBeLessThan(walletConnection);
+        const metadataUpload = uploadSource.indexOf('window.AssetService.uploadProposalAssets(', uploadHandler);
+        expect(approvalGuard).toBeGreaterThan(walletConnection);
         expect(approvalGuard).toBeLessThan(mintRecord);
+        expect(approvalGuard).toBeLessThan(metadataUpload);
     });
 });

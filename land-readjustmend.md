@@ -4,13 +4,13 @@
 
 Audit and follow-up review dates: **2026-10-11–12**. Filename follows the requested `land-readjustmend.md` spelling.
 The old implementation was selectively integrated and its local branch/worktree deleted.
-**§17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
+**§20 records the chain anchor for minted approval setups; §19 records the receipt relay that shares signed owner decisions between browsers; §18 records the lens-backed owner authority and the owner's Accept review; §17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
 abstraction; §14 the earlier consent/review increment; §13 the integration and §12 the review.**
 
 This is the working reference for land readjustment (LR): what exists, what is broken, prior
 decisions, international schemes, and the proposed path forward. Recommendations below are
-**proposed changes** unless explicitly marked implemented. The October 11–12 work in §§13–17 is
-implemented locally within the limits stated in each section.
+**proposed changes** unless explicitly marked implemented. The October 11–12 work in §§13–18 is
+implemented locally within the limits stated in each section (§§19–20 included).
 Broader settlement and jurisdiction recommendations remain proposals.
 
 ## 1. Findings that determine the next work
@@ -30,11 +30,13 @@ The remaining priorities are:
 1. **The LR ledger is not yet a payment contract.** Local proposal and per-parcel agreement cash
    totals now match each owner's EUR cents exactly. Existing chain payout formulas still do not
    execute that owner-specific schedule.
-2. **Production authority adapters and chain binding remain open.** The shared approval model now
-   consumes abstract rights, exact shares, a selected lens and signed owner decisions (§16).
-   Uploading rights grants no signer authority. A trusted runtime provider must independently
-   verify rights and the actor's authority; no production provider is installed by this increment.
-   Ownership is required for owner acceptance and voting, never for geometric creation.
+2. **Shared receipts and chain binding remain open.** The shared approval model consumes abstract
+   rights, exact shares, a selected lens and signed owner decisions (§16). A lens member now
+   attests the rights and each wallet's authority with signed facts, and wallets sign their own
+   decisions (§18); uploading rights still grants no signer authority. Those receipts verify
+   anywhere, but they live in the browser that recorded them: publication strips them and no chain
+   adapter carries them yet. Ownership is required for owner acceptance and voting, never for
+   geometric creation.
 3. **There is no statutory LR policy or binding LR-plus-zoning package.** Default consent, lenses,
    plans and counterproposals are foundations, not implementations of those capabilities.
 
@@ -666,9 +668,10 @@ record is not by itself a registered legal title.
 Phase B's accessible comparison, owner review and custom shares are implemented. Phase F's courtyard derivation and local agreement recovery are implemented with
 source-footprint snapshots. Phase C now has a shared local/server SHA-256 deal commitment and
 fresh-approval behavior (§14) and stable abstract owner IDs with a separate approval setup (§16).
-These phases are not wholly complete: verified funding/title, faithful ownership import, production
-authority providers and executable settlement remain open. Next, connect one real authority provider
-and finish the fixed-deal settlement contract before adding country presets or ranked choices.
+A lens-backed authority provider and the owner's Accept review are implemented (§18). These phases
+are not wholly complete: shared/published receipts, verified funding/title, faithful ownership import
+and executable settlement remain open. Next, share signed receipts across devices and finish the
+fixed-deal settlement contract before adding country presets or ranked choices.
 
 ### Initial headless audit baseline
 
@@ -1121,7 +1124,7 @@ schemes. Current international research in §7 still requires jurisdiction-speci
 
 ### Next implementation boundary
 
-Implement and verify one real lens provider for the two separate claims, then extend a chain
+The lens provider for the two separate claims is implemented in §18. Next, extend a chain
 adapter and contract to commit the same versioned context, verify those signed decisions and
 execute the explicit LR cash obligations. Keep country templates and non-ownership rights separate
 from this first title-owner policy. Add proposal packages only when LR-plus-zoning conditions can
@@ -1229,3 +1232,354 @@ well as phone width. All new messages have English, Croatian, Spanish and Serbia
   and matching chain support. Jurisdiction templates, binding LR-plus-zoning packages, faithful
   allocation import and negotiated/ranked alternatives remain separate work. No deployment,
   contract change or production data change is part of this increment.
+
+## 18. Lens-backed owner authority and the owner's Accept review (2026-10-12)
+
+Worktree `consensus-builder-lr-lens-authority`, branch `lr-lens-authority` (from `b08d720e`), kept
+apart from the `colosseum-worlds-fair` checkout while another session committed and deployed it.
+
+### Two separate lens facts, and the owner's own signature
+
+A member of the proposal's lens states two facts with the same key the proposal lists, each an
+Ed25519 signature over a canonical statement ([approval-proof.js](frontend/js/proposals/approval-proof.js)):
+
+| Fact | Statement | When a member issues it |
+|---|---|---|
+| Rights | `lens-rights-attestation/v1`: member, approval context hash, in-scope parcel IDs, opaque `evidenceRef`, `issuedAt`/`expiresAt` | The proposal's pinned snapshot matches the member's registry exactly for every in-scope parcel: complete owner list, exact shares, area. Free to ask; names no wallet. |
+| Authority | `lens-authority-attestation/v1`: member, context hash, `ownerId`, `actorId` (wallet), `evidenceRef`, validity | The wallet signed a one-time challenge and the registry lists it as a signer for that owner. One fact per owner it may act for; it learns nothing about other owners. |
+
+The owner's decision is not a lens fact: the wallet itself signs the `owner-decision/v1` statement
+(scheme `ed25519-wallet/v1`; a readable summary followed by every signed field). A receipt counts
+only when all three signatures verify, both facts name this context, owner and wallet, both
+members are in the lens, the decision time falls inside both validity windows (five minutes of
+clock skew allowed) and the terms hash equals the current deal. Rights and authority may come from
+different members, e.g. a cadastre office and an identity provider. Verification is synchronous
+and works after reload with no wallet or network: the browser, the member and Node tests use one
+vendored verifier, `@noble/curves` 1.2.0 with strict RFC 8032 decoding
+(`frontend/vendor/noble-curves-1.2.0/ed25519.js`, rebuilt by `backend/scripts/build-consent-crypto.mjs`).
+Verdicts are cached because tallies re-verify every receipt on each render.
+
+### Lens member service
+
+[`backend/lens/approval.js`](backend/lens/approval.js) adds `POST /lens/approval/rights`,
+`/challenge` and `/authority` to the reference member, enabled by `--rights <file>` with a
+`lens-rights-registry/v1` registry: opaque owner IDs, exact fractions, areas and signer wallets,
+never names (format in [backend/lens/README.md](backend/lens/README.md)). The member recomputes
+the context hash from the proposal's own fields and refuses contexts that do not list it
+(`not_in_lens`), are incomplete, or disagree with its registry (`rights_mismatch`,
+`area_mismatch`, `unknown_parcel`). Facts stay valid for `--approval-validity-days` (default 7).
+A dry run signs with an ephemeral key reported by `/lens/status`. Approval bodies may be 2 MB;
+other routes keep 32 kB and now answer 413 instead of 500 above it.
+
+### Browser provider
+
+[`approval-lens-authority.js`](frontend/js/proposals/approval-lens-authority.js) is registered as the
+`lens-wallet` authority provider. **Act for an owner** asks the chosen member for a challenge,
+checks that its text is exactly the expected message before the wallet signs it, verifies every
+returned fact (signature, member, context, parcels, wallet, electorate, expiry) and keeps them in
+memory per context and wallet. They are not persisted: each receipt carries its own evidence. The
+provider registry now lets a provider name its authenticated signer: the receipt's `actorId` is
+the wallet, not the local profile, and only that wallet can withdraw. Agents keep deciding
+through their own providers.
+
+### The owner's Accept review
+
+- **Owner acceptance card** (Details › Land & ownership): status (*Enough to pass* / *Not enough
+  yet* / *Ownership unresolved*), the rule, owners and area meters with what each still needs,
+  owners still to accept, a line per co-owned parcel saying its area counts only once every
+  co-owner accepts, and for the connected wallet *Review and accept as Owner X* / *Accepted as
+  Owner X* + *Withdraw acceptance*, plus *Act for an owner*.
+- **Act for an owner** dialog: lens member picker (directory names and service URLs), *Verify with
+  wallet*, the result (*Your wallet … can act for Owner C.*) or the member's refusal in words.
+- **Accept as Owner X** review: *What you contribute* (parcel, exact share, share of its area,
+  co-owners); for LR *What you get back* (plots with share and area, joint plots and who shares
+  them, land put in / got back / change, the owner's cash); *Conditions* (rule, payout condition,
+  deadline, funding, attesting members, a note that changed terms stop the acceptance counting);
+  *Progress* now and with this acceptance, and whether it would pass. Only *Accept as Owner X*
+  asks the wallet to sign; the dialog then becomes the receipt (signer, time, new tally, *Done*).
+- Every user Accept, including the per-parcel owner rows, opens this review first. Without
+  authority the review stays readable and offers *Act for an owner* instead of Accept.
+- Cash offers are labeled by the rights snapshot's owners, so *Owner A* is the same owner in the
+  cash list, the rows, the card and the review; a ledger recipient outside the snapshot is named
+  as such instead of borrowing a letter. A plan with no ledger row for an owner says so.
+- Withdraw uses `btn-outline-danger`, like Undo: `.btn-danger` is hidden outside debug mode
+  (utilities.css). The headed test removes debug mode before asserting the button is visible.
+
+### Verification
+
+- Fast: `proposal-approval-lens.test.js` (10: statements and tampering, member routes and refusals,
+  the four-owner milestone over a real HTTP member with real signatures, reload, tampered and
+  out-of-lens receipts, threshold counting, withdrawal) and `proposal-approval-review.test.js` (6).
+  Mutating the member's signer scoping, the receipt's decision-signature check or the cash-label
+  rule turns these red. Final combined fast run (approval, LR, lens, i18n, design, global-name and
+  static-build checks): **55 files, 680 tests passed**, run with a 60 s per-test timeout because
+  machine load was ~115 (two 5 s-timeout failures at that load passed on rerun; a stray 401 seen
+  once never reached the member's log, so the tests now bind one loopback server per test).
+- Headed (Chrome visible, one worker, no retries, page errors fail): **23 scenarios passed** across
+  `land-readjustment-audit`, `land-readjustment-consent`, `land-readjustment-courtyard`,
+  `proposal-approval` and the new `proposal-approval-lens` spec. The milestone spawns
+  `lens/run.mjs --dry-run --rights …`, switches four test wallets plus an unknown one, and checks
+  that each owner acts only for itself, Owner C cannot act for D, parcel C's area counts only after
+  both co-owners accept, a signed withdrawal and re-acceptance, and 4/4 after a 390px reload with
+  no wallet. Screenshots of the card, verification, review, receipt and phone layouts were
+  inspected. The button contract lists the four new source sites; a controls-instrumented run of
+  the new spec clicked all of them and all eight dialog action variants. The full controls suite
+  was not run.
+
+### Limits and next
+
+- Receipts live in the browser that recorded them; server publication strips them and no chain
+  adapter carries them. **Addressed by §19's receipt relay;** the chain adapter is still next.
+- The registry is a JSON file; no database registry or real identity adapter (Certilia remains a
+  stub). Approval facts are free (no x402). Nothing was deployed and no member runs on production.
+- Withdrawal is limited to the wallet that accepted, even if the registry lists another signer for
+  the same owner.
+
+Repeat from `e2e` against a no-cache frontend served from this worktree:
+
+```sh
+BASE_URL=http://127.0.0.1:8485 ./node_modules/.bin/playwright test tests/proposal-approval-lens.spec.ts --headed
+```
+
+## 19. Receipt relay: signed owner decisions shared between browsers (2026-10-12)
+
+Same worktree and branch as §18. Before this, an owner's signed decision counted only in the browser
+that recorded it. A published proposal now has a relay at `/proposals/:id/owner-decisions`, so every
+browser sees the same acceptances. The relay is a convenience, not an authority: it re-verifies a
+decision before storing it, and every reader verifies it again before counting it.
+
+### One rule set, on both sides
+
+[`approval-relay.js`](frontend/js/proposals/approval-relay.js) holds the pure rules. The server and
+the browser both use them:
+
+- **fold**: takes signed decisions in any order, with duplicates, and produces each owner's current
+  acceptance and the history. Decisions apply in signing order (`acceptedAt`, then signature),
+  under the local decision rules. A withdrawal needs a current acceptance by the same wallet.
+  Re-accepting the same terms changes nothing. Decisions that do not verify or do not apply are
+  left out, so any two readers of the same decisions reach the same state.
+- **admit**: whether the relay may store one more decision. It refuses, with an HTTP status:
+  - `unsupported_provider` (422): only lens-wallet receipts, which anyone can verify, are relayed.
+    Agents' local providers are not.
+  - `ownership_unresolved` (409) and `unknown_owner` (404).
+  - `proposal_closed` (409): the proposal is cancelled or expired, or it is executed and the
+    decision is an approval.
+  - `not_authorized` (403): the lens facts do not name this context, owner, signer and lens.
+  - `bad_signature` (401): any of the three signatures fails, or the decision names another proposal.
+  - `future_decision` (422): signed more than five minutes ahead of the server's clock.
+  - `stale_decision` (409): a later decision for this owner is already stored.
+  - `nothing_to_withdraw` (409), `not_your_acceptance` (403) and `already_accepted` (409).
+
+  Resending an identical decision is answered 200 as a duplicate.
+- The server cannot recompute the deal's terms hash, which the browser derives from the full
+  geometry. It stores a decision whose `effectHash` is no longer current. Readers count a receipt
+  only when that hash equals the terms they compute, so a stale receipt is stored but has no effect.
+
+### Server
+
+[`backend/proposals/owner-decisions.js`](backend/proposals/owner-decisions.js) answers `GET` and
+`POST /proposals/:id/owner-decisions`. It loads the published record exactly as `GET /proposals/:id`
+serves it, judges each decision under a per-proposal advisory lock (namespace 480403), and stores
+only the fields the signatures cover. Rows are append-only in `consensus.proposal_owner_decision`
+([DDL](backend/db/proposal-owner-decision-ddl.sql), added to `deploy-backend.sh`). `decided_at` is
+the signed `acceptedAt`, never the time the relay received it; a unique `signature` makes storing
+idempotent. `GET` answers with `Cache-Control: no-store`.
+
+### Browser
+
+- `recordAbstractProposalDecision` sends each signed approval or withdrawal to the relay after
+  saving it locally. The receipt in **Accept as Owner X** then says *Shared: other browsers can
+  verify and count this decision*, or that it was saved in this browser only, either because the
+  proposal is unpublished or because the relay was unreachable (it is sent again next time).
+- Every time an **Owner acceptance** card mounts in Details, the browser syncs that proposal: it
+  pulls the relay's decisions, folds them in with its own verifier (any installed provider's
+  `verifyReceipt` plus `evidenceAllows`), saves the proposal if anything changed, and pushes what
+  only this browser holds, oldest first.
+- On an unpublished proposal, the card says *Acceptances stay in this browser until the proposal
+  is published*.
+- Relayed acceptances update the card and the tally. They do not execute the proposal in another
+  browser; settlement against a schedule is separate work (§16 next steps).
+
+### Verification
+
+- Fast: `proposal-approval-relay.test.js` (8 tests) uses real lens facts and wallet signatures. It
+  covers:
+  - every refusal above, including forged, foreign, out-of-lens and wrong-owner decisions;
+  - order-independent folding, and a withdrawal by a second signer for the same owner that does not
+    apply;
+  - the route over the in-memory store, including duplicates, 404, unsigned extra fields dropped,
+    and concurrent decisions admitted one at a time;
+  - the database store's statement sequence (BEGIN, lock, read, insert, COMMIT) through the real app;
+  - two browsers syncing over HTTP, and a relay that serves forged and foreign decisions, which the
+    reader ignores.
+
+  The checks went red, as expected, after each of these mutations:
+  - removing the server's signature check;
+  - letting any signer withdraw;
+  - removing the stale check;
+  - removing the ordering;
+  - a store that never inserts.
+
+  The DDL ran twice in a rolled-back transaction on the local database. It created the table as
+  `geo_user`, and a duplicate insert was a no-op. The related fast suites (approval, LR, lens, proposals, i18n,
+  design, globals, static build, home paths) passed: 122 files and 1,847 tests, with 2 files
+  skipped. An earlier run failed 2 tests in `readjustment-consent.test.js` because that test's fake
+  console had no `info`; adding `info` fixed it.
+- Headed: the new scenario in `proposal-approval-lens.spec.ts` runs the relay's real handlers in a
+  separate process and uses two browser contexts:
+  - Browser 1 accepts for A and C, and each receipt says *Shared*.
+  - Browser 2 opens the proposal, shows 2 of 4 after its own verification, with parcel C at 1 of 2.
+    Owners D and B accept there.
+  - The relay holds exactly four decisions.
+  - Browser 1 reloads and shows 4 of 4.
+
+  With the panel's sync removed, the scenario fails at browser 2's "2 of 4". The two earlier
+  scenarios now also check the unpublished note and the "not published yet" receipt line. All three
+  pass headed, and so does the wider headed rerun of `land-readjustment-audit`, `-consent` and
+  `-courtyard`, `proposal-approval` and this spec: 24 scenarios, one worker, no retries. The
+  screenshots were inspected.
+
+### Limits and next
+
+- The relay is not deployed and its table does not exist on production. Applying
+  `db/proposal-owner-decision-ddl.sql` is part of the next deploy.
+- The chain adapter is still next. Receipts already verify without the server, so a chain record
+  can carry the same receipts. **Done as an anchor in §20.**
+- Agents' local providers are not relayed.
+- There is no rate limit beyond the 32 KB receipt cap and the global body limit.
+- Only the lens member's current facts can be checked. A member that later revokes a wallet does
+  not invalidate decisions already signed within their validity.
+
+## 20. Chain anchor for minted approval setups (2026-10-12)
+
+User decision: **anchor now, contract later.** The other options were the existing contract, used
+only where a deal fits it, or a new program version. With no program change, a proposal with an
+approval setup can be minted on Solana, and its signed owner decisions can be recovered and
+recounted from chain + IPFS alone, without our server. The chain records the approval setup and the
+decisions. It does not count them, execute the proposal or pay anyone; that needs the program
+version described in §10.
+
+### Why not the existing contract
+
+`proposal_nft` counts one wallet per owner, unanimously, per parcel (`accept_with_attestations`).
+It splits escrow equally per parcel and then per acceptance record. It has no withdrawal, no
+threshold over owners or area, and no binding to the signed terms. With the cash in the
+§18 test deal, owner A would be paid about a third of the escrow, while the deal gives A nothing.
+Using that contract would execute a different deal from the one the owners signed.
+
+### What changed
+
+- **The record commits the setup.** `approvalConfig` joined the portable chain record's `FIELDS`
+  ([chain-record.js](frontend/js/proposals/chain-record.js)). It is normalized when the record is
+  built and again when it is read, and an invalid setup fails as `chain-record-invalid`. The
+  approval context (parcels, rights, policy, lens) can therefore be rebuilt from metadata, and the
+  lens already has to match the chain account.
+- **Decisions sign the chain identity.** `ProposalApproval.subjectOf` names a proposal minted on
+  Solana `solana:<cluster>:<proposal account>`, and any other proposal by its `proposalId`. The
+  decision statement's `proposalId` field carries this subject. The minting browser, the server's
+  chain mirror and any chain reader therefore verify the same signatures. A decision signed before
+  minting does not carry over, because the minted record is a new record. Other chains still refuse
+  owner decisions.
+- **Minting.** The Solana bridge declares `supportsProposalApproval('proposal-approval/v1')`, and
+  the `ProposalChainBridge` dispatcher reports true only when it would mint on Solana. The create
+  flow already asked this; the upload dialog now asks it after wallet connection and before
+  mint-record preparation, metadata upload or the parcel-NFT check.
+  - An approval setup is minted with **no escrow** and **no verdict execution**, and the bridge
+    throws if a caller asks for either. Nothing the contract would distribute equally is ever
+    locked.
+- **Anchoring** ([approval-anchor.js](frontend/js/proposals/approval-anchor.js), pure apart from its
+  two I/O functions):
+  1. `POST /proposals/:id/owner-decisions/bundle` builds the canonical bundle
+     (`owner-decision-bundle/v1`: subject, context hash, and the decisions that apply in signing
+     order) from the decisions the relay has already verified. It pins the bundle to IPFS through
+     Pinata, once per hash per process, under the upload rate limit. It returns the `ipfs://` URI,
+     `sha256:` hash of the stable JSON, subject and count.
+  2. The connected wallet sends one **Memo v1** transaction:
+     `ugt-owner-decisions/1 <subject> <ipfs uri> sha256:<hash>`. Its only account is a read-only,
+     unsigned **lookup address**, the PDA of `["ugt-owner-decisions", proposal account]` under
+     the Memo v1 program id.
+     - Memo v1 ignores accounts, while v2 demands that every account sign. Both were checked on
+       devnet on 2026-10-12: v2 failed with "missing required signature".
+     - The fee is about 5,000 lamports, paid by whoever anchors. Anyone may anchor.
+- **Reading** needs no server. `getSignaturesForAddress(lookup address)` returns each memo's text.
+  - Pointers that do not name this subject, or are malformed, are ignored.
+  - Each bundle is fetched from public gateways (Pinata, then ipfs.io). It is rejected unless its
+    stable-JSON hash equals the memo hash, its subject matches and its schema is right.
+  - Pointers are keyed by URI and hash, so a bogus URI posted earlier under a genuine hash cannot
+    hide the genuine pointer. The first version keyed by hash alone, and the test caught it.
+  - At most 50 bundles are fetched, from the latest 1,000 memo transactions.
+  - Accepted decisions are folded in with the browser's own verifier (§19 `merge`), so a hostile
+    memo or gateway can add only noise.
+- **Card.** For a minted Solana proposal, the **Owner acceptance** card has an **On chain** block:
+  - the line *On chain: N of M decisions anchored.*, or *Reading…*, or a read-failure note;
+  - the scope note *The chain keeps the approval setup and the signed decisions so anyone can
+    recount them; it does not count or pay them.*;
+  - an **Anchor on chain** button when this browser holds decisions that are not yet anchored and
+    the proposal is published (pinning uses the relay);
+  - after anchoring, *Anchored N decisions.* and a **Latest anchor transaction** link.
+
+  Mounting the card reads the relay and then the chain.
+- **Nothing settles on the contract.** For a minted approval setup, Details leaves out the
+  donate/pledge actions, the funding card and the prediction market (`chainSettlesProposal`). They
+  settle on the contract's own execution, which never happens for these proposals. The lens card,
+  timeline and verification section stay.
+
+### Verification
+
+- **Node:** `proposal-approval-anchor.test.js` (7 tests) covers:
+  - record commit and restore, with invalid setups refused;
+  - the chain subject, and off-chain decisions that do not carry over;
+  - memo parsing;
+  - order-independent bundles and hashes;
+  - the exact Memo v1 instruction, with the lookup address unsigned and read-only;
+  - recovery from chain + IPFS, rejecting a swapped bundle under a genuine hash posted first, a
+    foreign subject and a failed transaction, with the recovered decisions counted after
+    re-verification;
+  - the pin route, which pins once, refuses an unminted proposal or one with nothing to anchor, and
+    produces exactly what a reader accepts.
+
+  `proposal-panel-actions.test.js` now checks that a minted approval setup gets no
+  donate/pledge/market but keeps the lens card. The relay test's signing fixtures moved to
+  `test/helpers/approval-decisions.js`.
+
+  These mutations each turned tests red:
+  - dropping the hash check;
+  - keying pointers by hash alone;
+  - ignoring the chain in `subjectOf`;
+  - dropping the subject check;
+  - showing the funding cards for approval setups.
+
+  The related fast suites passed: 145 files and 2,067 tests, with 2 files skipped. The mint-guard
+  ordering test now asserts the new order: after wallet connection, before mint-record preparation
+  and before metadata upload.
+- **Real devnet, from Node:** the module anchored a bundle pointer, and a fresh reader recovered it
+  with `getSignaturesForAddress` and counted owners A, C and D.
+- **Headed, real devnet (`E2E_DEVNET=1`):**
+  - The test funds a test wallet with 0.01 SOL from the Solana CLI keypair (`SOLANA_KEYPAIR`
+    overrides it). The proposal is seeded as minted under a fresh account.
+  - Owners A and C accept; the decisions sign `solana:devnet:<account>`.
+  - Anchor on chain pins through the relay's real handlers and sends the memo from the mock wallet,
+    which now signs transactions. The card then reads *2 of 2 decisions anchored* and links the
+    transaction.
+  - A second browser whose relay answers 503 recovers 2 of 4 accepted from chain + IPFS.
+  - No funding or market card appears.
+- **Headed run:** the wider run of `proposal-approval-lens` (including the devnet scenario),
+  `land-readjustment-audit`, `-consent` and `-courtyard`, `proposal-approval` and `proposal-actions`
+  passed 34 scenarios. The screenshots were inspected. The button contract lists **Anchor on
+  chain**. Without `E2E_DEVNET` the devnet scenario is skipped. The full controls suite was not run.
+
+### Limits and next
+
+- **No execution and no payment on chain.** Counting a policy, paying the cash schedule and the
+  final conflict check need a program version that commits the context and verifies these
+  signatures (ed25519 precompile), as in §10. That needs the upgrade authority and the
+  mainnet-readiness decisions.
+- **Pinning.** It goes through our server, which pins only decisions it has verified. The content
+  is addressed by hash, so anyone can re-pin or mirror it, and readers do not need our server.
+- **Spam.** Anyone can post memos to the lookup address. Readers bound the work (latest 1,000 memo
+  transactions, at most 50 bundles), so anchoring repeatedly or posting much noise can push older
+  anchors out of that window. A program-owned registry would remove this limit.
+- **Chain coverage.** EVM and Canton still refuse approval setups.
+- **Deploy.** Nothing is deployed. Production needs the §19 table and the Pinata keys already used
+  for minting.
+

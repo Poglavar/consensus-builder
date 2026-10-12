@@ -1,5 +1,6 @@
 // HTTP face of the reference lens member: status, challenge, x402-priced ownership attestation,
-// operator-only verdicts and the list of issued attestations. Every refusal the member can make
+// operator-only verdicts, the list of issued attestations and, with a rights registry, the signed
+// rights/authority facts for abstract proposal approval. Every refusal the member can make
 // (unknown parcel, wrong signature, missing source time) happens before the payment gate.
 
 import { timingSafeEqual, createHash } from 'node:crypto';
@@ -10,6 +11,7 @@ import { LensError, lensLog } from './errors.js';
 import { LENS_OWNERSHIP_PATH, describePricing } from './pricing.js';
 
 export const OPERATOR_TOKEN_HEADER = 'x-lens-operator-token';
+export const APPROVAL_PATH_PREFIX = '/lens/approval/';
 
 function isPubkey(value) {
     try {
@@ -48,18 +50,26 @@ function publicRecord(record) {
 const wrap = handler => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
 /**
- * @param {{ member: ReturnType<import('./member.js').createLensMember>, pricing: object, operatorToken?: string|null }} options
+ * @param {{ member: ReturnType<import('./member.js').createLensMember>, pricing: object, operatorToken?: string|null,
+ *   approvalAttester?: ReturnType<import('./approval.js').createApprovalAttester>|null }} options
  */
-export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*' }) {
+export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null }) {
     if (!member) throw new Error('createLensMemberApp: member is required');
     if (!pricing) throw new Error('createLensMemberApp: pricing is required');
+    // One member, one key: approval facts must be signed by the key proposals list in their lens.
+    if (approvalAttester && approvalAttester.member !== member.authority) {
+        throw new Error(`createLensMemberApp: approval attester signs as ${approvalAttester.member} but the member key is ${member.authority}`);
+    }
     const identity = member.identity;
     const app = express();
     // A lens member is a public service: owners call it from any site's browser and agents from
     // anywhere, so CORS is open by default (no credentials). Response headers are exposed so an
     // x402 402 challenge and the attestation headers reach browser clients.
     app.use(cors({ origin: corsOrigin, methods: ['GET', 'POST', 'OPTIONS'], credentials: false, exposedHeaders: '*' }));
-    app.use(express.json({ limit: '32kb' }));
+    // An approval context carries the proposal's whole rights snapshot (the browser caps uploads at 1 MiB).
+    const smallJson = express.json({ limit: '32kb' });
+    const approvalJson = express.json({ limit: '2mb' });
+    app.use((req, res, next) => (req.path.startsWith(APPROVAL_PATH_PREFIX) ? approvalJson : smallJson)(req, res, next));
     app.use((req, res, next) => {
         const started = Date.now();
         res.on('finish', () => lensLog(`${req.method} ${req.originalUrl} -> ${res.statusCode} (${Date.now() - started} ms)`));
@@ -67,7 +77,11 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
     });
 
     app.get('/lens/status', wrap(async (_req, res) => {
-        res.json({ ...(await member.status()), pricing: { ownership: describePricing(pricing) } });
+        res.json({
+            ...(await member.status()),
+            pricing: { ownership: describePricing(pricing) },
+            approval: approvalAttester ? approvalAttester.status() : null
+        });
     }));
 
     app.post('/lens/challenge', wrap(async (req, res) => {
@@ -125,6 +139,21 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
     }));
 
+    // Abstract proposal approval (backend/lens/approval.js): free, signed off-chain facts.
+    const attester = () => {
+        if (!approvalAttester) throw new LensError(503, 'approval_not_configured', 'this lens member has no rights registry for proposal approval');
+        return approvalAttester;
+    };
+    app.post(`${APPROVAL_PATH_PREFIX}rights`, wrap(async (req, res) => {
+        res.status(201).json({ rights: attester().attestRights(req.body) });
+    }));
+    app.post(`${APPROVAL_PATH_PREFIX}challenge`, wrap(async (req, res) => {
+        res.status(201).json(attester().issueChallenge({ wallet: req.body?.wallet, contextHash: req.body?.contextHash }));
+    }));
+    app.post(`${APPROVAL_PATH_PREFIX}authority`, wrap(async (req, res) => {
+        res.status(201).json(attester().attestAuthority(req.body || {}));
+    }));
+
     app.get('/lens/attestations', wrap(async (req, res) => {
         const text = name => (typeof req.query[name] === 'string' && req.query[name].trim() ? req.query[name].trim() : null);
         const kind = text('kind');
@@ -143,6 +172,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
             return res.status(error.status).json({ error: error.code, message: error.message });
         }
         if (error?.type === 'entity.parse.failed') return res.status(400).json({ error: 'bad_request', message: 'body is not valid JSON' });
+        if (error?.type === 'entity.too.large') return res.status(413).json({ error: 'payload_too_large', message: 'request body is too large' });
         console.error(`[${new Date().toISOString()}] [lens-member] ${req.method} ${req.originalUrl} failed:`, error);
         return res.status(500).json({ error: 'internal_error', message: error.message });
     });

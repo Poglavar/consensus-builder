@@ -59,7 +59,8 @@ async function seedReadjustment(page: Page, malformed = false): Promise<string> 
     w.ParcelsOwnershipUi.parcelOwnerDataCache.set(parcelId, fakeOwners);
     const slots = w.getParcelOwnerSlots(parcelId);
     if (slots.length !== 2) throw new Error(`Expected two fixture owner slots, found ${slots.length}`);
-    const ownerKeys = slots.map((slot: any) => slot.key);
+    // The readjustment allocates to the abstract owners of its rights snapshot, as the editor does.
+    const ownerKeys = ['owner-a', 'owner-b'];
     const record: any = {
       title: malformedDeal ? 'Malformed LR consent fixture' : 'LR consent fixture',
       goal: 'reparcellization',
@@ -211,6 +212,14 @@ test('changed LR cash terms lapse old consent, then preserve its receipt when an
   const ownerKey = await firstRow.getAttribute('data-owner-key');
   expect(ownerKey).toBeTruthy();
   await firstRow.getByRole('button', { name: 'Accept', exact: true }).click();
+  // Accept opens the owner's review; only its own Accept asks for the signature.
+  const review = page.locator('#proposal-approval-dialog .cb-dialog');
+  await expect(review).toHaveAttribute('data-approval-review', 'owner-a');
+  await expect(review.locator('[data-approval-cash]')).toContainText('65.12');
+  expect((await proposalState(page, proposalId)).ownerApprovals['owner-a']?.effectHash).toBe(beforeUi.originalHash);
+  await review.locator('[data-approval-accept="owner-a"]').click();
+  await expect(review).toHaveAttribute('data-approval-receipt', 'owner-a');
+  await review.locator('.cb-dialog__footer').getByRole('button', { name: 'Done', exact: true }).click();
   await expect.poll(async () => (await proposalState(page, proposalId)).ownerApprovals['owner-a']?.effectHash)
     .toBe(beforeUi.currentHash);
   const accepted = await proposalState(page, proposalId);

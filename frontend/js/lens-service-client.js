@@ -79,6 +79,22 @@
         });
     }
 
+    // Abstract proposal approval at one member (backend/lens/approval.js). `context` is the proposal's
+    // { cadastreParcelIds, approvalConfig, lens }; the member recomputes the context hash itself.
+    async function requestApprovalRights({ serviceUrl, context, fetchImpl } = {}) {
+        return request(joinUrl(serviceUrl, '/lens/approval/rights'), { method: 'POST', body: context, fetchImpl });
+    }
+
+    async function requestApprovalChallenge({ serviceUrl, wallet, contextHash, fetchImpl } = {}) {
+        return request(joinUrl(serviceUrl, '/lens/approval/challenge'), { method: 'POST', body: { wallet, contextHash }, fetchImpl });
+    }
+
+    async function submitApprovalAuthority({ serviceUrl, wallet, challenge, signature, context, fetchImpl } = {}) {
+        return request(joinUrl(serviceUrl, '/lens/approval/authority'), {
+            method: 'POST', body: { ...context, wallet, challenge, signature }, fetchImpl
+        });
+    }
+
     // Asks every member that declares a serviceUrl about every parcel (ownership only). Members
     // without a URL contribute `attestations: null`, i.e. unknown, never "not covered".
     async function collectParcelCoverage({ members, parcelIds, fetchImpl, concurrency = 6, nowSeconds } = {}) {
@@ -132,6 +148,9 @@
         requestChallenge,
         submitOwnership,
         postVerdict,
+        requestApprovalRights,
+        requestApprovalChallenge,
+        submitApprovalAuthority,
         collectParcelCoverage,
         runOwnershipFlow
     };

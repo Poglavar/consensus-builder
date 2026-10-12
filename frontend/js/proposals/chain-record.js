@@ -19,7 +19,10 @@
         'ownershipTransferDirection', 'ownershipTransferRecipient', 'ownershipTransferProposal',
         'acquisitionMode', 'boundaryAdjustment', 'primaryType', 'typologyType', 'tags', 'facets',
         'isCorridor', 'copiedFromProposalId', 'copiedFromName', 'sourceProposalId',
-        'replacementOfProposalId', 'landFork', 'agent'
+        'replacementOfProposalId', 'landFork', 'agent',
+        // The approval setup (rights snapshot and policy): with the parcels and lens it is the
+        // approval context every owner decision signs, so chain + IPFS alone can verify decisions.
+        'approvalConfig'
     ]);
     const clone = value => JSON.parse(JSON.stringify(value));
     const dependency = (name, path) => global[name] || (typeof require === 'function' ? require(path) : null);
@@ -44,7 +47,16 @@
         record.isConditional = proposal.isConditional === true || proposal.conditional === true;
         if (record.lens) record.lens = record.lens.map(entry => typeof entry === 'string' ? entry : entry.address);
         if (record.ownershipTransferProposal) delete record.ownershipTransferProposal.status;
+        if (record.approvalConfig != null) record.approvalConfig = approvalConfig(record.approvalConfig);
         return record;
+    }
+
+    function approvalConfig(value) {
+        try {
+            return dependency('ProposalApproval', './approval.js').normalizeConfig(value);
+        } catch (error) {
+            return fail(`The approval setup is invalid: ${error.message}`);
+        }
     }
 
     function metadataProperties(proposal) {
@@ -63,7 +75,9 @@
         if (!record.site || !record.binding || !record.cadastreSnapshot) fail('NFT proposal is missing its site, binding, or cadastral snapshot.');
         const gate = dependency('__formationDepth', './formation-depth.js').preparePublishRecord(record);
         if (!gate.verdict.flat) fail('NFT proposal contains invalid cadastral references.');
-        return clone(record);
+        const result = clone(record);
+        if (result.approvalConfig != null) result.approvalConfig = approvalConfig(result.approvalConfig);
+        return result;
     }
 
     function sameIds(left, right, lowerCase = false) {

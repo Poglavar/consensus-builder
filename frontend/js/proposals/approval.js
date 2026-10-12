@@ -192,9 +192,20 @@
                 && (kind === 'rights' || (fact.ownerId === owner && fact.actorId === actorId));
         });
     }
-    function decisionContent(proposal, receipt) {
+    // The identity an owner decision signs. A minted proposal is its chain account, so the server
+    // copy, a chain mirror and the minting browser all name it alike; otherwise its proposalId.
+    function subjectOf(proposal) {
+        const onchain = proposal?.onchain || {};
+        if (onchain.proposalId != null && String(onchain.proposalId)) {
+            const chainId = String(onchain.chainId || '');
+            if (!/^solana-[a-z-]+$/.test(chainId)) fail('Owner decisions are supported only for proposals minted on Solana.');
+            return `solana:${chainId.slice('solana-'.length)}:${onchain.proposalId}`;
+        }
         if (proposal?.proposalId == null || !String(proposal.proposalId).trim()) fail('An owner decision needs a published proposal identity.');
-        return { schema: 'owner-decision/v1', proposalId: String(proposal.proposalId),
+        return String(proposal.proposalId);
+    }
+    function decisionContent(proposal, receipt) {
+        return { schema: 'owner-decision/v1', proposalId: subjectOf(proposal),
             ownerId: receipt.ownerId, actorId: receipt.actorId, effectHash: receipt.effectHash,
             decision: receipt.decision, acceptedAt: receipt.acceptedAt, contextHash: contextHash(proposal) };
     }
@@ -230,5 +241,5 @@
     }
     return { RIGHTS_SCHEMA, CONFIG_SCHEMA, CONTEXT_SCHEMA, normalizeRights, normalizeConfig, normalizePolicy,
         lensKeys, contextContent, contextHash, consentHash, stableStringify, inspect, ownerLabel, createTemplate,
-        tally, evidenceAllows, decisionContent, validOwnerIds, recordDecision };
+        tally, evidenceAllows, subjectOf, decisionContent, validOwnerIds, recordDecision };
 });

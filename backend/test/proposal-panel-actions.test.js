@@ -13,7 +13,7 @@ const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active' } = {}) {
+function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false } = {}) {
     const content = { dataset: {}, innerHTML: '', scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
@@ -63,6 +63,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ProposalPossibilityTimeline: null,
         getSerialProposalId: () => road ? 'track-1' : null,
         SolanaMarketBridge: null,
+        ProposalApprovalRuntime: approvalSetup ? { uses: () => true } : null,
         RoadActions: road ? { factsFor: () => ({ proposalKey: proposal.proposalId, applied: true }), runAction() {} } : null,
         RoadActionsModel: road ? { isActionAvailable: () => true } : null,
         __claims: { materializedParcelIdsOf: () => [] }
@@ -118,6 +119,20 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it('leaves out donations, pledges and the market for a minted approval setup the contract never executes', () => {
+        const proposal = { proposalId: 'approval-1', title: 'Readjustment', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } };
+        const plain = render(proposal, { connected: true });
+        expect(parse(plain.footer.innerHTML)('[data-proposal-support-actions]').length).toBe(1);
+        expect(parse(plain.content.innerHTML)('.proposal-pledge-summary, .proposal-market-summary').length).toBe(2);
+        const setup = render(proposal, { connected: true, approvalSetup: true });
+        const content = parse(setup.content.innerHTML);
+        expect(parse(setup.footer.innerHTML)('[data-proposal-support-actions]').length).toBe(0);
+        expect(content('.proposal-pledge-summary, .proposal-market-summary').length).toBe(0);
+        expect(content('[data-proposal-section="funding"], [data-proposal-section="market"]').length).toBe(0);
+        expect(content('.proposal-lens-card').length).toBe(1);
+        expect(content('.approval-card-slot').length).toBe(1);
+    });
+
     it('renders primary and contextual actions, plus disconnected support in the footer once', () => {
         const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' }, saleOffer: true };
         const result = render(proposal, { connected: false });

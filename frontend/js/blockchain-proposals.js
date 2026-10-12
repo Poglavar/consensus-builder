@@ -1187,6 +1187,12 @@
         },
         formatParcelId,
         deriveParcelIdFromFeature,
+        // Only the Solana adapter commits an approval setup and anchors its decisions.
+        supportsProposalApproval(schema) {
+            const solana = globalScope.SolanaProposalChainBridge;
+            return !isCantonActive() && isSolanaWalletConnected() && !!solana?.isSupported()
+                && solana.supportsProposalApproval?.(schema) === true;
+        },
         mintProposal: mintProposalWithRouting,
         contributeToProposal: contributeToProposalWithRouting,
         acceptProposal: acceptProposalWithRouting,

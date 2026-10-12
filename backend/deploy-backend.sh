@@ -95,6 +95,7 @@ DDL_FILES=(
     routes/proposal-site-ddl.sql
     db/agents-ddl.sql
     db/proposal-prepared-ddl.sql
+    db/proposal-owner-decision-ddl.sql
     db/building-floor-model.sql
     db/floor-plan-archive.sql
     ens/ens-plan-ddl.sql

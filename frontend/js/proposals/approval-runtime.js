@@ -1,5 +1,6 @@
 // Thin browser adapter from pluggable rights/authority providers to the pure approval model.
-// The current profile is the actor; proposal uploads and caller display metadata grant no authority.
+// The current profile is the actor and its provider names the signer (the profile or a wallet);
+// proposal uploads and caller display metadata grant no authority.
 (function (root) {
     'use strict';
     const api = () => root.ProposalApproval;
@@ -30,15 +31,15 @@
             ownershipResolved: rights.ready, reason: rights.reason,
             entries: (parcel?.owners || []).map(owner => {
                 const receipt = proposal.ownerApprovals?.[owner.ownerId];
-                const authorized = rights.ready && hash && !!evidence(proposal, owner.ownerId, actor);
+                const authorization = rights.ready && hash ? evidence(proposal, owner.ownerId, actor) : null;
                 return {
                     key: owner.ownerId, ownerId: owner.ownerId,
                     displayName: label(owner.ownerId, rights.ownerIds), shareText: owner.share, shareDetail: '',
                     accepted: yes.has(owner.ownerId), termsChanged: !!receipt?.effectHash && !!hash && receipt.effectHash !== hash,
                     acceptedAt: receipt?.acceptedAt || null, acceptedByAgentId: receipt?.actorId || null,
                     acceptedByName: '', slotType: 'abstract', agentId: null,
-                    canAccept: !!authorized && !yes.has(owner.ownerId),
-                    canUndo: !!authorized && yes.has(owner.ownerId) && receipt?.actorId === actor?.id
+                    canAccept: !!authorization && !yes.has(owner.ownerId),
+                    canUndo: !!authorization && yes.has(owner.ownerId) && receipt?.actorId === authorization.actorId
                 };
             })
         };
@@ -74,7 +75,7 @@
         if (!id || !parcel?.owners.some(owner => owner.ownerId === id)) return { error: 'unknown-owner' };
         const authorization = evidence(proposal, id, actor);
         if (!authorization) return { error: 'authority-unresolved' };
-        const receipt = { ownerId: id, actorId: actor.id, effectHash: hash, evidence: authorization.evidence,
+        const receipt = { ownerId: id, actorId: authorization.actorId, effectHash: hash, evidence: authorization.evidence,
             providerId: authorization.providerId, decision: withdraw ? 'withdraw' : 'approve', acceptedAt: new Date().toISOString() };
         const decisionProof = await root.ProposalApprovalAuthorities.signDecision(proposal, receipt, actor);
         if (currentHash() !== hash || (!withdraw && proposal.lifecycleStatus === 'Executed')
@@ -88,5 +89,10 @@
         proposal.acceptedParcelIds = result.proposal.acceptedParcelIds;
         return { ...result.tally, ownerId: id };
     }
-    root.ProposalApprovalRuntime = { uses, inspect, state, refresh, summary, decide, label, validIds };
+    // Owners the current profile can act for right now, through any installed provider.
+    function authorizedOwnerIds(proposal, actor) {
+        const rights = inspect(proposal);
+        return rights.ready ? rights.ownerIds.filter(id => !!evidence(proposal, id, actor)) : [];
+    }
+    root.ProposalApprovalRuntime = { uses, inspect, state, refresh, summary, decide, label, validIds, authorizedOwnerIds };
 })(typeof window !== 'undefined' ? window : globalThis);

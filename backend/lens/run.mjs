@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // CLI for the reference lens member (backend/lens/README.md): serves the lens API on a port.
 // --dry-run uses a fake SAS issuer, an in-memory attestation store and an ephemeral key, with x402
-// pricing off; --live signs real SAS attestations with --keypair through sas-lib.
+// pricing off; --live signs real SAS attestations with --keypair through sas-lib. --rights adds the
+// signed rights/authority facts for abstract proposal approval (backend/lens/approval.js).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -18,6 +19,7 @@ import { createFileStore, createMemoryStore, createPgStore } from './store.js';
 import { announceLensMember } from '../oracle/lens-registration.js';
 import { createLensPricing, describePricing } from './pricing.js';
 import { createLensMemberApp } from './server.js';
+import { createApprovalAttester, normalizeRegistry } from './approval.js';
 import { lensLog } from './errors.js';
 import { retryWithBackoff } from './retry.js';
 
@@ -47,6 +49,9 @@ function usage(code = 0) {
         '  --identity <adapter>      devnet-registry (default) | certilia (not configured yet).',
         '  --owners <file.json>      devnet-registry rows in memory: [{parcelUid, owner, ownerCount, establishedAt}].',
         '                            Without it the registry is consensus.lens_devnet_owner (PG* env).',
+        '  --rights <file.json>      lens-rights-registry/v1 (abstract owners, exact shares, areas, signer wallets).',
+        '                            Enables POST /lens/approval/{rights,challenge,authority}; without it they answer 503.',
+        '  --approval-validity-days <n>  How long signed rights/authority facts stay usable (default 7).',
         '  --cluster <name>          devnet (default) | mainnet-beta | localhost.',
         '  --rpc <url>               RPC URL override for --live.',
         '  --expiry-days <n>         Attestation expiry (default 365).',
@@ -87,6 +92,8 @@ async function main() {
                 kind: { type: 'string', default: 'owner-consent' },
                 identity: { type: 'string', default: 'devnet-registry' },
                 owners: { type: 'string' },
+                rights: { type: 'string' },
+                'approval-validity-days': { type: 'string', default: '7' },
                 cluster: { type: 'string', default: 'devnet' },
                 rpc: { type: 'string' },
                 'expiry-days': { type: 'string', default: '365' },
@@ -115,6 +122,8 @@ async function main() {
     if (!Number.isInteger(port) || port <= 0) throw new Error(`bad --port ${values.port}`);
     const expiryDays = Number(values['expiry-days']);
     if (!(expiryDays > 0)) throw new Error(`bad --expiry-days ${values['expiry-days']}`);
+    const approvalValidityDays = Number(values['approval-validity-days']);
+    if (!(approvalValidityDays > 0)) throw new Error(`bad --approval-validity-days ${values['approval-validity-days']}`);
 
     dotenv.config({ path: path.join(HERE, '..', '.env'), quiet: true });
     const dryRun = !!values['dry-run'];
@@ -124,7 +133,9 @@ async function main() {
     pool?.on('error', error => console.error(`[${new Date().toISOString()}] [lens-member] idle pg client error:`, error.message));
 
     const keypair = dryRun ? null : Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(values.keypair, 'utf8'))));
-    const authority = keypair ? keypair.publicKey.toBase58() : Keypair.generate().publicKey.toBase58();
+    // A dry run still signs approval facts, with an ephemeral key that lives as long as the process.
+    const signingKeypair = keypair ?? Keypair.generate();
+    const authority = signingKeypair.publicKey.toBase58();
     const issuer = dryRun
         ? createFakeIssuer({ authority, clock })
         : await retryWithBackoff('loading the SAS issuer failed',
@@ -156,7 +167,15 @@ async function main() {
     });
     const pricing = createLensPricing({ dryRun, env: process.env });
     const operatorToken = process.env.LENS_OPERATOR_TOKEN?.trim() || null;
-    const app = createLensMemberApp({ member, pricing, operatorToken });
+    const approvalAttester = values.rights
+        ? createApprovalAttester({
+            keypair: signingKeypair,
+            registry: normalizeRegistry(JSON.parse(fs.readFileSync(values.rights, 'utf8'))),
+            clock,
+            validitySeconds: Math.round(approvalValidityDays * 86400)
+        })
+        : null;
+    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester });
 
     const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);
@@ -164,6 +183,10 @@ async function main() {
     lensLog(`identity ${identity.kind}${values.owners ? ` from ${values.owners}` : ''}; issuer ${issuer.kind}; store ${dryRun ? 'memory' : values.store ? `file ${values.store}` : 'postgres'}`);
     lensLog(`ownership pricing: ${JSON.stringify(describePricing(pricing))}`);
     lensLog(`verdicts: ${operatorToken ? 'enabled (operator token set)' : 'disabled (LENS_OPERATOR_TOKEN unset)'}`);
+    const approval = approvalAttester?.status();
+    lensLog(`proposal approval: ${approval
+        ? `enabled from ${values.rights} (${approval.parcels} parcel(s), ${approval.owners} owner(s), ${approval.signers} signer wallet(s); facts valid ${approvalValidityDays} day(s))`
+        : 'disabled (no --rights)'}`);
     const server = app.listen(port, values.host, () => {
         lensLog(`listening on http://${values.host}:${port}/lens/status`);
         if (!values.announce) return;

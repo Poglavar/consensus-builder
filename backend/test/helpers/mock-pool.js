@@ -53,6 +53,11 @@ export function createMockPool() {
             return { rows: [], rowCount: 0 };
         },
 
+        // A transaction client that shares this pool's queue and call log.
+        async connect() {
+            return { query: (sql, params) => pool.query(sql, params), release() {} };
+        },
+
         setResult(result) {
             results = [result];
         },
