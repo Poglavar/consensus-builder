@@ -389,6 +389,8 @@ class Runner:
                 entry.update(status="pending", summary="", evidenceFiles=[], artifactRecheck="prior terminal claim lacked verifiable durable artifacts")
             elif entry.get("status") == "resource-held" and self.city_bytes(city_dir) < MAX_CITY_BYTES:
                 entry.update(status="pending", summary="", evidenceFiles=[])
+            elif entry.get("status") == "needs-llm" and not getattr(self.args, "direct_only", False):
+                entry.update(status="pending", phase="llm")
         self.state["pid"] = os.getpid()
         self.state["executionMode"] = "direct-first"
         self.state["directWorkers"] = self.args.workers
@@ -534,7 +536,9 @@ class Runner:
         try:
             if error is None:
                 result = self._verify_worker_answer(item)
-                entry.update(status="pending" if result["status"] == "needs-llm" else result["status"], summary=result["summary"], evidenceFiles=result["evidenceFiles"],
+                # --direct-only leaves troubleshooting to an external worker (see --record-answer).
+                direct_only = getattr(self.args, "direct_only", False)
+                entry.update(status=("needs-llm" if direct_only else "pending") if result["status"] == "needs-llm" else result["status"], summary=result["summary"], evidenceFiles=result["evidenceFiles"],
                              pid=None, finishedAt=utc_now(), currentAttempt=None)
                 if result["status"] == "needs-llm":
                     entry.update(phase="llm", phaseAttempts=0, directAttemptDir=str(item["attemptDir"]))
@@ -674,7 +678,8 @@ class Runner:
                         self.state["cities"][str(city["cityCode"])].get("status") == "resource-held"
                         for city in self.records
                     )
-                    self.state["status"] = "resource-held" if resource_held else ("complete-with-holds" if any(e.get("status") == "held" for e in self.state["cities"].values()) else "complete-needs-review")
+                    needs_llm = any(e.get("status") == "needs-llm" for e in self.state["cities"].values())
+                    self.state["status"] = "resource-held" if resource_held else ("direct-complete-needs-llm" if needs_llm else "complete-with-holds" if any(e.get("status") == "held" for e in self.state["cities"].values()) else "complete-needs-review")
                     break
                 self.state["status"] = "running"
                 self.run_batch()
@@ -696,6 +701,51 @@ class Runner:
             if self._lock_stream:
                 fcntl.flock(self._lock_stream.fileno(), fcntl.LOCK_UN)
                 self._lock_stream.close()
+
+
+def record_answer(args: argparse.Namespace) -> dict[str, Any]:
+    """Verify and record an external worker's attempt for a city left at needs-llm.
+
+    The worker writes candidate.json, evidence/ and worker-answer.json ({"data": {cityCode, status,
+    summary, evidenceFiles}}) in a new attempt directory under the city's directory. The runner,
+    not the worker, decides: technical-qualified is accepted only after its own independent metric
+    recomputation and artifact checks.
+    """
+    runner = Runner(args)
+    runner.acquire()
+    try:
+        runner.records, runner.queue_hash = load_queue(runner.queue_path)
+        runner.state = read_json(runner.state_path)
+        if runner.state.get("queueSha256") != runner.queue_hash:
+            raise RuntimeError("immutable queue SHA-256 changed; refusing to record")
+        attempt_dir = Path(args.record_answer).resolve()
+        code = attempt_dir.parent.name
+        city = next((c for c in runner.records if str(c["cityCode"]) == code), None)
+        entry = runner.state["cities"].get(code)
+        if city is None or entry is None:
+            raise ValueError(f"attempt directory {attempt_dir} does not belong to a queued city")
+        if attempt_dir.parent != runner.city_dir(code).resolve() or not attempt_dir.name.startswith("attempt-"):
+            raise ValueError("attempt directory must be cities/<code>/attempt-NN inside the state directory")
+        if entry.get("status") not in {"needs-llm", "held", "pending"}:
+            raise ValueError(f"city {code} is {entry.get('status')}; only needs-llm/held/pending cities take an external answer")
+        answer_path = attempt_dir / "worker-answer.json"
+        raw = read_json(answer_path)
+        atomic_json(answer_path, {"executionMode": "external", "data": raw.get("data", raw),
+                                  "model": raw.get("model"), "usage": raw.get("usage")})
+        item = {"city": city, "cityDir": runner.city_dir(code).resolve(), "attemptDir": attempt_dir,
+                "answerPath": answer_path, "phase": "llm"}
+        result = runner._verify_worker_answer(item)
+        entry.update(status=result["status"], summary=result["summary"], evidenceFiles=result["evidenceFiles"],
+                     currentDir=str(attempt_dir), finishedAt=utc_now(), phase="llm",
+                     externalWorker=raw.get("model") or "external")
+        runner.log("city-finished", cityCode=code, attempt=attempt_dir.name, status=result["status"],
+                   summary=result["summary"], worker="external")
+        runner.save()
+        return {"cityCode": code, "status": result["status"]}
+    finally:
+        if runner._lock_stream:
+            fcntl.flock(runner._lock_stream.fileno(), fcntl.LOCK_UN)
+            runner._lock_stream.close()
 
 
 def status_report(state_dir: Path) -> dict[str, Any]:
@@ -739,6 +789,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--run", action="store_true")
     mode.add_argument("--status", action="store_true")
+    mode.add_argument("--record-answer", metavar="ATTEMPT_DIR",
+                      help="verify and record an external worker's attempt for a needs-llm city")
     parser.add_argument("--queue")
     parser.add_argument("--repo-root", required=True)
     parser.add_argument("--source-root")
@@ -748,8 +800,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--max-turn-minutes", type=int, default=45)
     parser.add_argument("--max-retries", type=int, default=2)
     parser.add_argument("--once", action="store_true")
+    parser.add_argument("--direct-only", action="store_true",
+                        help="stop cities that need troubleshooting at needs-llm instead of launching an LLM worker")
     args = parser.parse_args(argv)
-    if args.run and not args.queue: parser.error("--queue is required with --run")
+    if (args.run or args.record_answer) and not args.queue: parser.error("--queue is required with --run/--record-answer")
     if args.max_turn_minutes < 1 or args.max_retries < 1: parser.error("time and retry limits must be positive")
     return args
 
@@ -764,6 +818,9 @@ def main(argv: list[str] | None = None) -> int:
         state_dir = Path(args.state_dir)
         if not state_dir.is_absolute(): state_dir = Path(args.repo_root) / state_dir
         print(json.dumps(status_report(state_dir.resolve()), indent=2))
+        return 0
+    if args.record_answer:
+        print(json.dumps(record_answer(args), indent=2))
         return 0
     runner = Runner(args)
     return runner.run()

@@ -1,0 +1,1601 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MA",
+ "checkedAt": "2026-10-12",
+ "priorEvidence": "research/subnational/US/MA.json",
+ "uncoveredUnCities": 10,
+ "uncoveredUnCitySample": [
+  {
+   "cityCode": "8493",
+   "name": "Boston",
+   "lat": 42.3505752808132,
+   "lon": -71.0928038157234
+  },
+  {
+   "cityCode": "8469",
+   "name": "Worcester",
+   "lat": 42.2597734886551,
+   "lon": -71.8070882719052
+  },
+  {
+   "cityCode": "8463",
+   "name": "Springfield",
+   "lat": 42.1113118931937,
+   "lon": -72.5784998231599
+  },
+  {
+   "cityCode": "8523",
+   "name": "Lynn",
+   "lat": 42.4692858620628,
+   "lon": -70.9553412983168
+  },
+  {
+   "cityCode": "8487",
+   "name": "New Bedford",
+   "lat": 41.6443758563109,
+   "lon": -70.9295167896688
+  },
+  {
+   "cityCode": "8517",
+   "name": "Lawrence",
+   "lat": 42.7075937387977,
+   "lon": -71.1639769493182
+  },
+  {
+   "cityCode": "8529",
+   "name": "Peabody",
+   "lat": 42.5224020657245,
+   "lon": -70.8943363143339
+  },
+  {
+   "cityCode": "8505",
+   "name": "Lowell",
+   "lat": 42.6417314473143,
+   "lon": -71.3181810964044
+  },
+  {
+   "cityCode": "8481",
+   "name": "Fall River",
+   "lat": 41.6955271095878,
+   "lon": -71.1534456550269
+  },
+  {
+   "cityCode": "8499",
+   "name": "Brockton",
+   "lat": 42.084339659697,
+   "lon": -71.0187865990425
+  }
+ ],
+ "access": "Anonymous HTTPS GET/POST to the public ArcGIS REST query endpoint, at most one request per second per host, no token or cookie. Only object-ID, native-ID and county/town scope fields were ever requested; no owner, address, sale, account or taxpayer fields.",
+ "helperScripts": "tmp/adapter-staging/us-statewide-a/scripts/ (state-cities.py, polite.mjs, meta.mjs, uniqueness.mjs, statewide-repeats.mjs, coverage.mjs, blank-breakdown.mjs, dup-ids.mjs, repeat-geometry.mjs, distinct-area-repeats.mjs, parts-overlap.mjs, verify.mjs, verify-parts.mjs, dense-cell.mjs, descriptors.mjs)",
+ "status": "ready",
+ "sourceId": "us-ma-massgis-l3-tax-parcels",
+ "layer": {
+  "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+  "layerName": "Massachusetts Property Tax Parcels",
+  "type": "Feature Layer",
+  "geometryType": "esriGeometryPolygon",
+  "objectIdField": "OBJECTID",
+  "globalIdField": "GlobalID",
+  "maxRecordCount": 2000,
+  "capabilities": "Query,Extract,Sync",
+  "supportsPagination": true,
+  "supportsStatistics": true,
+  "supportsHavingClause": true,
+  "nativeSpatialReference": 3857,
+  "dataLastEditDate": "2026-10-07",
+  "fieldCount": 50,
+  "fieldNames": [
+   "OBJECTID",
+   "MAP_PAR_ID",
+   "LOC_ID",
+   "POLY_TYPE",
+   "MAP_NO",
+   "SOURCE",
+   "PLAN_ID",
+   "LAST_EDIT",
+   "BND_CHK",
+   "NO_MATCH",
+   "TOWN_ID",
+   "PROP_ID",
+   "BLDG_VAL",
+   "LAND_VAL",
+   "OTHER_VAL",
+   "TOTAL_VAL",
+   "FY",
+   "LOT_SIZE",
+   "LS_DATE",
+   "LS_PRICE",
+   "USE_CODE",
+   "SITE_ADDR",
+   "ADDR_NUM",
+   "FULL_STR",
+   "LOCATION",
+   "CITY",
+   "ZIP",
+   "OWNER1",
+   "OWN_ADDR",
+   "OWN_CITY",
+   "OWN_STATE",
+   "OWN_ZIP",
+   "OWN_CO",
+   "LS_BOOK",
+   "LS_PAGE",
+   "REG_ID",
+   "ZONING",
+   "YEAR_BUILT",
+   "BLD_AREA",
+   "UNITS",
+   "RES_AREA",
+   "STYLE",
+   "NUM_ROOMS",
+   "LOT_UNITS",
+   "STORIES",
+   "USE_DESC",
+   "TOWNID_UC",
+   "GlobalID",
+   "Shape__Area",
+   "Shape__Length"
+  ],
+  "description": "MassGIS' Level 3 Assessors’ Parcel Mapping data set was developed through a competitive procurement funded by MassGIS. Each community in the Commonwealth was bid on by one or more vendors and the unit of work awarded was a city or town. The specification for this work was Level 3 of the MassGIS Digital Parcel Standard. Standardization of assessor parcel mapping is complete for 350 of Massachusetts' 351 cities and towns. (Boston, which is not part of this project, is being processed separately). MassGIS is now incorporating updates from municipalities into the database.",
+  "copyrightText": "Commonwealth of Massachusetts Bureau of Geographic Information (MassGIS)"
+ },
+ "recordCount": 2559636,
+ "coverage": {
+  "townIdsPresent": 351,
+  "of": 351,
+  "missingTowns": [],
+  "polyTypeCounts": {
+   "FEE": 2494789,
+   "PRIV_ROW": 832,
+   "RAIL_ROW": 530,
+   "ROW": 232,
+   "TAX": 63180,
+   "WATER": 73
+  },
+  "nonFeeOverlapSamples": {
+   "TAX": [
+    {
+     "loc": "F_375582_2869441",
+     "town": 281,
+     "areaM2": 1704,
+     "feeCandidates": 5,
+     "overlapWithFeeM2": 0
+    },
+    {
+     "loc": "F_354044_2870828",
+     "town": 281,
+     "areaM2": 485,
+     "feeCandidates": 3,
+     "overlapWithFeeM2": 0
+    },
+    {
+     "loc": "F_353375_2870702",
+     "town": 281,
+     "areaM2": 759,
+     "feeCandidates": 6,
+     "overlapWithFeeM2": 0
+    }
+   ],
+   "ROW": [],
+   "WATER": [
+    {
+     "loc": "F_750868_2965357",
+     "town": 49,
+     "areaM2": 639904,
+     "feeCandidates": 255,
+     "overlapWithFeeM2": 0
+    }
+   ],
+   "PRIV_ROW": [
+    {
+     "loc": "F_764948_2929737",
+     "town": 35,
+     "areaM2": 10187,
+     "feeCandidates": 53,
+     "overlapWithFeeM2": 0
+    }
+   ]
+  },
+  "note": "Layer description: Level 3 standardization complete for 350 of 351 communities; Boston processed separately. Boston (TOWN_ID 35) rows are present. All 351 TOWN_IDs present."
+ },
+ "identity": {
+  "idField": "LOC_ID",
+  "parcelNumberField": "MAP_PAR_ID",
+  "why": "LOC_ID is the MassGIS locational parcel identifier (coordinate-derived, statewide by construction). MAP_PAR_ID and PROP_ID are town-scoped; PROP_ID and GlobalID identify assessing rows (many per polygon), not polygons.",
+  "blankCounts": {
+   "1=1": 2559636,
+   "LOC_ID IS NULL": 1,
+   "LOC_ID = ''": 0,
+   "LOC_ID = ' '": 0
+  },
+  "patternCheck": {
+   "LOC_ID LIKE '__%[^0-9_]%'": 0,
+   "LOC_ID NOT LIKE '_[_][0-9]%[_][0-9]%'": 0,
+   "LOC_ID LIKE '%[_]'": 0,
+   "LOC_ID LIKE '%[_][_]%'": 0,
+   "LOC_ID LIKE '%[_]%[_]%[_]%'": 0
+  },
+  "exclusion": "attributeNotNull LOC_ID (one null row statewide). All LOC_IDs match ^[MF]_[0-9]+_[0-9]+$."
+ },
+ "uniqueness": {
+  "bboxChecks": [
+   {
+    "state": "MA",
+    "label": "boston",
+    "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+    "bbox": [
+     -71.0978,
+     42.3456,
+     -71.0878,
+     42.3556
+    ],
+    "rows": 2972,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 402,
+    "fields": {
+     "LOC_ID": {
+      "distinctValues": 402,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 130,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "F_767304_2952970"
+       ],
+       [
+        "F_766640_2952868"
+       ],
+       [
+        "F_767110_2952327"
+       ],
+       [
+        "F_767100_2952936"
+       ],
+       [
+        "F_767265_2952957"
+       ]
+      ]
+     },
+     "MAP_PAR_ID": {
+      "distinctValues": 402,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 130,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "0503642000"
+       ],
+       [
+        "0503870210"
+       ],
+       [
+        "0503814000"
+       ],
+       [
+        "0503892000"
+       ],
+       [
+        "0503643000"
+       ]
+      ]
+     },
+     "PROP_ID": {
+      "distinctValues": 2972,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 130,
+      "sharedGeometryExamples": [
+       [
+        [
+         "0503870252"
+        ],
+        [
+         "0503870292"
+        ],
+        [
+         "0503870212"
+        ],
+        [
+         "0503870320"
+        ]
+       ],
+       [
+        [
+         "0503814024"
+        ],
+        [
+         "0503814034"
+        ],
+        [
+         "0503814048"
+        ],
+        [
+         "0503814050"
+        ]
+       ],
+       [
+        [
+         "0503892026"
+        ],
+        [
+         "0503892060"
+        ],
+        [
+         "0503892000"
+        ],
+        [
+         "0503892002"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "0503642000"
+       ],
+       [
+        "0503870252"
+       ],
+       [
+        "0503814024"
+       ],
+       [
+        "0503892026"
+       ],
+       [
+        "0503870292"
+       ]
+      ]
+     },
+     "GlobalID": {
+      "distinctValues": 2972,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 130,
+      "sharedGeometryExamples": [
+       [
+        [
+         "95140032-4b96-4266-8cd0-4d7956133acd"
+        ],
+        [
+         "23dae4b2-f0bf-406b-a11d-9effa06f255a"
+        ],
+        [
+         "24334c34-c545-4844-97e2-79d8b06497f1"
+        ],
+        [
+         "2b192680-b993-446d-943b-da3ca51364e1"
+        ]
+       ],
+       [
+        [
+         "8eac0e14-f816-4d6e-93d8-ef2e02437ba6"
+        ],
+        [
+         "0e3d16a0-064f-44b2-9c17-b81512a4dd3e"
+        ],
+        [
+         "7c2dba72-79ec-4738-a06f-8a65a636cb5f"
+        ],
+        [
+         "de11454d-d80d-4a36-95e1-9019dff7e7ce"
+        ]
+       ],
+       [
+        [
+         "2edc149c-4a80-4746-8829-4916e87b0b85"
+        ],
+        [
+         "816be9d8-4da5-4971-b721-0c8762f64a92"
+        ],
+        [
+         "f049eb11-191d-4897-858f-22c2718463f5"
+        ],
+        [
+         "5765c91f-8619-4b90-9657-87e2d84bd558"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "625e3e17-d037-4208-9ce8-4cce0c7acc9d"
+       ],
+       [
+        "95140032-4b96-4266-8cd0-4d7956133acd"
+       ],
+       [
+        "8eac0e14-f816-4d6e-93d8-ef2e02437ba6"
+       ],
+       [
+        "2edc149c-4a80-4746-8829-4916e87b0b85"
+       ],
+       [
+        "23dae4b2-f0bf-406b-a11d-9effa06f255a"
+       ]
+      ]
+     },
+     "TOWN_ID+LOC_ID": {
+      "distinctValues": 402,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 130,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "35",
+        "F_767304_2952970"
+       ],
+       [
+        "35",
+        "F_766640_2952868"
+       ],
+       [
+        "35",
+        "F_767110_2952327"
+       ],
+       [
+        "35",
+        "F_767100_2952936"
+       ],
+       [
+        "35",
+        "F_767265_2952957"
+       ]
+      ]
+     },
+     "TOWN_ID+MAP_PAR_ID": {
+      "distinctValues": 402,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 130,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "35",
+        "0503642000"
+       ],
+       [
+        "35",
+        "0503870210"
+       ],
+       [
+        "35",
+        "0503814000"
+       ],
+       [
+        "35",
+        "0503892000"
+       ],
+       [
+        "35",
+        "0503643000"
+       ]
+      ]
+     },
+     "TOWN_ID+PROP_ID": {
+      "distinctValues": 2972,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 130,
+      "sharedGeometryExamples": [
+       [
+        [
+         "35",
+         "0503870252"
+        ],
+        [
+         "35",
+         "0503870292"
+        ],
+        [
+         "35",
+         "0503870212"
+        ],
+        [
+         "35",
+         "0503870320"
+        ]
+       ],
+       [
+        [
+         "35",
+         "0503814024"
+        ],
+        [
+         "35",
+         "0503814034"
+        ],
+        [
+         "35",
+         "0503814048"
+        ],
+        [
+         "35",
+         "0503814050"
+        ]
+       ],
+       [
+        [
+         "35",
+         "0503892026"
+        ],
+        [
+         "35",
+         "0503892060"
+        ],
+        [
+         "35",
+         "0503892000"
+        ],
+        [
+         "35",
+         "0503892002"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "35",
+        "0503642000"
+       ],
+       [
+        "35",
+        "0503870252"
+       ],
+       [
+        "35",
+        "0503814024"
+       ],
+       [
+        "35",
+        "0503892026"
+       ],
+       [
+        "35",
+        "0503870292"
+       ]
+      ]
+     },
+     "TOWN_ID+GlobalID": {
+      "distinctValues": 2972,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 130,
+      "sharedGeometryExamples": [
+       [
+        [
+         "35",
+         "95140032-4b96-4266-8cd0-4d7956133acd"
+        ],
+        [
+         "35",
+         "23dae4b2-f0bf-406b-a11d-9effa06f255a"
+        ],
+        [
+         "35",
+         "24334c34-c545-4844-97e2-79d8b06497f1"
+        ],
+        [
+         "35",
+         "2b192680-b993-446d-943b-da3ca51364e1"
+        ]
+       ],
+       [
+        [
+         "35",
+         "8eac0e14-f816-4d6e-93d8-ef2e02437ba6"
+        ],
+        [
+         "35",
+         "0e3d16a0-064f-44b2-9c17-b81512a4dd3e"
+        ],
+        [
+         "35",
+         "7c2dba72-79ec-4738-a06f-8a65a636cb5f"
+        ],
+        [
+         "35",
+         "de11454d-d80d-4a36-95e1-9019dff7e7ce"
+        ]
+       ],
+       [
+        [
+         "35",
+         "2edc149c-4a80-4746-8829-4916e87b0b85"
+        ],
+        [
+         "35",
+         "816be9d8-4da5-4971-b721-0c8762f64a92"
+        ],
+        [
+         "35",
+         "f049eb11-191d-4897-858f-22c2718463f5"
+        ],
+        [
+         "35",
+         "5765c91f-8619-4b90-9657-87e2d84bd558"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "35",
+        "625e3e17-d037-4208-9ce8-4cce0c7acc9d"
+       ],
+       [
+        "35",
+        "95140032-4b96-4266-8cd0-4d7956133acd"
+       ],
+       [
+        "35",
+        "8eac0e14-f816-4d6e-93d8-ef2e02437ba6"
+       ],
+       [
+        "35",
+        "2edc149c-4a80-4746-8829-4916e87b0b85"
+       ],
+       [
+        "35",
+        "23dae4b2-f0bf-406b-a11d-9effa06f255a"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "TOWN_ID": [
+      35,
+      49
+     ],
+     "POLY_TYPE": [
+      "FEE"
+     ]
+    }
+   },
+   {
+    "state": "MA",
+    "label": "worcester",
+    "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+    "bbox": [
+     -71.8121,
+     42.2548,
+     -71.8021,
+     42.2648
+    ],
+    "rows": 1039,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon",
+     "MultiPolygon"
+    ],
+    "distinctGeometries": 614,
+    "fields": {
+     "LOC_ID": {
+      "distinctValues": 614,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 14,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "F_573237_2918820"
+       ],
+       [
+        "F_573300_2918965"
+       ],
+       [
+        "F_573124_2918874"
+       ],
+       [
+        "F_573379_2919245"
+       ],
+       [
+        "F_573059_2919075"
+       ]
+      ]
+     },
+     "MAP_PAR_ID": {
+      "distinctValues": 614,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 14,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "03-008-00024"
+       ],
+       [
+        "03-008-00025"
+       ],
+       [
+        "03-008-16+17"
+       ],
+       [
+        "03-009-00008"
+       ],
+       [
+        "03-008-00007"
+       ]
+      ]
+     },
+     "PROP_ID": {
+      "distinctValues": 1033,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 14,
+      "sharedGeometryExamples": [
+       [
+        [
+         "03_027_25711"
+        ],
+        [
+         "03_027_25713"
+        ],
+        [
+         "03_027_25714"
+        ],
+        [
+         "03_027_25716"
+        ]
+       ],
+       [
+        [
+         "03_025_19-01"
+        ],
+        [
+         "03_025_19-01_328"
+        ],
+        [
+         "03_025_19-02"
+        ],
+        [
+         "03_025_19-03"
+        ]
+       ],
+       [
+        [
+         "03_027_020-2"
+        ],
+        [
+         "03_027_018-1_125"
+        ],
+        [
+         "03_027_018-2"
+        ],
+        [
+         "03_027_018-3"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "03_008_00024"
+       ],
+       [
+        "03_008_00025"
+       ],
+       [
+        "03_008_16+17"
+       ],
+       [
+        "03_009_00008"
+       ],
+       [
+        "03_008_00007"
+       ]
+      ]
+     },
+     "TOWN_ID+LOC_ID": {
+      "distinctValues": 614,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 14,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "348",
+        "F_573237_2918820"
+       ],
+       [
+        "348",
+        "F_573300_2918965"
+       ],
+       [
+        "348",
+        "F_573124_2918874"
+       ],
+       [
+        "348",
+        "F_573379_2919245"
+       ],
+       [
+        "348",
+        "F_573059_2919075"
+       ]
+      ]
+     },
+     "TOWN_ID+MAP_PAR_ID": {
+      "distinctValues": 614,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 14,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "348",
+        "03-008-00024"
+       ],
+       [
+        "348",
+        "03-008-00025"
+       ],
+       [
+        "348",
+        "03-008-16+17"
+       ],
+       [
+        "348",
+        "03-009-00008"
+       ],
+       [
+        "348",
+        "03-008-00007"
+       ]
+      ]
+     },
+     "TOWN_ID+PROP_ID": {
+      "distinctValues": 1033,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 14,
+      "sharedGeometryExamples": [
+       [
+        [
+         "348",
+         "03_027_25711"
+        ],
+        [
+         "348",
+         "03_027_25713"
+        ],
+        [
+         "348",
+         "03_027_25714"
+        ],
+        [
+         "348",
+         "03_027_25716"
+        ]
+       ],
+       [
+        [
+         "348",
+         "03_025_19-01"
+        ],
+        [
+         "348",
+         "03_025_19-01_328"
+        ],
+        [
+         "348",
+         "03_025_19-02"
+        ],
+        [
+         "348",
+         "03_025_19-03"
+        ]
+       ],
+       [
+        [
+         "348",
+         "03_027_020-2"
+        ],
+        [
+         "348",
+         "03_027_018-1_125"
+        ],
+        [
+         "348",
+         "03_027_018-2"
+        ],
+        [
+         "348",
+         "03_027_018-3"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "348",
+        "03_008_00024"
+       ],
+       [
+        "348",
+        "03_008_00025"
+       ],
+       [
+        "348",
+        "03_008_16+17"
+       ],
+       [
+        "348",
+        "03_009_00008"
+       ],
+       [
+        "348",
+        "03_008_00007"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "TOWN_ID": [
+      348
+     ],
+     "POLY_TYPE": [
+      "FEE"
+     ]
+    }
+   },
+   {
+    "state": "MA",
+    "label": "springfield",
+    "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+    "bbox": [
+     -72.5835,
+     42.1063,
+     -72.5735,
+     42.1163
+    ],
+    "rows": 379,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon",
+     "MultiPolygon"
+    ],
+    "distinctGeometries": 378,
+    "fields": {
+     "LOC_ID": {
+      "distinctValues": 378,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 1,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "F_363260_2868982"
+       ],
+       [
+        "F_362750_2869303"
+       ],
+       [
+        "F_363022_2868799"
+       ],
+       [
+        "F_363261_2868311"
+       ],
+       [
+        "F_363638_2867727"
+       ]
+      ]
+     },
+     "MAP_PAR_ID": {
+      "distinctValues": 347,
+      "blankRows": 31,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 1,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "00135-0004"
+       ],
+       [
+        "00645-0260"
+       ],
+       [
+        "00645-0270"
+       ],
+       [
+        "00645-0282"
+       ],
+       [
+        "00645-0292"
+       ]
+      ]
+     },
+     "TOWN_ID+LOC_ID": {
+      "distinctValues": 378,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 1,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "281",
+        "F_363260_2868982"
+       ],
+       [
+        "281",
+        "F_362750_2869303"
+       ],
+       [
+        "281",
+        "F_363022_2868799"
+       ],
+       [
+        "281",
+        "F_363261_2868311"
+       ],
+       [
+        "281",
+        "F_363638_2867727"
+       ]
+      ]
+     },
+     "TOWN_ID+MAP_PAR_ID": {
+      "distinctValues": 347,
+      "blankRows": 31,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 1,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "281",
+        "00135-0004"
+       ],
+       [
+        "281",
+        "00645-0260"
+       ],
+       [
+        "281",
+        "00645-0270"
+       ],
+       [
+        "281",
+        "00645-0282"
+       ],
+       [
+        "281",
+        "00645-0292"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "TOWN_ID": [
+      281
+     ]
+    }
+   }
+  ],
+  "statewideSampleChecks": [
+   {
+    "state": "MA",
+    "label": "boston",
+    "field": "LOC_ID",
+    "sampled": 80,
+    "localRowsSampled": 333,
+    "statewideRows": 333,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   },
+   {
+    "state": "MA",
+    "label": "worcester",
+    "field": "LOC_ID",
+    "sampled": 80,
+    "localRowsSampled": 80,
+    "statewideRows": 80,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   },
+   {
+    "state": "MA",
+    "label": "worcester",
+    "field": "MAP_PAR_ID",
+    "sampled": 80,
+    "localRowsSampled": 80,
+    "statewideRows": 80,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   }
+  ],
+  "withinTownRepeatedLocIdRows": [
+   {
+    "scope": "TOWN_ID = 281",
+    "scopeRows": 44332,
+    "repeatedValues": 72,
+    "repeatedRows": 2151,
+    "truncatedAt2000": false,
+    "top": [
+     {
+      "n": 433,
+      "LOC_ID": "F_370329_2851764"
+     },
+     {
+      "n": 217,
+      "LOC_ID": "F_386423_2872438"
+     },
+     {
+      "n": 190,
+      "LOC_ID": "F_387624_2872142"
+     },
+     {
+      "n": 170,
+      "LOC_ID": "F_362223_2864615"
+     },
+     {
+      "n": 138,
+      "LOC_ID": "F_360593_2865202"
+     }
+    ]
+   },
+   {
+    "scope": "TOWN_ID = 348",
+    "scopeRows": 47703,
+    "repeatedValues": 367,
+    "repeatedRows": 5647,
+    "truncatedAt2000": false,
+    "top": [
+     {
+      "n": 145,
+      "LOC_ID": "F_578063_2910992"
+     },
+     {
+      "n": 141,
+      "LOC_ID": "F_574122_2919644"
+     },
+     {
+      "n": 124,
+      "LOC_ID": "F_563874_2919343"
+     },
+     {
+      "n": 121,
+      "LOC_ID": "F_573823_2908592"
+     },
+     {
+      "n": 120,
+      "LOC_ID": "F_563571_2935703"
+     }
+    ]
+   },
+   {
+    "scope": "TOWN_ID = 35",
+    "scopeRows": 180474,
+    "repeatedValues": 2000,
+    "repeatedRows": 57132,
+    "truncatedAt2000": true,
+    "top": [
+     {
+      "n": 865,
+      "LOC_ID": "F_773079_2958556"
+     },
+     {
+      "n": 848,
+      "LOC_ID": "F_773411_2958059"
+     },
+     {
+      "n": 702,
+      "LOC_ID": "F_774186_2954493"
+     },
+     {
+      "n": 539,
+      "LOC_ID": "F_772812_2950038"
+     },
+     {
+      "n": 462,
+      "LOC_ID": "F_773023_2949773"
+     }
+    ]
+   }
+  ],
+  "repeatedLocIdGeometrySamples": [
+   {
+    "value": "F_773079_2958556",
+    "rows": 865,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     20591
+    ]
+   },
+   {
+    "value": "F_773411_2958059",
+    "rows": 848,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     23810
+    ]
+   },
+   {
+    "value": "F_774186_2954493",
+    "rows": 702,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     2413
+    ]
+   },
+   {
+    "value": "F_767918_2952873",
+    "rows": 7,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     314
+    ]
+   },
+   {
+    "value": "F_767965_2941155",
+    "rows": 7,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     358
+    ]
+   },
+   {
+    "value": "F_768037_2953379",
+    "rows": 7,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     333
+    ]
+   },
+   {
+    "value": "F_370329_2851764",
+    "rows": 433,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     145926
+    ]
+   },
+   {
+    "value": "F_386423_2872438",
+    "rows": 217,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     65604
+    ]
+   },
+   {
+    "value": "F_387624_2872142",
+    "rows": 190,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     43391
+    ]
+   },
+   {
+    "value": "F_376716_2860242",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     669
+    ]
+   },
+   {
+    "value": "F_378372_2884564",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     529033
+    ]
+   },
+   {
+    "value": "F_391880_2863906",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     81134
+    ]
+   }
+  ],
+  "locIdsWithDifferingShapeArea": [
+   {
+    "scope": "TOWN_ID = 281",
+    "idsWithDistinctAreas": 0
+   },
+   {
+    "scope": "TOWN_ID = 348",
+    "idsWithDistinctAreas": 0
+   },
+   {
+    "scope": "TOWN_ID = 35",
+    "idsWithDistinctAreas": 0
+   }
+  ],
+  "result": "LOC_ID never repeats with differing geometry (bbox samples and full Boston, Worcester, Springfield tables); repeats are assessing-record join rows with byte-identical geometry. Distinct LOC_IDs never shared one polygon in the samples."
+ },
+ "liveVerification": [
+  {
+   "cityCode": "8493",
+   "name": "Boston",
+   "unPoint": [
+    -71.0928038157234,
+    42.3505752808132
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -71.093304,
+      42.350075,
+      -71.092304,
+      42.351075
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 7,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "ms": 1649,
+     "ids": [
+      "US-MA-STATEWIDE-F_766092_2952902",
+      "US-MA-STATEWIDE-F_766252_2952821",
+      "US-MA-STATEWIDE-F_766156_2952922",
+      "US-MA-STATEWIDE-F_766477_2952904",
+      "US-MA-STATEWIDE-F_766116_2952917",
+      "US-MA-STATEWIDE-F_766423_2953021",
+      "US-MA-STATEWIDE-F_765149_2953404"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query?where=LOC_ID+IS+NOT+NULL&outFields=OBJECTID%2CLOC_ID%2CMAP_PAR_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-71.093304%2C42.350075%2C-71.092304%2C42.351075&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+       "status": 200,
+       "ms": 1642
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-MA-STATEWIDE-F_766092_2952902",
+     "US-MA-STATEWIDE-F_766477_2952904",
+     "US-MA-STATEWIDE-F_765149_2953404"
+    ],
+    "returnedIds": [
+     "US-MA-STATEWIDE-F_766092_2952902",
+     "US-MA-STATEWIDE-F_766477_2952904",
+     "US-MA-STATEWIDE-F_765149_2953404"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-MA-STATEWIDE-F_766092_2952902",
+      "sourceParcelId": "F_766092_2952902",
+      "parcelNumber": "0503709000",
+      "geometryType": "Polygon",
+      "boundsHash": "c1dc7ea96ad8775a7c04187723b247a4c86270bf8b34512ad86ae43ae753cb92",
+      "idsHash": "c1dc7ea96ad8775a7c04187723b247a4c86270bf8b34512ad86ae43ae753cb92",
+      "identical": true
+     },
+     {
+      "id": "US-MA-STATEWIDE-F_766477_2952904",
+      "sourceParcelId": "F_766477_2952904",
+      "parcelNumber": "0503704002",
+      "geometryType": "Polygon",
+      "boundsHash": "2b18e344954e0924d9ce0dadb1538e8c2e57218c72bad08d86986f57de00ecb8",
+      "idsHash": "2b18e344954e0924d9ce0dadb1538e8c2e57218c72bad08d86986f57de00ecb8",
+      "identical": true
+     },
+     {
+      "id": "US-MA-STATEWIDE-F_765149_2953404",
+      "sourceParcelId": "F_765149_2953404",
+      "parcelNumber": "0503747000",
+      "geometryType": "Polygon",
+      "boundsHash": "d2da8f63f15bc4fd6ff74b6bad47ad89446c84dacf181f213d8dcffb3dea03fa",
+      "idsHash": "d2da8f63f15bc4fd6ff74b6bad47ad89446c84dacf181f213d8dcffb3dea03fa",
+      "identical": true
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query?where=%28LOC_ID+IS+NOT+NULL%29+AND+%28LOC_ID+IN+%28%27F_766092_2952902%27%2C%27F_766477_2952904%27%2C%27F_765149_2953404%27%29%29&outFields=OBJECTID%2CLOC_ID%2CMAP_PAR_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "status": 200,
+      "ms": 5454
+     }
+    ],
+    "ms": 5456
+   }
+  },
+  {
+   "cityCode": "8469",
+   "name": "Worcester",
+   "unPoint": [
+    -71.8070882719052,
+    42.2597734886551
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -71.807588,
+      42.259273,
+      -71.806588,
+      42.260273
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 10,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "ms": 1469,
+     "ids": [
+      "US-MA-STATEWIDE-F_573158_2919870",
+      "US-MA-STATEWIDE-F_573083_2919947",
+      "US-MA-STATEWIDE-F_573022_2919947",
+      "US-MA-STATEWIDE-F_573205_2920029",
+      "US-MA-STATEWIDE-F_572894_2919732",
+      "US-MA-STATEWIDE-F_572858_2919945",
+      "US-MA-STATEWIDE-F_573065_2919925",
+      "US-MA-STATEWIDE-F_572921_2919922",
+      "US-MA-STATEWIDE-F_573183_2919659",
+      "US-MA-STATEWIDE-F_572985_2919931"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query?where=LOC_ID+IS+NOT+NULL&outFields=OBJECTID%2CLOC_ID%2CMAP_PAR_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-71.807588%2C42.259273%2C-71.806588%2C42.260273&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+       "status": 200,
+       "ms": 1466
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-MA-STATEWIDE-F_573158_2919870",
+     "US-MA-STATEWIDE-F_572858_2919945",
+     "US-MA-STATEWIDE-F_572985_2919931"
+    ],
+    "returnedIds": [
+     "US-MA-STATEWIDE-F_573158_2919870",
+     "US-MA-STATEWIDE-F_572858_2919945",
+     "US-MA-STATEWIDE-F_572985_2919931"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-MA-STATEWIDE-F_573158_2919870",
+      "sourceParcelId": "F_573158_2919870",
+      "parcelNumber": "03-014-002+9",
+      "geometryType": "Polygon",
+      "boundsHash": "76282a0b80a206994eaaefcebd3635c8307ebaf28f66c63494d8e15ab8be4f22",
+      "idsHash": "76282a0b80a206994eaaefcebd3635c8307ebaf28f66c63494d8e15ab8be4f22",
+      "identical": true
+     },
+     {
+      "id": "US-MA-STATEWIDE-F_572858_2919945",
+      "sourceParcelId": "F_572858_2919945",
+      "parcelNumber": "03-015-00026",
+      "geometryType": "Polygon",
+      "boundsHash": "9de31ff771534e47012b7fa9c42ac35d99816f0d77d3400e11b97ad1dedcf75c",
+      "idsHash": "9de31ff771534e47012b7fa9c42ac35d99816f0d77d3400e11b97ad1dedcf75c",
+      "identical": true
+     },
+     {
+      "id": "US-MA-STATEWIDE-F_572985_2919931",
+      "sourceParcelId": "F_572985_2919931",
+      "parcelNumber": "03-015-04+23",
+      "geometryType": "Polygon",
+      "boundsHash": "efef2c2e14d49284d1b65e0afacce9924f0380209844e97948332edbf89622c7",
+      "idsHash": "efef2c2e14d49284d1b65e0afacce9924f0380209844e97948332edbf89622c7",
+      "identical": true
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query?where=%28LOC_ID+IS+NOT+NULL%29+AND+%28LOC_ID+IN+%28%27F_573158_2919870%27%2C%27F_572858_2919945%27%2C%27F_572985_2919931%27%29%29&outFields=OBJECTID%2CLOC_ID%2CMAP_PAR_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "status": 200,
+      "ms": 4831
+     }
+    ],
+    "ms": 4832
+   }
+  }
+ ],
+ "denseCellTiming": "A 0.003 degree Boston cell returned 45 parcels in 1.4 s.",
+ "caveats": [
+  "The layer joins polygons to assessing records, so one LOC_ID repeats once per assessing record with byte-identical geometry (up to 865 rows in Boston); the adapter keeps one polygon per LOC_ID. No LOC_ID with differing Shape__Area was found in Boston, Worcester or Springfield.",
+  "MAP_PAR_ID is a town-scoped assessor map-parcel label used only for display; it is blank on some polygons.",
+  "Non-FEE polygon types (TAX 63,180, PRIV_ROW 832, RAIL_ROW 530, ROW 232, WATER 73 rows) are included; sampled TAX, PRIV_ROW and WATER polygons did not overlap FEE polygons.",
+  "Publisher text: standardization is complete for 350 of 351 communities and Boston is processed separately; Boston (TOWN_ID 35) rows are present in this layer.",
+  "metricSrid 32619 suits eastern Massachusetts; cities west of 72 W (e.g. Springfield) need 32618 when qualified."
+ ]
+}

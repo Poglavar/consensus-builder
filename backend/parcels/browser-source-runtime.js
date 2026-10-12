@@ -22,6 +22,7 @@ import { createNairobiOutlineSource } from './nairobi-outline-source.js';
 import { createKazakhstanPkkSource } from './kazakhstan-pkk-source.js';
 import { createMsdaPointSource } from './msda-point-source.js';
 import { createTkgmPointSource } from './tkgm-point-source.js';
+import { createUldkPointSource } from './pl-uldk-point-source.js';
 import { upstreamError } from './source-contract.js';
 import { withSourceControls } from './source-controls.js';
 
@@ -46,7 +47,7 @@ export const browserParcelFactories = Object.freeze({
     'hamburg-alkis-wfs': createHamburgAlkisParcelSource, 'bev-tiles': createBevTileParcelSource,
     'dlrs-sheet': createDlrsSheetParcelSource, 'kerala-entebhoomi': createKeralaParcelSource,
     'nairobi-outlines': createNairobiOutlineSource, 'kazakhstan-pkk': createKazakhstanPkkSource,
-    'msda-point': createMsdaPointSource, 'tkgm-point': createTkgmPointSource });
+    'msda-point': createMsdaPointSource, 'tkgm-point': createTkgmPointSource, 'pl-uldk-point': createUldkPointSource });
 
 export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.fetch, relayBase, now = Date.now } = {}) {
     const blocked = new Map();

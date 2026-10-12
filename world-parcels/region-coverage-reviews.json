@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reviewed geographic scope for globe region colors (states, provinces, UK constituent countries). The gates match country-coverage-reviews.json: full needs a dated review, a verified source for the region, official https scope evidence and no geographic exclusions. Statewide compilations of county data also need every county present in the published data. Anything else stays partial. regionCode is the ISO 3166-2 id of an outline in world-parcels/regions.geojson; evidenceFiles are repository paths and caveats are recorded here but not shown on the globe.",
+  "reviews": [
+    {
+      "regionCode": "AU-VIC",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["au-vic-vicmap-parcel"],
+      "exclusions": [],
+      "note": "Vicmap Property is the State of Victoria's cadastral parcel map. The publisher includes registered and proposed parcels, both freehold and Crown land.",
+      "caveats": [
+        "Proposed parcels (status P) are published alongside approved ones; the app renders approved parcels only.",
+        "Parcel geometry is a cadastral map base, not a survey."
+      ],
+      "evidence": [
+        {
+          "title": "Victorian Government: Vicmap Property product description",
+          "url": "https://www.land.vic.gov.au/maps-and-spatial/spatial-data/vicmap-catalogue/vicmap-property"
+        },
+        {
+          "title": "Vicmap Parcel feature service (statewide parcel status counts checked)",
+          "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/0"
+        }
+      ],
+      "evidenceFiles": ["world-parcels/research/melbourne-live.json", "world-parcels/research/subnational/AU/VIC.json"]
+    },
+    {
+      "regionCode": "GB-ENG",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["gb-hmlr-browser-v1"],
+      "exclusions": [],
+      "note": "HM Land Registry publishes INSPIRE Index Polygons for all of England, one file per local authority. They show registered freehold title extents: land that was never registered has no polygon, and leasehold titles are not shown separately.",
+      "caveats": [
+        "Scope is registered freehold titles. Unregistered land has no index polygon; that is a gap in registration, not a geographic exclusion, and it is not counted here.",
+        "Leasehold titles are not published as their own polygons.",
+        "Index polygons show the general position of a title extent, not a legal boundary line. The app's ground is a deterministic surface derived from them (backend/parcels/HMLR-GROUND.md).",
+        "This review describes the source's geographic scope. Opening parcels in the app still goes through the qualified England and Wales city bindings."
+      ],
+      "evidence": [
+        {
+          "title": "HM Land Registry: INSPIRE Index Polygons cover England and Wales",
+          "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+        },
+        {
+          "title": "HM Land Registry: INSPIRE Index Polygons download by local authority",
+          "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+        }
+      ],
+      "evidenceFiles": ["backend/parcels/HMLR-GROUND.md", "scripts/build-hmlr-wup-seed.py", "world-parcels/research/qualification-admission-2026-10-12.json"]
+    },
+    {
+      "regionCode": "GB-WLS",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["gb-hmlr-browser-v1"],
+      "exclusions": [],
+      "note": "HM Land Registry publishes INSPIRE Index Polygons for all of Wales, one file per local authority. They show registered freehold title extents: land that was never registered has no polygon, and leasehold titles are not shown separately.",
+      "caveats": [
+        "Scope is registered freehold titles. Unregistered land has no index polygon; that is a gap in registration, not a geographic exclusion, and it is not counted here.",
+        "Leasehold titles are not published as their own polygons.",
+        "Index polygons show the general position of a title extent, not a legal boundary line. The app's ground is a deterministic surface derived from them (backend/parcels/HMLR-GROUND.md).",
+        "This review describes the source's geographic scope. Opening parcels in the app still goes through the qualified England and Wales city bindings."
+      ],
+      "evidence": [
+        {
+          "title": "HM Land Registry: INSPIRE Index Polygons cover England and Wales",
+          "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+        },
+        {
+          "title": "HM Land Registry: INSPIRE Index Polygons download by local authority",
+          "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+        }
+      ],
+      "evidenceFiles": ["backend/parcels/HMLR-GROUND.md", "scripts/build-hmlr-wup-seed.py", "world-parcels/research/qualification-admission-2026-10-12.json"]
+    },
+    {
+      "regionCode": "US-MD",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["us-md-imap-statewide-parcel-boundaries"],
+      "exclusions": [],
+      "note": "Maryland's Department of Planning publishes \"parcel polygons of the entire state\". All 24 jurisdictions (23 counties and Baltimore City) were present on 2026-10-12.",
+      "caveats": [
+        "Every jurisdiction contributes rows; that does not prove every square metre has a parcel.",
+        "Polygon and assessment dates differ (polydate and sdatdate fields); right-of-way polygons are included."
+      ],
+      "evidence": [
+        {
+          "title": "MD iMAP: Parcel Boundaries layer description",
+          "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0"
+        },
+        {
+          "title": "Maryland Department of Planning: parcel data downloads",
+          "url": "https://planning.maryland.gov/Pages/OurProducts/DownloadFiles.aspx"
+        }
+      ],
+      "evidenceFiles": ["world-parcels/research/statewide-us-2026-10-12/MD.json", "world-parcels/research/subnational/US/MD.json"]
+    },
+    {
+      "regionCode": "US-NC",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["us-nc-onemap-statewide-parcels"],
+      "exclusions": [],
+      "note": "NC OneMap's statewide parcel layer compiles parcels from North Carolina's county data producers and the Eastern Band of Cherokee Indians. All 100 counties were present on 2026-10-12.",
+      "caveats": [
+        "Every county contributes rows; that does not prove every square metre has a parcel.",
+        "Some counties publish exact duplicate rows for one parcel; the adapter collapses them."
+      ],
+      "evidence": [
+        {
+          "title": "NC OneMap: statewide parcels layer description",
+          "url": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1"
+        },
+        {
+          "title": "NC OneMap: parcel downloads by county or all counties",
+          "url": "https://www.nconemap.gov/"
+        }
+      ],
+      "evidenceFiles": ["world-parcels/research/statewide-us-2026-10-12/NC.json", "world-parcels/research/subnational/US/NC.json"]
+    },
+    {
+      "regionCode": "US-ND",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["us-nd-gishub-statewide-parcels"],
+      "exclusions": [],
+      "note": "The North Dakota GIS Hub State Parcel Program aggregates county parcel boundaries statewide, including Adams and Benson counties, which the program built itself. All 53 counties were present on 2026-10-12.",
+      "caveats": [
+        "Every county contributes rows; that does not prove every square metre has a parcel.",
+        "Currency varies by county (monthly to yearly). Right-of-way and water polygons are included."
+      ],
+      "evidence": [
+        {
+          "title": "North Dakota GIS: State Parcel Program",
+          "url": "https://www.gis.nd.gov/parcel-program"
+        },
+        {
+          "title": "ND GIS Hub parcels feature service",
+          "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0"
+        }
+      ],
+      "evidenceFiles": ["world-parcels/research/statewide-us-2026-10-12/ND.json", "world-parcels/research/subnational/US/ND.json"]
+    },
+    {
+      "regionCode": "US-NJ",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["us-nj-trenton-parcels"],
+      "exclusions": [],
+      "note": "NJOGIS publishes the statewide composite of New Jersey parcels, joined to the MOD-IV tax assessment system. All 21 counties were present on 2026-10-12.",
+      "caveats": [
+        "Every county contributes rows; that does not prove every square metre has a parcel.",
+        "Composite currency varies by municipality; owner names are redacted for public access."
+      ],
+      "evidence": [
+        {
+          "title": "NJOGIS: Parcels Composite of New Jersey (service description)",
+          "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0"
+        },
+        {
+          "title": "NJGIN: statewide parcel data",
+          "url": "https://nj.gov/njgin/edata/parcels/"
+        }
+      ],
+      "evidenceFiles": ["world-parcels/research/statewide-us-2026-10-12/NJ.json", "world-parcels/research/subnational/US/NJ.json"]
+    },
+    {
+      "regionCode": "US-UT",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["us-ut-ugrc-statewide-parcels"],
+      "exclusions": [],
+      "note": "UGRC publishes a statewide parcel layer aggregated from Utah's county parcel datasets. All 29 counties were present on 2026-10-12.",
+      "caveats": [
+        "Every county contributes rows; that does not prove every square metre has a parcel.",
+        "Rows without a parcel ID (24,063 on 2026-10-12) are excluded by the adapter; some counties split one parcel into several rows."
+      ],
+      "evidence": [
+        {
+          "title": "UGRC: Utah statewide parcels layer description",
+          "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0"
+        },
+        {
+          "title": "UGRC: SGID cadastre parcels",
+          "url": "https://gis.utah.gov/products/sgid/cadastre/parcels/"
+        }
+      ],
+      "evidenceFiles": ["world-parcels/research/statewide-us-2026-10-12/UT.json", "world-parcels/research/subnational/US/UT.json"]
+    },
+    {
+      "regionCode": "US-WI",
+      "coverage": "full",
+      "checkedAt": "2026-10-12",
+      "sourceIds": ["us-wi-v12-statewide-parcels"],
+      "exclusions": [],
+      "note": "Wisconsin's Version 12 Statewide Parcel Map Database collects parcel geometries from local governments across the state. All 72 counties were present on 2026-10-12.",
+      "caveats": [
+        "Every county contributes rows; that does not prove every square metre has a parcel.",
+        "STATEID derives from county parcel IDs and changes when a county renumbers."
+      ],
+      "evidence": [
+        {
+          "title": "Wisconsin V12 Statewide Parcel Map Database (layer description)",
+          "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0"
+        },
+        {
+          "title": "Wisconsin State Cartographer's Office: statewide parcel data",
+          "url": "https://www.sco.wisc.edu/parcels/data/"
+        }
+      ],
+      "evidenceFiles": ["world-parcels/research/statewide-us-2026-10-12/WI.json", "world-parcels/research/subnational/US/WI.json"]
+    }
+  ]
+}

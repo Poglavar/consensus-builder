@@ -1,0 +1,85 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ES",
+ "checkedAt": "2026-09-29",
+ "country": "Spain",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Direccion General del Catastro, Ministerio de Hacienda (Sede Electronica del Catastro); Basque Country and Navarre run their own foral cadastres",
+ "portalsFound": [
+  {
+   "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+   "observation": "INSPIRE ATOM download service: province feeds -> per-municipality ZIP of GML 3.2 CadastralParcel (EPSG:25830 etc.)"
+  },
+  {
+   "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+   "observation": "INSPIRE WFS stored queries (GetParcel, GetParcelByBBox); plain requests here returned HTTP 400 HTML error page, parameters may need adjusting"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "ATOM feed, 685 KB"
+  },
+  {
+   "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&refcat=9872023VH5797S&srsname=EPSG:4326",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/html",
+   "assessment": "HTML error page"
+  },
+  {
+   "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?...STOREDQUERIE_ID=GetParcelByBBox&bbox=37.3880,-5.9950,37.3890,-5.9940...",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/html",
+   "assessment": "HTML error page"
+  },
+  {
+   "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/41/ES.SDGC.CP.atom_41.xml",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "Sevilla province feed (via 302 from http)"
+  },
+  {
+   "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/41/41001-AGUADULCE/A.ES.SDGC.CP.41001.zip with Range: bytes=0-200000",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/x-zip-compressed",
+   "assessment": "ZIP prefix; inflated GML holds 1041 CadastralParcel elements (Aguadulce, Sevilla)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "es-catastro-inspire-cadastralparcels-atom",
+  "requestUrl": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/41/41001-AGUADULCE/A.ES.SDGC.CP.41001.zip (Range: bytes=0-200000)",
+  "method": "GET",
+  "httpStatus": 206,
+  "contentType": "application/x-zip-compressed",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 1041,
+  "recordListPath": "cp:CadastralParcel elements in GML 3.2",
+  "geometryType": "gml:MultiSurface / PolygonPatch",
+  "closedRings": true,
+  "idField": "cp:nationalCadastralReference",
+  "responseFile": "ES-parcel-response.json",
+  "pagination": "none; whole-municipality ZIP files",
+  "regionSampled": "Aguadulce (Sevilla, Andalusia); Madrid via ../madrid.json"
+ },
+ "subnationalServices": [
+  "Basque Country foral cadastres (Araba, Bizkaia, Gipuzkoa) and Navarra - not tested"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "All Spain except Basque Country and Navarre",
+  "regionsVerified": [
+   "Madrid",
+   "Sevilla province (Aguadulce)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Bulk-by-municipality downloads only; WFS bbox route untested successfully (400s). Basque/Navarre not covered. Licence terms not read.",
+ "nextStep": "Fix WFS stored-query syntax (or use ATOM per municipality with a spatial index); test Navarra/Basque separately."
+}

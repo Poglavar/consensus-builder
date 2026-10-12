@@ -1,6 +1,7 @@
 // World view: a full-viewport three.js globe for choosing a place. Land is painted by parcel-data
-// coverage tier (world-coverage.js), clicking anywhere shows what is available there, a search box
-// flies to a place, and flyTo() dives the camera to a point for the handoff into the 2D map.
+// coverage (world-coverage.js), country by country and, where coverage differs inside a country,
+// region by region (US states, England, ...); clicking anywhere shows what is available there, a
+// search box flies to a place, and flyTo() dives the camera to a point for the handoff into the 2D map.
 // Browser only; depends on window.whenThreeReady() (index.html import map), window.GlobeMath and
 // window.WorldCoverage and window.WorldCityDisplay. Nothing here touches the app's map or city config:
 // every action is a callback.
@@ -43,6 +44,7 @@
     const COVERAGE_COLORS = { full: '#71bc91', partial: '#ffc24b', none: '#d8918c', unknown: '#a4acb8' };
     const TIER_COLORS = { live: '#43e6a6', source: COVERAGE_COLORS.partial, none: COVERAGE_COLORS.none, unknown: COVERAGE_COLORS.unknown };
     const COVERAGE_LABELS = { full: 'Full country coverage', partial: 'Some open data', none: 'Checked: none found', unknown: 'Unchecked / inconclusive' };
+    const REGION_COVERAGE_LABELS = { full: 'Full region coverage', partial: 'Some open data in this region', none: 'Checked: none found in this region', unknown: 'Region unchecked / inconclusive' };
     const TIER_LABELS = { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Unconfirmed' };
 
     let coveragePromise = null;
@@ -159,6 +161,24 @@
             lctx.fillStyle = COVERAGE_COLORS[c.coverage];
             traceRings(lctx, c.rings, W, H); lctx.fill('evenodd');
         }
+        // Regions repaint their part of a country with their own coverage (England green over a
+        // partial United Kingdom). source-atop keeps the finer region outlines on the country land
+        // already drawn, so they never spill past the coarse coastline; a stroke in the same colour
+        // closes hairline gaps between independently simplified neighbours.
+        const regions = coverage.regions.filter(r => r.rings.length);
+        lctx.save();
+        lctx.globalCompositeOperation = 'source-atop';
+        lctx.lineJoin = 'round';
+        lctx.lineWidth = Math.max(1, 1.4 * s);
+        for (const r of regions) {
+            lctx.fillStyle = lctx.strokeStyle = COVERAGE_COLORS[r.coverage];
+            traceRings(lctx, r.rings, W, H); lctx.fill('evenodd'); lctx.stroke();
+        }
+        // Region borders: fainter than the country borders drawn below.
+        lctx.strokeStyle = 'rgba(12, 30, 62, 0.22)';
+        lctx.lineWidth = Math.max(1, 1 * s);
+        for (const r of regions) { traceRings(lctx, r.rings, W, H); lctx.stroke(); }
+        lctx.restore();
         lctx.save();
         lctx.globalCompositeOperation = 'source-atop';
         lctx.fillStyle = lctx.createPattern(noiseTile(256, 12), 'repeat');
@@ -485,11 +505,14 @@
             const legendLabel = t('world.legend.toggle', 'Map legend');
             legendToggle.setAttribute('aria-label', legendLabel);
             legendToggle.title = legendLabel;
-            legendTitle.textContent = t('world.legend.title', 'Country parcel coverage');
+            legendTitle.textContent = t('world.legend.title', 'Parcel coverage by country and region');
             legendList.textContent = '';
             global.WorldCoverage.COVERAGE_LEVELS.forEach(level => {
                 const li = el('li', 'world-legend__item');
-                li.append(el('span', 'world-tier-dot world-tier-dot--' + level), el('span', '', { text: t('world.coverage.' + level + '.short', COVERAGE_LABELS[level]) }));
+                // Regions are painted too, so the green entry cannot say "country".
+                const label = level === 'full' ? t('world.legend.full', 'Full country or region coverage')
+                    : t('world.coverage.' + level + '.short', COVERAGE_LABELS[level]);
+                li.append(el('span', 'world-tier-dot world-tier-dot--' + level), el('span', '', { text: label }));
                 legendList.appendChild(li);
             });
             legendCities.textContent = '';
@@ -878,14 +901,18 @@
             const place = selected;
             const tier = place.tier;
             const country = place.kind === 'country';
-            const status = country ? place.coverage : tier;
+            const region = place.kind === 'region';
+            const area = country || region;
+            const status = area ? place.coverage : tier;
             const statusKey = global.WorldCoverage.statusKey(place);
             popup.textContent = '';
             popup.className = 'world-popup world-popup--' + status;
             const close = el('button', 'world-popup__close', { type: 'button', 'aria-label': t('world.close', 'Close'), text: '×' });
             close.addEventListener('click', deselect);
             const badge = el('p', 'world-popup__tier');
-            badge.append(el('span', 'world-tier-dot world-tier-dot--' + status), el('span', '', { text: t(statusKey + '.short', country ? COVERAGE_LABELS[status] : TIER_LABELS[status]) }));
+            badge.append(el('span', 'world-tier-dot world-tier-dot--' + status), el('span', '', {
+                text: t(statusKey + '.short', region ? REGION_COVERAGE_LABELS[status] : country ? COVERAGE_LABELS[status] : TIER_LABELS[status])
+            }));
             const heading = place.kind === 'ocean' ? t('world.popup.ocean', 'Open water') : place.name;
             const titleNode = el('h2', 'world-popup__title', { text: heading });
             const subtitleParts = [];
@@ -904,6 +931,12 @@
                 none: 'We checked for open parcel data in this country and found none. This records the result of our search, not proof that no source exists.',
                 unknown: 'This country has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
             };
+            const regionTexts = {
+                full: 'Open parcel data is confirmed for this whole region. Cities available in the app are marked separately.',
+                partial: 'Open parcel data is confirmed somewhere in this region. Coverage at this specific location, or across the whole region, is not confirmed. Cities available in the app are marked separately.',
+                none: 'We checked for open parcel data in this region and found none. This records the result of our search, not proof that no source exists.',
+                unknown: 'This region has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
+            };
             const text = el('p', 'world-popup__text', {
                 text: place.kind === 'ocean'
                     ? t('world.popup.oceanText', 'No land here, so no parcels. You can still open the map at this spot.')
@@ -913,10 +946,10 @@
                             : place.dataVersion
                             ? t('world.tier.live.datedStreamText', 'Parcels load as you zoom in and pan. This source is a {{version}} dataset; current boundaries may differ.', { version: place.dataVersion })
                             : t('world.tier.live.streamText', 'Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.'))
-                    : t(statusKey + '.text', country ? countryTexts[status] : texts[tier])
+                    : t(statusKey + '.text', region ? regionTexts[status] : country ? countryTexts[status] : texts[tier])
             });
             popup.append(close, badge, titleNode, subtitle, text);
-            if (place.note && (country || tier !== 'live')) popup.appendChild(el('p', 'world-popup__note', { text: place.note }));
+            if (place.note && (area || tier !== 'live')) popup.appendChild(el('p', 'world-popup__note', { text: place.note }));
             for (const source of place.coverageSources || []) {
                 if (!/^https:\/\//.test(source.url)) continue;
                 popup.appendChild(el('a', 'world-popup__source', {
@@ -946,7 +979,7 @@
                     const ask = el('button', 'world-btn world-btn--primary', {
                         type: 'button',
                         text: requestState === 'done' || requestState === 'sending' ? labels[requestState]
-                            : place.kind === 'country' ? t('world.action.askArea', 'Ask for this area') : t('world.action.askCity', 'Ask for this city')
+                            : area ? t('world.action.askArea', 'Ask for this area') : t('world.action.askCity', 'Ask for this city')
                     });
                     if (requestState === 'done' || requestState === 'sending') ask.disabled = true;
                     ask.addEventListener('click', () => {
@@ -1003,11 +1036,14 @@
                 const li = el('li', 'world-search__result' + (i === activeIndex ? ' world-search__result--active' : ''), {
                     role: 'option', id: 'world-search-opt-' + i, 'aria-selected': i === activeIndex ? 'true' : 'false'
                 });
-                li.append(el('span', 'world-tier-dot world-tier-dot--' + (place.kind === 'country' ? place.coverage : place.tier)));
+                const area = place.kind === 'country' || place.kind === 'region';
+                li.append(el('span', 'world-tier-dot world-tier-dot--' + (area ? place.coverage : place.tier)));
                 const textWrap = el('span', 'world-search__text');
                 textWrap.append(el('span', 'world-search__name', { text: place.name }),
                     el('span', 'world-search__meta', { text: place.kind === 'country'
                         ? t('world.search.country', 'Country') + ' · ' + t(global.WorldCoverage.statusKey(place) + '.short', COVERAGE_LABELS[place.coverage])
+                        : place.kind === 'region'
+                            ? place.country + ' · ' + t(global.WorldCoverage.statusKey(place) + '.short', REGION_COVERAGE_LABELS[place.coverage])
                         : place.kind === 'territory' ? t('world.search.territory', 'Territory')
                         : place.country }));
                 li.append(textWrap);
@@ -1052,7 +1088,7 @@
             results.hidden = true; searchInput.setAttribute('aria-expanded', 'false');
             searchInput.blur();
             deselect();
-            const area = place.kind === 'country' || place.kind === 'territory';
+            const area = place.kind === 'country' || place.kind === 'region' || place.kind === 'territory';
             const altitudeKm = area ? Math.max(11000, Math.min(cam.altitudeKm, 16000)) : 8500;
             const popupPlace = area ? Object.assign({}, place) : coverage.tierAt(place.lat, place.lon);
             fly({ lat: place.lat, lon: place.lon, altitudeKm }, { hop: 0.6 }).then(() => select(popupPlace));

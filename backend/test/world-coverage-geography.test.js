@@ -170,7 +170,8 @@ describe('uncoded land in world coverage', () => {
         const territoryRings = [[10, -10, 20, -10, 20, 0, 10, 0]];
         h.context.paintEarth({
             countries: [{ cc: 'AA', coverage: 'full', rings: countryRings }],
-            territories: [{ id: 'ne:9', name: 'Uncoded neighbor', coverage: 'unknown', rings: territoryRings }]
+            territories: [{ id: 'ne:9', name: 'Uncoded neighbor', coverage: 'unknown', rings: territoryRings }],
+            regions: []
         }, 64, 32);
 
         expect(h.paintedLand).toEqual([

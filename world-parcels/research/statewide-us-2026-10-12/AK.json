@@ -1,0 +1,488 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "AK",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "new",
+ "descriptorId": "us-ak-statewide-parcels-agol",
+ "idPrefix": "US-AK-STATEWIDE-",
+ "endpoint": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "5571",
+   "name": "Anchorage",
+   "lat": 61.2001872597905,
+   "lon": -149.82840565615,
+   "pop2025k": 139.472,
+   "rank": 4374
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
+   "layerName": "AK_Parcels",
+   "layerType": "Feature Layer",
+   "recordCount": 415650,
+   "maxRecordCount": 2000,
+   "currentVersion": 12,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 3857,
+   "descriptionExcerpt": null,
+   "copyrightText": null,
+   "publishedFields": [
+    "OBJECTID",
+    "parcel_id",
+    "owner",
+    "alt_owner",
+    "property_type",
+    "property_use",
+    "land_value",
+    "building_value",
+    "total_value",
+    "local_gov",
+    "datetime_processed",
+    "feature_id",
+    "Shape__Area",
+    "Shape__Length",
+    "GlobalID"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "parcel_id is each local government's own number, so local_gov+parcel_id (composite). Unique in Anchorage. feature_id and GlobalID are compiler-generated row IDs, not native parcel IDs.",
+  "fields": [
+   "local_gov",
+   "parcel_id"
+  ]
+ },
+ "statewideChecks": [
+  {
+   "state": "AK",
+   "endpoint": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
+   "checkedAt": "2026-10-12T10:57:11.249Z",
+   "results": {
+    "nullId": {
+     "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+IS+NULL+OR+parcel_id+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+     "count": 2613
+    },
+    "localGov": {
+     "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=1%3D1&outFields=local_gov&returnDistinctValues=true&returnGeometry=false&orderByFields=local_gov&f=json",
+     "values": [
+      "Anchorage Municipality",
+      "Bristol Bay Borough",
+      "City of Dillingham",
+      "City of Nome",
+      "City of Unalaska",
+      "City of Valdez",
+      "Coastal Villages Region Fund (CVRF)",
+      "Denali Borough",
+      "Fairbanks North Star Borough",
+      "Haines Borough",
+      "Juneau City & Borough",
+      "Kenai Peninsula Borough",
+      "Ketchikan Borough",
+      "Kodiak Island Borough",
+      "Matanuska-Susitna Borough",
+      "North Slope Borough",
+      "Petersburg Borough",
+      "Sitka City & Borough",
+      "Wrangell City & Borough",
+      "Yakutat City & Borough"
+     ]
+    }
+   }
+  }
+ ],
+ "patternChecks": {
+  "AK": [
+   {
+    "where": "parcel_id LIKE '% ' OR parcel_id LIKE ' %'",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+LIKE+%27%25+%27+OR+parcel_id+LIKE+%27+%25%27&returnCountOnly=true&f=json",
+    "count": 218
+   },
+   {
+    "where": "local_gov IS NULL",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=local_gov+IS+NULL&returnCountOnly=true&f=json",
+    "count": 0
+   }
+  ]
+ },
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:52:47.103Z",
+   "fieldsRequested": [
+    "OBJECTID",
+    "parcel_id",
+    "local_gov",
+    "feature_id",
+    "GlobalID"
+   ],
+   "cities": [
+    {
+     "city": "Anchorage",
+     "cityCode": "5571",
+     "bbox": [
+      -149.833406,
+      61.195187,
+      -149.823406,
+      61.205187
+     ],
+     "count": 255,
+     "rowsRead": 255,
+     "keys": {
+      "parcel_id": {
+       "blanks": 0,
+       "distinct": 255,
+       "repeatedValues": 0
+      },
+      "local_gov+parcel_id": {
+       "blanks": 0,
+       "distinct": 255,
+       "repeatedValues": 0
+      },
+      "feature_id": {
+       "blanks": 0,
+       "distinct": 255,
+       "repeatedValues": 0
+      },
+      "GlobalID": {
+       "blanks": 0,
+       "distinct": 255,
+       "repeatedValues": 0
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:52:59.775Z",
+     "method": "GET",
+     "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-149.833406%2C61.195187%2C-149.823406%2C61.205187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:02.433Z",
+     "method": "GET",
+     "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-149.833406%2C61.195187%2C-149.823406%2C61.205187&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2Cparcel_id%2Clocal_gov%2Cfeature_id%2CGlobalID&returnGeometry=false&orderByFields=OBJECTID&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [],
+ "liveVerification": {
+  "descriptorId": "us-ak-statewide-parcels-agol",
+  "verifiedAt": "2026-10-12T11:07:02.914Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Anchorage",
+    "cityCode": "5571",
+    "unPoint": [
+     61.2001872597905,
+     -149.82840565615
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -149.828906,
+       61.199687,
+       -149.827906,
+       61.200687
+      ],
+      "features": 15
+     }
+    ],
+    "bbox": [
+     -149.828906,
+     61.199687,
+     -149.827906,
+     61.200687
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "featureCount": 15
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415417000",
+      "nativeId": "Anchorage%20Municipality~00415417000",
+      "type": "Polygon",
+      "geometrySha256": "e5fb7150b68e0b89ac10ab1ac7e39a1a4462d26f544124dc7b605daeef8ebb16",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415415000",
+      "nativeId": "Anchorage%20Municipality~00415415000",
+      "type": "Polygon",
+      "geometrySha256": "f7fdc6cc94ad7450bd4193442858cf79d08fe519791fd95241a4c0336418cf47",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415420000",
+      "nativeId": "Anchorage%20Municipality~00415420000",
+      "type": "Polygon",
+      "geometrySha256": "5cd89dd03488d498796ebd91604fe15cc0f9df2335d3220faa070bb35eb73eda",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415419000",
+      "nativeId": "Anchorage%20Municipality~00415419000",
+      "type": "Polygon",
+      "geometrySha256": "a8aa0136d6382ebb2f2b7dc8a9dd132812b06419193eed61182f1a18b5c01d21",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415418000",
+      "nativeId": "Anchorage%20Municipality~00415418000",
+      "type": "Polygon",
+      "geometrySha256": "7e10b529d7df937a564a75d2646c58174eb1c61ba817247e0fb21e5f775a8769",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415625000",
+      "nativeId": "Anchorage%20Municipality~00415625000",
+      "type": "Polygon",
+      "geometrySha256": "3f20b83fa037f8740190f9395171e829718f410ccb83d48e7d71e71537860f84",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415421000",
+      "nativeId": "Anchorage%20Municipality~00415421000",
+      "type": "Polygon",
+      "geometrySha256": "a92b9f4b5b7f3773b142ab3847c8ca267b9f3bd6ed47bc4cd7ad9247d3f16a99",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415413000",
+      "nativeId": "Anchorage%20Municipality~00415413000",
+      "type": "Polygon",
+      "geometrySha256": "636a018c5c621fb73c773241ee976b181754d0cc11e516e0218ff820f73f0104",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415627000",
+      "nativeId": "Anchorage%20Municipality~00415627000",
+      "type": "Polygon",
+      "geometrySha256": "4f9cdb5e9be751eb824834782f935e488ca97660212b7e09f85bac63db40b0e5",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415101000",
+      "nativeId": "Anchorage%20Municipality~00415101000",
+      "type": "Polygon",
+      "geometrySha256": "a927e83e2058fa92583742fc1e72d7fef25f944a48d7abe547c0197616205fcb",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415416000",
+      "nativeId": "Anchorage%20Municipality~00415416000",
+      "type": "Polygon",
+      "geometrySha256": "8a28ceb2117e2ae41f98846191c59aee3d42890067dcbea6b05934e72d98ca73",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415414000",
+      "nativeId": "Anchorage%20Municipality~00415414000",
+      "type": "Polygon",
+      "geometrySha256": "ea4ca751f1467e52071a45b56ae85d5865a5196fa2e84a3e81259ab89f33a075",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415624000",
+      "nativeId": "Anchorage%20Municipality~00415624000",
+      "type": "Polygon",
+      "geometrySha256": "8989d1e4ef83348dbebe4fae9301836c745c5469acfce6d77c66721dbc5a6c88",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415623000",
+      "nativeId": "Anchorage%20Municipality~00415623000",
+      "type": "Polygon",
+      "geometrySha256": "e6ec073f2d2a91ca2bc429a35be3fc23772c4ef4e673c6b726e4f6ab1800ff2d",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415626000",
+      "nativeId": "Anchorage%20Municipality~00415626000",
+      "type": "Polygon",
+      "geometrySha256": "894ffb10d6299d22d2a133bf006e09e4742abf51e4f2243aa027fb18bd49bee8",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-AK-STATEWIDE-Anchorage%20Municipality~00415417000",
+      "US-AK-STATEWIDE-Anchorage%20Municipality~00415415000",
+      "US-AK-STATEWIDE-Anchorage%20Municipality~00415420000"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "features": [
+      {
+       "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415417000",
+       "geometrySha256": "e5fb7150b68e0b89ac10ab1ac7e39a1a4462d26f544124dc7b605daeef8ebb16"
+      },
+      {
+       "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415415000",
+       "geometrySha256": "f7fdc6cc94ad7450bd4193442858cf79d08fe519791fd95241a4c0336418cf47"
+      },
+      {
+       "id": "US-AK-STATEWIDE-Anchorage%20Municipality~00415420000",
+       "geometrySha256": "5cd89dd03488d498796ebd91604fe15cc0f9df2335d3220faa070bb35eb73eda"
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:07:03.467Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&geometry=-149.828906%2C61.199687%2C-149.827906%2C61.200687&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:05.483Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&geometry=-149.828906%2C61.199687%2C-149.827906%2C61.200687&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:07.694Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&outFields=OBJECTID%2Clocal_gov%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=94108304%2C94114657%2C94116971%2C94118134%2C94128919%2C94129922%2C94139084%2C94139490%2C94164139%2C94164871%2C94169793%2C94178422%2C94185907%2C94191391%2C94192111",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:10.290Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=%28parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL%29+AND+%28%28local_gov+%3D+%27Anchorage+Municipality%27+AND+parcel_id+%3D+%2700415417000%27%29+OR+%28local_gov+%3D+%27Anchorage+Municipality%27+AND+parcel_id+%3D+%2700415415000%27%29+OR+%28local_gov+%3D+%27Anchorage+Municipality%27+AND+parcel_id+%3D+%2700415420000%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:12.970Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=%28parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL%29+AND+%28%28local_gov+%3D+%27Anchorage+Municipality%27+AND+parcel_id+%3D+%2700415417000%27%29+OR+%28local_gov+%3D+%27Anchorage+Municipality%27+AND+parcel_id+%3D+%2700415415000%27%29+OR+%28local_gov+%3D+%27Anchorage+Municipality%27+AND+parcel_id+%3D+%2700415420000%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:14.448Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&outFields=OBJECTID%2Clocal_gov%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=94114657%2C94108304%2C94116971",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [],
+ "idBatchCheck": {
+  "file": "batch-ids.json",
+  "id": "us-ak-statewide-parcels-agol",
+  "city": "Anchorage",
+  "result": {
+   "bbox": [
+    -149.829906,
+    61.198687,
+    -149.826906,
+    61.201687
+   ],
+   "boundsFeatures": 58,
+   "idsRequested": 58,
+   "returned": 58,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 11207
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:14:30.999Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&geometry=-149.829906%2C61.198687%2C-149.826906%2C61.201687&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 851
+   },
+   {
+    "ts": "2026-10-12T11:14:34.176Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&geometry=-149.829906%2C61.198687%2C-149.826906%2C61.201687&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 709
+   },
+   {
+    "ts": "2026-10-12T11:14:37.113Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&outFields=OBJECTID%2Clocal_gov%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=94106912%2C94108304%2C94109337%2C94114657%2C94115245%2C94116971%2C94118134%2C94119249%2C94120046%2C94127950%…",
+    "status": 200,
+    "ms": 344
+   },
+   {
+    "ts": "2026-10-12T11:14:41.022Z",
+    "method": "POST",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query",
+    "bodyBytes": 5242,
+    "status": 200,
+    "ms": 662
+   },
+   {
+    "ts": "2026-10-12T11:14:44.465Z",
+    "method": "POST",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query",
+    "bodyBytes": 5240,
+    "status": 200,
+    "ms": 502
+   },
+   {
+    "ts": "2026-10-12T11:14:48.310Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&outFields=OBJECTID%2Clocal_gov%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=94164871%2C94137501%2C94168133%2C94115245%2C94163014%2C94170523%2C94179392%2C94139490%2C94178422%2C94114657%…",
+    "status": 200,
+    "ms": 455
+   }
+  ]
+ },
+ "coverageCaveats": [
+  "Publisher not identified in service metadata; local governments not among the 20 local_gov values observed on 2026-10-12 are absent.",
+  "The local_gov label is part of the identity; a relabelled local government would change canonical IDs.",
+  "Rows with null or blank parcel_id (2,613 statewide on 2026-10-12) are excluded; 218 parcel_id values carry leading or trailing spaces and are kept verbatim.",
+  "Layer also publishes owner and value fields, which are not requested."
+ ]
+}

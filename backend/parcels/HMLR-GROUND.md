@@ -155,7 +155,7 @@ python3 scripts/build-hmlr-wup-seed.py \
   --manifest-base-url https://YOUR-PUBLIC-HOST/data/hmlr \
   --manifest-evidence-path tmp/hmlr-browser-metadata/manifest.json \
   --wup tmp/WUP2025.csv.gz --output tmp/hmlr-city-seed.json
-python3 scripts/build-provider-expansion-queue.py \
+python3 scripts/build-provider-expansion-queue.py --no-catalog \
   --source tmp/WUP2025.csv.gz --seeds tmp/hmlr-city-seed.json \
   --output tmp/hmlr-city-queue.json
 ```

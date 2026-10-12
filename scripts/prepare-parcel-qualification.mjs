@@ -182,6 +182,16 @@ export async function prepareCandidate(city, { repoRoot, sourceRoot } = {}) {
                 }
             }
         }
+        // Jurisdiction-first discovery records the provider's documented scope (a basis sentence
+        // backed by evidence files) in the queue, the packet and the catalog entry's own profile.
+        const jurisdiction = catalogSource.discovery?.jurisdiction;
+        const scopeItems = Array.isArray(packet.providerReuse.scopeEvidence) ? packet.providerReuse.scopeEvidence : [];
+        for (const item of [...scopeItems, ...(jurisdiction ? [jurisdiction] : [])]) {
+            const text = typeof item === 'string' ? item : item?.basis;
+            const country = typeof item === 'string' ? null : item?.countryCode;
+            const backed = typeof item === 'string' || (Array.isArray(item?.evidence) && item.evidence.length > 0);
+            if (typeof text === 'string' && text.trim() && backed && (!country || country === catalogSource.countryCode)) proofTexts.push(text.trim());
+        }
         const evidence = evidenceFromPacket({ ...packet, providerReuse: { ...packet.providerReuse,
             purpose: [...proofTexts, packet.providerReuse.purpose, packet.providerReuse.sourcePurpose].filter(Boolean).join('; ') } }, catalogSource);
         if (!evidence) return needs('Packet lacks first-party source-purpose evidence suitable for parcel classification.');
@@ -218,6 +228,13 @@ async function absentId(descriptor, sampleFeature, root) {
     }
     const sampleNative = rawNativeId(sampleFeature, descriptor);
     if (!sampleNative) return null;
+    if (descriptor.adapter === 'pl-uldk-point') {
+        // ULDK IDs are TERYT precinct + optional map sheet (AR_n) + parcel number; keep the precinct
+        // and sheet, and ask for parcel 999999 there (verified live as explicit absence 2026-10-12).
+        const candidate = sampleNative.replace(/\.[0-9]{1,6}(?:\/[0-9]{1,6})?$/, '.999999');
+        if (candidate === sampleNative || !new RegExp(descriptor.idPattern).test(candidate)) return null;
+        return `${descriptor.idPrefix}${candidate}`;
+    }
     const native = sampleNative;
     let candidate;
     if (descriptor.idType === 'integer' || descriptor.idType === 'number' || descriptor.idPattern === 'integer') {

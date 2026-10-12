@@ -4714,7 +4714,8 @@
         },
         "legend": {
             "toggle": "Legenda karte",
-            "title": "Pokrivenost česticama po državi",
+            "title": "Pokrivenost česticama po državama i regijama",
+            "full": "Potvrđeno za cijelu državu ili regiju",
             "cities": "Grad s česticama u aplikaciji"
         },
         "coverage": {
@@ -4733,6 +4734,24 @@
             "unknown": {
                 "short": "Nije provjereno / nejasno",
                 "text": "Ova država nije provjerena ili rezultat provjere nije jasan. Nismo potvrdili jesu li otvoreni podaci o česticama dostupni."
+            }
+        },
+        "regionCoverage": {
+            "full": {
+                "short": "Potvrđeno za cijelu regiju",
+                "text": "Otvoreni podaci o česticama potvrđeni su za cijelu ovu regiju. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "partial": {
+                "short": "Dio podataka u regiji je otvoren",
+                "text": "Otvoreni podaci o česticama potvrđeni su negdje u ovoj regiji. Pokrivenost na ovoj lokaciji ili u cijeloj regiji nije potvrđena. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "none": {
+                "short": "Provjereno: u regiji ništa nije pronađeno",
+                "text": "Provjerili smo postoje li otvoreni podaci o česticama u ovoj regiji i nismo ih pronašli. To bilježi rezultat pretrage, a ne dokazuje da izvor ne postoji."
+            },
+            "unknown": {
+                "short": "Regija nije provjerena / nejasno",
+                "text": "Ova regija nije provjerena ili rezultat provjere nije jasan. Nismo potvrdili jesu li otvoreni podaci o česticama dostupni."
             }
         },
         "tier": {

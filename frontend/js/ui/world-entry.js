@@ -296,7 +296,7 @@
     function askLabel(place) {
         if (state.request === 'sending') return t('world.request.sending', 'Sending…');
         if (state.request === 'done') return t('world.request.done', 'Request noted, thank you');
-        return place && place.kind === 'country'
+        return place && (place.kind === 'country' || place.kind === 'region')
             ? t('world.action.askArea', 'Ask for this area')
             : t('world.action.askCity', 'Ask for this city');
     }

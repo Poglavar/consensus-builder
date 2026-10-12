@@ -109,10 +109,14 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
     const result = (features, extra = {}) => ({ type: 'FeatureCollection', features,
         complete: true, sourceId: descriptor.id, returnsWGS84: true, ...extra });
 
+    // Viewports east of 0° are read in UTM31 (EPSG:25831), the rest in UTM30. An exact read must
+    // return the same coordinates as the viewport read of that parcel, so it uses the same rule.
+    const zoneForLongitude = longitude => (longitude < 0 ? 30 : 31);
+
     async function queryBounds(bounds) {
         validateBounds(bounds, descriptor.maxBboxKm2 || 1, descriptor);
         const [w, s, e, n] = bounds;
-        const zone = (w + e) / 2 < 0 ? 30 : 31;
+        const zone = zoneForLongitude((w + e) / 2);
         const points = [[w, s], [w, n], [e, s], [e, n]].map(p => proj4('EPSG:4326', utm(zone), p));
         const box = [Math.min(...points.map(p => p[0])), Math.min(...points.map(p => p[1])),
             Math.max(...points.map(p => p[0])), Math.max(...points.map(p => p[1]))];
@@ -137,9 +141,19 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
                 continue;
             }
             recent.delete(descriptor.idPrefix + key);
-            const found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: 'EPSG::25830' });
+            // The explicit missing-parcel message is only recognised for UTM30, so ask there first.
+            let found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: 'EPSG::25830' });
             if (found.length > 1 || found.some(f => f.properties.sourceParcelId !== key)) {
                 throw upstreamError('Cadastral exact lookup returned an unexpected native parcel.');
+            }
+            if (found.length === 1) {
+                const [west, , east] = geometryBbox(found[0]);
+                if (zoneForLongitude((west + east) / 2) === 31) {
+                    found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: 'EPSG::25831' });
+                    if (found.length !== 1 || found[0].properties.sourceParcelId !== key) {
+                        throw upstreamError('Cadastral UTM31 exact lookup did not return the requested parcel.');
+                    }
+                }
             }
             features.push(...remember(found));
         }

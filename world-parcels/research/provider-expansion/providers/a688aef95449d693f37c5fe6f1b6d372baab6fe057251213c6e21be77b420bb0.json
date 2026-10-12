@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:30:45.684495+00:00",
+  "rootReviewedAt": "2026-10-09T08:30:45.684495+00:00",
+  "cityId": "wup2025:260",
+  "appCityId": "riga",
+  "city": "Riga",
+  "countryCode": "LV",
+  "wupCityCode": 260,
+  "pointLatLon": [
+    56.9551247864813,
+    24.1200225203638
+  ],
+  "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+  "descriptor": {
+    "id": "lv-vzd-geolatvija-vraa-wfs",
+    "endpoint": "https://geolatvija.lv/geoserver/vraa/wfs",
+    "featureType": "vraa:parcel",
+    "idField": "code",
+    "geometryField": "geom",
+    "outFields": [
+      "code"
+    ],
+    "requestProperties": true,
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "minRequestIntervalMs": 250,
+    "adapter": "wfs",
+    "idType": "string",
+    "idPrefix": "LV-VZD-",
+    "idPattern": "^[0-9A-Z]{1,64}$",
+    "version": "2.0.0",
+    "metricSrid": 3059,
+    "countryCode": "LV",
+    "cityIds": [
+      "riga"
+    ],
+    "maxConcurrentQueries": 1,
+    "name": "Riga public cadastral parcel polygons",
+    "operator": "State Land Service of Latvia / Geolatvija",
+    "scope": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+    "responseCrs": "CRS:84",
+    "parcelNumberField": "code",
+    "evidenceFile": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json",
+    "catalogueUrl": "https://geolatvija.lv/",
+    "attribution": "State Land Service of Latvia / Geolatvija · cadastral references · adapted",
+    "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+  },
+  "scope": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+  "qualityStatus": "approved_bounded_full_geometry",
+  "workerQualification": "riga-runtime-qualification.json",
+  "rootIndependentProbe": "riga-root-independent-probe.json",
+  "rootIndependentQuality": "riga-root-quality.json",
+  "qualifiedUniqueParcels": 113,
+  "geometryChangedOrRepaired": false,
+  "registryFound": true,
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled"
+}

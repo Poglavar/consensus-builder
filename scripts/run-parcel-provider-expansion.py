@@ -17,7 +17,7 @@ def _load_coord(repo=None):
     raise FileNotFoundError('scripts/lib/parcel_discovery_coordination.py was not staged')
 coord=_load_coord()
 _VALIDATORS={}
-MIN_FREE=3*1024**3; PROBE_TIMEOUT=130; HEARTBEAT_EVERY=5; MAX_RETRIES=2; _STOP_REQUESTED=False
+MIN_FREE=3*1024**3; PROBE_TIMEOUT=360; HEARTBEAT_EVERY=5; MAX_RETRIES=2; _STOP_REQUESTED=False
 
 
 def _json_bytes(v): return (json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':'))+'\n').encode()
@@ -147,7 +147,7 @@ def run_probe(repo, task, out_dir, heartbeat):
                 try: proc.wait(timeout=5)
                 except subprocess.TimeoutExpired: proc.kill(); proc.wait()
                 raise InterruptedError('controller interrupted; probe child stopped')
-            if time.monotonic()-start>PROBE_TIMEOUT: proc.kill(); proc.wait(); raise TimeoutError('probe exceeded 130-second controller limit')
+            if time.monotonic()-start>PROBE_TIMEOUT: proc.kill(); proc.wait(); raise TimeoutError(f'probe exceeded {PROBE_TIMEOUT}-second controller limit')
             if time.monotonic()-last>=HEARTBEAT_EVERY: heartbeat(); last=time.monotonic()
             time.sleep(.25)
     text=stdout.read_text(errors='replace')
@@ -243,7 +243,7 @@ def _make_packets(queue_city, provider, result, evidence, sample, sample_name, c
     sourceid=(original_desc.get('sourceId') or original_desc.get('id')) if isinstance(original_desc,dict) else None
     tested_id=(tested_desc.get('sourceId') or tested_desc.get('id')) if isinstance(tested_desc,dict) else None
     if sourceid and tested_id and str(sourceid)!=str(tested_id): raise ValueError('tested provider descriptor source ID differs from queued provider')
-    reuse={'descriptor':_safe_descriptor(tested_desc),'sourceId':sourceid or tested_id,'seedCityCodes':provider.get('seedCityCodes',[]),'seedCityIds':provider.get('seedCityIds',[]),'sourceEvidenceFiles':evidence,'queryEvidence':result.get('attempts',[]),'verifiedQuery':attempts,'geometryHashes':geometry_hashes,'nativeIds':native_ids}
+    reuse={'descriptor':_safe_descriptor(tested_desc),'sourceId':sourceid or tested_id,'seedCityCodes':provider.get('seedCityCodes',[]),'seedCityIds':provider.get('seedCityIds',[]),'sourceEvidenceFiles':evidence,'queryEvidence':result.get('attempts',[]),'verifiedQuery':attempts,**({'scopeEvidence':provider['scopeEvidence']} if isinstance(provider.get('scopeEvidence'),list) else {}),'geometryHashes':geometry_hashes,'nativeIds':native_ids}
     limits={'maxFullPolygonsRetainedInRepository':3}
     base.update({'status':'complete','runtimeEligible':False,'registryFound':True,'geometryVerified':True,'parcelGeometryVerified':True,'verifiedSample':True,'discoveryMethod':'provider-expansion','providerReuse':reuse,'scopeEvidence':result.get('scopeEvidence',{}),'scopeLimits':limits,'cityPacketFile':city_name,'sampleFile':sample_name,'sampleFiles':[sample_name]})
     review={k:base[k] for k in ('cityCode','wupCityCode','rank','queueRank','point','population2025','population2025k','populationUnit','name','cityName','country','iso2','countryCode') if k in base}
@@ -315,7 +315,12 @@ def _probe_item(item, args, run_id, source_hash, heartbeat_path, provider_last, 
             if not _inputs_unchanged(args,evidence,source_hash):
                 _event(args.shared_root,{'runId':run_id,'cityCode':code,'status':'source-changed','providerKey':checkpoint.get('providerKey'),'attempt':attempt_no}); return {'status':'source-changed','retry':False,'attempt':attempt_no}
             status=result.get('status')
-            if status not in ('discovered','no-hit','held'): raise ValueError(f'unrecognized probe status: {status}')
+            if status not in ('discovered','no-hit','held','blocked'): raise ValueError(f'unrecognized probe status: {status}')
+            if status=='blocked':
+                # A provider-level 403/429 says nothing about this city: record no pair result,
+                # so the pair is probed again in a later run, and let the run stop this provider.
+                _event(args.shared_root,{'runId':run_id,'cityCode':code,'status':'provider-blocked','attempt':attempt_no,'providerKey':_provider_key(provider),'reason':result.get('reason')})
+                return {'status':'blocked','retry':False,'attempt':attempt_no}
             if status=='discovered':
                 sample=_samples_path(result.get('sampleFile',result.get('samplesfile')),out)
                 slug=f'provider-{code}'; cname=f'city-{code}-{slug}.json'; sname=f'{slug}-parcel-samples.geojson'
@@ -346,6 +351,7 @@ def run_queue(args):
     source_hash=_hash_file(source); queue_hash=_hash_file(queue_path); run_id=uuid.uuid4().hex[:12]
     run_dir=shared/'tmp/parcel-provider-expansion/runs'/run_id; run_dir.mkdir(parents=True,exist_ok=True); heartbeat=run_dir/'heartbeat.json'
     results=[]; retries=[]; busy_retry=[]; pending=busy=0; provider_last={}; busy_round=0; max_busy_rounds=getattr(args,'max_busy_rounds',None)
+    blocked_providers=set()
     _event(shared,{'runId':run_id,'status':'run-start','sourceSha256':source_hash,'queueSha256':queue_hash,'recordCount':len(records)})
     _heartbeat(heartbeat,run_id,args,{'position':0,'total':len(records)})
     try:
@@ -353,6 +359,8 @@ def run_queue(args):
             if _STOP_REQUESTED: break
             if not isinstance(item,dict) or not isinstance(item.get('city'),dict) or not isinstance(item.get('provider'),dict): raise ValueError('each record requires city and provider objects')
             code=_code(item['city']); _heartbeat(heartbeat,run_id,args,{'position':n,'total':len(records),'cityCode':code}); print(f'[{n}/{len(records)}] {code} {item["city"].get("name","")}: checking',flush=True)
+            if _provider_key(item['provider']) in blocked_providers:
+                results.append({'cityCode':code,'status':'deferred-provider-blocked'}); continue
             try: prepared=_prepare_item(item,args,source_hash)
             except Exception as e:
                 _event(shared,{'runId':run_id,'cityCode':code,'status':'held','reason':str(e)[:500]}); results.append({'cityCode':code,'status':'held'}); continue
@@ -363,6 +371,9 @@ def run_queue(args):
             if before: results.append({'status':'skipped-existing','cityCode':code}); continue
             pending+=1
             result=_probe_item(item,args,run_id,source_hash,heartbeat,provider_last,prepared=prepared)
+            if result.get('status')=='blocked':
+                blocked_providers.add(_provider_key(item['provider']))
+                print(f'[{n}/{len(records)}] provider blocked; its remaining pairs are deferred, not held',flush=True)
             if result.get('status')=='busy': busy+=1; busy_retry.append(item)
             if result.get('retry'): retries.append((item,2))
             results.append({'cityCode':code,**result})
@@ -383,6 +394,8 @@ def run_queue(args):
         # Retry only transient failures, after the first pass has progressed through next pairs.
         while retries and not _STOP_REQUESTED:
             item,attempt_no=retries.pop(0); code=_code(item['city'])
+            if _provider_key(item['provider']) in blocked_providers:
+                results.append({'cityCode':code,'status':'deferred-provider-blocked'}); continue
             print(f'retry {attempt_no}/{MAX_RETRIES+1} for {code}',flush=True)
             retry=_probe_item(item,args,run_id,source_hash,heartbeat,provider_last,attempt_no)
             results.append({'cityCode':code,'retry':True,**retry})

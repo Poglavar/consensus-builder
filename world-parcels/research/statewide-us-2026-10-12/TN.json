@@ -1,0 +1,45 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "TN",
+ "checkedAt": "2026-10-12",
+ "status": "held",
+ "category": "held",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "6980",
+   "name": "Memphis",
+   "lat": 35.1005667557473,
+   "lon": -89.9360317696787,
+   "pop2025k": 356.215,
+   "rank": 1597
+  },
+  {
+   "cityCode": "7237",
+   "name": "Castlegate Estates",
+   "lat": 36.06836472171,
+   "lon": -86.6876930352119,
+   "pop2025k": 132.507,
+   "rank": 4612
+  },
+  {
+   "cityCode": "7224",
+   "name": "Cherokee Park",
+   "lat": 36.1384275398301,
+   "lon": -86.8101356951042,
+   "pop2025k": 54.505,
+   "rank": 11289
+  }
+ ],
+ "endpoint": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0",
+ "reason": "HTTP 403 Forbidden (nginx) on the first request (layer metadata); per the access rules the service was not queried again.",
+ "requests": [
+  {
+   "ts": "2026-10-12T10:48:52.403Z",
+   "method": "GET",
+   "url": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0?f=json",
+   "status": 403
+  }
+ ],
+ "priorNotes": "Prior evidence (research/subnational/US/TN.json) reached this layer through a proxy; the Comptroller statewide layer requires a token and is not an option."
+}

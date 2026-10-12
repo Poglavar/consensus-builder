@@ -62,7 +62,19 @@
       "evidenceFile": "research/istanbul-live-2026-10-08.json",
       "operator": "General Directorate of Land Registry and Cadastre (TKGM)",
       "attribution": "TKGM · parcel lookup on click",
-      "licenceNote": "Public viewer-backed point lookup; terms for programmatic reuse are undocumented."
+      "licenceNote": "Public viewer-backed point lookup; terms for programmatic reuse are undocumented.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TR",
+          "basis": "TKGM MEGSİS is the national land registry and cadastre point lookup for Turkey.",
+          "evidence": [
+            "research/countries/TR.json",
+            "research/istanbul-live-2026-10-08.json"
+          ]
+        },
+        "paceMs": 1500,
+        "keepPublishedFields": true
+      }
     },
     {
       "id": "ca-on-toronto-property-boundary",
@@ -263,7 +275,20 @@
           "metricReportSha256": "a31e022766a1bfbdb7310bc37f8b22f9c3a71c2826d16f42fbe4be5d9665707a",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/3696/qualification.json"
         }
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CA",
+          "admin1": [
+            "CA-QC"
+          ],
+          "basis": "Quebec province-wide renewed cadastre (generalized lots).",
+          "evidence": [
+            "research/subnational/CA/QC.json",
+            "research/montreal-live-2026-10-03.json"
+          ]
+        }
+      }
     },
     {
       "id": "co-bogota-uaecd-lote",
@@ -1081,7 +1106,17 @@
       "version": "2.0.0",
       "geometryField": "geom",
       "requestProperties": true,
-      "minRequestIntervalMs": 1500
+      "minRequestIntervalMs": 1500,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "FR",
+          "basis": "IGN Parcellaire Express assembles the DGFiP cadastral plan for all of France.",
+          "evidence": [
+            "research/countries/FR.json",
+            "research/paris-live-wfs.json"
+          ]
+        }
+      }
     },
     {
       "id": "au-vic-vicmap-parcel",
@@ -1197,7 +1232,20 @@
           "metricReportSha256": "20628536a8a6406f67357e2e83295487b1eb55eea47c1c4da60f26ac4b6b71d8",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/1813/qualification.json"
         }
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AU",
+          "admin1": [
+            "AU-VIC"
+          ],
+          "basis": "Victoria statewide Vicmap cadastral parcels.",
+          "evidence": [
+            "research/subnational/AU/VIC.json",
+            "research/melbourne-live.json"
+          ]
+        }
+      }
     },
     {
       "id": "za-cct-land-parcels",
@@ -1282,6 +1330,16 @@
         "utrecht": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
         "amsterdam": "Bounded original city evidence; see research/amsterdam-live.json and research/rotterdam-live.json. Indicative cadastral boundaries; whole-city completeness unverified.",
         "rotterdam": "Bounded original city evidence; see research/amsterdam-live.json and research/rotterdam-live.json. Indicative cadastral boundaries; whole-city completeness unverified."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "NL",
+          "basis": "Kadaster BRK cadastral map via PDOK covers the Netherlands.",
+          "evidence": [
+            "research/countries/NL.json",
+            "research/amsterdam-live.json"
+          ]
+        }
       }
     },
     {
@@ -1314,7 +1372,24 @@
       "catalogueUrl": "https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb",
       "cityIds": [
         "antwerp"
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "BE",
+          "admin1": [
+            "BE-VAN",
+            "BE-VBR",
+            "BE-VLI",
+            "BE-VOV",
+            "BE-VWV"
+          ],
+          "basis": "Flanders region GRB administrative cadastral parcels (five Flemish provinces).",
+          "evidence": [
+            "research/countries/BE.json",
+            "research/antwerp-live.json"
+          ]
+        }
+      }
     },
     {
       "id": "de-nrw-lika-flurstueck",
@@ -1368,6 +1443,19 @@
       "cityScopes": {
         "dusseldorf": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
         "bonn": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "DE",
+          "admin1": [
+            "DE-NW"
+          ],
+          "basis": "North Rhine-Westphalia statewide ALKIS cadastral parcels.",
+          "evidence": [
+            "research/europe/DE.json",
+            "research/dortmund-live-2026-10-03.json"
+          ]
+        }
       }
     },
     {
@@ -1658,7 +1746,20 @@
           "metricReportSha256": "6c0eac19a6660d8b1e4859bbb3535edd968f19b7904e4e74f3b852bf8bbc320b",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/2060/qualification.json"
         }
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AU",
+          "admin1": [
+            "AU-NSW"
+          ],
+          "basis": "New South Wales statewide cadastral lots (Spatial Services).",
+          "evidence": [
+            "research/subnational/AU/NSW.json",
+            "research/sydney-live.json"
+          ]
+        }
+      }
     },
     {
       "id": "br-sp-geosampa-lote-cidadao",
@@ -2062,7 +2163,19 @@
       "attribution": "Geodetska uprava Republike Slovenije (GURS), cadastral parcels. Adapted to WGS84.",
       "licenceNote": "GURS source conditions remain informational. No ownership or personal fields are retained by this descriptor.",
       "defaultForCity": false,
-      "evidenceFile": "research/db-city-wfs-live-2026-10-03.json"
+      "evidenceFile": "research/db-city-wfs-live-2026-10-03.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "SI",
+          "basis": "GURS land cadastre (KN) national parcel service for Slovenia.",
+          "evidence": [
+            "research/countries/SI.json",
+            "research/db-city-wfs-live-2026-10-03.json"
+          ]
+        },
+        "keepPublishedFields": true
+      },
+      "geometryField": "GEOM"
     },
     {
       "id": "ar-caba-idecaba-wfs-parcelas",
@@ -2215,7 +2328,24 @@
       "additionalCityEvidence": {
         "valenciaspain": "research/overnight-cities-2026-10-08/valencia-spain-acceptance.json"
       },
-      "maxConcurrentQueries": 1
+      "maxConcurrentQueries": 1,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "ES",
+          "excludeAdmin1": [
+            "ES-BI",
+            "ES-SS",
+            "ES-VI",
+            "ES-NA"
+          ],
+          "basis": "Dirección General del Catastro covers Spain except the foral cadastres of the Basque Country and Navarre, which keep their own registers.",
+          "evidence": [
+            "research/countries/ES.json",
+            "research/batch-seven-live-cities-2026-10-04.json"
+          ]
+        },
+        "paceMs": 2500
+      }
     },
     {
       "idType": "string",
@@ -3022,7 +3152,22 @@
       "maxConcurrentQueries": 2,
       "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
       "attribution": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror. Adapted to WGS84.",
-      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-IA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Iowa Statewide Parcel Data 2017 snapshot (layer Parcels_20171102) carries all 99 Iowa counties on 2026-10-12; historical, not current.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/IA.json",
+            "research/subnational/US/IA.json"
+          ]
+        },
+        "paceMs": 1000
+      }
     },
     {
       "id": "us-mi-lansing-parcels",
@@ -3158,7 +3303,22 @@
         "PARCELID"
       ],
       "evidenceFile": "research/us-capitals-batch-three-live-2026-10-06.json",
-      "attribution": "Montana Department of Revenue and county GIS offices; integrated by Montana State Library. Adapted to WGS84."
+      "attribution": "Montana Department of Revenue and county GIS offices; integrated by Montana State Library. Adapted to WGS84.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-MT"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Montana Cadastral Framework (MSDI) \"shows the taxable parcels and tax-exempt parcels for most of Montana\"; all 56 county codes present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/MT.json",
+            "research/subnational/US/MT.json"
+          ]
+        },
+        "paceMs": 1000
+      }
     },
     {
       "id": "us-ne-lincoln-parcels",
@@ -3288,7 +3448,22 @@
           "metricReportSha256": "c5f975939d6a0e1e836c1cc25abfdd4717800e2d0f0fbca5f867274243b6de3a",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/8367/qualification.json"
         }
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-NJ"
+          ],
+          "excludeAdmin1": [],
+          "basis": "NJOGIS service description: latest statewide parcels integrating MOD-IV attributes; all 21 New Jersey counties present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/NJ.json",
+            "research/subnational/US/NJ.json"
+          ]
+        },
+        "paceMs": 1000
+      }
     },
     {
       "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
@@ -3823,7 +3998,22 @@
           "metricReportSha256": "9fe3d3e25b185db30c48cb0dc5d59ec398bdfcc138335865e49e58ee505969f1",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/8144/qualification.json"
         }
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-VA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "VGIN statewide layer \"Virginia Parcels\" aggregates locality parcel data; 136 locality FIPS codes present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/VA.json",
+            "research/subnational/US/VA.json"
+          ]
+        },
+        "paceMs": 1000
+      }
     },
     {
       "id": "us-nv-carson_city-parcels",
@@ -5345,7 +5535,17 @@
       "evidenceFile": "research/athens-live-2026-10-08.json",
       "attribution": "Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.",
       "catalogueUrl": "https://maps.ktimatologio.gr/",
-      "licenceNote": "The public map exposes a queryable ArcGIS layer; no named reuse licence was identified in the inspected viewer or layer metadata. Publisher terms remain informational."
+      "licenceNote": "The public map exposes a queryable ArcGIS layer; no named reuse licence was identified in the inspected viewer or layer metadata. Publisher terms remain informational.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "GR",
+          "basis": "Hellenic Cadastre (Ktimatologio) active national cadastral parcel layer.",
+          "evidence": [
+            "research/retry/countries/GR.json",
+            "research/athens-live-2026-10-08.json"
+          ]
+        }
+      }
     },
     {
       "id": "gaborone-bofinet-plots-provisional",
@@ -5499,7 +5699,17 @@
       },
       "qualityEvidenceFile": "research/world-capitals-2026-10-08/bev-fix-quality.json",
       "precisionNote": "Official BEV VTC specification describes generalized z16 display geometry at centimeter-level accuracy; map-source accuracy varies, and these are not legal survey coordinates.",
-      "completenessNote": "Reconstructs all tiles intersecting the official search/detail locator envelope; requires corresponding parcel cuts on both sides of each tile seam and rejects outlines outside the locator. Two encoded grid units are allowed for independent coordinate rounding. An exact parcel boundary on a tile seam without a matching neighbour is conservatively rejected."
+      "completenessNote": "Reconstructs all tiles intersecting the official search/detail locator envelope; requires corresponding parcel cuts on both sides of each tile seam and rejects outlines outside the locator. Two encoded grid units are allowed for independent coordinate rounding. An exact parcel boundary on a tile seam without a matching neighbour is conservatively rejected.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AT",
+          "basis": "BEV national cadastral map for Austria.",
+          "evidence": [
+            "research/countries/AT.json",
+            "research/world-capitals-2026-10-08/vienna-acceptance.json"
+          ]
+        }
+      }
     },
     {
       "id": "me-water-cadastral-parcels",
@@ -5634,6 +5844,16 @@
       "cityScopes": {
         "wellington": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
         "auckland": "Auckland city-scoped verification of the shared LINZ current primary-parcel publication. The initial 13 aligned cells and four adjacent pans were expanded to 30 cells, a wider viewport and four pans around the unchanged WUP locator, yielding 184 distinct full parcel geometries. All 47 checks passed with the existing runtime descriptor: page size 100, native id identity, OBJECTID transport manifests, and safe appellation/topology labels. Forced three-row paging completed in 48 geometry pages; all 184 fresh native-id reads reproduced geometry; explicit absence, full footprint lookup and complete proposal binding passed. The WUP-containing native parcel 5211850 also matched its prior full geometry. GEOS in EPSG:32760 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. The shared Wellington runtime settings are retained. Current primary parcels only; non-primary interests, historic/pending parcels, whole-city completeness, source publication freshness and identity continuity after revision remain unverified. Retain LINZ attribution and CC BY 4.0 conditions; source accuracy notices remain informational."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "NZ",
+          "basis": "LINZ primary parcels are the national cadastral fabric of New Zealand.",
+          "evidence": [
+            "research/countries/NZ.json",
+            "research/world-capitals-2026-10-08/wellington-acceptance.json"
+          ]
+        }
       }
     },
     {
@@ -5793,6 +6013,16 @@
       "cityScopes": {
         "eastjerusalem": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
         "jerusalem": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IL",
+          "basis": "Survey of Israel national cadastral parcel layer published through GovMap.",
+          "evidence": [
+            "research/countries/IL.json",
+            "research/world-capitals-2026-10-08/jerusalem-acceptance.json"
+          ]
+        }
       }
     },
     {
@@ -6824,6 +7054,19 @@
       "maxConcurrentQueries": 2,
       "cityScopes": {
         "stuttgart": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "DE",
+          "admin1": [
+            "DE-BW"
+          ],
+          "basis": "Baden-Württemberg statewide ALKIS cadastral parcels (LGL).",
+          "evidence": [
+            "research/europe/DE.json",
+            "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json"
+          ]
+        }
       }
     },
     {
@@ -7426,7 +7669,27 @@
           "metricSrid": 32633,
           "evidenceFile": "world-parcels/research/qualification-2026-10-12/acireale/qualification.json"
         }
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IT",
+          "admin1": [
+            "IT-AG",
+            "IT-CL",
+            "IT-CT",
+            "IT-EN",
+            "IT-ME",
+            "IT-PA",
+            "IT-RG",
+            "IT-SR",
+            "IT-TP"
+          ],
+          "basis": "Sicily region SITR cadastral parcels (nine Sicilian provinces).",
+          "evidence": [
+            "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json"
+          ]
+        }
+      }
     },
     {
       "id": "us-tx-el-paso-city-gis-parcels",
@@ -7584,6 +7847,20 @@
       "cityScopes": {
         "dresden": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
         "leipzig": "180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "DE",
+          "admin1": [
+            "DE-SN"
+          ],
+          "basis": "Saxony statewide simplified ALKIS cadastral parcels (GeoSN).",
+          "evidence": [
+            "research/europe/DE.json",
+            "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-acceptance.json"
+          ]
+        },
+        "keepPublishedFields": true
       }
     },
     {
@@ -7917,7 +8194,17 @@
           "metricReportSha256": "aa2ba80a5c1f2b1e736fdca2ada1fa67c2b1baca94682f14e1ec135e8d02b808",
           "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/663/qualification.json"
         }
-      ]
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IE",
+          "basis": "Tailte Éireann national registered freehold title boundaries (leasehold and unregistered land are outside it).",
+          "evidence": [
+            "research/countries/IE.json",
+            "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json"
+          ]
+        }
+      }
     },
     {
       "id": "lv-vzd-geolatvija-vraa-wfs",
@@ -7952,7 +8239,17 @@
       "evidenceFile": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json",
       "catalogueUrl": "https://geolatvija.lv/",
       "attribution": "State Land Service of Latvia / Geolatvija · cadastral references · adapted",
-      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "LV",
+          "basis": "State Land Service of Latvia national cadastral parcel service.",
+          "evidence": [
+            "research/countries/LV.json",
+            "research/country-integration-audit-2026-10-09/riga-root-acceptance.json"
+          ]
+        }
+      }
     },
     {
       "id": "ee-maaamet-kataster-wfs",
@@ -7988,7 +8285,17 @@
       "evidenceFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
       "catalogueUrl": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
       "attribution": "Estonian Land and Spatial Development Board / public cadastral WFS · cadastral references · adapted",
-      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "EE",
+          "basis": "Estonian Land Board national cadastral parcel service.",
+          "evidence": [
+            "research/countries/EE.json",
+            "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json"
+          ]
+        }
+      }
     },
     {
       "id": "lt-inspire-cp-wfs",
@@ -8034,7 +8341,17 @@
       "evidenceFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
       "catalogueUrl": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
       "attribution": "Lithuanian INSPIRE Geoportal / National Land Service · cadastral references · adapted",
-      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "LT",
+          "basis": "Lithuanian national INSPIRE cadastral parcel service.",
+          "evidence": [
+            "research/retry/countries/LT.json",
+            "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json"
+          ]
+        }
+      }
     },
     {
       "id": "br-jundiai-geojundiai-lotes-jund-gid",
@@ -9018,7 +9335,20 @@
           "evidenceFile": "world-parcels/research/qualification-2026-10-11/2998/qualification.json"
         }
       ],
-      "defaultForCity": true
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "DE",
+          "admin1": [
+            "DE-HE"
+          ],
+          "basis": "Hessen statewide simplified ALKIS cadastral parcels (HVBG).",
+          "evidence": [
+            "research/europe/DE.json"
+          ]
+        },
+        "keepPublishedFields": true
+      }
     },
     {
       "id": "gdansk-gml-wfs",
@@ -9514,7 +9844,1248 @@
         }
       ],
       "manifestUrl": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/manifest.json",
-      "snapshotId": "af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263"
+      "snapshotId": "af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263",
+      "discovery": {
+        "searchRingsM": []
+      }
+    },
+    {
+      "id": "us-wa-watech-statewide-parcels",
+      "name": "Washington State Parcels (WaTech Parcels_2026) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Washington Technology Solutions (WaTech) Washington State Parcels Project; data from Washington counties",
+      "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+      "idField": "PARCEL_ID_NR",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID_NR"
+      ],
+      "parcelNumberField": "PARCEL_ID_NR",
+      "idPrefix": "US-WA-STATEWIDE-",
+      "metricSrid": 32610,
+      "stateCode": "WA",
+      "attributeNotNull": [
+        "PARCEL_ID_NR"
+      ],
+      "attributeExclusions": {
+        "PARCEL_ID_NR": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "scope": "Washington statewide compilation of participating counties' assessment parcels (layer Parcels_2026). PARCEL_ID_NR is the WaTech statewide key: three-digit county FIPS, a dash, and the county parcel number; all source rows sharing it form one native parcel.",
+      "caveats": [
+        "Coverage is by participating counties, not a guaranteed statewide set: 38 county FIPS codes observed 2026-10-12; Asotin County (FIPS 003) absent.",
+        "Rows with null or blank PARCEL_ID_NR (29,340 statewide on 2026-10-12) have no native identity and are excluded.",
+        "Some county parcels are published as several disjoint rows sharing one PARCEL_ID_NR (observed in Yakima County); all components are fetched and dissolved (polygon union) into one canonical parcel.",
+        "Assessment mapping, not a boundary survey; layer also publishes owner, address and value fields, which are not requested."
+      ],
+      "attribution": "Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.",
+      "catalogueUrl": "https://geo.wa.gov/",
+      "evidenceFile": "research/statewide-us-2026-10-12/WA.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-WA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "WaTech publishes Parcels_2026 as the Washington State Parcels Project compilation of all counties that supply digital tax parcels (38 of 39 county FIPS codes present on 2026-10-12; Asotin absent).",
+          "evidence": [
+            "research/statewide-us-2026-10-12/WA.json",
+            "research/subnational/US/WA.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-md-imap-statewide-parcel-boundaries",
+      "name": "Maryland Parcel Boundaries (MD iMAP) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Maryland Department of Planning and State Department of Assessments and Taxation, via MD iMAP",
+      "endpoint": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0",
+      "idField": "POLYID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "POLYID"
+      ],
+      "parcelNumberField": "POLYID",
+      "idPrefix": "US-MD-STATEWIDE-",
+      "metricSrid": 32618,
+      "stateCode": "MD",
+      "attributeNotNull": [
+        "POLYID"
+      ],
+      "attributeExclusions": {
+        "POLYID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Maryland statewide parcel polygons (all 24 jurisdictions) published by MDP. POLYID is the MDP polygon identifier, prefixed by the two-digit jurisdiction number; it was populated and unique for every polygon sampled.",
+      "caveats": [
+        "POLYID identifies the MDP parcel polygon, not the SDAT assessment account; the account field is deliberately not used (it is blank or ROW on some polygons and repeated across distinct polygons in Gaithersburg).",
+        "POLYID stability across MDP releases is not documented; the polygon date is in the source polydate field (not requested).",
+        "The publisher dissolves polygons with matching account IDs; right-of-way polygons (account value ROW) carry their own POLYID and are included.",
+        "Layer also publishes owner, address and assessment fields, which are not requested."
+      ],
+      "attribution": "MD iMAP, Maryland Department of Planning, SDAT. Adapted to WGS84.",
+      "catalogueUrl": "https://planning.maryland.gov/Pages/OurProducts/DownloadFiles.aspx",
+      "evidenceFile": "research/statewide-us-2026-10-12/MD.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-MD"
+          ],
+          "excludeAdmin1": [],
+          "basis": "MD iMAP layer description: \"parcel polygons of the entire state\" attributed with SDAT and MDP data; all 24 Maryland jurisdiction codes present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/MD.json",
+            "research/subnational/US/MD.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-ri-ridem-statewide-tax-parcels",
+      "name": "RIDEM Tax Parcels — Rhode Island statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Rhode Island Department of Environmental Management via RI Enterprise GIS (risegis.ri.gov); municipal assessor plats",
+      "endpoint": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+      "idField": "PlatLot",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Z]{2}",
+      "outFields": [
+        "OBJECTID",
+        "PlatLot"
+      ],
+      "parcelNumberField": "PlatLot",
+      "idPrefix": "US-RI-STATEWIDE-",
+      "metricSrid": 32619,
+      "stateCode": "RI",
+      "attributeNotNull": [
+        "PlatLot"
+      ],
+      "attributeExclusions": {
+        "PlatLot": [
+          "",
+          " ",
+          "BR",
+          "BR 123-",
+          "BR 134-",
+          "BR 149-",
+          "BR 16-",
+          "BR 184-",
+          "BR 21-",
+          "BU",
+          "CH",
+          "CH -",
+          "CO",
+          "CU",
+          "EG  ",
+          "EP",
+          "FO",
+          "HO",
+          "JA",
+          "LI",
+          "MI",
+          "NA",
+          "NA R-2-",
+          "NA R-3-",
+          "NP",
+          "NP10-",
+          "NP12-",
+          "NP13-",
+          "NP15-",
+          "NP16-",
+          "NP17-",
+          "NP18-",
+          "NP19-",
+          "NP2-",
+          "NP20-",
+          "NP21A-",
+          "NP21B-",
+          "NP22A-",
+          "NP23B-",
+          "NP23C-",
+          "NP24A-",
+          "NP24B-",
+          "NP24C-",
+          "NP3-",
+          "NP4-",
+          "NP5-",
+          "NP6",
+          "NP6-",
+          "NP7-",
+          "NP8-",
+          "NP9-",
+          "NS ",
+          "PO",
+          "PR",
+          "SC",
+          "SM",
+          "TI",
+          "WA",
+          "WG",
+          "WK  ",
+          "WO  ",
+          "WW  ",
+          "WY"
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "scope": "Rhode Island municipal tax parcels compiled by RIDEM for all 39 towns. PlatLot is the published town-code-prefixed assessor plat/lot reference; all source rows sharing it form one native parcel.",
+      "caveats": [
+        "PlatLot formatting differs by town (e.g. \"PR 002-0015-0000\", \"BI 1:11\", \"NP3-32\"); the two-letter town code prefix keeps references distinct across towns.",
+        "Bare town-code placeholders and incomplete dash-terminated references that repeat across rows (61 values plus empty/space, 1,313 rows statewide on 2026-10-12) are excluded; single-row incomplete references remain as published.",
+        "Many plat/lots are published as exact duplicate rows with identical geometry (43 of 45 repeated values in Providence); some as touching parts, which are dissolved by polygon union.",
+        "A newly published repeated placeholder would be merged as one parcel when disjoint; the exclusion list reflects the 2026-10-12 publication.",
+        "Environmental-analysis layer (watershed and aquifer attributes); assessment geometry, not a boundary survey."
+      ],
+      "attribution": "Rhode Island Department of Environmental Management (RIDEM) / RIGIS and Rhode Island municipalities. Adapted to WGS84.",
+      "catalogueUrl": "https://www.rigis.org/pages/municipal-gis-resources",
+      "evidenceFile": "research/statewide-us-2026-10-12/RI.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-RI"
+          ],
+          "excludeAdmin1": [],
+          "basis": "RIDEM Tax Parcels carries a TownCode for all 39 Rhode Island cities and towns (39 distinct codes on 2026-10-12); statewide completeness is not stated by the publisher.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/RI.json",
+            "research/subnational/US/RI.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-ak-statewide-parcels-agol",
+      "name": "Alaska combined local-government parcels (AK_Parcels) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Unattributed ArcGIS Online compilation of Alaska local-government parcel data",
+      "endpoint": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
+      "idFields": [
+        "local_gov",
+        "parcel_id"
+      ],
+      "idFieldTypes": {
+        "local_gov": "string",
+        "parcel_id": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "local_gov",
+        "parcel_id"
+      ],
+      "parcelNumberField": "parcel_id",
+      "idPrefix": "US-AK-STATEWIDE-",
+      "metricSrid": 32606,
+      "stateCode": "AK",
+      "attributeNotNull": [
+        "local_gov",
+        "parcel_id"
+      ],
+      "attributeExclusions": {
+        "parcel_id": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Combined parcel data from 20 Alaska local governments (boroughs, municipalities and one regional fund). parcel_id is the local government's own number, so the native key is local_gov plus parcel_id.",
+      "caveats": [
+        "Publisher not identified in service metadata; local governments not among the 20 local_gov values observed on 2026-10-12 are absent.",
+        "The local_gov label is part of the identity; a relabelled local government would change canonical IDs.",
+        "Rows with null or blank parcel_id (2,613 statewide on 2026-10-12) are excluded; 218 parcel_id values carry leading or trailing spaces and are kept verbatim.",
+        "Layer also publishes owner and value fields, which are not requested."
+      ],
+      "attribution": "Alaska local governments; compiled ArcGIS Online layer AK_Parcels. Adapted to WGS84.",
+      "catalogueUrl": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer",
+      "evidenceFile": "research/statewide-us-2026-10-12/AK.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-AK"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Service description \"Combined land parcel data from various local government bodies in Alaska\"; 20 local governments present on 2026-10-12, so coverage is partial by construction.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/AK.json",
+            "research/subnational/US/AK.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-nh-granit-parcel-mosaic",
+      "name": "NH Parcel Mosaic (NH GRANIT) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "NH GRANIT, University of New Hampshire; parcel data from NH Department of Revenue Administration and municipalities",
+      "endpoint": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1",
+      "idField": "NH_GIS_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "NH_GIS_ID"
+      ],
+      "parcelNumberField": "NH_GIS_ID",
+      "idPrefix": "US-NH-STATEWIDE-",
+      "metricSrid": 32619,
+      "stateCode": "NH",
+      "attributeNotNull": [
+        "NH_GIS_ID"
+      ],
+      "attributeExclusions": {
+        "NH_GIS_ID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "New Hampshire parcel mosaic polygons (layer Parcels). NH_GIS_ID is the statewide key: six-digit county/town code, a dash, and the local parcel ID.",
+      "caveats": [
+        "Mosaic: towns without parcel polygons are represented only by linework in another layer and are not covered here (236 town IDs observed with polygons on 2026-10-12).",
+        "Rows with null or blank NH_GIS_ID (204 statewide) are excluded; 1,171 values carry leading or trailing spaces and are kept verbatim.",
+        "The same NH parcel data is also published by NHDES (catalogue entry us-nh-concord-parcels, Concord only) under a different namespace.",
+        "Layer also publishes street address and a name field, which are not requested."
+      ],
+      "attribution": "NH GRANIT (University of New Hampshire), NH Department of Revenue Administration and municipalities. Adapted to WGS84.",
+      "catalogueUrl": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer",
+      "evidenceFile": "research/statewide-us-2026-10-12/NH.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-NH"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Service description: \"New Hampshire Parcel Mosaic data\" with parcel polygons statewide and linework where polygons are not present; 236 town IDs carry polygons on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/NH.json",
+            "research/subnational/US/NH.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-ut-ugrc-statewide-parcels",
+      "name": "Utah statewide parcels (UGRC) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Utah Geospatial Resource Center and Utah county recorders/assessors",
+      "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+      "idFields": [
+        "County",
+        "PARCEL_ID"
+      ],
+      "idFieldTypes": {
+        "County": "string",
+        "PARCEL_ID": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "County",
+        "PARCEL_ID"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "idPrefix": "US-UT-STATEWIDE-",
+      "metricSrid": 32612,
+      "stateCode": "UT",
+      "attributeNotNull": [
+        "County",
+        "PARCEL_ID"
+      ],
+      "attributeExclusions": {
+        "PARCEL_ID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "scope": "Utah statewide parcel compilation, all 29 counties. PARCEL_ID is county-scoped, so the native key is County plus PARCEL_ID; all source rows sharing that key form one native parcel.",
+      "caveats": [
+        "Some counties publish one parcel as several touching or disjoint rows (observed in Utah County, Provo); all components are fetched and dissolved by polygon union. Rows sharing one key can overlap (Provo samples: 0.003, 0.91, 3.87 and 41.4 m², the last being most of a 71 m² row of Utah~180100174), so disjointParts is not set and the union absorbs the overlap; this is assembly of the publisher rows for one key, not a boundary repair.",
+        "Rows with null or blank PARCEL_ID (24,063 statewide on 2026-10-12) are excluded.",
+        "Same endpoint as us-ut-salt-lake-city-parcels (County=SaltLake, key PARCEL_ID under US-UT-SALTLAKE-); Salt Lake County parcels would exist under both namespaces.",
+        "Layer also publishes address, owner type and account fields, which are not requested."
+      ],
+      "attribution": "Utah Geospatial Resource Center and Utah counties. Adapted to WGS84.",
+      "catalogueUrl": "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+      "evidenceFile": "research/statewide-us-2026-10-12/UT.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-UT"
+          ],
+          "excludeAdmin1": [],
+          "basis": "UGRC StateWideParcels layer compiles county parcels with a County attribute; all 29 Utah counties present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/UT.json",
+            "research/subnational/US/UT.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-wi-v12-statewide-parcels",
+      "name": "Wisconsin Statewide Parcel Map Database V12 — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Wisconsin State Cartographer's Office / Wisconsin Land Information Program (Department of Administration); county parcel data",
+      "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "idField": "STATEID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "STATEID"
+      ],
+      "parcelNumberField": "STATEID",
+      "idPrefix": "US-WI-STATEWIDE-",
+      "metricSrid": 32616,
+      "stateCode": "WI",
+      "attributeNotNull": [
+        "STATEID"
+      ],
+      "attributeExclusions": {
+        "STATEID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "idBatchSize": 5,
+      "scope": "Wisconsin V12 statewide parcel database, all 72 counties. STATEID is the statewide key: the county PARCELFIPS followed by the county PARCELID.",
+      "caveats": [
+        "STATEID is derived from the county PARCELID and changes if a county renumbers.",
+        "Same endpoint as us-wi-madison-parcels (CONAME=DANE, key PARCELID under US-WI-MADISON-DANE-); Dane County parcels would exist under both namespaces.",
+        "Layer also publishes owner, address and assessment fields, which are not requested."
+      ],
+      "attribution": "Wisconsin State Cartographer's Office, Wisconsin Land Information Program and Wisconsin counties. Adapted to WGS84.",
+      "catalogueUrl": "https://www.sco.wisc.edu/parcels/data/",
+      "evidenceFile": "research/statewide-us-2026-10-12/WI.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-WI"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Layer description: final deliverable of the Version 12 Statewide Parcel Map Database Project aggregating county parcel data; all 72 county names present on 2026-10-12 (73 CONAME values; the extra one is the label MENOMONIE).",
+          "evidence": [
+            "research/statewide-us-2026-10-12/WI.json",
+            "research/subnational/US/WI.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-in-indianamap-statewide-parcels",
+      "name": "Parcel Boundaries of Indiana Current (IndianaMap) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Indiana Geographic Information Office / IndianaMap; county parcel data",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "idField": "state_parcel_id",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "objectid",
+        "state_parcel_id"
+      ],
+      "parcelNumberField": "state_parcel_id",
+      "idPrefix": "US-IN-STATEWIDE-",
+      "metricSrid": 32616,
+      "stateCode": "IN",
+      "attributeNotNull": [
+        "state_parcel_id"
+      ],
+      "attributeExclusions": {
+        "state_parcel_id": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Indiana statewide parcel boundaries, all 92 counties. state_parcel_id is the Indiana state parcel number (county-coded, normally 18 digits).",
+      "caveats": [
+        "Rows with null or blank state_parcel_id (7,540 statewide on 2026-10-12) are excluded; 9,637 non-blank values are not 18 characters and 1,062 contain spaces, all kept verbatim.",
+        "Same endpoint as us-in-marion-indianapolis-parcels (county_id=49, key local_id under US-IN-MARION-); Marion County parcels would exist under both namespaces with different keys.",
+        "Layer also publishes property address and tax-district fields, which are not requested."
+      ],
+      "attribution": "IndianaMap / Indiana Geographic Information Office and Indiana counties. Adapted to WGS84.",
+      "catalogueUrl": "https://www.indianamap.org/",
+      "evidenceFile": "research/statewide-us-2026-10-12/IN.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-IN"
+          ],
+          "excludeAdmin1": [],
+          "basis": "IndianaMap service \"Parcel Boundaries of Indiana Current\" compiles county parcels; all 92 county_id values present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/IN.json",
+            "research/subnational/US/IN.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-nc-onemap-statewide-parcels",
+      "name": "NC OneMap statewide parcels — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "NC OneMap / NC Center for Geographic Information and Analysis; county parcel data",
+      "endpoint": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
+      "idField": "nparno",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "objectid",
+        "nparno"
+      ],
+      "parcelNumberField": "nparno",
+      "idPrefix": "US-NC-STATEWIDE-",
+      "metricSrid": 32617,
+      "stateCode": "NC",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "idBatchSize": 5,
+      "scope": "North Carolina statewide parcel polygons, all 100 counties. nparno is the NC OneMap statewide key: five-digit state+county FIPS, an underscore and the county parcel number.",
+      "caveats": [
+        "Native-ID IN predicates on this service take seconds per request (32 IDs: 10.6 s; 10 IDs: up to 3.7 s; 5 IDs: up to 3.9 s on 2026-10-12, Greensboro), so ID reads use batches of 5, matching the existing Wake County entry on the same service.",
+        "Some counties publish exact duplicate rows with identical geometry for one nparno (observed in Mecklenburg County); they collapse to one parcel. Distinct geometries under one nparno fail.",
+        "Same NC1Map_Parcels service as us-nc-wake-raleigh-parcels (served there from services.gis.nc.gov with stcntyfips=37183 and key parno); Wake County parcels would exist under both namespaces.",
+        "Layer also publishes owner, mailing address, sale and value fields, which are not requested."
+      ],
+      "attribution": "NC OneMap, NC Center for Geographic Information and Analysis, and North Carolina counties. Adapted to WGS84.",
+      "catalogueUrl": "https://www.nconemap.gov/",
+      "evidenceFile": "research/statewide-us-2026-10-12/NC.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-NC"
+          ],
+          "excludeAdmin1": [],
+          "basis": "NC OneMap publishes NC1Map_Parcels as the statewide parcel layer; all 100 county FIPS codes present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/NC.json",
+            "research/subnational/US/NC.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-hi-statewide-tmk-parcels",
+      "name": "Hawaii Statewide TMKs — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "State of Hawaii Office of Planning and Sustainable Development, Statewide GIS Program; county real property TMK maps",
+      "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "idField": "tmk",
+      "objectIdField": "objectid",
+      "idType": "integer",
+      "outFields": [
+        "objectid",
+        "tmk"
+      ],
+      "parcelNumberField": "tmk",
+      "idPrefix": "US-HI-STATEWIDE-",
+      "metricSrid": 32604,
+      "stateCode": "HI",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Hawaii statewide Tax Map Key parcels, all four counties. tmk is the nine-digit statewide key (island/division, zone, section, plat, parcel).",
+      "caveats": [
+        "Provider describes TMK boundaries as visual reference, not survey-level accuracy.",
+        "Same endpoint as us-hi-honolulu-parcels (county=Honolulu, same tmk key under US-HI-HONOLULU-); Honolulu County parcels would exist under both namespaces."
+      ],
+      "attribution": "State of Hawaii Statewide GIS Program and Hawaii counties. Adapted to WGS84.",
+      "catalogueUrl": "https://geoportal.hawaii.gov/",
+      "evidenceFile": "research/statewide-us-2026-10-12/HI.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-HI"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Layer \"Statewide TMKs\" in the State GIS ParcelsZoning service; all four counties (Hawaii, Honolulu, Kauai, Maui) present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/HI.json",
+            "research/subnational/US/HI.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-de-firstmap-statewide-parcels",
+      "name": "Delaware State Parcels (FirstMap) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "State of Delaware FirstMap; county parcel data",
+      "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "idFields": [
+        "COUNTY",
+        "PIN"
+      ],
+      "idFieldTypes": {
+        "COUNTY": "string",
+        "PIN": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "COUNTY",
+        "PIN"
+      ],
+      "parcelNumberField": "PIN",
+      "idPrefix": "US-DE-STATEWIDE-",
+      "metricSrid": 32618,
+      "stateCode": "DE",
+      "attributeNotNull": [
+        "COUNTY",
+        "PIN"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Delaware state parcel layer, all three counties. PIN is county-assigned with county-specific formats, so the native key is COUNTY plus PIN.",
+      "caveats": [
+        "Offset paging on this service returned the same object twice across pages (Wilmington, 2026-10-12); bounded reads use complete count/object-ID manifests.",
+        "This service evaluates any comparison with an empty-string literal as unknown (PIN <> '' and PIN NOT IN ('',' ') match zero rows), so no blank-string exclusion is configured; the 6 blank PINs statewide are NULL and are excluded by attributeNotNull. One PIN carries a leading or trailing space and is kept verbatim.",
+        "Same endpoint as us-de-kent-dover-parcels (COUNTY=Kent, key PIN under US-DE-KENT-); Kent County parcels would exist under both namespaces."
+      ],
+      "attribution": "State of Delaware FirstMap and Delaware counties. Adapted to WGS84.",
+      "catalogueUrl": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "evidenceFile": "research/statewide-us-2026-10-12/DE.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-DE"
+          ],
+          "excludeAdmin1": [],
+          "basis": "FirstMap layer \"State Parcels\" covers Delaware; all three counties (Kent, New Castle, Sussex) present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/DE.json",
+            "research/subnational/US/DE.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-nd-gishub-statewide-parcels",
+      "name": "NDGISHUB Parcels (State Parcel Program) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "North Dakota Information Technology / ND GIS Hub State Parcel Program; county parcel data",
+      "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+      "idField": "UniqueGISID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "UniqueGISID"
+      ],
+      "parcelNumberField": "UniqueGISID",
+      "idPrefix": "US-ND-STATEWIDE-",
+      "metricSrid": 32614,
+      "stateCode": "ND",
+      "attributeNotNull": [
+        "UniqueGISID"
+      ],
+      "attributeExclusions": {
+        "UniqueGISID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "North Dakota State Parcel Program compilation, all 53 counties. UniqueGISID is the program's statewide key: five-digit county FIPS, a dash and the county GISID.",
+      "caveats": [
+        "The layer includes right-of-way, water and unknown feature types alongside parcels; FeatureType is null in some counties (e.g. Cass), so no type filter is applied and such polygons appear with their own UniqueGISID.",
+        "Rows with null or blank UniqueGISID (38,250 statewide on 2026-10-12) are excluded; 486 values carry leading or trailing spaces and are kept verbatim.",
+        "Same endpoint as us-nd-burleigh-bismarck-parcels (CountyName=Burleigh, key GISID under US-ND-BURLEIGH-); Burleigh County parcels would exist under both namespaces."
+      ],
+      "attribution": "North Dakota GIS Hub State Parcel Program and North Dakota counties. Adapted to WGS84.",
+      "catalogueUrl": "https://www.gis.nd.gov/parcel-program",
+      "evidenceFile": "research/statewide-us-2026-10-12/ND.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-ND"
+          ],
+          "excludeAdmin1": [],
+          "basis": "ND GIS Hub State Parcel Program item aggregates county parcel boundaries statewide; all 53 counties present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/ND.json",
+            "research/subnational/US/ND.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-nv-ndwr-statewide-county-parcels",
+      "name": "County Parcels in Nevada (NDWR) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Nevada Division of Water Resources; county assessor parcel data",
+      "endpoint": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0",
+      "idFields": [
+        "County",
+        "PIN"
+      ],
+      "idFieldTypes": {
+        "County": "string",
+        "PIN": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "County",
+        "PIN"
+      ],
+      "parcelNumberField": "PIN",
+      "idPrefix": "US-NV-STATEWIDE-",
+      "metricSrid": 32611,
+      "stateCode": "NV",
+      "attributeNotNull": [
+        "County",
+        "PIN"
+      ],
+      "attributeExclusions": {
+        "PIN": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Nevada county parcel compilation, all 17 counties, with per-county source dates. PIN is county-scoped, so the native key is County plus PIN.",
+      "caveats": [
+        "Offset paging omitted rows in a Reno box (406 counted, 402 returned); bounded reads use complete count/object-ID manifests.",
+        "PIN differs from the published APN on 233,673 rows; PIN is used as in the existing Carson City entry. Rows with null or blank PIN (292) are excluded; 55 PINs carry leading or trailing spaces and are kept verbatim.",
+        "Same endpoint as us-nv-carson_city-parcels (County=Carson City, key PIN under US-NV-CARSON_CITY-); Carson City parcels would exist under both namespaces."
+      ],
+      "attribution": "Nevada Division of Water Resources and Nevada counties. Adapted to WGS84.",
+      "catalogueUrl": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer",
+      "evidenceFile": "research/statewide-us-2026-10-12/NV.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-NV"
+          ],
+          "excludeAdmin1": [],
+          "basis": "NDWR County_Parcels_in_Nevada compiles county assessor parcels with per-county source dates; all 17 Nevada counties present on 2026-10-12.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/NV.json",
+            "research/subnational/US/NV.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "pl-gugik-uldk",
+      "name": "GUGiK ULDK national parcel lookup (Usługa Lokalizacji Działek Katastralnych)",
+      "adapter": "pl-uldk-point",
+      "endpoint": "https://uldk.gugik.gov.pl/",
+      "idField": "id",
+      "idPrefix": "PL-ULDK-",
+      "idPattern": "^[0-9]{6}_[0-9]\\.[0-9]{4}\\.(?:AR_[0-9]{1,4}\\.)?[0-9]{1,6}(?:/[0-9]{1,6})?$",
+      "outFields": [
+        "id"
+      ],
+      "queryMode": "point",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": false,
+        "areaEnumeration": false
+      },
+      "countryCode": "PL",
+      "metricSrid": 2180,
+      "maxConcurrentQueries": 1,
+      "scope": "National point and exact-ID lookup of EGiB cadastral parcels (one parcel per request, WGS84 output requested from the provider). Live-verified on 2026-10-12 for 51 of 53 uncovered Polish UN cities (point containment, identical exact re-read, explicit absence). Earlier live samples: Warsaw and Kraków (2026-09-29), Bydgoszcz (2026-10-09). Bbox queries and area enumeration are unavailable.",
+      "caveats": [
+        "Point and exact-ID lookup only: a clicked parcel never proves a viewport complete.",
+        "ULDK serves EGiB data held by county starosties; counties whose data is missing, stale or temporarily unavailable may answer with the same no-result line as a genuinely absent parcel.",
+        "Explicit absence is accepted only from the exact reply \"-1 brak wyników\"; every other \"-1\" message, count line, HTML or non-text reply is treated as unavailable.",
+        "Parcel IDs outside the documented TERYT form WWPPGG_R.OOOO[.AR_N].NR_DZ are rejected rather than coerced; unusual county numbering would surface as provider errors, not silent data.",
+        "Geometry is the provider's own EPSG:2180 to EPSG:4326 output, unrounded and unrepaired; the adapter rejects any returned polygon that does not contain the queried point.",
+        "Requests are paced to one start per second per adapter instance; GUGiK publishes no rate limit."
+      ],
+      "cityIds": [],
+      "evidenceFile": "research/countries/PL-adapter-2026-10-12.json",
+      "operator": "Główny Urząd Geodezji i Kartografii (GUGiK); EGiB data maintained by county starosties",
+      "attribution": "GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click",
+      "catalogueUrl": "https://uldk.gugik.gov.pl/opis.html",
+      "licenceNote": "Anonymous public HTTPS API without credentials. ULDK's own reuse terms were not read in this session (documentation host unreachable from the verification machine); confirm them before publication. Cadastral geometry does not establish legal title or survey accuracy.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "PL",
+          "basis": "ULDK is GUGiK's national parcel lookup that answers point and TERYT-ID queries from the county EGiB cadastral databases.",
+          "evidence": [
+            "research/countries/PL.json",
+            "research/countries/PL-adapter-2026-10-12.json"
+          ]
+        },
+        "paceMs": 1000,
+        "keepPublishedFields": true
+      }
+    },
+    {
+      "id": "us-ca-calfire-statewide-parcels",
+      "name": "California Statewide Parcels Public View (CAL FIRE)",
+      "operator": "California Department of Forestry and Fire Protection (CAL FIRE), ArcGIS Online public view of a statewide county-parcel compilation",
+      "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+      "adapter": "arcgis",
+      "idFields": [
+        "FIPS_CODE",
+        "PARCEL_APN"
+      ],
+      "idFieldTypes": {
+        "FIPS_CODE": "string",
+        "PARCEL_APN": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "FIPS_CODE",
+        "PARCEL_APN"
+      ],
+      "parcelNumberField": "PARCEL_APN",
+      "attributeNotNull": [
+        "PARCEL_APN"
+      ],
+      "idPrefix": "US-CA-STATEWIDE-",
+      "metricSrid": 32611,
+      "stateCode": "CA",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "Statewide California county-parcel compilation (58 county FIPS codes present, 13,138,000 rows on 2026-10-12). Canonical identity is the county FIPS code plus the county assessor parcel number; the 23,032 rows without an APN are outside this source.",
+      "caveats": [
+        "APNs are county-scoped number spaces, so identity is the reversible composite FIPS_CODE~PARCEL_APN; PARCEL_DMP_ID (an aggregator key with several batch prefixes) is not used.",
+        "Condominium-style rows repeat one APN with byte-identical lot geometry (e.g. 582 rows for one Los Angeles APN); the adapter keeps one polygon per APN. No APN with differing Shape__Area was found in Los Angeles, Sacramento, Orange or Contra Costa counties; a differing repeat elsewhere fails closed.",
+        "Distinct APNs can share one identical lot polygon (observed in Orange and Contra Costa bbox samples).",
+        "metricSrid 32611 suits southern California; cities west of 120 W need a per-city metric projection (e.g. 32610) when qualified.",
+        "Layer derives from a statewide compilation of county data (data last edited 2026-05-28); per-county currency was not established and no licence text is published in the service metadata."
+      ],
+      "attribution": "CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+      "evidenceFile": "research/statewide-us-2026-10-12/CA.json",
+      "cityIds": [],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-CA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "CAL FIRE publishes this layer as California statewide parcels; all 58 county FIPS codes are present in the live layer.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/CA.json",
+            "research/subnational/US/CA.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-fl-dor-statewide-cadastral",
+      "name": "Florida Statewide Cadastral (Department of Revenue)",
+      "operator": "Florida Department of Revenue, Property Tax Oversight, from the 67 county property appraisers",
+      "endpoint": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+      "adapter": "arcgis",
+      "idFields": [
+        "CO_NO",
+        "PARCEL_ID"
+      ],
+      "idFieldTypes": {
+        "CO_NO": "integer",
+        "PARCEL_ID": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "CO_NO",
+        "PARCEL_ID"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "attributeExclusions": {
+        "CO_NO": [
+          0
+        ],
+        "PARCEL_ID": [
+          " "
+        ]
+      },
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "idPrefix": "US-FL-STATEWIDE-",
+      "metricSrid": 32617,
+      "stateCode": "FL",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "Florida DOR statewide cadastral polygons joined to the county tax rolls for all 67 counties (10,950,718 rows on 2026-10-12). Canonical identity is the DOR county number plus roll PARCEL_ID; same-key rows form one native parcel group. The 97,244 polygons with no roll join (CO_NO 0, blank PARCEL_ID) are outside this source.",
+      "caveats": [
+        "PARCEL_ID is county-scoped, so identity is the reversible composite CO_NO~PARCEL_ID.",
+        "Many roll parcels are stored as several polygon rows (e.g. 86 rows for one Hillsborough condominium parcel); all components are fetched and unioned. Some components overlap slightly (largest observed 0.79 m2), so overlap is not rejected for this provider.",
+        "The layer carries owner, address and sale columns; only CO_NO, PARCEL_ID and OBJECTID are requested.",
+        "Statewide envelope queries are slow (about 11 s for a 0.01 degree box, 18 s for 46 object IDs); small cells are required."
+      ],
+      "attribution": "Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+      "evidenceFile": "research/statewide-us-2026-10-12/FL.json",
+      "cityIds": [],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-FL"
+          ],
+          "excludeAdmin1": [],
+          "basis": "The DOR layer is collected annually from all 67 Florida county property appraisers; all 67 county numbers are present in the live layer.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/FL.json",
+            "research/subnational/US/FL.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-ma-massgis-l3-tax-parcels",
+      "name": "Massachusetts Property Tax Parcels (MassGIS Level 3)",
+      "operator": "MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts",
+      "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "idField": "LOC_ID",
+      "idType": "string",
+      "idPattern": "^[MF]_[0-9]+_[0-9]+$",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "LOC_ID",
+        "MAP_PAR_ID"
+      ],
+      "parcelNumberField": "MAP_PAR_ID",
+      "attributeNotNull": [
+        "LOC_ID"
+      ],
+      "idPrefix": "US-MA-STATEWIDE-",
+      "metricSrid": 32619,
+      "stateCode": "MA",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "MassGIS Level 3 standardized assessor parcel polygons for all 351 Massachusetts cities and towns (2,559,636 rows on 2026-10-12), identified by the MassGIS LOC_ID locational parcel identifier. All published POLY_TYPE values are included; the one row without a LOC_ID is excluded.",
+      "caveats": [
+        "The layer joins polygons to assessing records, so one LOC_ID repeats once per assessing record with byte-identical geometry (up to 865 rows in Boston); the adapter keeps one polygon per LOC_ID. No LOC_ID with differing Shape__Area was found in Boston, Worcester or Springfield.",
+        "MAP_PAR_ID is a town-scoped assessor map-parcel label used only for display; it is blank on some polygons.",
+        "Non-FEE polygon types (TAX 63,180, PRIV_ROW 832, RAIL_ROW 530, ROW 232, WATER 73 rows) are included; sampled TAX, PRIV_ROW and WATER polygons did not overlap FEE polygons.",
+        "Publisher text: standardization is complete for 350 of 351 communities and Boston is processed separately; Boston (TOWN_ID 35) rows are present in this layer.",
+        "metricSrid 32619 suits eastern Massachusetts; cities west of 72 W (e.g. Springfield) need 32618 when qualified."
+      ],
+      "attribution": "MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels",
+      "evidenceFile": "research/statewide-us-2026-10-12/MA.json",
+      "cityIds": [],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-MA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "MassGIS documents Level 3 assessor parcels for every Massachusetts community; all 351 TOWN_ID values are present in the live layer.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/MA.json",
+            "research/subnational/US/MA.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-oh-ogrip-statewide-parcels",
+      "name": "Ohio Statewide Parcels (OGRIP)",
+      "operator": "Ohio Geographically Referenced Information Program (OGRIP), Ohio Department of Administrative Services, from county auditor parcel data",
+      "endpoint": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0",
+      "adapter": "arcgis",
+      "idFields": [
+        "County",
+        "LocalParcelID"
+      ],
+      "idFieldTypes": {
+        "County": "string",
+        "LocalParcelID": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "County",
+        "LocalParcelID"
+      ],
+      "parcelNumberField": "LocalParcelID",
+      "attributeExclusions": {
+        "LocalParcelID": [
+          "",
+          " "
+        ]
+      },
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "disjointParts": false,
+      "idPrefix": "US-OH-STATEWIDE-",
+      "metricSrid": 32617,
+      "stateCode": "OH",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "OGRIP statewide compilation of county auditor parcels for all 88 Ohio counties (6,313,610 rows on 2026-10-12). Canonical identity is County plus the county LocalParcelID; same-key rows form one native parcel group. Rows with a null, empty or single-space LocalParcelID are excluded.",
+      "caveats": [
+        "StateParcelID (39 + county FIPS + LocalParcelID) is published but the service rejects every SQL predicate on it (HTTP 200 error 400), so the equivalent County~LocalParcelID composite is used.",
+        "Some counties publish one LocalParcelID on several polygons (13 IDs in Franklin, 67 in Hamilton); all components are fetched and unioned. Byte-identical copies of a component also repeat, so disjointParts is off (with it on, Hamilton 0940008042100 failed); sampled distinct components did not overlap.",
+        "Hamilton County stacks byte-identical condominium polygons under distinct LocalParcelIDs (31 shared polygons in one 0.01 degree Cincinnati box).",
+        "About 25,000 rows carry no usable LocalParcelID (e.g. 5,664 null in Franklin, 1,709 single-space in Hamilton) and are outside this source; a few counties put free-text notes in LocalParcelID, which are kept verbatim.",
+        "metricSrid 32617 suits central/eastern Ohio; cities west of 84 W (e.g. Cincinnati, Dayton) need 32616 when qualified."
+      ],
+      "attribution": "Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://ohioparcels-geohio.hub.arcgis.com/",
+      "evidenceFile": "research/statewide-us-2026-10-12/OH.json",
+      "cityIds": [],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-OH"
+          ],
+          "excludeAdmin1": [],
+          "basis": "OGRIP compiles county auditor parcels into one statewide layer; all 88 Ohio counties are present in the live layer.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/OH.json",
+            "research/subnational/US/OH.json"
+          ]
+        },
+        "paceMs": 1000
+      }
+    },
+    {
+      "id": "us-co-oit-statewide-parcels",
+      "name": "Colorado Public Parcels (OIT statewide composite)",
+      "operator": "Colorado Governor's Office of Information Technology (OIT) GIS, from county and municipal parcel data",
+      "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "idFields": [
+        "countyName",
+        "parcel_id"
+      ],
+      "idFieldTypes": {
+        "countyName": "string",
+        "parcel_id": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "countyName",
+        "parcel_id"
+      ],
+      "parcelNumberField": "parcel_id",
+      "attributeNotNull": [
+        "parcel_id"
+      ],
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "disjointParts": false,
+      "idPrefix": "US-COLORADO-STATEWIDE-",
+      "metricSrid": 32613,
+      "stateCode": "CO",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "OIT statewide composite of 44 of 64 Colorado counties (2,600,023 rows on 2026-10-12). Canonical identity is countyName plus the county parcel_id; same-key rows form one native parcel group. Rows without parcel_id (5,310) are excluded.",
+      "caveats": [
+        "Absent counties: Alamosa, Baca, Bent, Chaffee, Cheyenne, Conejos, Costilla, Crowley, Delta, Fremont, Jackson, Kiowa, Kit Carson, Las Animas, Lincoln, Mineral, Montrose, Otero, Phillips, Prowers.",
+        "parcel_id is county-scoped (the Denver entry fixes countyName for this reason), so identity is the composite countyName~parcel_id.",
+        "Larimer (1,133 IDs) and Boulder (834 IDs) publish one parcel_id on several polygons plus stacked byte-identical copies (up to 487 rows); all components are fetched and unioned. disjointParts is off because stacked copies fail the overlap check (Boulder 146329311017 failed with it on); sampled distinct components did not overlap.",
+        "Distinct parcel_ids can share one identical polygon (stacked condominium units; 25 shared polygons in one 0.01 degree Fort Collins box)."
+      ],
+      "attribution": "Colorado Governor's Office of Information Technology GIS and contributing counties. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+      "evidenceFile": "research/statewide-us-2026-10-12/CO.json",
+      "cityIds": [],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-CO"
+          ],
+          "excludeAdmin1": [],
+          "basis": "OIT aggregates county and municipal parcels into one statewide layer, but only 44 of 64 counties are present; cities in the 20 absent counties cannot qualify.",
+          "evidence": [
+            "research/statewide-us-2026-10-12/CO.json",
+            "research/subnational/US/CO.json"
+          ]
+        },
+        "paceMs": 1000
+      }
     }
   ]
 }

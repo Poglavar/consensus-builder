@@ -185,7 +185,9 @@ export function createTkgmPointSource(descriptor, {
             || !coordinates.every(value => typeof value === 'number' && Number.isFinite(value))
             || coordinates[0] < -180 || coordinates[0] > 180
             || coordinates[1] < -90 || coordinates[1] > 90) throw invalidPoint();
-        const [longitude, latitude] = coordinates;
+        // TKGM echoes coordinates at 15 significant digits in its not-found message, so request
+        // at that precision; otherwise a 16-17 digit point turns a real no-hit into an error.
+        const [longitude, latitude] = coordinates.map(value => Number(value.toPrecision(15)));
         const { response, payload } = await request(`${latitude}/${longitude}`);
         if (response.status === 404) {
             if (payload && typeof payload === 'object' && !Array.isArray(payload)
@@ -197,7 +199,7 @@ export function createTkgmPointSource(descriptor, {
         if (!response.ok) throw providerHttpError(response);
         const feature = sourceFeature(payload);
         let contains;
-        try { contains = booleanPointInPolygon(turfPoint(coordinates), turfFeature(feature.geometry)); }
+        try { contains = booleanPointInPolygon(turfPoint([longitude, latitude]), turfFeature(feature.geometry)); }
         catch { throw invalidProvider('TKGM parcel geometry could not be checked against the requested point.'); }
         if (!contains) throw invalidProvider('TKGM returned parcel geometry that does not contain the requested point.');
         return result([feature], 'point', { point: [longitude, latitude] });

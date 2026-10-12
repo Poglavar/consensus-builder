@@ -1,0 +1,2 @@
+-1 brak wyników
+błędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsłużyła zapytanie. 

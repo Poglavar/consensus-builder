@@ -1,0 +1,1347 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "CT",
+ "checkedAt": "2026-10-12",
+ "priorEvidence": "research/subnational/US/CT.json",
+ "uncoveredUnCities": 7,
+ "uncoveredUnCitySample": [
+  {
+   "cityCode": "8415",
+   "name": "Bridgeport",
+   "lat": 41.1909714422495,
+   "lon": -73.1931304859171
+  },
+  {
+   "cityCode": "8457",
+   "name": "Hartford",
+   "lat": 41.7617817388507,
+   "lon": -72.7009728673668
+  },
+  {
+   "cityCode": "8421",
+   "name": "New Haven",
+   "lat": 41.3151559392038,
+   "lon": -72.9243753709176
+  },
+  {
+   "cityCode": "8385",
+   "name": "Stamford",
+   "lat": 41.0614706315226,
+   "lon": -73.5335469700643
+  },
+  {
+   "cityCode": "8433",
+   "name": "Waterbury",
+   "lat": 41.5570573735477,
+   "lon": -73.0367752136248
+  },
+  {
+   "cityCode": "8451",
+   "name": "New Britain",
+   "lat": 41.6733692969952,
+   "lon": -72.7800547700192
+  },
+  {
+   "cityCode": "8397",
+   "name": "Norwalk",
+   "lat": 41.1093785714329,
+   "lon": -73.4187368535772
+  }
+ ],
+ "access": "Anonymous HTTPS GET/POST to the public ArcGIS REST query endpoint, at most one request per second per host, no token or cookie. Only object-ID, native-ID and county/town scope fields were ever requested; no owner, address, sale, account or taxpayer fields.",
+ "helperScripts": "tmp/adapter-staging/us-statewide-a/scripts/ (state-cities.py, polite.mjs, meta.mjs, uniqueness.mjs, statewide-repeats.mjs, coverage.mjs, blank-breakdown.mjs, dup-ids.mjs, repeat-geometry.mjs, distinct-area-repeats.mjs, parts-overlap.mjs, verify.mjs, verify-parts.mjs, dense-cell.mjs, descriptors.mjs)",
+ "status": "held",
+ "heldReason": "Endpoint already catalogued as us-ct-hartford-parcels (Town_Name=Hartford filter, Parcel_ID identity, idPrefix US-CT-HARTFORD-). No statewide identity is expressible with the current arcgis adapter: Parcel_ID is null for whole towns (Stamford 25,722, Norwalk 21,115, New Britain 15,737 rows, among others), and CAMA_Link (town code + parcel) is populated there but carries more than 150 distinct placeholder values (e.g. \"52070-None\", \"<town>-\", \"<town>- \", \"<town>-<Null>\", \"88190-CT-169-ROW--\") that cannot be excluded within the adapter limit of 80 exclusion values per field and would otherwise be grouped as fake parcels. Needs a pattern-based exclusion in the adapter or per-town entries.",
+ "existingEntry": "us-ct-hartford-parcels",
+ "layer": {
+  "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+  "layerName": "Connecticut_CAMA_and_Parcel_Layer",
+  "type": "Feature Layer",
+  "geometryType": "esriGeometryPolygon",
+  "objectIdField": "OBJECTID",
+  "globalIdField": null,
+  "maxRecordCount": 2000,
+  "capabilities": "Query",
+  "supportsPagination": true,
+  "supportsStatistics": true,
+  "supportsHavingClause": true,
+  "nativeSpatialReference": 3857,
+  "dataLastEditDate": "2026-09-08",
+  "fieldCount": 56,
+  "fieldNames": [
+   "OBJECTID",
+   "Town_Name",
+   "Location",
+   "CAMA_Link",
+   "Parcel_ID",
+   "Parcel_Type",
+   "Unit_Type",
+   "Link",
+   "Collection_year",
+   "Editor",
+   "Editor_Comment",
+   "Edit_Date",
+   "link_1",
+   "Location_1",
+   "Property_City",
+   "Property_Zip",
+   "Owner",
+   "Co_Owner",
+   "Mailing_Address",
+   "Mailing_City",
+   "Mailing_State",
+   "Mailing_Zip",
+   "Assessed_Total",
+   "Assessed_Land",
+   "Assessed_Building",
+   "Pre_Yr_Assessed_Total",
+   "Appraised_Land",
+   "Appraised_Building",
+   "Appraised_Outbuilding",
+   "Valuation_Year",
+   "Land_Acres",
+   "Zone",
+   "State_Use",
+   "State_Use_Description",
+   "EYB",
+   "AYB",
+   "Model",
+   "Condition",
+   "Living_Area",
+   "Effective_Area",
+   "Total_Rooms",
+   "Number_of_Bedroom",
+   "Number_of_Baths",
+   "Number_of_Half_Baths",
+   "Sale_Price",
+   "Sale_Date",
+   "Prior_Sale_Date",
+   "Prior_Book_Page",
+   "Prior_Sale_Price",
+   "Occupancy",
+   "FIPS",
+   "COG",
+   "Full_Address",
+   "Full_Mailing",
+   "SHAPE__Area",
+   "SHAPE__Length"
+  ],
+  "description": null,
+  "copyrightText": null
+ },
+ "recordCount": 1282833,
+ "coverage": {
+  "townsPresent": 169,
+  "of": 169,
+  "missingTowns": []
+ },
+ "identity": {
+  "blankCounts": {
+   "1=1": 1282833,
+   "Parcel_ID IS NULL": 173070,
+   "Parcel_ID = ' '": 9479,
+   "Parcel_ID = ''": 9479,
+   "CAMA_Link IS NULL": 3197,
+   "Town_Name IS NULL": 0
+  },
+  "blankByTown": {
+   "Parcel_ID IS NULL": {
+    "Stamford": 25722,
+    "Norwalk": 21115,
+    "Greenwich": 19364,
+    "West Haven": 16942,
+    "Wallingford": 16758,
+    "New Britain": 15737,
+    "Windsor": 12192,
+    "South Windsor": 11331,
+    "Farmington": 11218,
+    "Wethersfield": 9966,
+    "Old Lyme": 5688,
+    "Lyme": 1731,
+    "Bridgewater": 1113,
+    "Monroe": 615,
+    "Westport": 494,
+    "Easton": 309,
+    "Bridgeport": 300,
+    "Norwich": 277,
+    "Portland": 187,
+    "Waterford": 161,
+    "Trumbull": 140,
+    "Newtown": 139,
+    "New Fairfield": 121,
+    "Canterbury": 112,
+    "Ridgefield": 110,
+    "Clinton": 105,
+    "Thompson": 99,
+    "Hampton": 93,
+    "North Haven": 92,
+    "Putnam": 72,
+    "Madison": 53,
+    "Scotland": 47,
+    "Coventry": 42,
+    "Lebanon": 37,
+    "Windham": 37,
+    "Killingly": 34,
+    "Chaplin": 33,
+    "Prospect": 30,
+    "Brooklyn": 29,
+    "North Branford": 28,
+    "Westbrook": 28,
+    "Marlborough": 27,
+    "Montville": 24,
+    "Sprague": 23,
+    "Willington": 23,
+    "Ellington": 22,
+    "Mansfield": 22,
+    "Vernon": 21,
+    "New Canaan": 17,
+    "Chester": 16,
+    "Middlebury": 15,
+    "Stratford": 15,
+    "Andover": 14,
+    "Woodstock": 12,
+    "New London": 11,
+    "Bethel": 10,
+    "Enfield": 10,
+    "Orange": 10,
+    "Tolland": 10,
+    "Bozrah": 9,
+    "East Lyme": 9,
+    "Shelton": 9,
+    "Woodbridge": 9,
+    "Derby": 5,
+    "Lisbon": 4,
+    "New Haven": 4,
+    "Cromwell": 3,
+    "Pomfret": 3,
+    "Eastford": 2,
+    "West Hartford": 2,
+    "Berlin": 1,
+    "Bethany": 1,
+    "Canton": 1,
+    "East Hartford": 1,
+    "Hebron": 1,
+    "Killingworth": 1,
+    "Redding": 1,
+    "Southington": 1
+   },
+   "Parcel_ID IS NULL AND CAMA_Link IS NOT NULL": {
+    "Stamford": 25722,
+    "Norwalk": 21115,
+    "Greenwich": 19364,
+    "West Haven": 16942,
+    "Wallingford": 16628,
+    "New Britain": 15737,
+    "Windsor": 12192,
+    "South Windsor": 11331,
+    "Farmington": 11218,
+    "Wethersfield": 9966,
+    "Old Lyme": 5688,
+    "Lyme": 1731,
+    "Bridgewater": 1111,
+    "Easton": 309,
+    "Norwich": 277,
+    "Trumbull": 140,
+    "Newtown": 139,
+    "New Fairfield": 121,
+    "Canterbury": 112,
+    "Ridgefield": 110,
+    "Clinton": 105,
+    "Thompson": 99,
+    "Hampton": 93,
+    "North Haven": 92,
+    "Madison": 53,
+    "Scotland": 47,
+    "Coventry": 42,
+    "Lebanon": 37,
+    "Windham": 37,
+    "Waterford": 31,
+    "Prospect": 30,
+    "Brooklyn": 29,
+    "North Branford": 28,
+    "Westbrook": 28,
+    "Marlborough": 26,
+    "Montville": 24,
+    "Sprague": 23,
+    "Ellington": 22,
+    "Mansfield": 22,
+    "Vernon": 21,
+    "New Canaan": 17,
+    "Middlebury": 15,
+    "Stratford": 15,
+    "New London": 11,
+    "Bethel": 10,
+    "Orange": 10,
+    "Tolland": 10,
+    "Bozrah": 9,
+    "Woodbridge": 9,
+    "Enfield": 5,
+    "Lisbon": 4,
+    "New Haven": 4,
+    "Cromwell": 3,
+    "Pomfret": 3,
+    "Eastford": 2,
+    "West Hartford": 2,
+    "Berlin": 1,
+    "Bethany": 1,
+    "Canton": 1,
+    "Hebron": 1,
+    "Killingworth": 1,
+    "Redding": 1
+   },
+   "CAMA_Link IS NULL": {
+    "Monroe": 615,
+    "Westport": 494,
+    "Plymouth": 433,
+    "Bridgeport": 300,
+    "Portland": 187,
+    "East Lyme": 137,
+    "Wallingford": 130,
+    "Waterford": 130,
+    "Seymour": 110,
+    "Oxford": 104,
+    "Manchester": 83,
+    "Putnam": 72,
+    "Woodbury": 55,
+    "Andover": 52,
+    "Salisbury": 45,
+    "East Hartford": 35,
+    "Killingly": 34,
+    "Chaplin": 33,
+    "Willington": 23,
+    "Fairfield": 22,
+    "Cornwall": 18,
+    "Sharon": 17,
+    "Chester": 16,
+    "Woodstock": 14,
+    "Southington": 11,
+    "Shelton": 9,
+    "Derby": 5,
+    "Enfield": 5,
+    "Goshen": 5,
+    "Bridgewater": 2,
+    "Marlborough": 1
+   },
+   "CAMA_Link = ''": 0
+  },
+  "camaLinkPlaceholders": {
+   "CAMA_Link LIKE '%None%'": {
+    "25360-None": 22,
+    "44560-None": 53,
+    "46940-None": 1,
+    "74190-None": 15,
+    "77200-None": 140,
+    "82590-None": 2,
+    "87070-None": 37,
+    "06820-None": 9,
+    "12130-None": 112,
+    "23890-None": 309,
+    "42390-None": 37,
+    "44910-None": 22,
+    "50580-None": 227,
+    "52070-None": 336,
+    "52350-None": 11,
+    "56270-None": 277,
+    "57600-None": 261,
+    "76290-None": 10,
+    "78250-None": 46,
+    "04300-None": 1,
+    "04720-None": 10,
+    "34250-None": 24,
+    "40710-None": 83,
+    "50860-None": 121,
+    "54870-None": 136,
+    "75870-None": 162,
+    "81680-None": 28,
+    "86790-None": 37,
+    "12270-None": 1,
+    "15350-None": 100,
+    "17800-None": 3,
+    "18080-None": 73,
+    "21860-None": 2,
+    "37910-None": 1,
+    "43230-None": 1,
+    "45820-None": 26,
+    "48900-None": 24,
+    "53890-None": 69,
+    "62290-None": 29,
+    "63970-None": 112,
+    "71670-None": 23,
+    "73070-None": 9
+   },
+   "CAMA_Link LIKE '%-'": {
+    "02760-26-33-": 1,
+    "02760-31-26-": 1,
+    "02760-40-13-": 1,
+    "05910-": 1,
+    "43370-": 6,
+    "52140-": 19,
+    "58300-16-57-35-1-": 1,
+    "58300-27-M-7-": 1,
+    "58300-34-9-1-2-6-": 1,
+    "58300-34-9-1-2-7-": 1,
+    "58300-35-75-122-7-": 1,
+    "58300-35-75-382-384-": 1,
+    "60120-": 22,
+    "60750-": 1,
+    "68170-106D-": 1,
+    "68170-128B-": 2,
+    "68170-132-": 1,
+    "68170-20-": 1,
+    "68170-77-": 1,
+    "68170-93B-": 1,
+    "68310---": 1,
+    "74190-": 6,
+    "78600-063-009-01-": 1,
+    "86440-": 6,
+    "88190-CT-169-5124-20-": 1,
+    "88190-CT-169-ROW--": 221,
+    "02760-1-1-": 1,
+    "02760-21-13-": 1,
+    "02760-48-18-": 1,
+    "02760-8-32-": 1,
+    "19130-56-75B-": 1,
+    "19130-56-75C-": 1,
+    "50860-": 3,
+    "54030-CT-100--": 6,
+    "56060-": 54,
+    "58300-12-51-7-": 1,
+    "58300-15-57-13-16-43-": 1,
+    "58300-15-57-B17-18-19-": 1,
+    "58300-15-57-R1-R13-": 1,
+    "58300-19-26-3-A-": 1,
+    "58300-19-29-18-20-2-": 1,
+    "58300-34-9-1-2-1-": 1,
+    "58300-35-75-187-190-": 1,
+    "58300-35-75-270-272-": 1,
+    "63480-": 1,
+    "68170-15-": 1,
+    "68170-30-": 2,
+    "68170-92-": 1,
+    "87560-": 1,
+    "87560-130-": 1,
+    "01430-CT-003-45-E-": 1,
+    "02760-2-3-": 2,
+    "02760-28-11-": 1,
+    "02760-8-31-": 1,
+    "19130-56-75A-": 1,
+    "21860-CT-039---": 1,
+    "23890-": 1,
+    "58300-15-57-B26-54-": 1,
+    "58300-15-57-R9-10-14-": 1,
+    "58300-34-9-1-2-3-": 1,
+    "58300-34-9-1-2-5-": 1,
+    "58300-35-75-3-3A-": 1,
+    "68170-174-": 3,
+    "68170-70-": 1,
+    "69220-": 19,
+    "78600-": 24,
+    "80070--": 2,
+    "87560-127-": 1,
+    "02760-40-16A-": 1,
+    "02760-41-": 1,
+    "02760-51-40-": 1,
+    "10100-": 39,
+    "12270-": 77,
+    "36000-CT-063-": 2,
+    "48620-": 3,
+    "52980-": 1,
+    "58300-12-48-25-L13-": 1,
+    "58300-16-52-W97A-W96-": 1,
+    "58300-18-30-19-B-1-": 1,
+    "58300-34-9-1-2-2-": 1,
+    "58300-34-9-1-2-4-": 1,
+    "58300-34-9-1-2-8-": 1,
+    "58300-6-48-818-17-": 1,
+    "62150-": 7,
+    "62290-": 39,
+    "68170-": 1,
+    "68170-117D-": 1,
+    "68170-128-": 1,
+    "68170-129A-": 1,
+    "68170-153-": 1,
+    "68170-163-": 1,
+    "68170-169-": 1,
+    "68170-68-": 1,
+    "75730-": 15,
+    "83500-": 1
+   },
+   "CAMA_Link LIKE '%- '": {
+    "15350- ": 1,
+    "20810-CT_038- ": 46,
+    "37140- ": 3,
+    "63480- ": 17,
+    "02060- ": 47,
+    "10940- ": 44,
+    "18500- ": 59,
+    "22490- ": 71,
+    "31240- ": 13,
+    "47080- ": 47,
+    "49460- ": 39,
+    "52630- ": 186,
+    "59980- ": 365,
+    "68310- ": 34,
+    "73420- ": 25,
+    "06260- ": 1,
+    "14300- ": 16,
+    "16050-CT-029- ": 23,
+    "33900- ": 1,
+    "37070- ": 26,
+    "37280- ": 136,
+    "53470- ": 15,
+    "57040- ": 2,
+    "57320- ": 59,
+    "80070- ": 1,
+    "02760- ": 1,
+    "04720- ": 26,
+    "19130- ": 18,
+    "22280- ": 57,
+    "23400- ": 4,
+    "44210- ": 35,
+    "52980- ": 2,
+    "75730- ": 7,
+    "76570- ": 20
+   },
+   "CAMA_Link LIKE '%null%'": {
+    "56270-<Null>": 2,
+    "71670-<Null>": 2
+   },
+   "CAMA_Link NOT LIKE '[0-9][0-9][0-9][0-9][0-9]-%'": {}
+  }
+ },
+ "uniqueness": {
+  "bboxChecks": [
+   {
+    "state": "CT",
+    "label": "bridgeport",
+    "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+    "bbox": [
+     -73.1981,
+     41.186,
+     -73.1881,
+     41.196
+    ],
+    "rows": 501,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 501,
+    "fields": {
+     "Parcel_ID": {
+      "distinctValues": 480,
+      "blankRows": 18,
+      "valuesRepeatedWithDistinctGeometry": 2,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "1530-12"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1530-11"
+        ],
+        "rows": 3,
+        "geoms": 3
+       }
+      ],
+      "sampleValues": [
+       [
+        "1660-1C"
+       ],
+       [
+        "1660-1A"
+       ],
+       [
+        "1531-2A"
+       ],
+       [
+        "1531-1"
+       ],
+       [
+        "1045-15A"
+       ]
+      ]
+     },
+     "CAMA_Link": {
+      "distinctValues": 480,
+      "blankRows": 18,
+      "valuesRepeatedWithDistinctGeometry": 2,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "08070-1530-12"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "08070-1530-11"
+        ],
+        "rows": 3,
+        "geoms": 3
+       }
+      ],
+      "sampleValues": [
+       [
+        "08070-1660-1C"
+       ],
+       [
+        "08070-1660-1A"
+       ],
+       [
+        "08070-1531-2A"
+       ],
+       [
+        "08070-1531-1"
+       ],
+       [
+        "08070-1045-15A"
+       ]
+      ]
+     },
+     "Town_Name+Parcel_ID": {
+      "distinctValues": 480,
+      "blankRows": 18,
+      "valuesRepeatedWithDistinctGeometry": 2,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "Bridgeport",
+         "1530-12"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "Bridgeport",
+         "1530-11"
+        ],
+        "rows": 3,
+        "geoms": 3
+       }
+      ],
+      "sampleValues": [
+       [
+        "Bridgeport",
+        "1660-1C"
+       ],
+       [
+        "Bridgeport",
+        "1660-1A"
+       ],
+       [
+        "Bridgeport",
+        "1531-2A"
+       ],
+       [
+        "Bridgeport",
+        "1531-1"
+       ],
+       [
+        "Bridgeport",
+        "1045-15A"
+       ]
+      ]
+     },
+     "Town_Name+CAMA_Link": {
+      "distinctValues": 480,
+      "blankRows": 18,
+      "valuesRepeatedWithDistinctGeometry": 2,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "Bridgeport",
+         "08070-1530-12"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "Bridgeport",
+         "08070-1530-11"
+        ],
+        "rows": 3,
+        "geoms": 3
+       }
+      ],
+      "sampleValues": [
+       [
+        "Bridgeport",
+        "08070-1660-1C"
+       ],
+       [
+        "Bridgeport",
+        "08070-1660-1A"
+       ],
+       [
+        "Bridgeport",
+        "08070-1531-2A"
+       ],
+       [
+        "Bridgeport",
+        "08070-1531-1"
+       ],
+       [
+        "Bridgeport",
+        "08070-1045-15A"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "Town_Name": [
+      "Bridgeport"
+     ]
+    }
+   },
+   {
+    "state": "CT",
+    "label": "stamford",
+    "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+    "bbox": [
+     -73.5385,
+     41.0565,
+     -73.5285,
+     41.0665
+    ],
+    "rows": 441,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 441,
+    "fields": {
+     "CAMA_Link": {
+      "distinctValues": 439,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 2,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "73070-S 013 4120"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "73070-W 009 8880"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "73070-W 462 8304"
+       ],
+       [
+        "73070-E 001 5576"
+       ],
+       [
+        "73070-S 004 3608"
+       ],
+       [
+        "73070-S 010 7352"
+       ],
+       [
+        "73070-S 005 3608"
+       ]
+      ]
+     },
+     "Parcel_ID": {
+      "distinctValues": 0,
+      "blankRows": 441,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": []
+     },
+     "Town_Name+CAMA_Link": {
+      "distinctValues": 439,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 2,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "Stamford",
+         "73070-S 013 4120"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "Stamford",
+         "73070-W 009 8880"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "Stamford",
+        "73070-W 462 8304"
+       ],
+       [
+        "Stamford",
+        "73070-E 001 5576"
+       ],
+       [
+        "Stamford",
+        "73070-S 004 3608"
+       ],
+       [
+        "Stamford",
+        "73070-S 010 7352"
+       ],
+       [
+        "Stamford",
+        "73070-S 005 3608"
+       ]
+      ]
+     },
+     "Town_Name+Parcel_ID": {
+      "distinctValues": 0,
+      "blankRows": 441,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": []
+     }
+    },
+    "scopeValues": {
+     "Town_Name": [
+      "Stamford"
+     ]
+    }
+   },
+   {
+    "state": "CT",
+    "label": "newhaven",
+    "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+    "bbox": [
+     -72.9294,
+     41.3102,
+     -72.9194,
+     41.3202
+    ],
+    "rows": 653,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 443,
+    "fields": {
+     "CAMA_Link": {
+      "distinctValues": 636,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 1,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 15,
+      "sharedGeometryExamples": [
+       [
+        [
+         "52070-13961"
+        ],
+        [
+         "52070-13962"
+        ],
+        [
+         "52070-13963"
+        ],
+        [
+         "52070-13964"
+        ]
+       ],
+       [
+        [
+         "52070-104400"
+        ],
+        [
+         "52070-104421"
+        ],
+        [
+         "52070-104422"
+        ],
+        [
+         "52070-104423"
+        ]
+       ],
+       [
+        [
+         "52070-104942"
+        ],
+        [
+         "52070-104944"
+        ],
+        [
+         "52070-104946"
+        ],
+        [
+         "52070-104947"
+        ]
+       ]
+      ],
+      "repeatExamples": [
+       {
+        "value": [
+         "52070-None"
+        ],
+        "rows": 18,
+        "geoms": 9
+       }
+      ],
+      "sampleValues": [
+       [
+        "52070-13923"
+       ],
+       [
+        "52070-13924"
+       ],
+       [
+        "52070-13926"
+       ],
+       [
+        "52070-13931"
+       ],
+       [
+        "52070-13995"
+       ]
+      ]
+     },
+     "Parcel_ID": {
+      "distinctValues": 653,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 15,
+      "sharedGeometryExamples": [
+       [
+        [
+         "13961"
+        ],
+        [
+         "13962"
+        ],
+        [
+         "13963"
+        ],
+        [
+         "13964"
+        ]
+       ],
+       [
+        [
+         "104400"
+        ],
+        [
+         "104421"
+        ],
+        [
+         "104422"
+        ],
+        [
+         "104423"
+        ]
+       ],
+       [
+        [
+         "104942"
+        ],
+        [
+         "104944"
+        ],
+        [
+         "104946"
+        ],
+        [
+         "104947"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "13923"
+       ],
+       [
+        "13924"
+       ],
+       [
+        "13926"
+       ],
+       [
+        "13931"
+       ],
+       [
+        "13995"
+       ]
+      ]
+     },
+     "Town_Name+CAMA_Link": {
+      "distinctValues": 636,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 1,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 15,
+      "sharedGeometryExamples": [
+       [
+        [
+         "New Haven",
+         "52070-13961"
+        ],
+        [
+         "New Haven",
+         "52070-13962"
+        ],
+        [
+         "New Haven",
+         "52070-13963"
+        ],
+        [
+         "New Haven",
+         "52070-13964"
+        ]
+       ],
+       [
+        [
+         "New Haven",
+         "52070-104400"
+        ],
+        [
+         "New Haven",
+         "52070-104421"
+        ],
+        [
+         "New Haven",
+         "52070-104422"
+        ],
+        [
+         "New Haven",
+         "52070-104423"
+        ]
+       ],
+       [
+        [
+         "New Haven",
+         "52070-104942"
+        ],
+        [
+         "New Haven",
+         "52070-104944"
+        ],
+        [
+         "New Haven",
+         "52070-104946"
+        ],
+        [
+         "New Haven",
+         "52070-104947"
+        ]
+       ]
+      ],
+      "repeatExamples": [
+       {
+        "value": [
+         "New Haven",
+         "52070-None"
+        ],
+        "rows": 18,
+        "geoms": 9
+       }
+      ],
+      "sampleValues": [
+       [
+        "New Haven",
+        "52070-13923"
+       ],
+       [
+        "New Haven",
+        "52070-13924"
+       ],
+       [
+        "New Haven",
+        "52070-13926"
+       ],
+       [
+        "New Haven",
+        "52070-13931"
+       ],
+       [
+        "New Haven",
+        "52070-13995"
+       ]
+      ]
+     },
+     "Town_Name+Parcel_ID": {
+      "distinctValues": 653,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 15,
+      "sharedGeometryExamples": [
+       [
+        [
+         "New Haven",
+         "13961"
+        ],
+        [
+         "New Haven",
+         "13962"
+        ],
+        [
+         "New Haven",
+         "13963"
+        ],
+        [
+         "New Haven",
+         "13964"
+        ]
+       ],
+       [
+        [
+         "New Haven",
+         "104400"
+        ],
+        [
+         "New Haven",
+         "104421"
+        ],
+        [
+         "New Haven",
+         "104422"
+        ],
+        [
+         "New Haven",
+         "104423"
+        ]
+       ],
+       [
+        [
+         "New Haven",
+         "104942"
+        ],
+        [
+         "New Haven",
+         "104944"
+        ],
+        [
+         "New Haven",
+         "104946"
+        ],
+        [
+         "New Haven",
+         "104947"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "New Haven",
+        "13923"
+       ],
+       [
+        "New Haven",
+        "13924"
+       ],
+       [
+        "New Haven",
+        "13926"
+       ],
+       [
+        "New Haven",
+        "13931"
+       ],
+       [
+        "New Haven",
+        "13995"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "Town_Name": [
+      "New Haven"
+     ]
+    }
+   },
+   {
+    "state": "CT",
+    "label": "newbritain",
+    "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+    "bbox": [
+     -72.7851,
+     41.6684,
+     -72.7751,
+     41.6784
+    ],
+    "rows": 542,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 542,
+    "fields": {
+     "CAMA_Link": {
+      "distinctValues": 541,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 1,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "50440-12578"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "50440-10360"
+       ],
+       [
+        "50440-10361"
+       ],
+       [
+        "50440-16058"
+       ],
+       [
+        "50440-16836"
+       ],
+       [
+        "50440-16059"
+       ]
+      ]
+     },
+     "Parcel_ID": {
+      "distinctValues": 0,
+      "blankRows": 542,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": []
+     },
+     "Town_Name+CAMA_Link": {
+      "distinctValues": 541,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 1,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "New Britain",
+         "50440-12578"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "New Britain",
+        "50440-10360"
+       ],
+       [
+        "New Britain",
+        "50440-10361"
+       ],
+       [
+        "New Britain",
+        "50440-16058"
+       ],
+       [
+        "New Britain",
+        "50440-16836"
+       ],
+       [
+        "New Britain",
+        "50440-16059"
+       ]
+      ]
+     },
+     "Town_Name+Parcel_ID": {
+      "distinctValues": 0,
+      "blankRows": 542,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": []
+     }
+    },
+    "scopeValues": {
+     "Town_Name": [
+      "New Britain"
+     ]
+    }
+   }
+  ],
+  "statewideSampleChecks": [
+   {
+    "state": "CT",
+    "label": "bridgeport",
+    "field": "CAMA_Link",
+    "sampled": 80,
+    "localRowsSampled": 81,
+    "statewideRows": 81,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   },
+   {
+    "state": "CT",
+    "label": "bridgeport",
+    "field": "Parcel_ID",
+    "sampled": 80,
+    "localRowsSampled": 81,
+    "statewideRows": 81,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   }
+  ],
+  "result": "Bridgeport: Parcel_ID/CAMA_Link repeat with distinct geometry (multi-part). Stamford, New Britain: Parcel_ID entirely null; CAMA_Link holds the ID (with embedded spaces, e.g. \"73070-S 013 4120\"). New Haven: \"52070-None\" spans 18 rows / 9 distinct polygons; 15 polygons shared by distinct Parcel_IDs."
+ },
+ "caveats": [
+  "The single New Haven bbox request first failed with a TLS socket reset (transient); the retry succeeded."
+ ]
+}

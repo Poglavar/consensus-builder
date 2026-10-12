@@ -1,0 +1,1490 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "CO",
+ "checkedAt": "2026-10-12",
+ "priorEvidence": "research/subnational/US/CO.json",
+ "uncoveredUnCities": 5,
+ "uncoveredUnCitySample": [
+  {
+   "cityCode": "6032",
+   "name": "Denver",
+   "lat": 39.720100810999,
+   "lon": -104.967274214941
+  },
+  {
+   "cityCode": "6146",
+   "name": "Fort Collins",
+   "lat": 40.5521620103556,
+   "lon": -105.082666110416
+  },
+  {
+   "cityCode": "6165",
+   "name": "Greeley",
+   "lat": 40.4065900589356,
+   "lon": -104.71555057375
+  },
+  {
+   "cityCode": "6089",
+   "name": "Boulder",
+   "lat": 40.0140689394027,
+   "lon": -105.261838065455
+  },
+  {
+   "cityCode": "6108",
+   "name": "Longmont",
+   "lat": 40.1842725408466,
+   "lon": -105.103362776236
+  }
+ ],
+ "access": "Anonymous HTTPS GET/POST to the public ArcGIS REST query endpoint, at most one request per second per host, no token or cookie. Only object-ID, native-ID and county/town scope fields were ever requested; no owner, address, sale, account or taxpayer fields.",
+ "helperScripts": "tmp/adapter-staging/us-statewide-a/scripts/ (state-cities.py, polite.mjs, meta.mjs, uniqueness.mjs, statewide-repeats.mjs, coverage.mjs, blank-breakdown.mjs, dup-ids.mjs, repeat-geometry.mjs, distinct-area-repeats.mjs, parts-overlap.mjs, verify.mjs, verify-parts.mjs, dense-cell.mjs, descriptors.mjs)",
+ "status": "held",
+ "heldReason": "Endpoint already catalogued as us-co-oit-public-parcels-denver (attributeFilters countyName=Denver, idField parcel_id, idPrefix US-CO-). A statewide discovery profile on that entry would probe every Colorado city through a Denver-only filter, and widening it in place would change identity (countyName must join parcel_id) and therefore every existing Denver parcel ID. Caller decision needed: a separate statewide entry on the same endpoint (candidate below, live-verified) or a migration of the Denver entry.",
+ "existingEntry": "us-co-oit-public-parcels-denver",
+ "sourceId": "us-co-oit-statewide-parcels",
+ "layer": {
+  "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+  "layerName": "Colorado_Public_Parcel_Composite",
+  "type": "Feature Layer",
+  "geometryType": "esriGeometryPolygon",
+  "objectIdField": "OBJECTID",
+  "globalIdField": null,
+  "maxRecordCount": 2000,
+  "capabilities": "Query,Create,Update,Delete,Uploads,Editing",
+  "supportsPagination": true,
+  "supportsStatistics": true,
+  "supportsHavingClause": true,
+  "nativeSpatialReference": 4326,
+  "dataLastEditDate": null,
+  "fieldCount": 35,
+  "fieldNames": [
+   "OBJECTID",
+   "sharing",
+   "countyName",
+   "countyFips",
+   "parcel_id",
+   "account",
+   "situsAdd",
+   "sitAddCty",
+   "sitAddZip",
+   "owner",
+   "owner2",
+   "ownerAdd",
+   "ownAddCty",
+   "ownAddStt",
+   "ownAddCou",
+   "ownAddZip",
+   "legalDesc",
+   "landSqft",
+   "landAcres",
+   "block",
+   "lot",
+   "subCode",
+   "subName",
+   "zoningCode",
+   "zoningDesc",
+   "landUseCde",
+   "landUseDsc",
+   "saleDate",
+   "salePrice",
+   "apprValTot",
+   "asedValTot",
+   "URL",
+   "dateReceived",
+   "Shape__Area",
+   "Shape__Length"
+  ],
+  "description": "The spatial polygon data is aggregated by the State of Colorado Governor's Office of Information Technology Geospatial Information Systems Team. This dataset represents an on-going relationship between the counties, municipalities and the State of Colorado to provide accurate updated land parcel information. Updates are collected annually.",
+  "copyrightText": "This dataset is created and maintained by the Governor's Office of Information Technology (OIT) GIS Team; sourced data is provided by various county, regional, and local government entities."
+ },
+ "recordCount": 2600023,
+ "coverage": {
+  "countiesPresent": [
+   "Adams",
+   "Arapahoe",
+   "Archuleta",
+   "Boulder",
+   "Broomfield",
+   "Clear Creek",
+   "Custer",
+   "Denver",
+   "Dolores",
+   "Douglas",
+   "Eagle",
+   "El Paso",
+   "Elbert",
+   "Garfield",
+   "Gilpin",
+   "Grand",
+   "Gunnison",
+   "Hinsdale",
+   "Huerfano",
+   "Jefferson",
+   "La Plata",
+   "Lake",
+   "Larimer",
+   "Logan",
+   "Mesa",
+   "Moffat",
+   "Montezuma",
+   "Morgan",
+   "Ouray",
+   "Park",
+   "Pitkin",
+   "Pueblo",
+   "Rio Blanco",
+   "Rio Grande",
+   "Routt",
+   "Saguache",
+   "San Juan",
+   "San Miguel",
+   "Sedgwick",
+   "Summit",
+   "Teller",
+   "Washington",
+   "Weld",
+   "Yuma"
+  ],
+  "of": 64,
+  "missingCounties": [
+   "Alamosa",
+   "Baca",
+   "Bent",
+   "Chaffee",
+   "Cheyenne",
+   "Conejos",
+   "Costilla",
+   "Crowley",
+   "Delta",
+   "Fremont",
+   "Jackson",
+   "Kiowa",
+   "Kit Carson",
+   "Las Animas",
+   "Lincoln",
+   "Mineral",
+   "Montrose",
+   "Otero",
+   "Phillips",
+   "Prowers"
+  ],
+  "sharingValues": {
+   "Public": 2600023
+  },
+  "note": "Missing counties derived from the live countyName groups (44 present); the service description says updates are collected annually from participating counties. All five uncovered UN cities (Denver, Fort Collins, Greeley, Boulder, Longmont) lie in present counties."
+ },
+ "identity": {
+  "idFields": [
+   "countyName",
+   "parcel_id"
+  ],
+  "parcelNumberField": "parcel_id",
+  "why": "parcel_id is county-scoped (the existing Denver entry fixes the county for this reason), so countyName is joined. No GlobalID; account is an assessor account field and is not requested.",
+  "blankCounts": {
+   "1=1": 2600023,
+   "parcel_id IS NULL": 5310,
+   "parcel_id = ''": 0,
+   "parcel_id = ' '": 0,
+   "countyName IS NULL": 0
+  },
+  "blankByCounty": {
+   "parcel_id IS NULL": {
+    "Teller": 4262,
+    "Ouray": 698,
+    "Grand": 207,
+    "Park": 91,
+    "Mesa": 31,
+    "Montezuma": 10,
+    "Gilpin": 9,
+    "Archuleta": 2
+   }
+  },
+  "exclusion": "attributeNotNull parcel_id (5,310 rows in 8 counties)."
+ },
+ "uniqueness": {
+  "bboxChecks": [
+   {
+    "state": "CO",
+    "label": "denver",
+    "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "bbox": [
+     -104.9723,
+     39.7151,
+     -104.9623,
+     39.7251
+    ],
+    "rows": 627,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon",
+     "MultiPolygon"
+    ],
+    "distinctGeometries": 618,
+    "fields": {
+     "parcel_id": {
+      "distinctValues": 627,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 2,
+      "sharedGeometryExamples": [
+       [
+        [
+         "0511107027027"
+        ],
+        [
+         "0511107029029"
+        ],
+        [
+         "0511107032032"
+        ],
+        [
+         "0511107030030"
+        ]
+       ],
+       [
+        [
+         "0511108046046"
+        ],
+        [
+         "0511108047047"
+        ],
+        [
+         "0511108048048"
+        ],
+        [
+         "0511108046999"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "0511107027027"
+       ],
+       [
+        "0511107029029"
+       ],
+       [
+        "0511107032032"
+       ],
+       [
+        "0511107030030"
+       ],
+       [
+        "0511107028028"
+       ]
+      ]
+     },
+     "countyName+parcel_id": {
+      "distinctValues": 627,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 2,
+      "sharedGeometryExamples": [
+       [
+        [
+         "Denver",
+         "0511107027027"
+        ],
+        [
+         "Denver",
+         "0511107029029"
+        ],
+        [
+         "Denver",
+         "0511107032032"
+        ],
+        [
+         "Denver",
+         "0511107030030"
+        ]
+       ],
+       [
+        [
+         "Denver",
+         "0511108046046"
+        ],
+        [
+         "Denver",
+         "0511108047047"
+        ],
+        [
+         "Denver",
+         "0511108048048"
+        ],
+        [
+         "Denver",
+         "0511108046999"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "Denver",
+        "0511107027027"
+       ],
+       [
+        "Denver",
+        "0511107029029"
+       ],
+       [
+        "Denver",
+        "0511107032032"
+       ],
+       [
+        "Denver",
+        "0511107030030"
+       ],
+       [
+        "Denver",
+        "0511107028028"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "countyName": [
+      "Denver"
+     ],
+     "countyFips": [
+      "031"
+     ],
+     "sharing": [
+      "Public"
+     ]
+    }
+   },
+   {
+    "state": "CO",
+    "label": "fortcollins",
+    "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "bbox": [
+     -105.0877,
+     40.5472,
+     -105.0777,
+     40.5572
+    ],
+    "rows": 378,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 334,
+    "fields": {
+     "parcel_id": {
+      "distinctValues": 376,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 1,
+      "valuesRepeatedWithIdenticalGeometry": 1,
+      "geometriesSharedByDistinctValues": 25,
+      "sharedGeometryExamples": [
+       [
+        [
+         "9726129004"
+        ],
+        [
+         "9726130004"
+        ]
+       ],
+       [
+        [
+         "9726141001"
+        ],
+        [
+         "9726141002"
+        ],
+        [
+         "9726141004"
+        ]
+       ],
+       [
+        [
+         "9726141003"
+        ],
+        [
+         "9726141005"
+        ],
+        [
+         "9726141006"
+        ]
+       ]
+      ],
+      "repeatExamples": [
+       {
+        "value": [
+         "9723310004"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "9726108007"
+       ],
+       [
+        "9726117003"
+       ],
+       [
+        "9726117004"
+       ],
+       [
+        "9726117005"
+       ],
+       [
+        "9726117006"
+       ]
+      ]
+     },
+     "countyName+parcel_id": {
+      "distinctValues": 376,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 1,
+      "valuesRepeatedWithIdenticalGeometry": 1,
+      "geometriesSharedByDistinctValues": 25,
+      "sharedGeometryExamples": [
+       [
+        [
+         "Larimer",
+         "9726129004"
+        ],
+        [
+         "Larimer",
+         "9726130004"
+        ]
+       ],
+       [
+        [
+         "Larimer",
+         "9726141001"
+        ],
+        [
+         "Larimer",
+         "9726141002"
+        ],
+        [
+         "Larimer",
+         "9726141004"
+        ]
+       ],
+       [
+        [
+         "Larimer",
+         "9726141003"
+        ],
+        [
+         "Larimer",
+         "9726141005"
+        ],
+        [
+         "Larimer",
+         "9726141006"
+        ]
+       ]
+      ],
+      "repeatExamples": [
+       {
+        "value": [
+         "Larimer",
+         "9723310004"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "Larimer",
+        "9726108007"
+       ],
+       [
+        "Larimer",
+        "9726117003"
+       ],
+       [
+        "Larimer",
+        "9726117004"
+       ],
+       [
+        "Larimer",
+        "9726117005"
+       ],
+       [
+        "Larimer",
+        "9726117006"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "countyName": [
+      "Larimer"
+     ],
+     "countyFips": [
+      "69"
+     ],
+     "sharing": [
+      "Public"
+     ]
+    }
+   },
+   {
+    "state": "CO",
+    "label": "greeley",
+    "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "bbox": [
+     -104.7206,
+     40.4016,
+     -104.7106,
+     40.4116
+    ],
+    "rows": 552,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon",
+     "MultiPolygon"
+    ],
+    "distinctGeometries": 552,
+    "fields": {
+     "parcel_id": {
+      "distinctValues": 552,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "095912410010"
+       ],
+       [
+        "095912412009"
+       ],
+       [
+        "095912412025"
+       ],
+       [
+        "095912413001"
+       ],
+       [
+        "095912414046"
+       ]
+      ]
+     },
+     "countyName+parcel_id": {
+      "distinctValues": 552,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "Weld",
+        "095912410010"
+       ],
+       [
+        "Weld",
+        "095912412009"
+       ],
+       [
+        "Weld",
+        "095912412025"
+       ],
+       [
+        "Weld",
+        "095912413001"
+       ],
+       [
+        "Weld",
+        "095912414046"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "countyName": [
+      "Weld"
+     ]
+    }
+   }
+  ],
+  "statewideSampleChecks": [
+   {
+    "state": "CO",
+    "label": "denver",
+    "field": "parcel_id",
+    "sampled": 80,
+    "localRowsSampled": 80,
+    "statewideRows": 80,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   },
+   {
+    "state": "CO",
+    "label": "fortcollins",
+    "field": "parcel_id",
+    "sampled": 80,
+    "localRowsSampled": 80,
+    "statewideRows": 80,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   }
+  ],
+  "withinCountyRepeatedIdRows": [
+   {
+    "scope": "countyName = 'Boulder'",
+    "scopeRows": 144551,
+    "repeatedValues": 2000,
+    "repeatedRows": 8441,
+    "truncatedAt2000": true,
+    "top": [
+     {
+      "parcel_id": "146329208019",
+      "n": 154
+     },
+     {
+      "parcel_id": "146329311017",
+      "n": 105
+     },
+     {
+      "parcel_id": "157724042011",
+      "n": 90
+     },
+     {
+      "parcel_id": "131509085008",
+      "n": 84
+     },
+     {
+      "parcel_id": "146328055001",
+      "n": 81
+     }
+    ]
+   },
+   {
+    "scope": "countyName = 'Larimer'",
+    "scopeRows": 180960,
+    "repeatedValues": 1818,
+    "repeatedRows": 9117,
+    "truncatedAt2000": false,
+    "top": [
+     {
+      "parcel_id": "8732300006",
+      "n": 487
+     },
+     {
+      "parcel_id": "8710000014",
+      "n": 388
+     },
+     {
+      "parcel_id": "9835400046",
+      "n": 343
+     },
+     {
+      "parcel_id": "9636200044",
+      "n": 300
+     },
+     {
+      "parcel_id": "9733100030",
+      "n": 293
+     }
+    ]
+   },
+   {
+    "scope": "countyName = 'Weld'",
+    "scopeRows": 163491,
+    "repeatedValues": 0,
+    "repeatedRows": 0,
+    "truncatedAt2000": false,
+    "top": []
+   },
+   {
+    "scope": "countyName = 'Denver'",
+    "scopeRows": 240257,
+    "repeatedValues": 0,
+    "repeatedRows": 0,
+    "truncatedAt2000": false,
+    "top": []
+   }
+  ],
+  "repeatedIdGeometrySamples": [
+   {
+    "value": "8732300006",
+    "rows": 487,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     291215
+    ]
+   },
+   {
+    "value": "8710000014",
+    "rows": 388,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     248709
+    ]
+   },
+   {
+    "value": "9835400046",
+    "rows": 343,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     157590
+    ]
+   },
+   {
+    "value": "9636200044",
+    "rows": 300,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     245757
+    ]
+   },
+   {
+    "value": "8718220901",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     846,
+     855
+    ]
+   },
+   {
+    "value": "8504307202",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     26,
+     332
+    ]
+   },
+   {
+    "value": "9818000047",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     24698
+    ]
+   },
+   {
+    "value": "2502000917",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     141140,
+     1552082
+    ]
+   },
+   {
+    "value": "146329208019",
+    "rows": 154,
+    "distinctGeometries": 14,
+    "pairsChecked": 91,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     698,
+     658,
+     648,
+     677,
+     665,
+     680,
+     648,
+     654
+    ]
+   },
+   {
+    "value": "146329311017",
+    "rows": 105,
+    "distinctGeometries": 5,
+    "pairsChecked": 10,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     4819,
+     27103,
+     3623,
+     6212,
+     28978
+    ]
+   },
+   {
+    "value": "157724042011",
+    "rows": 90,
+    "distinctGeometries": 6,
+    "pairsChecked": 15,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     26665,
+     58882,
+     5096,
+     5649,
+     38035,
+     3958
+    ]
+   },
+   {
+    "value": "131509085008",
+    "rows": 84,
+    "distinctGeometries": 7,
+    "pairsChecked": 21,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     1816,
+     4818,
+     5161,
+     4527,
+     157596,
+     3400,
+     5176
+    ]
+   },
+   {
+    "value": "120532421023",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     565
+    ]
+   },
+   {
+    "value": "157508315023",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     646,
+     380
+    ]
+   },
+   {
+    "value": "157511213008",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     510
+    ]
+   },
+   {
+    "value": "157510151001",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     33421
+    ]
+   }
+  ],
+  "idsWithDifferingShapeArea": [
+   {
+    "scope": "countyName = 'Boulder'",
+    "idsWithDistinctAreas": 834
+   },
+   {
+    "scope": "countyName = 'Denver'",
+    "idsWithDistinctAreas": 0
+   },
+   {
+    "scope": "countyName = 'Larimer'",
+    "idsWithDistinctAreas": 1133
+   },
+   {
+    "scope": "countyName = 'Weld'",
+    "idsWithDistinctAreas": 0
+   }
+  ],
+  "result": "Denver and Weld: no repeated parcel_id. Larimer (1,133 IDs) and Boulder (834 IDs) publish one parcel_id on several non-overlapping polygons plus stacked identical copies (up to 487 rows), hence parts mode; disjointParts rejected for the same stacked-copy reason as Ohio. Distinct parcel_ids share identical polygons (25 in the Fort Collins bbox)."
+ },
+ "candidateDescriptor": {
+  "id": "us-co-oit-statewide-parcels",
+  "name": "Colorado Public Parcels (OIT statewide composite)",
+  "operator": "Colorado Governor's Office of Information Technology (OIT) GIS, from county and municipal parcel data",
+  "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+  "adapter": "arcgis",
+  "idFields": [
+   "countyName",
+   "parcel_id"
+  ],
+  "idFieldTypes": {
+   "countyName": "string",
+   "parcel_id": "string"
+  },
+  "objectIdField": "OBJECTID",
+  "outFields": [
+   "OBJECTID",
+   "countyName",
+   "parcel_id"
+  ],
+  "parcelNumberField": "parcel_id",
+  "attributeNotNull": [
+   "parcel_id"
+  ],
+  "nativeGeometryMode": "parts",
+  "boundsQueryMode": "object-ids",
+  "idsQueryMode": "object-ids",
+  "disjointParts": false,
+  "idPrefix": "US-COLORADO-STATEWIDE-",
+  "metricSrid": 32613,
+  "stateCode": "CO",
+  "countryCode": "US",
+  "pageSize": 500,
+  "maxFeatures": 10000,
+  "maxBboxKm2": 25,
+  "maxConcurrentQueries": 2,
+  "scope": "OIT statewide composite of 44 of 64 Colorado counties (2,600,023 rows on 2026-10-12). Canonical identity is countyName plus the county parcel_id; same-key rows form one native parcel group. Rows without parcel_id (5,310) are excluded.",
+  "caveats": [
+   "Absent counties: Alamosa, Baca, Bent, Chaffee, Cheyenne, Conejos, Costilla, Crowley, Delta, Fremont, Jackson, Kiowa, Kit Carson, Las Animas, Lincoln, Mineral, Montrose, Otero, Phillips, Prowers.",
+   "parcel_id is county-scoped (the Denver entry fixes countyName for this reason), so identity is the composite countyName~parcel_id.",
+   "Larimer (1,133 IDs) and Boulder (834 IDs) publish one parcel_id on several polygons plus stacked byte-identical copies (up to 487 rows); all components are fetched and unioned. disjointParts is off because stacked copies fail the overlap check (Boulder 146329311017 failed with it on); sampled distinct components did not overlap.",
+   "Distinct parcel_ids can share one identical polygon (stacked condominium units; 25 shared polygons in one 0.01 degree Fort Collins box)."
+  ],
+  "attribution": "Colorado Governor's Office of Information Technology GIS and contributing counties. Adapted to WGS84.",
+  "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+  "catalogueUrl": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+  "evidenceFile": "research/statewide-us-2026-10-12/CO.json",
+  "cityIds": [],
+  "discovery": {
+   "jurisdiction": {
+    "countryCode": "US",
+    "admin1": [
+     "US-CO"
+    ],
+    "excludeAdmin1": [],
+    "basis": "OIT aggregates county and municipal parcels into one statewide layer, but only 44 of 64 counties are present; cities in the 20 absent counties cannot qualify.",
+    "evidence": [
+     "research/statewide-us-2026-10-12/CO.json",
+     "research/subnational/US/CO.json"
+    ]
+   },
+   "paceMs": 1000
+  }
+ },
+ "liveVerification": [
+  {
+   "cityCode": "6032",
+   "name": "Denver",
+   "unPoint": [
+    -104.967274214941,
+    39.720100810999
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -104.967774,
+      39.719601,
+      -104.966774,
+      39.720601
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 8,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "sourceRows": 8,
+     "ms": 9016,
+     "ids": [
+      "US-COLORADO-STATEWIDE-Denver~0511127005000",
+      "US-COLORADO-STATEWIDE-Denver~0511127006000",
+      "US-COLORADO-STATEWIDE-Denver~0511127013000",
+      "US-COLORADO-STATEWIDE-Denver~0511127014000",
+      "US-COLORADO-STATEWIDE-Denver~0511130001000",
+      "US-COLORADO-STATEWIDE-Denver~0511130002000",
+      "US-COLORADO-STATEWIDE-Denver~0511130012000",
+      "US-COLORADO-STATEWIDE-Denver~0511130013000"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-104.967774%2C39.719601%2C-104.966774%2C39.720601&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 976
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-104.967774%2C39.719601%2C-104.966774%2C39.720601&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 1346
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=715732%2C715733%2C715738%2C715739%2C715767%2C715768%2C715777%2C715778",
+       "status": 200,
+       "ms": 1379
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127005000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127006000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127013000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127014000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130001000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130002000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130012000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130013000%27%29%29&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 2168
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127005000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127006000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127013000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127014000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130001000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130002000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130012000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130013000%27%29%29&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 1815
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=715732%2C715733%2C715738%2C715739%2C715767%2C715768%2C715777%2C715778",
+       "status": 200,
+       "ms": 1325
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-COLORADO-STATEWIDE-Denver~0511127005000",
+     "US-COLORADO-STATEWIDE-Denver~0511130001000",
+     "US-COLORADO-STATEWIDE-Denver~0511130013000"
+    ],
+    "returnedIds": [
+     "US-COLORADO-STATEWIDE-Denver~0511127005000",
+     "US-COLORADO-STATEWIDE-Denver~0511130001000",
+     "US-COLORADO-STATEWIDE-Denver~0511130013000"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-COLORADO-STATEWIDE-Denver~0511127005000",
+      "sourceParcelId": "Denver~0511127005000",
+      "parcelNumber": "0511127005000",
+      "geometryType": "Polygon",
+      "boundsHash": "38fafb19416a677df7357d0a32d270c4d7ed591fbc3b65d815c3bd4e0fb2dfec",
+      "idsHash": "38fafb19416a677df7357d0a32d270c4d7ed591fbc3b65d815c3bd4e0fb2dfec",
+      "identical": true,
+      "sourcePartCount": 1
+     },
+     {
+      "id": "US-COLORADO-STATEWIDE-Denver~0511130001000",
+      "sourceParcelId": "Denver~0511130001000",
+      "parcelNumber": "0511130001000",
+      "geometryType": "Polygon",
+      "boundsHash": "e93617c0d062e7f6059f60695042a8728d86ea25e47415eb6ac5fa1e7d861f9e",
+      "idsHash": "e93617c0d062e7f6059f60695042a8728d86ea25e47415eb6ac5fa1e7d861f9e",
+      "identical": true,
+      "sourcePartCount": 1
+     },
+     {
+      "id": "US-COLORADO-STATEWIDE-Denver~0511130013000",
+      "sourceParcelId": "Denver~0511130013000",
+      "parcelNumber": "0511130013000",
+      "geometryType": "Polygon",
+      "boundsHash": "2da5c28da784580cb78372e8c02e27b2ac4d8d2414b4c134c064435dcc68c749",
+      "idsHash": "2da5c28da784580cb78372e8c02e27b2ac4d8d2414b4c134c064435dcc68c749",
+      "identical": true,
+      "sourcePartCount": 1
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127005000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130001000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130013000%27%29%29&f=json&returnCountOnly=true",
+      "status": 200,
+      "ms": 1608
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511127005000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130001000%27%29+OR+%28countyName+%3D+%27Denver%27+AND+parcel_id+%3D+%270511130013000%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200,
+      "ms": 2060
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=715732%2C715767%2C715778",
+      "status": 200,
+      "ms": 1396
+     }
+    ],
+    "ms": 5065
+   }
+  },
+  {
+   "cityCode": "6146",
+   "name": "Fort Collins",
+   "unPoint": [
+    -105.082666110416,
+    40.5521620103556
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -105.083166,
+      40.551662,
+      -105.082166,
+      40.552662
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 35,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "sourceRows": 35,
+     "ms": 9494,
+     "ids": [
+      "US-COLORADO-STATEWIDE-Larimer~9726151000",
+      "US-COLORADO-STATEWIDE-Larimer~9726136000",
+      "US-COLORADO-STATEWIDE-Larimer~9726128009",
+      "US-COLORADO-STATEWIDE-Larimer~9726129004",
+      "US-COLORADO-STATEWIDE-Larimer~9726130004",
+      "US-COLORADO-STATEWIDE-Larimer~9726128016",
+      "US-COLORADO-STATEWIDE-Larimer~9726141000",
+      "US-COLORADO-STATEWIDE-Larimer~9726141001",
+      "US-COLORADO-STATEWIDE-Larimer~9726141002",
+      "US-COLORADO-STATEWIDE-Larimer~9726141004",
+      "US-COLORADO-STATEWIDE-Larimer~9726141003",
+      "US-COLORADO-STATEWIDE-Larimer~9726141005",
+      "US-COLORADO-STATEWIDE-Larimer~9726141006",
+      "US-COLORADO-STATEWIDE-Larimer~9726129000",
+      "US-COLORADO-STATEWIDE-Larimer~9726136005",
+      "US-COLORADO-STATEWIDE-Larimer~9726136010",
+      "US-COLORADO-STATEWIDE-Larimer~9726136001",
+      "US-COLORADO-STATEWIDE-Larimer~9726136006",
+      "US-COLORADO-STATEWIDE-Larimer~9726136002",
+      "US-COLORADO-STATEWIDE-Larimer~9726136007",
+      "US-COLORADO-STATEWIDE-Larimer~9726136004",
+      "US-COLORADO-STATEWIDE-Larimer~9726136009",
+      "US-COLORADO-STATEWIDE-Larimer~9726136003",
+      "US-COLORADO-STATEWIDE-Larimer~9726136008",
+      "US-COLORADO-STATEWIDE-Larimer~9726129002",
+      "US-COLORADO-STATEWIDE-Larimer~9726130002",
+      "US-COLORADO-STATEWIDE-Larimer~9726129003",
+      "US-COLORADO-STATEWIDE-Larimer~9726130003",
+      "US-COLORADO-STATEWIDE-Larimer~9726129001",
+      "US-COLORADO-STATEWIDE-Larimer~9726130001",
+      "US-COLORADO-STATEWIDE-Larimer~9726129005",
+      "US-COLORADO-STATEWIDE-Larimer~9726130005",
+      "US-COLORADO-STATEWIDE-Larimer~9726128011",
+      "US-COLORADO-STATEWIDE-Larimer~9726128017",
+      "US-COLORADO-STATEWIDE-Larimer~9726151140"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-105.083166%2C40.551662%2C-105.082166%2C40.552662&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 1330
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-105.083166%2C40.551662%2C-105.082166%2C40.552662&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 1354
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=1795497%2C1795499%2C1795500%2C1817217%2C1817218%2C1817219%2C1817222%2C1817223%2C1817224%2C1817225%2C1817226%2C1817227%2C1817228%2C1817229%2C1817486%2C1817487%2C1819144%2C1819145%2C1819146%2C1819147%2C1846435%2C1846436%2C1846440%2C1846441%2C1846444%2C1846445%2C1846448%2C1846449%2C1846548%2C1846549%2C1846552%2C1846553%2C1904717%2C1904718%2C1904720",
+       "status": 200,
+       "ms": 1383
+      },
+      {
+       "method": "POST",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query",
+       "body": "where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128009%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128016%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141006%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136010%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136006%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136007%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136009%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136008%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128011%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128017%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151140%27%29%29&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 2138
+      },
+      {
+       "method": "POST",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query",
+       "body": "where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128009%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128016%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726141006%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136010%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136006%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136007%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136004%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136009%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136008%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130002%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130003%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726129005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726130005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128011%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726128017%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151140%27%29%29&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 1917
+      },
+      {
+       "method": "GET",
+       "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=1795497%2C1795499%2C1795500%2C1817217%2C1817218%2C1817219%2C1817222%2C1817223%2C1817224%2C1817225%2C1817226%2C1817227%2C1817228%2C1817229%2C1817486%2C1817487%2C1819144%2C1819145%2C1819146%2C1819147%2C1846435%2C1846436%2C1846440%2C1846441%2C1846444%2C1846445%2C1846448%2C1846449%2C1846548%2C1846549%2C1846552%2C1846553%2C1904717%2C1904718%2C1904720",
+       "status": 200,
+       "ms": 1354
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-COLORADO-STATEWIDE-Larimer~9726151000",
+     "US-COLORADO-STATEWIDE-Larimer~9726136006",
+     "US-COLORADO-STATEWIDE-Larimer~9726151140"
+    ],
+    "returnedIds": [
+     "US-COLORADO-STATEWIDE-Larimer~9726151000",
+     "US-COLORADO-STATEWIDE-Larimer~9726136006",
+     "US-COLORADO-STATEWIDE-Larimer~9726151140"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-COLORADO-STATEWIDE-Larimer~9726151000",
+      "sourceParcelId": "Larimer~9726151000",
+      "parcelNumber": "9726151000",
+      "geometryType": "Polygon",
+      "boundsHash": "7a7b0afc12c1970247add92773400ec2010dec2b7e4927f94a7452f766b673f2",
+      "idsHash": "7a7b0afc12c1970247add92773400ec2010dec2b7e4927f94a7452f766b673f2",
+      "identical": true,
+      "sourcePartCount": 1
+     },
+     {
+      "id": "US-COLORADO-STATEWIDE-Larimer~9726136006",
+      "sourceParcelId": "Larimer~9726136006",
+      "parcelNumber": "9726136006",
+      "geometryType": "Polygon",
+      "boundsHash": "82f7f42c753fd38aaa60c6640ba380e4e1d00b6cda86469d065637f0cfb690eb",
+      "idsHash": "82f7f42c753fd38aaa60c6640ba380e4e1d00b6cda86469d065637f0cfb690eb",
+      "identical": true,
+      "sourcePartCount": 1
+     },
+     {
+      "id": "US-COLORADO-STATEWIDE-Larimer~9726151140",
+      "sourceParcelId": "Larimer~9726151140",
+      "parcelNumber": "9726151140",
+      "geometryType": "Polygon",
+      "boundsHash": "8b624bfdc57658c25fecc4e5c6b48cb19367a3c39cf088fe699e147ebeafaaec",
+      "idsHash": "8b624bfdc57658c25fecc4e5c6b48cb19367a3c39cf088fe699e147ebeafaaec",
+      "identical": true,
+      "sourcePartCount": 1
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136006%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151140%27%29%29&f=json&returnCountOnly=true",
+      "status": 200,
+      "ms": 1647
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151000%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726136006%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%279726151140%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200,
+      "ms": 2101
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=1795497%2C1819145%2C1904720",
+      "status": 200,
+      "ms": 1684
+     }
+    ],
+    "ms": 5433
+   }
+  }
+ ],
+ "partsVerification": [
+  {
+   "id": "US-COLORADO-STATEWIDE-Larimer~8718220901",
+   "idsQuery": {
+    "absentIds": [],
+    "sourceRows": 2,
+    "geometryType": "Polygon",
+    "sourcePartCount": 2,
+    "hash": "3b75eb982de32c88742e1aff145d984c682d7e9042c464fe9a441caf22919706",
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718220901%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718220901%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=1836969%2C1842473",
+      "status": 200
+     }
+    ]
+   },
+   "boundsQuery": {
+    "bbox": [
+     -105.0566625,
+     40.5751793,
+     -105.0556625,
+     40.5761793
+    ],
+    "features": 6,
+    "sourceRows": 7,
+    "found": true,
+    "hash": "3b75eb982de32c88742e1aff145d984c682d7e9042c464fe9a441caf22919706",
+    "sourcePartCount": 2,
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-105.0566625%2C40.5751793%2C-105.0556625%2C40.5761793&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-105.0566625%2C40.5751793%2C-105.0556625%2C40.5761793&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=1796637%2C1836968%2C1836969%2C1842355%2C1842473%2C1842774%2C1902721",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718232001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718220005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718220901%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718216904%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718215901%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718216901%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718232001%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718220005%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718220901%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718216904%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718215901%27%29+OR+%28countyName+%3D+%27Larimer%27+AND+parcel_id+%3D+%278718216901%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=1796637%2C1836968%2C1836969%2C1842355%2C1842473%2C1842774%2C1902721",
+      "status": 200
+     }
+    ]
+   },
+   "identical": true
+  },
+  {
+   "id": "US-COLORADO-STATEWIDE-Boulder~146329311017",
+   "idsQuery": {
+    "absentIds": [],
+    "sourceRows": 105,
+    "geometryType": "MultiPolygon",
+    "sourcePartCount": 105,
+    "hash": "aa555729ca97f06a0de2f52fc7554ecaae491ffa42e5de834a6a9e0f77cdbb3c",
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329311017%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329311017%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=569135%2C569136%2C569137%2C569138%2C569139%2C569140%2C569141%2C569142%2C569143%2C569144%2C569145%2C569146%2C569147%2C569148%2C569149%2C569150%2C569151%2C569152%2C569153%2C569154%2C569155%2C569164%2C569165%2C569166%2C569167%2C569168%2C569169%2C569170%2C569171%2C569172%2C569173%2C569174%2C569175%2C569176%2C569177%2C569178%2C569179%2C569180%2C569181%2C569182%2C569183%2C569184%2C569185%2C569186%2C569187%2C569188%2C569189%2C569190%2C569191%2C569192%2C569193%2C569194%2C569195%2C569196%2C569197%2C569198%2C569199%2C569200%2C569201%2C569202%2C569203%2C569204%2C569205%2C569669%2C569670%2C569671%2C569672%2C569673%2C569674%2C569675%2C569676%2C569677%2C569678%2C569679%2C569680%2C569681%2C569682%2C569683%2C569684%2C569685%2C569686%2C569687%2C569688%2C569689%2C569800%2C569801%2C569802%2C569803%2C569804%2C569805%2C569806%2C569807%2C569808%2C569809%2C569810%2C569811%2C569812%2C569813%2C569814%2C569815%2C569816%2C569817%2C569818%2C569819%2C569820",
+      "status": 200
+     }
+    ]
+   },
+   "boundsQuery": {
+    "bbox": [
+     -105.2567996,
+     40.0201313,
+     -105.2557996,
+     40.0211313
+    ],
+    "features": 5,
+    "sourceRows": 109,
+    "found": true,
+    "hash": "aa555729ca97f06a0de2f52fc7554ecaae491ffa42e5de834a6a9e0f77cdbb3c",
+    "sourcePartCount": 105,
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-105.2567996%2C40.0201313%2C-105.2557996%2C40.0211313&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&geometry=-105.2567996%2C40.0201313%2C-105.2557996%2C40.0211313&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=478352%2C527268%2C528587%2C541025%2C569164%2C569165%2C569166%2C569167%2C569168%2C569169%2C569170%2C569171%2C569172%2C569173%2C569174%2C569175%2C569176%2C569177%2C569178%2C569179%2C569180%2C569181%2C569182%2C569183%2C569184%2C569800%2C569801%2C569802%2C569803%2C569804%2C569805%2C569806%2C569807%2C569808%2C569809%2C569810%2C569811%2C569812%2C569813%2C569814%2C569815%2C569816%2C569817%2C569818%2C569819%2C569820",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329311005%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329304001%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329313001%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329313002%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329311017%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=%28parcel_id+IS+NOT+NULL%29+AND+%28%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329311005%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329304001%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329313001%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329313002%27%29+OR+%28countyName+%3D+%27Boulder%27+AND+parcel_id+%3D+%27146329311017%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id+IS+NOT+NULL&outFields=OBJECTID%2CcountyName%2Cparcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=478352%2C527268%2C528587%2C541025%2C569135%2C569136%2C569137%2C569138%2C569139%2C569140%2C569141%2C569142%2C569143%2C569144%2C569145%2C569146%2C569147%2C569148%2C569149%2C569150%2C569151%2C569152%2C569153%2C569154%2C569155%2C569164%2C569165%2C569166%2C569167%2C569168%2C569169%2C569170%2C569171%2C569172%2C569173%2C569174%2C569175%2C569176%2C569177%2C569178%2C569179%2C569180%2C569181%2C569182%2C569183%2C569184%2C569185%2C569186%2C569187%2C569188%2C569189%2C569190%2C569191%2C569192%2C569193%2C569194%2C569195%2C569196%2C569197%2C569198%2C569199%2C569200%2C569201%2C569202%2C569203%2C569204%2C569205%2C569669%2C569670%2C569671%2C569672%2C569673%2C569674%2C569675%2C569676%2C569677%2C569678%2C569679%2C569680%2C569681%2C569682%2C569683%2C569684%2C569685%2C569686%2C569687%2C569688%2C569689%2C569800%2C569801%2C569802%2C569803%2C569804%2C569805%2C569806%2C569807%2C569808%2C569809%2C569810%2C569811%2C569812%2C569813%2C569814%2C569815%2C569816%2C569817%2C569818%2C569819%2C569820",
+      "status": 200
+     }
+    ]
+   },
+   "identical": true
+  }
+ ],
+ "transientObservations": [
+  "One Boulder parts query timed out at the adapter 15 s limit (a 5-term native-ID count); the immediate retry passed with every request under 1 s."
+ ],
+ "caveats": [
+  "Absent counties: Alamosa, Baca, Bent, Chaffee, Cheyenne, Conejos, Costilla, Crowley, Delta, Fremont, Jackson, Kiowa, Kit Carson, Las Animas, Lincoln, Mineral, Montrose, Otero, Phillips, Prowers.",
+  "parcel_id is county-scoped (the Denver entry fixes countyName for this reason), so identity is the composite countyName~parcel_id.",
+  "Larimer (1,133 IDs) and Boulder (834 IDs) publish one parcel_id on several polygons plus stacked byte-identical copies (up to 487 rows); all components are fetched and unioned. disjointParts is off because stacked copies fail the overlap check (Boulder 146329311017 failed with it on); sampled distinct components did not overlap.",
+  "Distinct parcel_ids can share one identical polygon (stacked condominium units; 25 shared polygons in one 0.01 degree Fort Collins box)."
+ ]
+}

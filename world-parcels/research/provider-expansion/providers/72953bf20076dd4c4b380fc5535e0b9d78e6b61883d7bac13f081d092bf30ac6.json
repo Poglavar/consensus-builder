@@ -1,0 +1,87 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PL",
+ "country": "Poland",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "GUGiK (Head Office of Geodesy and Cartography): ULDK service and Krajowa Integracja Ewidencji Gruntow (KIEG); EGiB data held by county starosties",
+ "portalsFound": [
+  {
+   "url": "https://uldk.gugik.gov.pl/",
+   "observation": "ULDK: open national parcel lookup API by point / id; returns id, admin names and WKT geometry"
+  },
+  {
+   "url": "https://integracja.gugik.gov.pl/cgi-bin/KrajowaIntegracjaEwidencjiGruntow",
+   "observation": "KIEG WMS/WFS national parcel integration; my WFS GetFeature attempt returned an HTML page (params not tuned)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=638000,486000,2180&result=id,voivodeship,county,commune,parcel&srid=2180",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "one parcel record, Warsaw (attributes)"
+  },
+  {
+   "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=21.0122,52.2297,4326&result=id,geom_wkt&srid=4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "Warsaw parcel 146510_8.0502.1/3 with closed POLYGON WKT"
+  },
+  {
+   "url": "https://integracja.gugik.gov.pl/cgi-bin/KrajowaIntegracjaEwidencjiGruntow?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:dzialki&COUNT=2&BBOX=52.2295,21.0117,52.2300,21.0125,urn:ogc:def:crs:EPSG::4326&OUTPUTFORMAT=application/json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "HTML WMS page, no features (layer/params wrong); not verification"
+  },
+  {
+   "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.945,50.0647,4326&result=id,voivodeship,county,commune,region,parcel&srid=4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "Krakow parcel 126105_9.0120.107/1 (malopolskie)"
+  },
+  {
+   "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.945,50.0647,4326&result=id,geom_wkt&srid=4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "Krakow parcel with closed POLYGON WKT"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "pl-gugik-uldk",
+  "requestUrl": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=21.0122,52.2297,4326&result=id,geom_wkt&srid=4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/plain; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   21.0122,
+   52.2297,
+   21.0122,
+   52.2297
+  ],
+  "parcelRecordCount": 1,
+  "recordListPath": "pipe-separated line: id|SRID=4326;POLYGON((...))",
+  "geometryType": "Polygon (WKT)",
+  "closedRings": true,
+  "idField": "TERYT-based parcel id (e.g. 146510_8.0502.1/3)",
+  "responseFile": "countries/PL-parcel-response.json",
+  "pagination": "none; one parcel per point query (GetParcelByXY)",
+  "regionSampled": "Warsaw (mazowieckie); second sample Krakow (malopolskie)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Poland-wide land parcels (EGiB) via national ULDK",
+  "regionsVerified": [
+   "mazowieckie (Warsaw)",
+   "malopolskie (Krakow)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Point-lookup API, not a bulk/bbox feature service; KIEG WFS bbox query not verified; licence not read.",
+ "nextStep": "Tune KIEG WFS GetFeature (layer names from GetCapabilities) for bbox queries."
+}

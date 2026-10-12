@@ -1,12 +1,13 @@
 // The coverage compiler (scripts/build-world-coverage.mjs): registry status -> tier mapping, city
-// config parsing, and that the committed frontend/data/world-coverage.json is what it produces now.
+// config parsing, region (state/province/UK nation) coverage gates, and that the committed
+// frontend/data/world-coverage.json is what it produces now.
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-    buildCoverage, cityStatusTier, countryProbeTier, countryCoverageTier, countryCoverageLevel, regionBucketTier,
-    parseCityConfigs, simplifyRing, strongest
+    buildCoverage, buildRegions, cityStatusTier, countryProbeTier, countryCoverageTier, countryCoverageLevel, regionBucketTier,
+    regionCoverageLevel, regionIdFor, parseCityConfigs, simplifyRing, strongest, UNPAINTED_SUBNATIONAL
 } from '../../scripts/build-world-coverage.mjs';
 
 const REPO = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
@@ -34,8 +35,12 @@ describe('tier mapping', () => {
         expect(countryProbeTier('subnational_only')).toBe('unknown');
         expect(countryCoverageTier('verified_countrywide')).toBe('source');
         expect(regionBucketTier('partial')).toBe('source');
+        expect(regionBucketTier('regionWide')).toBe('source');
         expect(regionBucketTier('credentialed')).toBe('none');
+        expect(regionBucketTier('viewerOnly')).toBe('none');
         expect(regionBucketTier('unavailable')).toBe('unknown');
+        // Self-declared rural registries are not cadastral parcels.
+        expect(regionBucketTier('ruralRegistryOnly')).toBe('unknown');
     });
 
     it('keeps the strongest tier', () => {
@@ -87,6 +92,9 @@ describe('buildCoverage', () => {
         registry: JSON.parse(read('world-parcels/registry.json')),
         countryReviews: JSON.parse(read('world-parcels/country-coverage-reviews.json')).reviews,
         countries: JSON.parse(read('world-parcels/countries.geojson')),
+        regions: JSON.parse(read('world-parcels/regions.geojson')),
+        regionReviews: JSON.parse(read('world-parcels/region-coverage-reviews.json')).reviews,
+        catalog: JSON.parse(read('backend/parcels/source-catalog.json')).sources,
         cityConfigSource: read('frontend/js/city-config.js'),
         demographics: JSON.parse(read('world-parcels/report/city-demographics.json'))
     };
@@ -319,13 +327,177 @@ describe('buildCoverage', () => {
         });
     });
 
+    describe('regions in the current data', () => {
+        const regions = Object.fromEntries(built.regions.map(region => [region.id, region]));
+        const countries = Object.fromEntries(built.countries.map(country => [country.cc, country]));
+        const reviews = JSON.parse(read('world-parcels/region-coverage-reviews.json')).reviews;
+
+        it('paints England and Wales full from the HMLR review while the United Kingdom stays partial', () => {
+            for (const id of ['GB-ENG', 'GB-WLS']) {
+                expect(regions[id]).toMatchObject({
+                    cc: 'GB', coverage: 'full', tier: 'source', note: expect.stringMatching(/registered freehold/),
+                    coverageSources: expect.arrayContaining([{ title: expect.any(String), url: 'https://www.gov.uk/guidance/inspire-index-polygons-spatial-data' }])
+                });
+                expect(regions[id].rings.length).toBeGreaterThan(0);
+            }
+            expect(regions['GB-SCT']).toMatchObject({ coverage: 'partial', note: expect.stringMatching(/Edinburgh and Glasgow/) });
+            expect(regions['GB-NIR']).toMatchObject({ coverage: 'unknown', tier: 'unknown' });
+            expect(countries.GB.coverage).toBe('partial');
+        });
+
+        it('keeps the United States partial while reviewed states are full and gapped states stay partial', () => {
+            expect(countries.US.coverage).toBe('partial');
+            for (const id of ['US-MD', 'US-NC', 'US-ND', 'US-NJ', 'US-UT', 'US-WI']) expect(regions[id].coverage, id).toBe('full');
+            // Asotin County is missing from the Washington compilation; Esmeralda has no digital parcels.
+            expect(regions['US-WA']).toMatchObject({ coverage: 'partial', note: expect.stringMatching(/Asotin absent/) });
+            expect(regions['US-NV'].coverage).toBe('partial');
+            expect(built.regions.filter(region => region.cc === 'US')).toHaveLength(51);
+        });
+
+        it('grants full exactly to the reviewed regions, so a review that stops passing its gates is caught', () => {
+            const fullReviews = reviews.filter(review => review.coverage === 'full').map(review => review.regionCode).sort();
+            expect(built.regions.filter(region => region.coverage === 'full').map(region => region.id).sort()).toEqual(fullReviews);
+            for (const review of reviews) {
+                expect(review.evidenceFiles.every(file => existsSync(path.join(REPO, file))), `${review.regionCode} evidence files`).toBe(true);
+            }
+        });
+
+        it('emits each region scheme in full and leaves district-level Rwanda as a country', () => {
+            const perCountry = built.regions.reduce((m, region) => ({ ...m, [region.cc]: (m[region.cc] || 0) + 1 }), {});
+            expect(perCountry).toMatchObject({ US: 51, CA: 13, AU: 8, DE: 16, CH: 26, BE: 3, GB: 4, MX: 32, MY: 16, BR: 27, AR: 24 });
+            expect(perCountry.RW).toBeUndefined();
+            expect(Object.keys(UNPAINTED_SUBNATIONAL)).toEqual(['RW']);
+            // Malaysia's registry letter codes join the numeric ISO 3166-2 outlines.
+            expect(regionIdFor('MY', 'SGR')).toBe('MY-10');
+            expect(regions['MY-10']).toMatchObject({ name: 'Selangor', coverage: 'partial' });
+            expect(regions['BE-VLG']).toMatchObject({ coverage: 'partial', note: expect.stringMatching(/Flanders/) });
+        });
+
+        it('keeps every region record compact and deterministic', () => {
+            const ids = built.regions.map(region => region.id);
+            expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b)));
+            for (const region of built.regions) {
+                expect(Object.keys(region).filter(key => key !== 'coverageSources'))
+                    .toEqual(['id', 'cc', 'name', 'tier', 'coverage', 'note', 'center', 'rings']);
+                expect(region.id.startsWith(`${region.cc}-`)).toBe(true);
+                expect(region.note).toBeTruthy();
+            }
+        });
+    });
+
+    describe('synthetic region coverage gates', () => {
+        const box = (x0, y0, x1, y1) => ({ type: 'Polygon', coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]] });
+        const outline = (id, geometry, extra = {}) => ({ type: 'Feature', properties: { id, cc: id.slice(0, 2), name: `Region ${id}`, labelLat: 0.5, labelLon: 0.5, ...extra }, geometry });
+        const outlines = (...features) => ({ type: 'FeatureCollection', features });
+        const twoRegions = outlines(outline('AA-ONE', box(0, 0, 1, 1)), outline('AA-TWO', box(1, 0, 2, 1)));
+        const registry = ({ sources = [], cities = [], subnationalCoverage = [] } = {}) => ({ updatedAt: '2026-10-12', sources, cities, subnationalCoverage, countryProbes: [], countryCoverage: [] });
+        const verified = sourceId => ({ sourceId, countryCode: 'AA', verificationStatus: 'verified_nonempty_sample' });
+        const review = (regionCode, sourceIds, overrides = {}) => ({
+            regionCode, coverage: 'full', checkedAt: '2026-10-12', sourceIds, exclusions: [], note: 'Reviewed regional scope',
+            evidence: [{ title: 'Regional scope evidence', url: 'https://scope.invalid/region' }], ...overrides
+        });
+        const sub = rows => [{ countryCode: 'AA', regions: rows.map(([code, bucket]) => ({ code, name: code, bucket, sourceName: `Source ${code}` })) }];
+        const regionsOf = args => Object.fromEntries(buildRegions({ outlines: twoRegions, tolerance: 0.01, ...args }).map(region => [region.id, region]));
+
+        it('paints a reviewed region full over a country that stays partial', () => {
+            const country = { type: 'Feature', properties: { ISO_A2: 'AA', NAME: 'Test AA', LABEL_Y: 0.5, LABEL_X: 1 }, geometry: box(0, 0, 2, 1) };
+            const result = buildCoverage({
+                registry: registry({ sources: [verified('aa-one-parcels')], subnationalCoverage: sub([['ONE', 'regionWide'], ['TWO', 'none']]) }),
+                countries: { type: 'FeatureCollection', features: [country] }, cityConfigSource: 'const CITY_CONFIGS = {};',
+                regions: twoRegions, regionReviews: [review('AA-ONE', ['aa-one-parcels'])]
+            });
+            expect(result.countries.find(entry => entry.cc === 'AA').coverage).toBe('partial');
+            expect(result.regions).toMatchObject([
+                { id: 'AA-ONE', coverage: 'full', tier: 'source', note: 'Reviewed regional scope', coverageSources: [{ title: 'Regional scope evidence', url: 'https://scope.invalid/region' }] },
+                { id: 'AA-TWO', coverage: 'none', tier: 'none', note: 'No open regional parcel source found' }
+            ]);
+        });
+
+        it('never makes a region full without a review that passes every gate', () => {
+            const sources = [verified('aa-one-parcels')];
+            const subnationalCoverage = sub([['ONE', 'regionWide']]);
+            const provider = { id: 'aa-statewide', discovery: { jurisdiction: { countryCode: 'AA', admin1: ['AA-ONE'], basis: 'Statewide layer, every county present.' } } };
+            expect(regionsOf({ registry: registry({ sources, subnationalCoverage }), catalog: [provider] })['AA-ONE'].coverage).toBe('partial');
+            for (const invalid of [
+                review('AA-ONE', ['aa-one-parcels'], { exclusions: ['One county'] }),
+                review('AA-ONE', ['aa-one-parcels'], { exclusions: undefined }),
+                review('AA-ONE', ['aa-one-parcels'], { evidence: [] }),
+                review('AA-ONE', ['aa-one-parcels'], { evidence: [{ title: 'Regional scope evidence', url: 'http://scope.invalid/region' }] }),
+                review('AA-ONE', ['aa-one-parcels'], { checkedAt: 'last week' }),
+                review('AA-ONE', ['not-a-verified-source'])
+            ]) {
+                const region = regionsOf({ registry: registry({ sources, subnationalCoverage }), reviews: [invalid] })['AA-ONE'];
+                expect(region.coverage).toBe('partial');
+                expect(region.coverageSources).toBeUndefined();
+            }
+            // A partial review only explains a partial region, like a country review does.
+            const explained = regionsOf({ registry: registry({ sources, subnationalCoverage }), reviews: [review('AA-ONE', [], { coverage: 'partial', note: 'Two counties missing' })] })['AA-ONE'];
+            expect(explained).toMatchObject({ coverage: 'partial', note: 'Two counties missing' });
+            // A provider named for the region can back its review; a provider for the neighbour cannot.
+            const neighbour = { id: 'aa-two-statewide', discovery: { jurisdiction: { admin1: ['AA-TWO'], basis: 'Neighbour layer.' } } };
+            expect(regionsOf({ registry: registry(), catalog: [provider], reviews: [review('AA-ONE', ['aa-statewide'])] })['AA-ONE'].coverage).toBe('full');
+            expect(regionsOf({ registry: registry(), catalog: [neighbour], reviews: [review('AA-ONE', ['aa-two-statewide'])] })['AA-ONE'].coverage).toBe('unknown');
+        });
+
+        it('derives partial from buckets, executable providers and verified cities inside the outline only', () => {
+            expect(regionCoverageLevel({ buckets: ['credentialed', 'partial'] })).toBe('partial');
+            expect(regionCoverageLevel({ buckets: ['ruralRegistryOnly'] })).toBe('unknown');
+            expect(regionCoverageLevel({ buckets: ['viewerOnly'] })).toBe('none');
+            expect(regionCoverageLevel({})).toBe('unknown');
+
+            const provider = { id: 'aa-one-layer', discovery: { jurisdiction: { admin1: ['AA-ONE'], basis: 'Region-wide layer for One.' } } };
+            const byProvider = regionsOf({ registry: registry(), catalog: [provider] });
+            expect(byProvider['AA-ONE']).toMatchObject({ coverage: 'partial', note: 'Region-wide layer for One.' });
+            expect(byProvider['AA-TWO']).toMatchObject({ coverage: 'unknown', note: 'No open parcel source verified in this region yet' });
+
+            const cities = [
+                { cityId: 'c1', name: 'Inside', countryCode: 'AA', centerLatLon: [0.5, 1.5], parcelStatus: 'verified_sample_city_scope' },
+                { cityId: 'c2', name: 'Foreign', countryCode: 'BB', centerLatLon: [0.5, 0.5], parcelStatus: 'verified_sample_city_scope' },
+                { cityId: 'c3', name: 'Unverified', countryCode: 'AA', centerLatLon: [0.5, 0.5], parcelStatus: 'no_verified_open_endpoint_after_attempts' }
+            ];
+            const byCity = regionsOf({ registry: registry({ cities }) });
+            expect(byCity['AA-TWO']).toMatchObject({ coverage: 'partial', note: expect.stringMatching(/verified in Inside/) });
+            expect(byCity['AA-ONE'].coverage).toBe('unknown');
+        });
+
+        it('joins providers that name the admin-1 members of a map-unit region', () => {
+            const mapUnit = outlines(outline('AA-NAT', box(0, 0, 1, 1), { members: ['AA-P1', 'AA-P2'] }));
+            const provider = { id: 'aa-p1-layer', discovery: { jurisdiction: { admin1: ['AA-P1'], basis: 'Province one layer.' } } };
+            const [region] = buildRegions({ outlines: mapUnit, registry: registry(), catalog: [provider], tolerance: 0.01 });
+            expect(region).toMatchObject({ id: 'AA-NAT', coverage: 'partial', note: 'Province one layer.' });
+        });
+
+        it('lets one outline answer for provinces split after Natural Earth was cut', () => {
+            const split = outlines(outline('AA-OLD', box(0, 0, 1, 1), { codes: ['AA-OLD', 'AA-NEW'] }));
+            const [region] = buildRegions({ outlines: split, registry: registry({ subnationalCoverage: sub([['OLD', 'none'], ['NEW', 'partial']]) }), tolerance: 0.01 });
+            expect(region.coverage).toBe('partial');
+        });
+
+        it('fails loudly on registry, catalog or review codes without an outline', () => {
+            expect(() => buildRegions({ outlines: twoRegions, registry: registry({ subnationalCoverage: sub([['THREE', 'partial']]) }) }))
+                .toThrow(/AA\/THREE/);
+            expect(() => buildRegions({ outlines: twoRegions, registry: registry({ subnationalCoverage: [{ countryCode: 'BB', regions: [] }] }) }))
+                .toThrow(/BB without region outlines/);
+            expect(() => buildRegions({ outlines: twoRegions, registry: registry({ subnationalCoverage: [{ countryCode: 'RW', regions: [{ code: 'Gasabo', bucket: 'regionWide' }] }] }) }))
+                .not.toThrow();
+            expect(() => buildRegions({ outlines: twoRegions, registry: registry(), catalog: [{ id: 'typo', discovery: { jurisdiction: { admin1: ['AA-TRE'] } } }] }))
+                .toThrow(/typo names admin-1 AA-TRE/);
+            expect(() => buildRegions({ outlines: twoRegions, registry: registry(), reviews: [review('AA-ZZZ', [])] }))
+                .toThrow(/AA-ZZZ/);
+            expect(() => buildRegions({ outlines: twoRegions, registry: registry(), reviews: [review('AA-ONE', []), review('AA-ONE', [])] }))
+                .toThrow(/more than one/);
+        });
+    });
+
     it('matches the committed output byte for byte and keeps outline and per-city payloads small', () => {
         const committed = read('frontend/data/world-coverage.json');
         expect(committed).toBe(`${JSON.stringify(built)}\n`);
         // Allow the catalog to grow without repeatedly lifting a total-file ceiling. Geography
         // has a fixed budget; city records retain a compact average budget as their count grows.
         const bytes = value => Buffer.byteLength(JSON.stringify(value));
-        expect(bytes({ ...built, liveCities: [], cities: [] })).toBeLessThan(200 * 1024);
+        expect(bytes({ ...built, liveCities: [], cities: [], regions: [] })).toBeLessThan(200 * 1024);
+        // Regions have their own geography budget (about 215 KB with 253 regions on 2026-10-12).
+        expect(bytes(built.regions)).toBeLessThan(240 * 1024);
         expect(bytes(built.liveCities) + bytes(built.cities))
             .toBeLessThan(256 * (built.liveCities.length + built.cities.length) + 4);
     });

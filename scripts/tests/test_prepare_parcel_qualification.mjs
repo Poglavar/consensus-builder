@@ -149,3 +149,41 @@ test('CLI writes a safe needs-llm preparation record and exits 2', async t => {
     assert.equal(preparation.status, 'needs-llm');
     assert.match(preparation.reason, /repository root is missing|provider reuse descriptor/);
 });
+
+test('accepts a provider jurisdiction basis backed by evidence as source-purpose proof', async t => {
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'parcel-preparer-jurisdiction-'));
+    t.after(() => fs.rm(sourceRoot, { recursive: true, force: true }));
+    const uldk = parcelSourceCatalog.sources.find(row => row.id === 'pl-gugik-uldk');
+    await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection', features: [
+        { type: 'Feature', properties: { id: '146506_8.0104.1' }, geometry: polygon(21.0) }
+    ] }));
+    // A country research file with no purpose/scope text, as for Poland.
+    await fs.writeFile(path.join(sourceRoot, 'country.json'), JSON.stringify({ countryCode: 'PL', status: 'verified' }));
+    const city = () => ({
+        cityCode: '2093', cityName: 'Example', point: [52.2, 21.0], sampleFiles: [{ path: 'sample.geojson' }],
+        providerReuse: { descriptor: { id: uldk.id, adapter: uldk.adapter, idPrefix: uldk.idPrefix, endpoint: uldk.endpoint,
+            idField: uldk.idField, idPattern: uldk.idPattern, outFields: uldk.outFields }, sourceEvidenceFiles: [{ path: 'country.json' }] }
+    });
+    const prepared = await prepareCandidate(city(), { repoRoot, sourceRoot });
+    assert.equal(prepared.status, 'prepared', prepared.reason);
+    assert.ok(prepared.candidate.sourceClassification.evidence.includes(uldk.discovery.jurisdiction.basis));
+    assert.equal(prepared.candidate.absentId, 'PL-ULDK-146506_8.0104.999999');
+    await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection', features: [
+        { type: 'Feature', properties: { id: '247301_1.0089.AR_7.3035/160' }, geometry: polygon(18.5) }
+    ] }));
+    const sheet = await prepareCandidate(city(), { repoRoot, sourceRoot });
+    assert.equal(sheet.status, 'prepared', sheet.reason);
+    assert.equal(sheet.candidate.absentId, 'PL-ULDK-247301_1.0089.AR_7.999999');
+    await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection', features: [
+        { type: 'Feature', properties: { id: '146506_8.0104.1' }, geometry: polygon(21.0) }
+    ] }));
+    const profile = uldk.discovery;
+    delete uldk.discovery;
+    t.after(() => { uldk.discovery = profile; });
+    const unbacked = await prepareCandidate(city(), { repoRoot, sourceRoot });
+    assert.equal(unbacked.status, 'needs-llm');
+    assert.match(unbacked.reason, /source-purpose evidence/);
+    const packetScope = city();
+    packetScope.providerReuse.scopeEvidence = [{ basis: 'National parcel lookup.', countryCode: 'PL', evidence: ['research/countries/PL.json'] }];
+    assert.equal((await prepareCandidate(packetScope, { repoRoot, sourceRoot })).status, 'prepared');
+});

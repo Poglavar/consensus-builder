@@ -1,0 +1,4221 @@
+{
+  "startedAt": "2026-10-12T11:28:35.493Z",
+  "exchanges": [
+    {
+      "n": 1,
+      "startedAt": "2026-10-12T11:28:35.493Z",
+      "url": "https://uldk.gugik.gov.pl/opis.html",
+      "ms": 140,
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 28926,
+      "bodySha256": "828691e0848c9bcffe731bb14c9eb6f72d33cc85abd2ed8f715193417ba36983",
+      "rawFile": "raw/0001.txt",
+      "bodyHead": "<!DOCTYPE html>\\n<html lang=\"pl\">"
+    },
+    {
+      "n": 2,
+      "startedAt": "2026-10-12T11:28:36.494Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=52.2229170530915%2C21.0008161096485%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 352,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0002.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 3,
+      "startedAt": "2026-10-12T11:28:37.495Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=21.0008161096%2C52.2229170531%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 121,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 816,
+      "bodySha256": "d7564d4a40158e718ab97eba61b0ec9a25c1e9c9d8c38af8724e0664d349017a",
+      "rawFile": "raw/0003.txt",
+      "bodyHead": "0\\n146506_8.0104.1|SRID=4326;POLYGON((21.0004912869347 52.2231510487558,21.00047299"
+    },
+    {
+      "n": 4,
+      "startedAt": "2026-10-12T11:28:38.495Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146506_8.0104.1&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 152,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 816,
+      "bodySha256": "d7564d4a40158e718ab97eba61b0ec9a25c1e9c9d8c38af8724e0664d349017a",
+      "rawFile": "raw/0004.txt",
+      "bodyHead": "0\\n146506_8.0104.1|SRID=4326;POLYGON((21.0004912869347 52.2231510487558,21.00047299"
+    },
+    {
+      "n": 5,
+      "startedAt": "2026-10-12T11:28:39.496Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146506_8.0104.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 179,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0005.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 6,
+      "startedAt": "2026-10-12T11:28:40.497Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=14.5350485616%2C53.4353064484%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 1090,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 751,
+      "bodySha256": "8bd7abf2edf01a1c744175425977a42fb29b3dc4ecabe570602850274cdca932",
+      "rawFile": "raw/0006.txt",
+      "bodyHead": "0\\n326201_1.1023.61/1|SRID=4326;POLYGON((14.5350838697998 53.4352400285224,14.53508"
+    },
+    {
+      "n": 7,
+      "startedAt": "2026-10-12T11:28:41.588Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=326201_1.1023.61%2F1&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 1276,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 751,
+      "bodySha256": "8bd7abf2edf01a1c744175425977a42fb29b3dc4ecabe570602850274cdca932",
+      "rawFile": "raw/0007.txt",
+      "bodyHead": "0\\n326201_1.1023.61/1|SRID=4326;POLYGON((14.5350838697998 53.4352400285224,14.53508"
+    },
+    {
+      "n": 8,
+      "startedAt": "2026-10-12T11:28:42.865Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=326201_1.1023.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 977,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0008.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 9,
+      "startedAt": "2026-10-12T11:28:43.865Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.5517979899%2C51.2411675205%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 158,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1939,
+      "bodySha256": "c8ab497a79aa2c48b762b6b1d22ea52d49c604a0352a6df5a4e9ae8eb902a457",
+      "rawFile": "raw/0009.txt",
+      "bodyHead": "0\\n066301_1.0029.AR_3.12/10|SRID=4326;POLYGON((22.5515500958795 51.2399281554685,22"
+    },
+    {
+      "n": 10,
+      "startedAt": "2026-10-12T11:28:44.867Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=066301_1.0029.AR_3.12%2F10&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 175,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1939,
+      "bodySha256": "c8ab497a79aa2c48b762b6b1d22ea52d49c604a0352a6df5a4e9ae8eb902a457",
+      "rawFile": "raw/0010.txt",
+      "bodyHead": "0\\n066301_1.0029.AR_3.12/10|SRID=4326;POLYGON((22.5515500958795 51.2399281554685,22"
+    },
+    {
+      "n": 11,
+      "startedAt": "2026-10-12T11:28:45.868Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=066301_1.0029.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 280,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0011.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 12,
+      "startedAt": "2026-10-12T11:28:46.868Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=23.1484323569%2C53.1338242364%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 171,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 453,
+      "bodySha256": "50ee91daebf74b10c42b1e7ca913715c2bb9d919186fdf23b1a275e3924c941a",
+      "rawFile": "raw/0012.txt",
+      "bodyHead": "0\\n206101_1.0011.1590/23|SRID=4326;POLYGON((23.1486335625414 53.1337164151486,23.14"
+    },
+    {
+      "n": 13,
+      "startedAt": "2026-10-12T11:28:47.868Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=206101_1.0011.1590%2F23&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 268,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 453,
+      "bodySha256": "50ee91daebf74b10c42b1e7ca913715c2bb9d919186fdf23b1a275e3924c941a",
+      "rawFile": "raw/0013.txt",
+      "bodyHead": "0\\n206101_1.0011.1590/23|SRID=4326;POLYGON((23.1486335625414 53.1337164151486,23.14"
+    },
+    {
+      "n": 14,
+      "startedAt": "2026-10-12T11:28:48.869Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=206101_1.0011.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 277,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0014.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 15,
+      "startedAt": "2026-10-12T11:28:49.869Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=17.9978116248%2C53.126102186%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 138,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1124,
+      "bodySha256": "5727d506bf82d7a0abf207554f58e2a5881b80631efad3cf294eb77545511936",
+      "rawFile": "raw/0015.txt",
+      "bodyHead": "0\\n046101_1.0128.268/2|SRID=4326;POLYGON((17.9970275929801 53.1265185678819,17.9969"
+    },
+    {
+      "n": 16,
+      "startedAt": "2026-10-12T11:28:50.869Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046101_1.0128.268%2F2&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 125,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1124,
+      "bodySha256": "5727d506bf82d7a0abf207554f58e2a5881b80631efad3cf294eb77545511936",
+      "rawFile": "raw/0016.txt",
+      "bodyHead": "0\\n046101_1.0128.268/2|SRID=4326;POLYGON((17.9970275929801 53.1265185678819,17.9969"
+    },
+    {
+      "n": 17,
+      "startedAt": "2026-10-12T11:28:51.869Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046101_1.0128.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 157,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0017.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 18,
+      "startedAt": "2026-10-12T11:28:52.870Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.507634171%2C54.5322041863%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 123,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1292,
+      "bodySha256": "655f820669dcc426ea11df99ed617e579e778cad6b18ba345e57581b8f1aa546",
+      "rawFile": "raw/0018.txt",
+      "bodyHead": "0\\n226201_1.0015.1|SRID=4326;POLYGON((18.5019414103289 54.5366391496344,18.50144583"
+    },
+    {
+      "n": 19,
+      "startedAt": "2026-10-12T11:28:53.871Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=226201_1.0015.1&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 171,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1292,
+      "bodySha256": "655f820669dcc426ea11df99ed617e579e778cad6b18ba345e57581b8f1aa546",
+      "rawFile": "raw/0019.txt",
+      "bodyHead": "0\\n226201_1.0015.1|SRID=4326;POLYGON((18.5019414103289 54.5366391496344,18.50144583"
+    },
+    {
+      "n": 20,
+      "startedAt": "2026-10-12T11:28:54.872Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=226201_1.0015.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 234,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0020.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 21,
+      "startedAt": "2026-10-12T11:28:55.873Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.0039593163%2C50.0320723877%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 227,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 452,
+      "bodySha256": "df561e1e6299f604fa5815817eb90343aab8c891028f6ee1ae00ea850510eb88",
+      "rawFile": "raw/0021.txt",
+      "bodyHead": "0\\n186301_1.0207.1326/12|SRID=4326;POLYGON((22.0043226704168 50.0323311751549,22.00"
+    },
+    {
+      "n": 22,
+      "startedAt": "2026-10-12T11:28:56.873Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=186301_1.0207.1326%2F12&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 121,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 452,
+      "bodySha256": "df561e1e6299f604fa5815817eb90343aab8c891028f6ee1ae00ea850510eb88",
+      "rawFile": "raw/0022.txt",
+      "bodyHead": "0\\n186301_1.0207.1326/12|SRID=4326;POLYGON((22.0043226704168 50.0323311751549,22.00"
+    },
+    {
+      "n": 23,
+      "startedAt": "2026-10-12T11:28:57.874Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=186301_1.0207.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 181,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0023.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 24,
+      "startedAt": "2026-10-12T11:28:58.874Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=21.1526507651%2C51.3964628829%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 238,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 953,
+      "bodySha256": "dc85d19203a08c222758d7e2ade2160188788c7330e8e4155c5d375bb75f38e0",
+      "rawFile": "raw/0024.txt",
+      "bodyHead": "0\\n146301_1.0090.AR_90.29|SRID=4326;POLYGON((21.1533525669453 51.3961578690993,21.1"
+    },
+    {
+      "n": 25,
+      "startedAt": "2026-10-12T11:28:59.874Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146301_1.0090.AR_90.29&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 268,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 953,
+      "bodySha256": "dc85d19203a08c222758d7e2ade2160188788c7330e8e4155c5d375bb75f38e0",
+      "rawFile": "raw/0025.txt",
+      "bodyHead": "0\\n146301_1.0090.AR_90.29|SRID=4326;POLYGON((21.1533525669453 51.3961578690993,21.1"
+    },
+    {
+      "n": 26,
+      "startedAt": "2026-10-12T11:29:00.874Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146301_1.0090.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 369,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0026.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 27,
+      "startedAt": "2026-10-12T11:29:01.874Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.6212481127%2C53.0245852712%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 214,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1423,
+      "bodySha256": "6918b7d6153a8aabf7ac89200a442258c2f725ddd4111ba9ff838ad88f0a153d",
+      "rawFile": "raw/0027.txt",
+      "bodyHead": "0\\n046301_1.0004.334|SRID=4326;POLYGON((18.6202753705676 53.0248556309331,18.620290"
+    },
+    {
+      "n": 28,
+      "startedAt": "2026-10-12T11:29:02.875Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046301_1.0004.334&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 473,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1423,
+      "bodySha256": "6918b7d6153a8aabf7ac89200a442258c2f725ddd4111ba9ff838ad88f0a153d",
+      "rawFile": "raw/0028.txt",
+      "bodyHead": "0\\n046301_1.0004.334|SRID=4326;POLYGON((18.6202753705676 53.0248556309331,18.620290"
+    },
+    {
+      "n": 29,
+      "startedAt": "2026-10-12T11:29:03.875Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046301_1.0004.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 519,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0029.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 30,
+      "startedAt": "2026-10-12T11:29:04.877Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=20.6275441266%2C50.8750758566%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 516,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 887,
+      "bodySha256": "04f1fb5ff7dafe6a51c166f8840e3b834161881d69b51cfceb764911c1295d6d",
+      "rawFile": "raw/0030.txt",
+      "bodyHead": "0\\n266101_1.0010.187/9|SRID=4326;POLYGON((20.6288731647511 50.877336097904,20.62834"
+    },
+    {
+      "n": 31,
+      "startedAt": "2026-10-12T11:29:05.877Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=266101_1.0010.187%2F9&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 629,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 887,
+      "bodySha256": "04f1fb5ff7dafe6a51c166f8840e3b834161881d69b51cfceb764911c1295d6d",
+      "rawFile": "raw/0031.txt",
+      "bodyHead": "0\\n266101_1.0010.187/9|SRID=4326;POLYGON((20.6288731647511 50.877336097904,20.62834"
+    },
+    {
+      "n": 32,
+      "startedAt": "2026-10-12T11:29:06.877Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=266101_1.0010.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 631,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0032.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 33,
+      "startedAt": "2026-10-12T11:29:07.878Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.1134120802%2C50.8076252951%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 420,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 448,
+      "bodySha256": "7766174c9db5d092d5ed4b5bf641ee94601c82a2c0793089e8c6f7f781440661",
+      "rawFile": "raw/0033.txt",
+      "bodyHead": "0\\n246401_1.0182.45|SRID=4326;POLYGON((19.1128524477827 50.8077842507953,19.1128539"
+    },
+    {
+      "n": 34,
+      "startedAt": "2026-10-12T11:29:08.878Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246401_1.0182.45&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 680,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 448,
+      "bodySha256": "7766174c9db5d092d5ed4b5bf641ee94601c82a2c0793089e8c6f7f781440661",
+      "rawFile": "raw/0034.txt",
+      "bodyHead": "0\\n246401_1.0182.45|SRID=4326;POLYGON((19.1128524477827 50.8077842507953,19.1128539"
+    },
+    {
+      "n": 35,
+      "startedAt": "2026-10-12T11:29:09.879Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246401_1.0182.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 471,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0035.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 36,
+      "startedAt": "2026-10-12T11:29:10.880Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=20.497827116%2C53.7665732877%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 149,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1059,
+      "bodySha256": "4a31703571e67ca3c1b2a9fcc8f162216c87755912c5e450b3684a32edf49ca1",
+      "rawFile": "raw/0036.txt",
+      "bodyHead": "0\\n286201_1.0104.67/6|SRID=4326;POLYGON((20.4960859864547 53.7662466793311,20.49602"
+    },
+    {
+      "n": 37,
+      "startedAt": "2026-10-12T11:29:11.881Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=286201_1.0104.67%2F6&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 234,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1059,
+      "bodySha256": "4a31703571e67ca3c1b2a9fcc8f162216c87755912c5e450b3684a32edf49ca1",
+      "rawFile": "raw/0037.txt",
+      "bodyHead": "0\\n286201_1.0104.67/6|SRID=4326;POLYGON((20.4960859864547 53.7662466793311,20.49602"
+    },
+    {
+      "n": 38,
+      "startedAt": "2026-10-12T11:29:12.882Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=286201_1.0104.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 195,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0038.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 39,
+      "startedAt": "2026-10-12T11:29:13.882Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=15.5023625953%2C51.9373160501%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 338,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 251,
+      "bodySha256": "5319d9eb26a8845c6b50dea6b397b03e8e5fc5dd3c17e0684745930042b3dd36",
+      "rawFile": "raw/0039.txt",
+      "bodyHead": "0\\n086201_1.0030.AR_2.149/1|SRID=4326;POLYGON((15.5023668479834 51.9373437737318,15"
+    },
+    {
+      "n": 40,
+      "startedAt": "2026-10-12T11:29:14.882Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=086201_1.0030.AR_2.149%2F1&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 434,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 251,
+      "bodySha256": "5319d9eb26a8845c6b50dea6b397b03e8e5fc5dd3c17e0684745930042b3dd36",
+      "rawFile": "raw/0040.txt",
+      "bodyHead": "0\\n086201_1.0030.AR_2.149/1|SRID=4326;POLYGON((15.5023668479834 51.9373437737318,15"
+    },
+    {
+      "n": 41,
+      "startedAt": "2026-10-12T11:29:15.882Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=086201_1.0030.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 724,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0041.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 42,
+      "startedAt": "2026-10-12T11:29:16.883Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.0423255904%2C49.8178778644%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 289,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 382,
+      "bodySha256": "37a4aa61e40841f78be8bc83ad88a07d5d1b57e87f2279e9c85dfddc9e234087",
+      "rawFile": "raw/0042.txt",
+      "bodyHead": "0\\n246101_1.0006.522/2|SRID=4326;POLYGON((19.0421695264727 49.8173127272271,19.0417"
+    },
+    {
+      "n": 43,
+      "startedAt": "2026-10-12T11:29:17.884Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246101_1.0006.522%2F2&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 305,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 382,
+      "bodySha256": "37a4aa61e40841f78be8bc83ad88a07d5d1b57e87f2279e9c85dfddc9e234087",
+      "rawFile": "raw/0043.txt",
+      "bodyHead": "0\\n246101_1.0006.522/2|SRID=4326;POLYGON((19.0421695264727 49.8173127272271,19.0417"
+    },
+    {
+      "n": 44,
+      "startedAt": "2026-10-12T11:29:18.884Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246101_1.0006.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 318,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0044.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 45,
+      "startedAt": "2026-10-12T11:29:19.884Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.4103120546%2C54.1668551129%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 374,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 516,
+      "bodySha256": "1fcc9f35710667139e85d7dbb5f8878d3c3da5804620a4b35ccd3e421925b47d",
+      "rawFile": "raw/0045.txt",
+      "bodyHead": "0\\n286101_1.0010.342/3|SRID=4326;POLYGON((19.4103599885932 54.167468035629,19.41033"
+    },
+    {
+      "n": 46,
+      "startedAt": "2026-10-12T11:29:20.885Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=286101_1.0010.342%2F3&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 374,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 516,
+      "bodySha256": "1fcc9f35710667139e85d7dbb5f8878d3c3da5804620a4b35ccd3e421925b47d",
+      "rawFile": "raw/0046.txt",
+      "bodyHead": "0\\n286101_1.0010.342/3|SRID=4326;POLYGON((19.4103599885932 54.167468035629,19.41033"
+    },
+    {
+      "n": 47,
+      "startedAt": "2026-10-12T11:29:21.885Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=286101_1.0010.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 366,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0047.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 48,
+      "startedAt": "2026-10-12T11:29:22.886Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.987175031%2C50.1188429469%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 124,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 4749,
+      "bodySha256": "399a393c230427260c20bf2691e5a2d238621c5e4921ef9cd99d7d7e98029b5c",
+      "rawFile": "raw/0048.txt",
+      "bodyHead": "0\\n247701_1.0001.AR_2.5456/70|SRID=4326;POLYGON((18.9858099955126 50.1194399237873,"
+    },
+    {
+      "n": 49,
+      "startedAt": "2026-10-12T11:29:23.886Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=247701_1.0001.AR_2.5456%2F70&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 168,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 4749,
+      "bodySha256": "399a393c230427260c20bf2691e5a2d238621c5e4921ef9cd99d7d7e98029b5c",
+      "rawFile": "raw/0049.txt",
+      "bodyHead": "0\\n247701_1.0001.AR_2.5456/70|SRID=4326;POLYGON((18.9858099955126 50.1194399237873,"
+    },
+    {
+      "n": 50,
+      "startedAt": "2026-10-12T11:29:24.887Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=247701_1.0001.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 201,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0050.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 51,
+      "startedAt": "2026-10-12T11:29:25.888Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.672670151%2C50.2974825733%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 152,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 277,
+      "bodySha256": "fc4f9d9b83bc2ff19dafe05e69368cf821e20f224b75e95f3f875c34cd4280f7",
+      "rawFile": "raw/0051.txt",
+      "bodyHead": "0\\n246601_1.0054.941|SRID=4326;POLYGON((18.6730319732321 50.297451612995,18.6727088"
+    },
+    {
+      "n": 52,
+      "startedAt": "2026-10-12T11:29:26.888Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246601_1.0054.941&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 332,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 277,
+      "bodySha256": "fc4f9d9b83bc2ff19dafe05e69368cf821e20f224b75e95f3f875c34cd4280f7",
+      "rawFile": "raw/0052.txt",
+      "bodyHead": "0\\n246601_1.0054.941|SRID=4326;POLYGON((18.6730319732321 50.297451612995,18.6727088"
+    },
+    {
+      "n": 53,
+      "startedAt": "2026-10-12T11:29:27.888Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246601_1.0054.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 369,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0053.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 54,
+      "startedAt": "2026-10-12T11:29:28.888Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=15.2389393767%2C52.7429409231%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 145,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 3386,
+      "bodySha256": "7f93538157ae2536fa9293907e2e0816e52b6ac4465e4d9081ec0cdf52349e9c",
+      "rawFile": "raw/0054.txt",
+      "bodyHead": "0\\n086101_1.0002.961|SRID=4326;POLYGON((15.2387058629014 52.7431211457722,15.238598"
+    },
+    {
+      "n": 55,
+      "startedAt": "2026-10-12T11:29:29.889Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=086101_1.0002.961&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 136,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 3386,
+      "bodySha256": "7f93538157ae2536fa9293907e2e0816e52b6ac4465e4d9081ec0cdf52349e9c",
+      "rawFile": "raw/0055.txt",
+      "bodyHead": "0\\n086101_1.0002.961|SRID=4326;POLYGON((15.2387058629014 52.7431211457722,15.238598"
+    },
+    {
+      "n": 56,
+      "startedAt": "2026-10-12T11:29:30.889Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=086101_1.0002.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 146,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0056.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 57,
+      "startedAt": "2026-10-12T11:29:31.890Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=16.1902100835%2C54.1941105602%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 464,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 956,
+      "bodySha256": "45128a288a4b4b48e41bf12ebb1a6597bb5899ce750c3c73cb34b0d7952880ca",
+      "rawFile": "raw/0057.txt",
+      "bodyHead": "0\\n326101_1.0020.74/3|SRID=4326;POLYGON((16.1913163886808 54.1937837378847,16.19136"
+    },
+    {
+      "n": 58,
+      "startedAt": "2026-10-12T11:29:32.890Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=326101_1.0020.74%2F3&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 431,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 956,
+      "bodySha256": "45128a288a4b4b48e41bf12ebb1a6597bb5899ce750c3c73cb34b0d7952880ca",
+      "rawFile": "raw/0058.txt",
+      "bodyHead": "0\\n326101_1.0020.74/3|SRID=4326;POLYGON((16.1913163886808 54.1937837378847,16.19136"
+    },
+    {
+      "n": 59,
+      "startedAt": "2026-10-12T11:29:33.890Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=326101_1.0020.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 475,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0059.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 60,
+      "startedAt": "2026-10-12T11:29:34.891Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=17.9404125955%2C50.6681692861%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 303,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 682,
+      "bodySha256": "4c2574737a6ef938c87810c830bfae49b6433ffaac935e5f34ab997a49cd8481",
+      "rawFile": "raw/0060.txt",
+      "bodyHead": "0\\n166101_1.0103.2395|SRID=4326;POLYGON((17.941893979287 50.6682776091275,17.941797"
+    },
+    {
+      "n": 61,
+      "startedAt": "2026-10-12T11:29:35.891Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=166101_1.0103.2395&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 327,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 682,
+      "bodySha256": "4c2574737a6ef938c87810c830bfae49b6433ffaac935e5f34ab997a49cd8481",
+      "rawFile": "raw/0061.txt",
+      "bodyHead": "0\\n166101_1.0103.2395|SRID=4326;POLYGON((17.941893979287 50.6682776091275,17.941797"
+    },
+    {
+      "n": 62,
+      "startedAt": "2026-10-12T11:29:36.892Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=166101_1.0103.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 352,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0062.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 63,
+      "startedAt": "2026-10-12T11:29:37.893Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=17.0213199178%2C54.4636975833%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 174,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1058,
+      "bodySha256": "cefb10ce34eac76efe96549cb25f3a213f30195cac0dff2996f4815bdae97f0f",
+      "rawFile": "raw/0063.txt",
+      "bodyHead": "0\\n226301_1.0013.20/1|SRID=4326;POLYGON((17.0207248484815 54.4637757585963,17.02090"
+    },
+    {
+      "n": 64,
+      "startedAt": "2026-10-12T11:29:38.894Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=226301_1.0013.20%2F1&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 157,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1058,
+      "bodySha256": "cefb10ce34eac76efe96549cb25f3a213f30195cac0dff2996f4815bdae97f0f",
+      "rawFile": "raw/0064.txt",
+      "bodyHead": "0\\n226301_1.0013.20/1|SRID=4326;POLYGON((17.0207248484815 54.4637757585963,17.02090"
+    },
+    {
+      "n": 65,
+      "startedAt": "2026-10-12T11:29:39.894Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=226301_1.0013.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 210,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0065.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 66,
+      "startedAt": "2026-10-12T11:29:40.895Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.083317306%2C51.7549404064%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 555,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 921,
+      "bodySha256": "fb5b4dfc5b0105e92752fc1449e869982799e70b5989b0a0b7f8d5059a04ff0f",
+      "rawFile": "raw/0066.txt",
+      "bodyHead": "0\\n306101_1.0044.244/1|SRID=4326;POLYGON((18.0834415467966 51.755068024975,18.08353"
+    },
+    {
+      "n": 67,
+      "startedAt": "2026-10-12T11:29:41.896Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=306101_1.0044.244%2F1&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 555,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 921,
+      "bodySha256": "fb5b4dfc5b0105e92752fc1449e869982799e70b5989b0a0b7f8d5059a04ff0f",
+      "rawFile": "raw/0067.txt",
+      "bodyHead": "0\\n306101_1.0044.244/1|SRID=4326;POLYGON((18.0834415467966 51.755068024975,18.08353"
+    },
+    {
+      "n": 68,
+      "startedAt": "2026-10-12T11:29:42.897Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=306101_1.0044.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 559,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0068.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 69,
+      "startedAt": "2026-10-12T11:29:43.897Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=16.1741221611%2C51.2058512284%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 159,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1726,
+      "bodySha256": "371a0b573d17f83d841c8990cc761d36c115352b071639f1aab56bff1ab16a73",
+      "rawFile": "raw/0069.txt",
+      "bodyHead": "0\\n026201_1.0017.384/5|SRID=4326;POLYGON((16.1737267675008 51.20553198987,16.173761"
+    },
+    {
+      "n": 70,
+      "startedAt": "2026-10-12T11:29:44.897Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=026201_1.0017.384%2F5&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 224,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1726,
+      "bodySha256": "371a0b573d17f83d841c8990cc761d36c115352b071639f1aab56bff1ab16a73",
+      "rawFile": "raw/0070.txt",
+      "bodyHead": "0\\n026201_1.0017.384/5|SRID=4326;POLYGON((16.1737267675008 51.20553198987,16.173761"
+    },
+    {
+      "n": 71,
+      "startedAt": "2026-10-12T11:29:45.897Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=026201_1.0017.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 201,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0071.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 72,
+      "startedAt": "2026-10-12T11:29:46.897Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.7571110836%2C53.4788249167%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 173,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 2238,
+      "bodySha256": "6184cb62e2d125424047cc86ec46fa403d092c701d80b184b2708e44d9a1ad0f",
+      "rawFile": "raw/0072.txt",
+      "bodyHead": "0\\n046201_1.0089.8/9|SRID=4326;POLYGON((18.7547145548209 53.4816554778121,18.754711"
+    },
+    {
+      "n": 73,
+      "startedAt": "2026-10-12T11:29:47.898Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046201_1.0089.8%2F9&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 108,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 2238,
+      "bodySha256": "6184cb62e2d125424047cc86ec46fa403d092c701d80b184b2708e44d9a1ad0f",
+      "rawFile": "raw/0073.txt",
+      "bodyHead": "0\\n046201_1.0089.8/9|SRID=4326;POLYGON((18.7547145548209 53.4816554778121,18.754711"
+    },
+    {
+      "n": 74,
+      "startedAt": "2026-10-12T11:29:48.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046201_1.0089.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 135,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0074.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 75,
+      "startedAt": "2026-10-12T11:29:49.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.2767061228%2C52.1656867657%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 111,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 3354,
+      "bodySha256": "3acc85dffbbb80839fc6a68e4df9bf73914d0d91e68b72be85d09e747d649550",
+      "rawFile": "raw/0075.txt",
+      "bodyHead": "0\\n146401_1.0049.89|SRID=4326;POLYGON((22.2758540354605 52.1657578340542,22.2754983"
+    },
+    {
+      "n": 76,
+      "startedAt": "2026-10-12T11:29:50.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146401_1.0049.89&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 91,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 3354,
+      "bodySha256": "3acc85dffbbb80839fc6a68e4df9bf73914d0d91e68b72be85d09e747d649550",
+      "rawFile": "raw/0076.txt",
+      "bodyHead": "0\\n146401_1.0049.89|SRID=4326;POLYGON((22.2758540354605 52.1657578340542,22.2754983"
+    },
+    {
+      "n": 77,
+      "startedAt": "2026-10-12T11:29:51.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146401_1.0049.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 117,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0077.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 78,
+      "startedAt": "2026-10-12T11:29:52.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.0626658622%2C52.6505942526%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 167,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1090,
+      "bodySha256": "cc38619322f9ec05435ee810eaa5ef1d65316f969d045367d71a32bdb525472c",
+      "rawFile": "raw/0078.txt",
+      "bodyHead": "0\\n046401_1.0520.220/2|SRID=4326;POLYGON((19.0610775770104 52.6523744685939,19.0609"
+    },
+    {
+      "n": 79,
+      "startedAt": "2026-10-12T11:29:53.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046401_1.0520.220%2F2&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 149,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1090,
+      "bodySha256": "cc38619322f9ec05435ee810eaa5ef1d65316f969d045367d71a32bdb525472c",
+      "rawFile": "raw/0079.txt",
+      "bodyHead": "0\\n046401_1.0520.220/2|SRID=4326;POLYGON((19.0610775770104 52.6523744685939,19.0609"
+    },
+    {
+      "n": 80,
+      "startedAt": "2026-10-12T11:29:54.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=046401_1.0520.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 159,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0080.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 81,
+      "startedAt": "2026-10-12T11:29:55.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=20.9877709077%2C50.0164917072%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 314,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 549,
+      "bodySha256": "df117d5745a4e6ff98cda87838996bc8dccb016257da415e815a3797f9412554",
+      "rawFile": "raw/0081.txt",
+      "bodyHead": "0\\n126301_1.0167.62/5|SRID=4326;POLYGON((20.9879725190056 50.0163755941143,20.98811"
+    },
+    {
+      "n": 82,
+      "startedAt": "2026-10-12T11:29:56.900Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=126301_1.0167.62%2F5&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 319,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 549,
+      "bodySha256": "df117d5745a4e6ff98cda87838996bc8dccb016257da415e815a3797f9412554",
+      "rawFile": "raw/0082.txt",
+      "bodyHead": "0\\n126301_1.0167.62/5|SRID=4326;POLYGON((20.9879725190056 50.0163755941143,20.98811"
+    },
+    {
+      "n": 83,
+      "startedAt": "2026-10-12T11:29:57.901Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=126301_1.0167.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 410,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0083.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 84,
+      "startedAt": "2026-10-12T11:29:58.902Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=20.6998999215%2C49.6140452924%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 282,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 310,
+      "bodySha256": "4b19dc11409d303c732fd746d01ce727beec7eaaf7609e6249aecc8ca46061de",
+      "rawFile": "raw/0084.txt",
+      "bodyHead": "0\\n126201_1.0088.69/2|SRID=4326;POLYGON((20.7002919062588 49.6140297946925,20.70020"
+    },
+    {
+      "n": 85,
+      "startedAt": "2026-10-12T11:29:59.902Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=126201_1.0088.69%2F2&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 1740,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 310,
+      "bodySha256": "4b19dc11409d303c732fd746d01ce727beec7eaaf7609e6249aecc8ca46061de",
+      "rawFile": "raw/0085.txt",
+      "bodyHead": "0\\n126201_1.0088.69/2|SRID=4326;POLYGON((20.7002919062588 49.6140297946925,20.70020"
+    },
+    {
+      "n": 86,
+      "startedAt": "2026-10-12T11:30:01.644Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=126201_1.0088.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 1827,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0086.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 87,
+      "startedAt": "2026-10-12T11:30:03.474Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=16.1963940636%2C51.3979869467%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 143,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 2782,
+      "bodySha256": "b496b7bd4b744b23b11cfd9c754e027f7b4687e6ab33d692efe154a0932a6d7f",
+      "rawFile": "raw/0087.txt",
+      "bodyHead": "0\\n021101_1.0005.122/17|SRID=4326;POLYGON((16.1951525614514 51.3981881409074,16.195"
+    },
+    {
+      "n": 88,
+      "startedAt": "2026-10-12T11:30:04.475Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=021101_1.0005.122%2F17&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 222,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 2782,
+      "bodySha256": "b496b7bd4b744b23b11cfd9c754e027f7b4687e6ab33d692efe154a0932a6d7f",
+      "rawFile": "raw/0088.txt",
+      "bodyHead": "0\\n021101_1.0005.122/17|SRID=4326;POLYGON((16.1951525614514 51.3981881409074,16.195"
+    },
+    {
+      "n": 89,
+      "startedAt": "2026-10-12T11:30:05.475Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=021101_1.0005.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 404,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0089.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 90,
+      "startedAt": "2026-10-12T11:30:06.476Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.7195485491%2C52.5430998888%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 194,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 448,
+      "bodySha256": "ad4a7fa821a56de5cd080e1bc2fb877064b7cfdeeb942bdb2b526e7fb9f6079c",
+      "rawFile": "raw/0090.txt",
+      "bodyHead": "0\\n146201_1.0009.270|SRID=4326;POLYGON((19.7187105009448 52.5431163060907,19.719770"
+    },
+    {
+      "n": 91,
+      "startedAt": "2026-10-12T11:30:07.476Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146201_1.0009.270&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 203,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 448,
+      "bodySha256": "ad4a7fa821a56de5cd080e1bc2fb877064b7cfdeeb942bdb2b526e7fb9f6079c",
+      "rawFile": "raw/0091.txt",
+      "bodyHead": "0\\n146201_1.0009.270|SRID=4326;POLYGON((19.7187105009448 52.5431163060907,19.719770"
+    },
+    {
+      "n": 92,
+      "startedAt": "2026-10-12T11:30:08.476Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=146201_1.0009.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 199,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0092.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 93,
+      "startedAt": "2026-10-12T11:30:09.477Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.9331027876%2C54.1043061998%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 462,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 347,
+      "bodySha256": "9fa52323683a2eaae07e13d3efd0ea0029c9c5ffe916d8301b1c8976024e52bf",
+      "rawFile": "raw/0093.txt",
+      "bodyHead": "0\\n206301_1.0005.12256|SRID=4326;POLYGON((22.9334521179901 54.1043288554096,22.9334"
+    },
+    {
+      "n": 94,
+      "startedAt": "2026-10-12T11:30:10.477Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=206301_1.0005.12256&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 170,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 347,
+      "bodySha256": "9fa52323683a2eaae07e13d3efd0ea0029c9c5ffe916d8301b1c8976024e52bf",
+      "rawFile": "raw/0094.txt",
+      "bodyHead": "0\\n206301_1.0005.12256|SRID=4326;POLYGON((22.9334521179901 54.1043288554096,22.9334"
+    },
+    {
+      "n": 95,
+      "startedAt": "2026-10-12T11:30:11.477Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=206301_1.0005.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 291,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0095.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 96,
+      "startedAt": "2026-10-12T11:30:12.478Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.2590588435%2C52.7902336993%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 223,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 613,
+      "bodySha256": "ae5fe99f09ce5c8c6db2a6a9defe53c0d435f8fc1ba6cae732caf1faf7dfd8c3",
+      "rawFile": "raw/0096.txt",
+      "bodyHead": "0\\n040701_1.0090.226|SRID=4326;POLYGON((18.259610987214 52.7912882963582,18.2595511"
+    },
+    {
+      "n": 97,
+      "startedAt": "2026-10-12T11:30:13.478Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=040701_1.0090.226&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 235,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 613,
+      "bodySha256": "ae5fe99f09ce5c8c6db2a6a9defe53c0d435f8fc1ba6cae732caf1faf7dfd8c3",
+      "rawFile": "raw/0097.txt",
+      "bodyHead": "0\\n040701_1.0090.226|SRID=4326;POLYGON((18.259610987214 52.7912882963582,18.2595511"
+    },
+    {
+      "n": 98,
+      "startedAt": "2026-10-12T11:30:14.478Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=040701_1.0090.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 268,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0098.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 99,
+      "startedAt": "2026-10-12T11:30:15.478Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=20.9252703477%2C52.4039665954%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 120,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 210,
+      "bodySha256": "3d303c4d6a1163c0ffe4f1a6a709cb557e8f63d63d54883c0ebfbcce7c60b50b",
+      "rawFile": "raw/0099.txt",
+      "bodyHead": "0\\n140801_1.0036.93|SRID=4326;POLYGON((20.9259480308226 52.4042154211794,20.9256742"
+    },
+    {
+      "n": 100,
+      "startedAt": "2026-10-12T11:30:16.479Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=140801_1.0036.93&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 80,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 210,
+      "bodySha256": "3d303c4d6a1163c0ffe4f1a6a709cb557e8f63d63d54883c0ebfbcce7c60b50b",
+      "rawFile": "raw/0100.txt",
+      "bodyHead": "0\\n140801_1.0036.93|SRID=4326;POLYGON((20.9259480308226 52.4042154211794,20.9256742"
+    },
+    {
+      "n": 101,
+      "startedAt": "2026-10-12T11:30:17.480Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=140801_1.0036.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 124,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0101.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 102,
+      "startedAt": "2026-10-12T11:30:18.480Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.0646901929%2C53.1714002877%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 340,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 417,
+      "bodySha256": "0f895b55cd7a7b7fa84e7b34294805fd21770201299effadd9c53926e0c9b346",
+      "rawFile": "raw/0102.txt",
+      "bodyHead": "0\\n206201_1.0002.22893/17|SRID=4326;POLYGON((22.0651675777352 53.1715789731031,22.0"
+    },
+    {
+      "n": 103,
+      "startedAt": "2026-10-12T11:30:19.480Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=206201_1.0002.22893%2F17&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 3598,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 417,
+      "bodySha256": "0f895b55cd7a7b7fa84e7b34294805fd21770201299effadd9c53926e0c9b346",
+      "rawFile": "raw/0103.txt",
+      "bodyHead": "0\\n206201_1.0002.22893/17|SRID=4326;POLYGON((22.0651675777352 53.1715789731031,22.0"
+    },
+    {
+      "n": 104,
+      "startedAt": "2026-10-12T11:30:23.079Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=206201_1.0002.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 4274,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0104.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 105,
+      "startedAt": "2026-10-12T11:30:27.355Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=16.7464328052%2C53.1513682979%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 257,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1091,
+      "bodySha256": "c2bfa14839abe5506b71e4bd87583f71e6cfda66413cdda574385c9280d59721",
+      "rawFile": "raw/0105.txt",
+      "bodyHead": "0\\n301901_1.0027.673/2|SRID=4326;POLYGON((16.7477063021006 53.1515137371569,16.7491"
+    },
+    {
+      "n": 106,
+      "startedAt": "2026-10-12T11:30:28.357Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=301901_1.0027.673%2F2&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 256,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1091,
+      "bodySha256": "c2bfa14839abe5506b71e4bd87583f71e6cfda66413cdda574385c9280d59721",
+      "rawFile": "raw/0106.txt",
+      "bodyHead": "0\\n301901_1.0027.673/2|SRID=4326;POLYGON((16.7477063021006 53.1515137371569,16.7491"
+    },
+    {
+      "n": 107,
+      "startedAt": "2026-10-12T11:30:29.357Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=301901_1.0027.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 303,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0107.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 108,
+      "startedAt": "2026-10-12T11:30:30.358Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.3534282664%2C51.6609967629%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 148,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 312,
+      "bodySha256": "5275a0211ad6f12a9385e9863bb927c1d028640ca137cb15e9e7de3f7125f449",
+      "rawFile": "raw/0108.txt",
+      "bodyHead": "0\\n100802_1.0007.450|SRID=4326;POLYGON((19.3534123879439 51.6610698401602,19.353394"
+    },
+    {
+      "n": 109,
+      "startedAt": "2026-10-12T11:30:31.358Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=100802_1.0007.450&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 135,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 312,
+      "bodySha256": "5275a0211ad6f12a9385e9863bb927c1d028640ca137cb15e9e7de3f7125f449",
+      "rawFile": "raw/0109.txt",
+      "bodyHead": "0\\n100802_1.0007.450|SRID=4326;POLYGON((19.3534123879439 51.6610698401602,19.353394"
+    },
+    {
+      "n": 110,
+      "startedAt": "2026-10-12T11:30:32.358Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=100802_1.0007.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 154,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0110.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 111,
+      "startedAt": "2026-10-12T11:30:33.360Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=17.8138050881%2C51.649738446%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 558,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 716,
+      "bodySha256": "a4e4192aff73a33bba0e0ad238f28ee72314cb44f0f83915f33a41fcd8ec93b9",
+      "rawFile": "raw/0111.txt",
+      "bodyHead": "0\\n301701_1.0071.75/1|SRID=4326;POLYGON((17.812928268465 51.6497554352218,17.813068"
+    },
+    {
+      "n": 112,
+      "startedAt": "2026-10-12T11:30:34.361Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=301701_1.0071.75%2F1&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 690,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 716,
+      "bodySha256": "a4e4192aff73a33bba0e0ad238f28ee72314cb44f0f83915f33a41fcd8ec93b9",
+      "rawFile": "raw/0112.txt",
+      "bodyHead": "0\\n301701_1.0071.75/1|SRID=4326;POLYGON((17.812928268465 51.6497554352218,17.813068"
+    },
+    {
+      "n": 113,
+      "startedAt": "2026-10-12T11:30:35.361Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=301701_1.0071.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 576,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0113.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 114,
+      "startedAt": "2026-10-12T11:30:36.362Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=15.0305642015%2C53.3382279105%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 268,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 3451,
+      "bodySha256": "b05be4dbc4bd7cda1c5b5e433f209dadf2d5b91fb9471d01176343db5ef13f31",
+      "rawFile": "raw/0114.txt",
+      "bodyHead": "0\\n321401_1.0010.59/6|SRID=4326;POLYGON((15.0238168959187 53.3394228317742,15.02294"
+    },
+    {
+      "n": 115,
+      "startedAt": "2026-10-12T11:30:37.362Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=321401_1.0010.59%2F6&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 281,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 3451,
+      "bodySha256": "b05be4dbc4bd7cda1c5b5e433f209dadf2d5b91fb9471d01176343db5ef13f31",
+      "rawFile": "raw/0115.txt",
+      "bodyHead": "0\\n321401_1.0010.59/6|SRID=4326;POLYGON((15.0238168959187 53.3394228317742,15.02294"
+    },
+    {
+      "n": 116,
+      "startedAt": "2026-10-12T11:30:38.362Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=321401_1.0010.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 319,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0116.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 117,
+      "startedAt": "2026-10-12T11:30:39.362Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.5383788655%2C50.0991804794%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 319,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 451,
+      "bodySha256": "4b055311a790a63f629aa0819026748d899529bba6a13b99aafdb9d3c080fb1d",
+      "rawFile": "raw/0117.txt",
+      "bodyHead": "0\\n247301_1.0089.AR_7.3035/160|SRID=4326;POLYGON((18.538261545493 50.0994963268936,"
+    },
+    {
+      "n": 118,
+      "startedAt": "2026-10-12T11:30:40.362Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=247301_1.0089.AR_7.3035%2F160&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 363,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 451,
+      "bodySha256": "4b055311a790a63f629aa0819026748d899529bba6a13b99aafdb9d3c080fb1d",
+      "rawFile": "raw/0118.txt",
+      "bodyHead": "0\\n247301_1.0089.AR_7.3035/160|SRID=4326;POLYGON((18.538261545493 50.0994963268936,"
+    },
+    {
+      "n": 119,
+      "startedAt": "2026-10-12T11:30:41.363Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=247301_1.0089.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 618,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0119.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 120,
+      "startedAt": "2026-10-12T11:30:42.363Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=23.2609637553%2C50.7217702281%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 194,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 316,
+      "bodySha256": "53cc092ac67e83e5ccf06b755f0a5863f434ab7235a25cd9bb3955dcb33eb65d",
+      "rawFile": "raw/0120.txt",
+      "bodyHead": "0\\n066401_1.0001.AR_41.111/6|SRID=4326;POLYGON((23.2610437889901 50.7219468717984,2"
+    },
+    {
+      "n": 121,
+      "startedAt": "2026-10-12T11:30:43.363Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=066401_1.0001.AR_41.111%2F6&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 162,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 316,
+      "bodySha256": "53cc092ac67e83e5ccf06b755f0a5863f434ab7235a25cd9bb3955dcb33eb65d",
+      "rawFile": "raw/0121.txt",
+      "bodyHead": "0\\n066401_1.0001.AR_41.111/6|SRID=4326;POLYGON((23.2610437889901 50.7219468717984,2"
+    },
+    {
+      "n": 122,
+      "startedAt": "2026-10-12T11:30:44.363Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=066401_1.0001.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 235,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0122.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 123,
+      "startedAt": "2026-10-12T11:30:45.363Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.7843364945%2C54.0908371716%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 149,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 2345,
+      "bodySha256": "e79a5761ba3910f16ff71b5fb68b26b7bcea2c1c23b0e9caa31f40f6af120b39",
+      "rawFile": "raw/0123.txt",
+      "bodyHead": "0\\n221401_1.0006.425/22|SRID=4326;POLYGON((18.7841366619552 54.0906010786483,18.784"
+    },
+    {
+      "n": 124,
+      "startedAt": "2026-10-12T11:30:46.363Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=221401_1.0006.425%2F22&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 312,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 2345,
+      "bodySha256": "e79a5761ba3910f16ff71b5fb68b26b7bcea2c1c23b0e9caa31f40f6af120b39",
+      "rawFile": "raw/0124.txt",
+      "bodyHead": "0\\n221401_1.0006.425/22|SRID=4326;POLYGON((18.7841366619552 54.0906010786483,18.784"
+    },
+    {
+      "n": 125,
+      "startedAt": "2026-10-12T11:30:47.363Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=221401_1.0006.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 293,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0125.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 126,
+      "startedAt": "2026-10-12T11:30:48.364Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=17.6064312678%2C52.5344430788%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 530,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 687,
+      "bodySha256": "73156b956353f7c07f0062d1068ce2eb43afdb750b6381c4a10a7c737c2d7ce2",
+      "rawFile": "raw/0126.txt",
+      "bodyHead": "0\\n300301_1.0001.2640/56|SRID=4326;POLYGON((17.6058075010393 52.5350048730436,17.60"
+    },
+    {
+      "n": 127,
+      "startedAt": "2026-10-12T11:30:49.365Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=300301_1.0001.2640%2F56&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 563,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 687,
+      "bodySha256": "73156b956353f7c07f0062d1068ce2eb43afdb750b6381c4a10a7c737c2d7ce2",
+      "rawFile": "raw/0127.txt",
+      "bodyHead": "0\\n300301_1.0001.2640/56|SRID=4326;POLYGON((17.6058075010393 52.5350048730436,17.60"
+    },
+    {
+      "n": 128,
+      "startedAt": "2026-10-12T11:30:50.366Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=300301_1.0001.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 564,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0128.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 129,
+      "startedAt": "2026-10-12T11:30:51.366Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=16.5773027601%2C51.8427843894%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 276,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 418,
+      "bodySha256": "e7a56d535541421fb2d12cbe8844314a4c51b7b01c25228362c4502b7acfa443",
+      "rawFile": "raw/0129.txt",
+      "bodyHead": "0\\n306301_1.0002.AR_46.96|SRID=4326;POLYGON((16.576875298181 51.8427430799268,16.57"
+    },
+    {
+      "n": 130,
+      "startedAt": "2026-10-12T11:30:52.366Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=306301_1.0002.AR_46.96&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 246,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 418,
+      "bodySha256": "e7a56d535541421fb2d12cbe8844314a4c51b7b01c25228362c4502b7acfa443",
+      "rawFile": "raw/0130.txt",
+      "bodyHead": "0\\n306301_1.0002.AR_46.96|SRID=4326;POLYGON((16.576875298181 51.8427430799268,16.57"
+    },
+    {
+      "n": 131,
+      "startedAt": "2026-10-12T11:30:53.367Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=306301_1.0002.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 313,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0131.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 132,
+      "startedAt": "2026-10-12T11:30:54.367Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.0568167437%2C50.5664297326%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 170,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 5665,
+      "bodySha256": "f574f30f964cd62a78a2984af7914518be3d04e1b94204062553343bc7f43e57",
+      "rawFile": "raw/0132.txt",
+      "bodyHead": "0\\n181801_1.0003.313/33|SRID=4326;POLYGON((22.0569979945007 50.5652592645976,22.057"
+    },
+    {
+      "n": 133,
+      "startedAt": "2026-10-12T11:30:55.367Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=181801_1.0003.313%2F33&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 109,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 5665,
+      "bodySha256": "f574f30f964cd62a78a2984af7914518be3d04e1b94204062553343bc7f43e57",
+      "rawFile": "raw/0133.txt",
+      "bodyHead": "0\\n181801_1.0003.313/33|SRID=4326;POLYGON((22.0569979945007 50.5652592645976,22.057"
+    },
+    {
+      "n": 134,
+      "startedAt": "2026-10-12T11:30:56.368Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=181801_1.0003.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 177,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0134.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 135,
+      "startedAt": "2026-10-12T11:30:57.368Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.3576680534%2C53.8234849792%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 184,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 348,
+      "bodySha256": "035516bef5df7f1f6dec1ee6a91e36b436d2bda5d1268ec3f98ca6dc77a2b306",
+      "rawFile": "raw/0135.txt",
+      "bodyHead": "0\\n280501_1.0001.538/69|SRID=4326;POLYGON((22.3576864963343 53.8234399338428,22.358"
+    },
+    {
+      "n": 136,
+      "startedAt": "2026-10-12T11:30:58.369Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=280501_1.0001.538%2F69&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 126,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 348,
+      "bodySha256": "035516bef5df7f1f6dec1ee6a91e36b436d2bda5d1268ec3f98ca6dc77a2b306",
+      "rawFile": "raw/0136.txt",
+      "bodyHead": "0\\n280501_1.0001.538/69|SRID=4326;POLYGON((22.3576864963343 53.8234399338428,22.358"
+    },
+    {
+      "n": 137,
+      "startedAt": "2026-10-12T11:30:59.370Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=280501_1.0001.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 160,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0137.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 138,
+      "startedAt": "2026-10-12T11:31:00.370Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.5908434067%2C49.9518257086%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 175,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 586,
+      "bodySha256": "63bf82c4c174d8b34f52d17659ce18800358c154dabf3595be883a74b485a349",
+      "rawFile": "raw/0138.txt",
+      "bodyHead": "0\\n246701_1.0012.362/46|SRID=4326;POLYGON((18.5887675456697 49.9526457057418,18.588"
+    },
+    {
+      "n": 139,
+      "startedAt": "2026-10-12T11:31:01.371Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246701_1.0012.362%2F46&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 153,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 586,
+      "bodySha256": "63bf82c4c174d8b34f52d17659ce18800358c154dabf3595be883a74b485a349",
+      "rawFile": "raw/0139.txt",
+      "bodyHead": "0\\n246701_1.0012.362/46|SRID=4326;POLYGON((18.5887675456697 49.9526457057418,18.588"
+    },
+    {
+      "n": 140,
+      "startedAt": "2026-10-12T11:31:02.372Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=246701_1.0012.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 163,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0140.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 141,
+      "startedAt": "2026-10-12T11:31:03.373Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=21.2337346051%2C52.3426974153%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 392,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 211,
+      "bodySha256": "4ce8cd672ed474ebf3bef1a903d972debcf609a3f1aef91b32b313f5e5ecbcea",
+      "rawFile": "raw/0141.txt",
+      "bodyHead": "0\\n143412_4.0027.194|SRID=4326;POLYGON((21.2336920090648 52.3428432791222,21.234046"
+    },
+    {
+      "n": 142,
+      "startedAt": "2026-10-12T11:31:04.374Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=143412_4.0027.194&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 333,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 211,
+      "bodySha256": "4ce8cd672ed474ebf3bef1a903d972debcf609a3f1aef91b32b313f5e5ecbcea",
+      "rawFile": "raw/0142.txt",
+      "bodyHead": "0\\n143412_4.0027.194|SRID=4326;POLYGON((21.2336920090648 52.3428432791222,21.234046"
+    },
+    {
+      "n": 143,
+      "startedAt": "2026-10-12T11:31:05.375Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=143412_4.0027.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 475,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0143.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 144,
+      "startedAt": "2026-10-12T11:31:06.376Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=20.0135606379%2C51.5340194073%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 148,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 211,
+      "bodySha256": "69eab93f147205e516772bc673fbc168a3529fb3dab2dafac77a868ea2b3130e",
+      "rawFile": "raw/0144.txt",
+      "bodyHead": "0\\n101601_1.0008.480|SRID=4326;POLYGON((20.0136041247127 51.5337662030863,20.013823"
+    },
+    {
+      "n": 145,
+      "startedAt": "2026-10-12T11:31:07.376Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=101601_1.0008.480&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 90,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 211,
+      "bodySha256": "69eab93f147205e516772bc673fbc168a3529fb3dab2dafac77a868ea2b3130e",
+      "rawFile": "raw/0145.txt",
+      "bodyHead": "0\\n101601_1.0008.480|SRID=4326;POLYGON((20.0136041247127 51.5337662030863,20.013823"
+    },
+    {
+      "n": 146,
+      "startedAt": "2026-10-12T11:31:08.377Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=101601_1.0008.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 126,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0146.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 147,
+      "startedAt": "2026-10-12T11:31:09.377Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.2391802227%2C54.6054036641%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 398,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 617,
+      "bodySha256": "806b1f57e8a424d9dfe6fc3e4430f0051af721719d58124961017c26fc666761",
+      "rawFile": "raw/0147.txt",
+      "bodyHead": "0\\n221503_1.0009.149/25|SRID=4326;POLYGON((18.2391372550624 54.6054056226429,18.239"
+    },
+    {
+      "n": 148,
+      "startedAt": "2026-10-12T11:31:10.378Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=221503_1.0009.149%2F25&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 425,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 617,
+      "bodySha256": "806b1f57e8a424d9dfe6fc3e4430f0051af721719d58124961017c26fc666761",
+      "rawFile": "raw/0148.txt",
+      "bodyHead": "0\\n221503_1.0009.149/25|SRID=4326;POLYGON((18.2391372550624 54.6054056226429,18.239"
+    },
+    {
+      "n": 149,
+      "startedAt": "2026-10-12T11:31:11.379Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=221503_1.0009.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 377,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0149.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 150,
+      "startedAt": "2026-10-12T11:31:12.379Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=22.7720844418%2C49.786570394%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 151,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1394,
+      "bodySha256": "8027feab09efcce13cd05425a2070ff2d32c661e2891334563d924859f7d8c8f",
+      "rawFile": "raw/0150.txt",
+      "bodyHead": "0\\n186201_1.0202.2901|SRID=4326;POLYGON((22.7710138986759 49.7852196140426,22.77114"
+    },
+    {
+      "n": 151,
+      "startedAt": "2026-10-12T11:31:13.380Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=186201_1.0202.2901&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 108,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 1394,
+      "bodySha256": "8027feab09efcce13cd05425a2070ff2d32c661e2891334563d924859f7d8c8f",
+      "rawFile": "raw/0151.txt",
+      "bodyHead": "0\\n186201_1.0202.2901|SRID=4326;POLYGON((22.7710138986759 49.7852196140426,22.77114"
+    },
+    {
+      "n": 152,
+      "startedAt": "2026-10-12T11:31:14.381Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=186201_1.0202.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 153,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0152.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 153,
+      "startedAt": "2026-10-12T11:31:15.381Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=23.4775917479%2C51.1343001958%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 358,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 881,
+      "bodySha256": "494ff21a47443e3c0c9c4e3be1ab29c64f192a51dedf4715de644d9779e9bf7f",
+      "rawFile": "raw/0153.txt",
+      "bodyHead": "0\\n066201_1.0015.7|SRID=4326;POLYGON((23.479860044425 51.1341455514888,23.478334419"
+    },
+    {
+      "n": 154,
+      "startedAt": "2026-10-12T11:31:16.381Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=066201_1.0015.7&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 450,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 881,
+      "bodySha256": "494ff21a47443e3c0c9c4e3be1ab29c64f192a51dedf4715de644d9779e9bf7f",
+      "rawFile": "raw/0154.txt",
+      "bodyHead": "0\\n066201_1.0015.7|SRID=4326;POLYGON((23.479860044425 51.1341455514888,23.478334419"
+    },
+    {
+      "n": 155,
+      "startedAt": "2026-10-12T11:31:17.382Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=066201_1.0015.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 411,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 123,
+      "bodySha256": "d8c17059200252df6078ab7405bfb52ccf449ce4f30aa6d22080a2ef89e84d1c",
+      "rawFile": "raw/0155.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    },
+    {
+      "n": 156,
+      "startedAt": "2026-10-12T11:31:18.382Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=19.3733696862%2C51.3600738694%2C4326&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 193,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 688,
+      "bodySha256": "fb158fbe2a76c7c4628cbfe4c78354ad0fdd6c18088594df78c526d11556e185",
+      "rawFile": "raw/0156.txt",
+      "bodyHead": "0\\n100101_1.0013.171/35|SRID=4326;POLYGON((19.3714562637959 51.3605352193967,19.372"
+    },
+    {
+      "n": 157,
+      "startedAt": "2026-10-12T11:31:19.382Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=100101_1.0013.171%2F35&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 83,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 688,
+      "bodySha256": "fb158fbe2a76c7c4628cbfe4c78354ad0fdd6c18088594df78c526d11556e185",
+      "rawFile": "raw/0157.txt",
+      "bodyHead": "0\\n100101_1.0013.171/35|SRID=4326;POLYGON((19.3714562637959 51.3605352193967,19.372"
+    },
+    {
+      "n": 158,
+      "startedAt": "2026-10-12T11:31:20.382Z",
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=100101_1.0013.999999&result=id%2Cgeom_wkt&srid=4326",
+      "ms": 1945,
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 184,
+      "bodySha256": "86b5f5f2fe31262b8a501f8d1947cefda87ea0a7975bbdc02bc96f7ef034c494",
+      "rawFile": "raw/0158.txt",
+      "bodyHead": "-1 brak wyników\\nbłędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsł"
+    }
+  ],
+  "cities": {
+    "71": {
+      "cityCode": "71",
+      "name": "Szczecin",
+      "population2025k": 300.314,
+      "point": [
+        14.5350485616,
+        53.4353064484
+      ],
+      "attempts": [
+        {
+          "point": [
+            14.5350485616,
+            53.4353064484
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-326201_1.1023.61/1"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-326201_1.1023.61/1",
+        "nativeId": "326201_1.1023.61/1",
+        "voivodeshipCode": "32",
+        "countyCode": "3262",
+        "communeCode": "326201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 21,
+        "geometrySha256": "ad327090b6351a868c10b3c03a8b889251943e0df1f15adacb8bf6b5b0fed5ad",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "ad327090b6351a868c10b3c03a8b889251943e0df1f15adacb8bf6b5b0fed5ad",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-326201_1.1023.999999",
+        "absentIds": [
+          "PL-ULDK-326201_1.1023.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "241": {
+      "cityCode": "241",
+      "name": "Stargard",
+      "population2025k": 58.692,
+      "point": [
+        15.0305642015,
+        53.3382279105
+      ],
+      "attempts": [
+        {
+          "point": [
+            15.0305642015,
+            53.3382279105
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-321401_1.0010.59/6"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-321401_1.0010.59/6",
+        "nativeId": "321401_1.0010.59/6",
+        "voivodeshipCode": "32",
+        "countyCode": "3214",
+        "communeCode": "321401_1",
+        "geometryType": "Polygon",
+        "vertexCount": 101,
+        "geometrySha256": "dcd54e4c376f4480652a971ff7004ce9dcb6348aadc9931063da19787cf875f9",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "dcd54e4c376f4480652a971ff7004ce9dcb6348aadc9931063da19787cf875f9",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-321401_1.0010.999999",
+        "absentIds": [
+          "PL-ULDK-321401_1.0010.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "399": {
+      "cityCode": "399",
+      "name": "Gorzów Wielkopolski",
+      "population2025k": 94.196,
+      "point": [
+        15.2389393767,
+        52.7429409231
+      ],
+      "attempts": [
+        {
+          "point": [
+            15.2389393767,
+            52.7429409231
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-086101_1.0002.961"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-086101_1.0002.961",
+        "nativeId": "086101_1.0002.961",
+        "voivodeshipCode": "08",
+        "countyCode": "0861",
+        "communeCode": "086101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 99,
+        "geometrySha256": "0244156955afeca4b9b5a6fdb8b95d215e32f7eb9a1795f92c18c0db2928040d",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "0244156955afeca4b9b5a6fdb8b95d215e32f7eb9a1795f92c18c0db2928040d",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-086101_1.0002.999999",
+        "absentIds": [
+          "PL-ULDK-086101_1.0002.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "544": {
+      "cityCode": "544",
+      "name": "Zielona Góra",
+      "population2025k": 133.925,
+      "point": [
+        15.5023625953,
+        51.9373160501
+      ],
+      "attempts": [
+        {
+          "point": [
+            15.5023625953,
+            51.9373160501
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-086201_1.0030.AR_2.149/1"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-086201_1.0030.AR_2.149/1",
+        "nativeId": "086201_1.0030.AR_2.149/1",
+        "voivodeshipCode": "08",
+        "countyCode": "0862",
+        "communeCode": "086201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 6,
+        "geometrySha256": "107536eb3ba1799304612edc940e300a4a9a9f8cb446090121a55cd471abe601",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "107536eb3ba1799304612edc940e300a4a9a9f8cb446090121a55cd471abe601",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-086201_1.0030.999999",
+        "absentIds": [
+          "PL-ULDK-086201_1.0030.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "685": {
+      "cityCode": "685",
+      "name": "Koszalin",
+      "population2025k": 93.416,
+      "point": [
+        16.1902100835,
+        54.1941105602
+      ],
+      "attempts": [
+        {
+          "point": [
+            16.1902100835,
+            54.1941105602
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-326101_1.0020.74/3"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-326101_1.0020.74/3",
+        "nativeId": "326101_1.0020.74/3",
+        "voivodeshipCode": "32",
+        "countyCode": "3261",
+        "communeCode": "326101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 27,
+        "geometrySha256": "338a0accde6b0afb2cf30414b9b787255a9976c61c00a2e97d10e67bd3442643",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "338a0accde6b0afb2cf30414b9b787255a9976c61c00a2e97d10e67bd3442643",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-326101_1.0020.999999",
+        "absentIds": [
+          "PL-ULDK-326101_1.0020.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "816": {
+      "cityCode": "816",
+      "name": "Lubin",
+      "population2025k": 67.14,
+      "point": [
+        16.1963940636,
+        51.3979869467
+      ],
+      "attempts": [
+        {
+          "point": [
+            16.1963940636,
+            51.3979869467
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-021101_1.0005.122/17"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-021101_1.0005.122/17",
+        "nativeId": "021101_1.0005.122/17",
+        "voivodeshipCode": "02",
+        "countyCode": "0211",
+        "communeCode": "021101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 81,
+        "geometrySha256": "896a83a07481d4387021c17063f995838cdab7675eb303f4c107930b3629341a",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "896a83a07481d4387021c17063f995838cdab7675eb303f4c107930b3629341a",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-021101_1.0005.999999",
+        "absentIds": [
+          "PL-ULDK-021101_1.0005.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "937": {
+      "cityCode": "937",
+      "name": "Legnica",
+      "population2025k": 76.676,
+      "point": [
+        16.1741221611,
+        51.2058512284
+      ],
+      "attempts": [
+        {
+          "point": [
+            16.1741221611,
+            51.2058512284
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-026201_1.0017.384/5"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-026201_1.0017.384/5",
+        "nativeId": "026201_1.0017.384/5",
+        "voivodeshipCode": "02",
+        "countyCode": "0262",
+        "communeCode": "026201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 50,
+        "geometrySha256": "8fa23de44d3fefdf4b4fc46776439827ebaaf8a3d75cef2d1b039f2b4dffbfaa",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "8fa23de44d3fefdf4b4fc46776439827ebaaf8a3d75cef2d1b039f2b4dffbfaa",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-026201_1.0017.999999",
+        "absentIds": [
+          "PL-ULDK-026201_1.0017.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "1053": {
+      "cityCode": "1053",
+      "name": "Słupsk",
+      "population2025k": 83.293,
+      "point": [
+        17.0213199178,
+        54.4636975833
+      ],
+      "attempts": [
+        {
+          "point": [
+            17.0213199178,
+            54.4636975833
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-226301_1.0013.20/1"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-226301_1.0013.20/1",
+        "nativeId": "226301_1.0013.20/1",
+        "voivodeshipCode": "22",
+        "countyCode": "2263",
+        "communeCode": "226301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 30,
+        "geometrySha256": "a6a9dc74066332ca9b12dd9a746efc0e0e622915e446ae08073803b89be145c1",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "a6a9dc74066332ca9b12dd9a746efc0e0e622915e446ae08073803b89be145c1",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-226301_1.0013.999999",
+        "absentIds": [
+          "PL-ULDK-226301_1.0013.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "1167": {
+      "cityCode": "1167",
+      "name": "Pila",
+      "population2025k": 60.401,
+      "point": [
+        16.7464328052,
+        53.1513682979
+      ],
+      "attempts": [
+        {
+          "point": [
+            16.7464328052,
+            53.1513682979
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-301901_1.0027.673/2"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-301901_1.0027.673/2",
+        "nativeId": "301901_1.0027.673/2",
+        "voivodeshipCode": "30",
+        "countyCode": "3019",
+        "communeCode": "301901_1",
+        "geometryType": "Polygon",
+        "vertexCount": 31,
+        "geometrySha256": "76605ebf06d81a943e44d0d74b761762158e120cfd0a59c90b9f32843d226243",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "76605ebf06d81a943e44d0d74b761762158e120cfd0a59c90b9f32843d226243",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-301901_1.0027.999999",
+        "absentIds": [
+          "PL-ULDK-301901_1.0027.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "1275": {
+      "cityCode": "1275",
+      "name": "Leszno",
+      "population2025k": 54.448,
+      "point": [
+        16.5773027601,
+        51.8427843894
+      ],
+      "attempts": [
+        {
+          "point": [
+            16.5773027601,
+            51.8427843894
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-306301_1.0002.AR_46.96"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-306301_1.0002.AR_46.96",
+        "nativeId": "306301_1.0002.AR_46.96",
+        "voivodeshipCode": "30",
+        "countyCode": "3063",
+        "communeCode": "306301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 11,
+        "geometrySha256": "cd427af1b2ac324f1faa61d910ce6589883ffac5203957b752e0ed211f3550f4",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "cd427af1b2ac324f1faa61d910ce6589883ffac5203957b752e0ed211f3550f4",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-306301_1.0002.999999",
+        "absentIds": [
+          "PL-ULDK-306301_1.0002.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "1673": {
+      "cityCode": "1673",
+      "name": "Gniezno",
+      "population2025k": 55.1,
+      "point": [
+        17.6064312678,
+        52.5344430788
+      ],
+      "attempts": [
+        {
+          "point": [
+            17.6064312678,
+            52.5344430788
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-300301_1.0001.2640/56"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-300301_1.0001.2640/56",
+        "nativeId": "300301_1.0001.2640/56",
+        "voivodeshipCode": "30",
+        "countyCode": "3003",
+        "communeCode": "300301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 19,
+        "geometrySha256": "ef5df3f0f62ce54d1b42bb057f816de2084bba4477636fb740414ccbf10c5831",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "ef5df3f0f62ce54d1b42bb057f816de2084bba4477636fb740414ccbf10c5831",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-300301_1.0001.999999",
+        "absentIds": [
+          "PL-ULDK-300301_1.0001.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "1763": {
+      "cityCode": "1763",
+      "name": "Wejherowo",
+      "population2025k": 51.83,
+      "point": [
+        18.2391802227,
+        54.6054036641
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.2391802227,
+            54.6054036641
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-221503_1.0009.149/25"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-221503_1.0009.149/25",
+        "nativeId": "221503_1.0009.149/25",
+        "voivodeshipCode": "22",
+        "countyCode": "2215",
+        "communeCode": "221503_1",
+        "geometryType": "Polygon",
+        "vertexCount": 17,
+        "geometrySha256": "faa824d0bdbde8364e86e9ca78cadc92832445b6d8a629ba75e99738957312b8",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "faa824d0bdbde8364e86e9ca78cadc92832445b6d8a629ba75e99738957312b8",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-221503_1.0009.999999",
+        "absentIds": [
+          "PL-ULDK-221503_1.0009.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "1852": {
+      "cityCode": "1852",
+      "name": "Bydgoszcz",
+      "population2025k": 266.908,
+      "point": [
+        17.9978116248,
+        53.126102186
+      ],
+      "attempts": [
+        {
+          "point": [
+            17.9978116248,
+            53.126102186
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-046101_1.0128.268/2"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-046101_1.0128.268/2",
+        "nativeId": "046101_1.0128.268/2",
+        "voivodeshipCode": "04",
+        "countyCode": "0461",
+        "communeCode": "046101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 32,
+        "geometrySha256": "fe389dbb58008b5fc9a1accbfbcfef5c2dff314ce1c8afaf95d79b05755568a4",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "fe389dbb58008b5fc9a1accbfbcfef5c2dff314ce1c8afaf95d79b05755568a4",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-046101_1.0128.999999",
+        "absentIds": [
+          "PL-ULDK-046101_1.0128.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "1935": {
+      "cityCode": "1935",
+      "name": "Gdynia",
+      "population2025k": 209.918,
+      "point": [
+        18.507634171,
+        54.5322041863
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.507634171,
+            54.5322041863
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-226201_1.0015.1"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-226201_1.0015.1",
+        "nativeId": "226201_1.0015.1",
+        "voivodeshipCode": "22",
+        "countyCode": "2262",
+        "communeCode": "226201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 37,
+        "geometrySha256": "a2b9a8d315cff823e0e0db2cce74d75fd95d36fc4aa460e9025a83791e8d95c4",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "a2b9a8d315cff823e0e0db2cce74d75fd95d36fc4aa460e9025a83791e8d95c4",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-226201_1.0015.999999",
+        "absentIds": [
+          "PL-ULDK-226201_1.0015.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2014": {
+      "cityCode": "2014",
+      "name": "Ostrów Wielkopolski",
+      "population2025k": 59.44,
+      "point": [
+        17.8138050881,
+        51.649738446
+      ],
+      "attempts": [
+        {
+          "point": [
+            17.8138050881,
+            51.649738446
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-301701_1.0071.75/1"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-301701_1.0071.75/1",
+        "nativeId": "301701_1.0071.75/1",
+        "voivodeshipCode": "30",
+        "countyCode": "3017",
+        "communeCode": "301701_1",
+        "geometryType": "Polygon",
+        "vertexCount": 20,
+        "geometrySha256": "875ec784b715defbfc6b1e85d4d8a3e675db184ee34d3481e9c35edb1ff2778a",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "875ec784b715defbfc6b1e85d4d8a3e675db184ee34d3481e9c35edb1ff2778a",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-301701_1.0071.999999",
+        "absentIds": [
+          "PL-ULDK-301701_1.0071.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2172": {
+      "cityCode": "2172",
+      "name": "Inowrocław",
+      "population2025k": 64.117,
+      "point": [
+        18.2590588435,
+        52.7902336993
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.2590588435,
+            52.7902336993
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-040701_1.0090.226"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-040701_1.0090.226",
+        "nativeId": "040701_1.0090.226",
+        "voivodeshipCode": "04",
+        "countyCode": "0407",
+        "communeCode": "040701_1",
+        "geometryType": "Polygon",
+        "vertexCount": 17,
+        "geometrySha256": "afe3d05681ca288b5f716f6e4d02b26652413a26a5a8424460b99a2dca8b89db",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "afe3d05681ca288b5f716f6e4d02b26652413a26a5a8424460b99a2dca8b89db",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-040701_1.0090.999999",
+        "absentIds": [
+          "PL-ULDK-040701_1.0090.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2249": {
+      "cityCode": "2249",
+      "name": "Kalisz",
+      "population2025k": 82.099,
+      "point": [
+        18.083317306,
+        51.7549404064
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.083317306,
+            51.7549404064
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-306101_1.0044.244/1"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-306101_1.0044.244/1",
+        "nativeId": "306101_1.0044.244/1",
+        "voivodeshipCode": "30",
+        "countyCode": "3061",
+        "communeCode": "306101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 26,
+        "geometrySha256": "86505d7fcd803c315e4367178b58dbc5c81ed23f9dac02e34ac33b9a6f5fc583",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "86505d7fcd803c315e4367178b58dbc5c81ed23f9dac02e34ac33b9a6f5fc583",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-306101_1.0044.999999",
+        "absentIds": [
+          "PL-ULDK-306101_1.0044.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2325": {
+      "cityCode": "2325",
+      "name": "Tczew",
+      "population2025k": 55.947,
+      "point": [
+        18.7843364945,
+        54.0908371716
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.7843364945,
+            54.0908371716
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-221401_1.0006.425/22"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-221401_1.0006.425/22",
+        "nativeId": "221401_1.0006.425/22",
+        "voivodeshipCode": "22",
+        "countyCode": "2214",
+        "communeCode": "221401_1",
+        "geometryType": "Polygon",
+        "vertexCount": 68,
+        "geometrySha256": "ce0a6da479240a3f6d894b72015ee1c238d8c6c7cdd31b52c5f20ea7d189a819",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "ce0a6da479240a3f6d894b72015ee1c238d8c6c7cdd31b52c5f20ea7d189a819",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-221401_1.0006.999999",
+        "absentIds": [
+          "PL-ULDK-221401_1.0006.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2401": {
+      "cityCode": "2401",
+      "name": "Opole",
+      "population2025k": 90.669,
+      "point": [
+        17.9404125955,
+        50.6681692861
+      ],
+      "attempts": [
+        {
+          "point": [
+            17.9404125955,
+            50.6681692861
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-166101_1.0103.2395"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-166101_1.0103.2395",
+        "nativeId": "166101_1.0103.2395",
+        "voivodeshipCode": "16",
+        "countyCode": "1661",
+        "communeCode": "166101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 19,
+        "geometrySha256": "23ff43ac80e51b9f67ed780d5c144018114257a32eb08a3bc9f04b00f8c25908",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "23ff43ac80e51b9f67ed780d5c144018114257a32eb08a3bc9f04b00f8c25908",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-166101_1.0103.999999",
+        "absentIds": [
+          "PL-ULDK-166101_1.0103.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2476": {
+      "cityCode": "2476",
+      "name": "Toruń",
+      "population2025k": 166.921,
+      "point": [
+        18.6212481127,
+        53.0245852712
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.6212481127,
+            53.0245852712
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-046301_1.0004.334"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-046301_1.0004.334",
+        "nativeId": "046301_1.0004.334",
+        "voivodeshipCode": "04",
+        "countyCode": "0463",
+        "communeCode": "046301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 41,
+        "geometrySha256": "ebc595564fbb9132de6ec71ed5e914153988e5f027eae4e1c88e8ffe13417470",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "ebc595564fbb9132de6ec71ed5e914153988e5f027eae4e1c88e8ffe13417470",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-046301_1.0004.999999",
+        "absentIds": [
+          "PL-ULDK-046301_1.0004.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2549": {
+      "cityCode": "2549",
+      "name": "Grudziądz",
+      "population2025k": 73.692,
+      "point": [
+        18.7571110836,
+        53.4788249167
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.7571110836,
+            53.4788249167
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-046201_1.0089.8/9"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-046201_1.0089.8/9",
+        "nativeId": "046201_1.0089.8/9",
+        "voivodeshipCode": "04",
+        "countyCode": "0462",
+        "communeCode": "046201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 65,
+        "geometrySha256": "3986008bc9fb57c9af3df4e102f8a54f1941500cd9c59578791c4930d9ff3f85",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "3986008bc9fb57c9af3df4e102f8a54f1941500cd9c59578791c4930d9ff3f85",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-046201_1.0089.999999",
+        "absentIds": [
+          "PL-ULDK-046201_1.0089.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2620": {
+      "cityCode": "2620",
+      "name": "Elbląg",
+      "population2025k": 107.088,
+      "point": [
+        19.4103120546,
+        54.1668551129
+      ],
+      "attempts": [
+        {
+          "point": [
+            19.4103120546,
+            54.1668551129
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-286101_1.0010.342/3"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-286101_1.0010.342/3",
+        "nativeId": "286101_1.0010.342/3",
+        "voivodeshipCode": "28",
+        "countyCode": "2861",
+        "communeCode": "286101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 14,
+        "geometrySha256": "4eca70cb40f584e71c0168ec3725e2dcd644e23f7081acf25b767de225f33954",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "4eca70cb40f584e71c0168ec3725e2dcd644e23f7081acf25b767de225f33954",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-286101_1.0010.999999",
+        "absentIds": [
+          "PL-ULDK-286101_1.0010.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2687": {
+      "cityCode": "2687",
+      "name": "Włocławek",
+      "population2025k": 72.215,
+      "point": [
+        19.0626658622,
+        52.6505942526
+      ],
+      "attempts": [
+        {
+          "point": [
+            19.0626658622,
+            52.6505942526
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-046401_1.0520.220/2"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-046401_1.0520.220/2",
+        "nativeId": "046401_1.0520.220/2",
+        "voivodeshipCode": "04",
+        "countyCode": "0464",
+        "communeCode": "046401_1",
+        "geometryType": "Polygon",
+        "vertexCount": 31,
+        "geometrySha256": "69587d1b3af2771b99ad74f55ae7c4bf36a169af0c7d9a0d685124140131dce8",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "69587d1b3af2771b99ad74f55ae7c4bf36a169af0c7d9a0d685124140131dce8",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-046401_1.0520.999999",
+        "absentIds": [
+          "PL-ULDK-046401_1.0520.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2754": {
+      "cityCode": "2754",
+      "name": "Rybnik",
+      "population2025k": 58.13,
+      "point": [
+        18.5383788655,
+        50.0991804794
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.5383788655,
+            50.0991804794
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-247301_1.0089.AR_7.3035/160"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-247301_1.0089.AR_7.3035/160",
+        "nativeId": "247301_1.0089.AR_7.3035/160",
+        "voivodeshipCode": "24",
+        "countyCode": "2473",
+        "communeCode": "247301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 12,
+        "geometrySha256": "f84d97684fa0c9370ee50a156e996a6ea6270902a414d32a3e3c2c13ca04e37b",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "f84d97684fa0c9370ee50a156e996a6ea6270902a414d32a3e3c2c13ca04e37b",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-247301_1.0089.999999",
+        "absentIds": [
+          "PL-ULDK-247301_1.0089.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2818": {
+      "cityCode": "2818",
+      "name": "Jastrzębie-Zdrój",
+      "population2025k": 53.229,
+      "point": [
+        18.5908434067,
+        49.9518257086
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.5908434067,
+            49.9518257086
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-246701_1.0012.362/46"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-246701_1.0012.362/46",
+        "nativeId": "246701_1.0012.362/46",
+        "voivodeshipCode": "24",
+        "countyCode": "2467",
+        "communeCode": "246701_1",
+        "geometryType": "Polygon",
+        "vertexCount": 16,
+        "geometrySha256": "23a657012591d10458848fab018ec132db2988aaf06e68ef745043e2010d2624",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "23a657012591d10458848fab018ec132db2988aaf06e68ef745043e2010d2624",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-246701_1.0012.999999",
+        "absentIds": [
+          "PL-ULDK-246701_1.0012.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "2881": {
+      "cityCode": "2881",
+      "name": "Gliwice",
+      "population2025k": 95.73,
+      "point": [
+        18.672670151,
+        50.2974825733
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.672670151,
+            50.2974825733
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-246601_1.0054.941"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-246601_1.0054.941",
+        "nativeId": "246601_1.0054.941",
+        "voivodeshipCode": "24",
+        "countyCode": "2466",
+        "communeCode": "246601_1",
+        "geometryType": "Polygon",
+        "vertexCount": 7,
+        "geometrySha256": "50046df8d05b4c35ab8c4f0c262da7bd245855cb1e99ce0e0dbd87361b3327fc",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "50046df8d05b4c35ab8c4f0c262da7bd245855cb1e99ce0e0dbd87361b3327fc",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-246601_1.0054.999999",
+        "absentIds": [
+          "PL-ULDK-246601_1.0054.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3002": {
+      "cityCode": "3002",
+      "name": "Częstochowa",
+      "population2025k": 164.337,
+      "point": [
+        19.1134120802,
+        50.8076252951
+      ],
+      "attempts": [
+        {
+          "point": [
+            19.1134120802,
+            50.8076252951
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-246401_1.0182.45"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-246401_1.0182.45",
+        "nativeId": "246401_1.0182.45",
+        "voivodeshipCode": "24",
+        "countyCode": "2464",
+        "communeCode": "246401_1",
+        "geometryType": "Polygon",
+        "vertexCount": 12,
+        "geometrySha256": "9af85ca0bab18dfd4ba0b9afdf5aa7739ce54b11c8d5cd072861296f40b0d786",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "9af85ca0bab18dfd4ba0b9afdf5aa7739ce54b11c8d5cd072861296f40b0d786",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-246401_1.0182.999999",
+        "absentIds": [
+          "PL-ULDK-246401_1.0182.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3061": {
+      "cityCode": "3061",
+      "name": "Pabianice",
+      "population2025k": 60.303,
+      "point": [
+        19.3534282664,
+        51.6609967629
+      ],
+      "attempts": [
+        {
+          "point": [
+            19.3534282664,
+            51.6609967629
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-100802_1.0007.450"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-100802_1.0007.450",
+        "nativeId": "100802_1.0007.450",
+        "voivodeshipCode": "10",
+        "countyCode": "1008",
+        "communeCode": "100802_1",
+        "geometryType": "Polygon",
+        "vertexCount": 8,
+        "geometrySha256": "b5e1c72eda61bf4deac6047e4464203e1ebef9f552243b0907e0c1262469bb3b",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "b5e1c72eda61bf4deac6047e4464203e1ebef9f552243b0907e0c1262469bb3b",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-100802_1.0007.999999",
+        "absentIds": [
+          "PL-ULDK-100802_1.0007.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3178": {
+      "cityCode": "3178",
+      "name": "Tychy",
+      "population2025k": 100.761,
+      "point": [
+        18.987175031,
+        50.1188429469
+      ],
+      "attempts": [
+        {
+          "point": [
+            18.987175031,
+            50.1188429469
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-247701_1.0001.AR_2.5456/70"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-247701_1.0001.AR_2.5456/70",
+        "nativeId": "247701_1.0001.AR_2.5456/70",
+        "voivodeshipCode": "24",
+        "countyCode": "2477",
+        "communeCode": "247701_1",
+        "geometryType": "Polygon",
+        "vertexCount": 139,
+        "geometrySha256": "ffb2e17c54ebd23d6eca91cd705efd7da3240616c42808122269d5f72b38d907",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "ffb2e17c54ebd23d6eca91cd705efd7da3240616c42808122269d5f72b38d907",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-247701_1.0001.999999",
+        "absentIds": [
+          "PL-ULDK-247701_1.0001.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3289": {
+      "cityCode": "3289",
+      "name": "Płock",
+      "population2025k": 67.138,
+      "point": [
+        19.7195485491,
+        52.5430998888
+      ],
+      "attempts": [
+        {
+          "point": [
+            19.7195485491,
+            52.5430998888
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-146201_1.0009.270"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-146201_1.0009.270",
+        "nativeId": "146201_1.0009.270",
+        "voivodeshipCode": "14",
+        "countyCode": "1462",
+        "communeCode": "146201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 12,
+        "geometrySha256": "83d16b1bc4f1fa6832096bd30f2922cce56bb748ef847d6d6d79e7feb74ff7bf",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "83d16b1bc4f1fa6832096bd30f2922cce56bb748ef847d6d6d79e7feb74ff7bf",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-146201_1.0009.999999",
+        "absentIds": [
+          "PL-ULDK-146201_1.0009.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3397": {
+      "cityCode": "3397",
+      "name": "Bielsko-Biała",
+      "population2025k": 133.022,
+      "point": [
+        19.0423255904,
+        49.8178778644
+      ],
+      "attempts": [
+        {
+          "point": [
+            19.0423255904,
+            49.8178778644
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-246101_1.0006.522/2"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-246101_1.0006.522/2",
+        "nativeId": "246101_1.0006.522/2",
+        "voivodeshipCode": "24",
+        "countyCode": "2461",
+        "communeCode": "246101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 10,
+        "geometrySha256": "e40d60053e52fd3c7945b65643159782e8f64ff008dabd8ffbb54dfdcdbb5934",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "e40d60053e52fd3c7945b65643159782e8f64ff008dabd8ffbb54dfdcdbb5934",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-246101_1.0006.999999",
+        "absentIds": [
+          "PL-ULDK-246101_1.0006.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3502": {
+      "cityCode": "3502",
+      "name": "Olsztyn",
+      "population2025k": 145.771,
+      "point": [
+        20.497827116,
+        53.7665732877
+      ],
+      "attempts": [
+        {
+          "point": [
+            20.497827116,
+            53.7665732877
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-286201_1.0104.67/6"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-286201_1.0104.67/6",
+        "nativeId": "286201_1.0104.67/6",
+        "voivodeshipCode": "28",
+        "countyCode": "2862",
+        "communeCode": "286201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 30,
+        "geometrySha256": "a02b4b00751b7977b261675c1bb3494f850332ae9880652322cb268f607d06d8",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "a02b4b00751b7977b261675c1bb3494f850332ae9880652322cb268f607d06d8",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-286201_1.0104.999999",
+        "absentIds": [
+          "PL-ULDK-286201_1.0104.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3555": {
+      "cityCode": "3555",
+      "name": "Tomaszów Mazowiecki",
+      "population2025k": 52.153,
+      "point": [
+        20.0135606379,
+        51.5340194073
+      ],
+      "attempts": [
+        {
+          "point": [
+            20.0135606379,
+            51.5340194073
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-101601_1.0008.480"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-101601_1.0008.480",
+        "nativeId": "101601_1.0008.480",
+        "voivodeshipCode": "10",
+        "countyCode": "1016",
+        "communeCode": "101601_1",
+        "geometryType": "Polygon",
+        "vertexCount": 5,
+        "geometrySha256": "72ea47ffa1ee726773737bafb0dd70ef3ac8ae9e5f1bee0b5b8274bf40c77a7b",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "72ea47ffa1ee726773737bafb0dd70ef3ac8ae9e5f1bee0b5b8274bf40c77a7b",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-101601_1.0008.999999",
+        "absentIds": [
+          "PL-ULDK-101601_1.0008.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3660": {
+      "cityCode": "3660",
+      "name": "Warszawa (Warsaw)",
+      "population2025k": 1882.756,
+      "point": [
+        21.0008161096,
+        52.2229170531
+      ],
+      "attempts": [
+        {
+          "point": [
+            21.0008161096,
+            52.2229170531
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-146506_8.0104.1"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-146506_8.0104.1",
+        "nativeId": "146506_8.0104.1",
+        "voivodeshipCode": "14",
+        "countyCode": "1465",
+        "communeCode": "146506_8",
+        "geometryType": "Polygon",
+        "vertexCount": 23,
+        "geometrySha256": "1c7b9debdd224d3538bed8d0cb62c6b482dc018d0b80450288206c214adf1210",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "1c7b9debdd224d3538bed8d0cb62c6b482dc018d0b80450288206c214adf1210",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-146506_8.0104.999999",
+        "absentIds": [
+          "PL-ULDK-146506_8.0104.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3710": {
+      "cityCode": "3710",
+      "name": "Legionowo",
+      "population2025k": 62.109,
+      "point": [
+        20.9252703477,
+        52.4039665954
+      ],
+      "attempts": [
+        {
+          "point": [
+            20.9252703477,
+            52.4039665954
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-140801_1.0036.93"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-140801_1.0036.93",
+        "nativeId": "140801_1.0036.93",
+        "voivodeshipCode": "14",
+        "countyCode": "1408",
+        "communeCode": "140801_1",
+        "geometryType": "Polygon",
+        "vertexCount": 5,
+        "geometrySha256": "a8fc40c5ffc04a1223881ae5ab2da8d0ecc7517bbe92a6be71039f507dea0909",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "a8fc40c5ffc04a1223881ae5ab2da8d0ecc7517bbe92a6be71039f507dea0909",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-140801_1.0036.999999",
+        "absentIds": [
+          "PL-ULDK-140801_1.0036.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3758": {
+      "cityCode": "3758",
+      "name": "Kielce",
+      "population2025k": 165.834,
+      "point": [
+        20.6275441266,
+        50.8750758566
+      ],
+      "attempts": [
+        {
+          "point": [
+            20.6275441266,
+            50.8750758566
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-266101_1.0010.187/9"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-266101_1.0010.187/9",
+        "nativeId": "266101_1.0010.187/9",
+        "voivodeshipCode": "26",
+        "countyCode": "2661",
+        "communeCode": "266101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 25,
+        "geometrySha256": "665673f049372d41ed43228632e19f9f64568fcddda93fcab6227eab861c8235",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "665673f049372d41ed43228632e19f9f64568fcddda93fcab6227eab861c8235",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-266101_1.0010.999999",
+        "absentIds": [
+          "PL-ULDK-266101_1.0010.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3805": {
+      "cityCode": "3805",
+      "name": "Wołomin",
+      "population2025k": 53.038,
+      "point": [
+        21.2337346051,
+        52.3426974153
+      ],
+      "attempts": [
+        {
+          "point": [
+            21.2337346051,
+            52.3426974153
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-143412_4.0027.194"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-143412_4.0027.194",
+        "nativeId": "143412_4.0027.194",
+        "voivodeshipCode": "14",
+        "countyCode": "1434",
+        "communeCode": "143412_4",
+        "geometryType": "Polygon",
+        "vertexCount": 5,
+        "geometrySha256": "56551f7ca836be18730df2cddfb379141fec2e03832141d17c018924552e64a3",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "56551f7ca836be18730df2cddfb379141fec2e03832141d17c018924552e64a3",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-143412_4.0027.999999",
+        "absentIds": [
+          "PL-ULDK-143412_4.0027.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3851": {
+      "cityCode": "3851",
+      "name": "Radom",
+      "population2025k": 174.122,
+      "point": [
+        21.1526507651,
+        51.3964628829
+      ],
+      "attempts": [
+        {
+          "point": [
+            21.1526507651,
+            51.3964628829
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-146301_1.0090.AR_90.29"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-146301_1.0090.AR_90.29",
+        "nativeId": "146301_1.0090.AR_90.29",
+        "voivodeshipCode": "14",
+        "countyCode": "1463",
+        "communeCode": "146301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 27,
+        "geometrySha256": "2b2d28d152f2e2fac96ed59b4a22c550d2c9c7920dbfd827cad36b720f3cc11a",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "2b2d28d152f2e2fac96ed59b4a22c550d2c9c7920dbfd827cad36b720f3cc11a",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-146301_1.0090.999999",
+        "absentIds": [
+          "PL-ULDK-146301_1.0090.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3897": {
+      "cityCode": "3897",
+      "name": "Nowy Sącz",
+      "population2025k": 67.282,
+      "point": [
+        20.6998999215,
+        49.6140452924
+      ],
+      "attempts": [
+        {
+          "point": [
+            20.6998999215,
+            49.6140452924
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-126201_1.0088.69/2"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-126201_1.0088.69/2",
+        "nativeId": "126201_1.0088.69/2",
+        "voivodeshipCode": "12",
+        "countyCode": "1262",
+        "communeCode": "126201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 8,
+        "geometrySha256": "ab43d3a294333e4c5153681449b121c426e096df491c450a311888f0082a6b2b",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "ab43d3a294333e4c5153681449b121c426e096df491c450a311888f0082a6b2b",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-126201_1.0088.999999",
+        "absentIds": [
+          "PL-ULDK-126201_1.0088.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3942": {
+      "cityCode": "3942",
+      "name": "Tarnów",
+      "population2025k": 70.695,
+      "point": [
+        20.9877709077,
+        50.0164917072
+      ],
+      "attempts": [
+        {
+          "point": [
+            20.9877709077,
+            50.0164917072
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-126301_1.0167.62/5"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-126301_1.0167.62/5",
+        "nativeId": "126301_1.0167.62/5",
+        "voivodeshipCode": "12",
+        "countyCode": "1263",
+        "communeCode": "126301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 15,
+        "geometrySha256": "49da99820d95f82ceb736074ed31d879cd7fe5737e52fa7e1f201d6bcb4a849a",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "49da99820d95f82ceb736074ed31d879cd7fe5737e52fa7e1f201d6bcb4a849a",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-126301_1.0167.999999",
+        "absentIds": [
+          "PL-ULDK-126301_1.0167.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "3986": {
+      "cityCode": "3986",
+      "name": "Łomża",
+      "population2025k": 62.058,
+      "point": [
+        22.0646901929,
+        53.1714002877
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.0646901929,
+            53.1714002877
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-206201_1.0002.22893/17"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-206201_1.0002.22893/17",
+        "nativeId": "206201_1.0002.22893/17",
+        "voivodeshipCode": "20",
+        "countyCode": "2062",
+        "communeCode": "206201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 11,
+        "geometrySha256": "4cfa8ff335c306b3a188960993cd04ee9e14a25d8103913cf18264ffe63a16ce",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "4cfa8ff335c306b3a188960993cd04ee9e14a25d8103913cf18264ffe63a16ce",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-206201_1.0002.999999",
+        "absentIds": [
+          "PL-ULDK-206201_1.0002.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4029": {
+      "cityCode": "4029",
+      "name": "Elk",
+      "population2025k": 53.844,
+      "point": [
+        22.3576680534,
+        53.8234849792
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.3576680534,
+            53.8234849792
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-280501_1.0001.538/69"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-280501_1.0001.538/69",
+        "nativeId": "280501_1.0001.538/69",
+        "voivodeshipCode": "28",
+        "countyCode": "2805",
+        "communeCode": "280501_1",
+        "geometryType": "Polygon",
+        "vertexCount": 9,
+        "geometrySha256": "1ee23ebd9e45e43ab69e65cd96be59ec252af14b4e0806732dca64f18afb03d9",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "1ee23ebd9e45e43ab69e65cd96be59ec252af14b4e0806732dca64f18afb03d9",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-280501_1.0001.999999",
+        "absentIds": [
+          "PL-ULDK-280501_1.0001.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4072": {
+      "cityCode": "4072",
+      "name": "Siedlce",
+      "population2025k": 72.316,
+      "point": [
+        22.2767061228,
+        52.1656867657
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.2767061228,
+            52.1656867657
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-146401_1.0049.89"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-146401_1.0049.89",
+        "nativeId": "146401_1.0049.89",
+        "voivodeshipCode": "14",
+        "countyCode": "1464",
+        "communeCode": "146401_1",
+        "geometryType": "Polygon",
+        "vertexCount": 98,
+        "geometrySha256": "6a6f9cad336cb2fab531933261f880aad7f475adaf3a1f2ce6c0126cc6aa65ff",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "6a6f9cad336cb2fab531933261f880aad7f475adaf3a1f2ce6c0126cc6aa65ff",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-146401_1.0049.999999",
+        "absentIds": [
+          "PL-ULDK-146401_1.0049.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4115": {
+      "cityCode": "4115",
+      "name": "Suwałki",
+      "population2025k": 65.194,
+      "point": [
+        22.9331027876,
+        54.1043061998
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.9331027876,
+            54.1043061998
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-206301_1.0005.12256"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-206301_1.0005.12256",
+        "nativeId": "206301_1.0005.12256",
+        "voivodeshipCode": "20",
+        "countyCode": "2063",
+        "communeCode": "206301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 9,
+        "geometrySha256": "8196378d60227067492e048b1c2d0559e00bbee6dbf6d87b224a5bee98563e2e",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "8196378d60227067492e048b1c2d0559e00bbee6dbf6d87b224a5bee98563e2e",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-206301_1.0005.999999",
+        "absentIds": [
+          "PL-ULDK-206301_1.0005.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4157": {
+      "cityCode": "4157",
+      "name": "Stalowa Wola",
+      "population2025k": 53.879,
+      "point": [
+        22.0568167437,
+        50.5664297326
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.0568167437,
+            50.5664297326
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-181801_1.0003.313/33"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-181801_1.0003.313/33",
+        "nativeId": "181801_1.0003.313/33",
+        "voivodeshipCode": "18",
+        "countyCode": "1818",
+        "communeCode": "181801_1",
+        "geometryType": "Polygon",
+        "vertexCount": 166,
+        "geometrySha256": "2b263abb6fd88be170af5231d156ff4d4cf000c7702c19bf7965854aaf913162",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "2b263abb6fd88be170af5231d156ff4d4cf000c7702c19bf7965854aaf913162",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-181801_1.0003.999999",
+        "absentIds": [
+          "PL-ULDK-181801_1.0003.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4199": {
+      "cityCode": "4199",
+      "name": "Rzeszów",
+      "population2025k": 187.574,
+      "point": [
+        22.0039593163,
+        50.0320723877
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.0039593163,
+            50.0320723877
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-186301_1.0207.1326/12"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-186301_1.0207.1326/12",
+        "nativeId": "186301_1.0207.1326/12",
+        "voivodeshipCode": "18",
+        "countyCode": "1863",
+        "communeCode": "186301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 12,
+        "geometrySha256": "c78da4f79520da2f5a69f4c0d15fe824a76ef72279b2be5d20d13a55ea90444b",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "c78da4f79520da2f5a69f4c0d15fe824a76ef72279b2be5d20d13a55ea90444b",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-186301_1.0207.999999",
+        "absentIds": [
+          "PL-ULDK-186301_1.0207.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4240": {
+      "cityCode": "4240",
+      "name": "Białystok",
+      "population2025k": 288.641,
+      "point": [
+        23.1484323569,
+        53.1338242364
+      ],
+      "attempts": [
+        {
+          "point": [
+            23.1484323569,
+            53.1338242364
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-206101_1.0011.1590/23"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-206101_1.0011.1590/23",
+        "nativeId": "206101_1.0011.1590/23",
+        "voivodeshipCode": "20",
+        "countyCode": "2061",
+        "communeCode": "206101_1",
+        "geometryType": "Polygon",
+        "vertexCount": 12,
+        "geometrySha256": "fb4bca1ba03afe15706c1c865b6afdb8af144f133a427db7282f0a192a16c601",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "fb4bca1ba03afe15706c1c865b6afdb8af144f133a427db7282f0a192a16c601",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-206101_1.0011.999999",
+        "absentIds": [
+          "PL-ULDK-206101_1.0011.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4280": {
+      "cityCode": "4280",
+      "name": "Lublin",
+      "population2025k": 300.013,
+      "point": [
+        22.5517979899,
+        51.2411675205
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.5517979899,
+            51.2411675205
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-066301_1.0029.AR_3.12/10"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-066301_1.0029.AR_3.12/10",
+        "nativeId": "066301_1.0029.AR_3.12/10",
+        "voivodeshipCode": "06",
+        "countyCode": "0663",
+        "communeCode": "066301_1",
+        "geometryType": "Polygon",
+        "vertexCount": 56,
+        "geometrySha256": "28bd402030da227f42039ca457f4f75e0a6e05d9c24fc50de7d37b3df9d814b0",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "28bd402030da227f42039ca457f4f75e0a6e05d9c24fc50de7d37b3df9d814b0",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-066301_1.0029.999999",
+        "absentIds": [
+          "PL-ULDK-066301_1.0029.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4318": {
+      "cityCode": "4318",
+      "name": "Przemyśl",
+      "population2025k": 51.468,
+      "point": [
+        22.7720844418,
+        49.786570394
+      ],
+      "attempts": [
+        {
+          "point": [
+            22.7720844418,
+            49.786570394
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-186201_1.0202.2901"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-186201_1.0202.2901",
+        "nativeId": "186201_1.0202.2901",
+        "voivodeshipCode": "18",
+        "countyCode": "1862",
+        "communeCode": "186201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 40,
+        "geometrySha256": "ed4a826007efa3fcd995ff3eedededf6a8e849d97c5b2ae58ddd46748a830f95",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "ed4a826007efa3fcd995ff3eedededf6a8e849d97c5b2ae58ddd46748a830f95",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-186201_1.0202.999999",
+        "absentIds": [
+          "PL-ULDK-186201_1.0202.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4356": {
+      "cityCode": "4356",
+      "name": "Zamość",
+      "population2025k": 57.576,
+      "point": [
+        23.2609637553,
+        50.7217702281
+      ],
+      "attempts": [
+        {
+          "point": [
+            23.2609637553,
+            50.7217702281
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-066401_1.0001.AR_41.111/6"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-066401_1.0001.AR_41.111/6",
+        "nativeId": "066401_1.0001.AR_41.111/6",
+        "voivodeshipCode": "06",
+        "countyCode": "0664",
+        "communeCode": "066401_1",
+        "geometryType": "Polygon",
+        "vertexCount": 8,
+        "geometrySha256": "40862f80af9427cb3004a110942d88776cd0563de0ad532f73f98d9b6409f753",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "40862f80af9427cb3004a110942d88776cd0563de0ad532f73f98d9b6409f753",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-066401_1.0001.999999",
+        "absentIds": [
+          "PL-ULDK-066401_1.0001.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    },
+    "4394": {
+      "cityCode": "4394",
+      "name": "Chełm",
+      "population2025k": 51.377,
+      "point": [
+        23.4775917479,
+        51.1343001958
+      ],
+      "attempts": [
+        {
+          "point": [
+            23.4775917479,
+            51.1343001958
+          ],
+          "outcome": "parcel",
+          "parcelId": "PL-ULDK-066201_1.0015.7"
+        }
+      ],
+      "parcel": {
+        "id": "PL-ULDK-066201_1.0015.7",
+        "nativeId": "066201_1.0015.7",
+        "voivodeshipCode": "06",
+        "countyCode": "0662",
+        "communeCode": "066201_1",
+        "geometryType": "Polygon",
+        "vertexCount": 25,
+        "geometrySha256": "95a7e9d096894b972abceed7ce98adf5ae1796fb4504dad0250243870a373348",
+        "containsQueryPoint": true
+      },
+      "exactId": {
+        "features": 1,
+        "absentIds": [],
+        "geometrySha256": "95a7e9d096894b972abceed7ce98adf5ae1796fb4504dad0250243870a373348",
+        "byteIdentical": true
+      },
+      "absence": {
+        "id": "PL-ULDK-066201_1.0015.999999",
+        "absentIds": [
+          "PL-ULDK-066201_1.0015.999999"
+        ],
+        "features": 0,
+        "explicit": true
+      },
+      "verdict": "pass"
+    }
+  },
+  "axisProbe": {
+    "city": "Warszawa (Warsaw)",
+    "swappedPoint": [
+      52.2229170530915,
+      21.0008161096485
+    ],
+    "features": 0,
+    "note": "xy sent as latitude,longitude; a Polish parcel here would mean ULDK reads the other axis order"
+  },
+  "docs": {
+    "url": "https://uldk.gugik.gov.pl/opis.html",
+    "httpStatus": 200,
+    "bytes": 28926,
+    "sha256": "828691e0848c9bcffe731bb14c9eb6f72d33cc85abd2ed8f715193417ba36983",
+    "savedAs": "live/opis.html"
+  },
+  "updatedAt": "2026-10-12T11:31:22.329Z",
+  "stoppedAt": "2026-10-12T11:31:22.328Z",
+  "stopReason": {
+    "status": 502,
+    "code": "parcel-source-unavailable",
+    "message": "ULDK returned an unrecognised reply status."
+  }
+}

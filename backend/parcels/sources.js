@@ -17,6 +17,7 @@ import { createNairobiOutlineSource } from './nairobi-outline-source.js';
 import { createKazakhstanPkkSource } from './kazakhstan-pkk-source.js';
 import { createMsdaPointSource } from './msda-point-source.js';
 import { createTkgmPointSource } from './tkgm-point-source.js';
+import { createUldkPointSource } from './pl-uldk-point-source.js';
 import { createBevTileParcelSource } from './bev-tile-source.js';
 import { createHamburgAlkisParcelSource } from './hamburg-alkis-source.js';
 import { createFrankfurtWfsParcelSource } from './frankfurt-wfs-source.js';
@@ -77,6 +78,7 @@ export function createParcelSource(descriptor, options = {}) {
         'kazakhstan-pkk': createKazakhstanPkkSource,
         'msda-point': createMsdaPointSource,
         'tkgm-point': createTkgmPointSource,
+        'pl-uldk-point': createUldkPointSource,
         'bev-tiles': createBevTileParcelSource,
         'hamburg-alkis-wfs': createHamburgAlkisParcelSource,
         'frankfurt-wfs': createFrankfurtWfsParcelSource,

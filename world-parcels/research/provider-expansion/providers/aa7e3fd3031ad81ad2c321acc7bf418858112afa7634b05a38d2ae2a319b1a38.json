@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "UT",
+ "regionName": "Utah",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-ut-parcels",
+  "name": "Utah Geospatial Resource Center (AGRC) statewide parcels, ArcGIS Online feature service",
+  "operator": "Utah Geospatial Resource Center (AGRC) statewide parcels, ArcGIS Online feature service",
+  "scope": "statewide layer",
+  "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST query (f=geojson)",
+  "crs": "EPSG:3857 (requested outSR 4326)",
+  "reuseStatus": "No licence text in layer metadata; not read elsewhere. Unconfirmed."
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: application/json; Accept-Language: en-US,en;q=0.9; cookie jar (curl -b/-c); outbound via agent proxy, TLS verified",
+ "verifiedParcelResponse": {
+  "sourceId": "us-ut-parcels",
+  "requestUrl": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json / geo+json",
+  "spatialTestAreaLonLat": "bbox ~0.0024 deg (about 200 m) around each sample point, inSR=4326",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID",
+  "responseFile": "research/subnational/US/UT-parcel-response.json",
+  "pagination": "resultRecordCount=3; server maxRecordCount 100000 or 2000/1000",
+  "regionSampled": "Salt Lake County, Washington County"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer 'StateWideParcels' with a County attribute; both sampled counties (Salt Lake, Washington) answered from the same layer. Layer metadata carries no explicit statewide claim or licence text; per-county completeness not checked. Washington County sample had null PARCEL_ID values.",
+ "subregionsVerified": [
+  "Salt Lake County",
+  "Washington County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+   "observation": "anonymous ArcGIS REST layer; found via ArcGIS Online sharing search / known state service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=PARCEL_ID,County&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 polygon(s), Salt Lake County"
+  },
+  {
+   "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=PARCEL_ID,County&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 polygon(s), Washington County"
+  }
+ ],
+ "reuseStatus": "No licence text in layer metadata; not read elsewhere. Unconfirmed.",
+ "remainingUncertainty": "Layer description empty; county completeness and currency (ParcelsCur field) not audited; some records have null PARCEL_ID.",
+ "nextStep": "Read AGRC parcel page for licence and county coverage list."
+}

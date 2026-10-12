@@ -1,0 +1,86 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "TX",
+ "checkedAt": "2026-10-12",
+ "priorEvidence": "research/subnational/US/TX.json",
+ "uncoveredUnCities": 26,
+ "uncoveredUnCitySample": [
+  {
+   "cityCode": "6051",
+   "name": "Austin",
+   "lat": 30.356713851455,
+   "lon": -97.7333440108143
+  },
+  {
+   "cityCode": "6363",
+   "name": "North Richland Hills",
+   "lat": 32.8621940092415,
+   "lon": -97.1985157079356
+  },
+  {
+   "cityCode": "6650",
+   "name": "Plano",
+   "lat": 33.0655348058545,
+   "lon": -96.746764017442
+  },
+  {
+   "cityCode": "5854",
+   "name": "McAllen",
+   "lat": 26.2212316871423,
+   "lon": -98.2340869585896
+  },
+  {
+   "cityCode": "6381",
+   "name": "The Woodlands",
+   "lat": 30.174927425283,
+   "lon": -95.5060077599405
+  },
+  {
+   "cityCode": "5975",
+   "name": "Corpus Christi",
+   "lat": 27.7290358614509,
+   "lon": -97.3978332058705
+  },
+  {
+   "cityCode": "6525",
+   "name": "Irving",
+   "lat": 32.8302900979308,
+   "lon": -96.9720436807242
+  },
+  {
+   "cityCode": "5994",
+   "name": "Wetmore",
+   "lat": 29.5740993675035,
+   "lon": -98.4123284814205
+  },
+  {
+   "cityCode": "5916",
+   "name": "Brownsville",
+   "lat": 25.9264000678658,
+   "lon": -97.4786565983261
+  },
+  {
+   "cityCode": "6589",
+   "name": "Denton",
+   "lat": 33.1957594880463,
+   "lon": -97.1159889980199
+  }
+ ],
+ "access": "Anonymous HTTPS GET/POST to the public ArcGIS REST query endpoint, at most one request per second per host, no token or cookie. Only object-ID, native-ID and county/town scope fields were ever requested; no owner, address, sale, account or taxpayer fields.",
+ "helperScripts": "tmp/adapter-staging/us-statewide-a/scripts/ (state-cities.py, polite.mjs, meta.mjs, uniqueness.mjs, statewide-repeats.mjs, coverage.mjs, blank-breakdown.mjs, dup-ids.mjs, repeat-geometry.mjs, distinct-area-repeats.mjs, parts-overlap.mjs, verify.mjs, verify-parts.mjs, dense-cell.mjs, descriptors.mjs)",
+ "status": "held",
+ "heldReason": "feature.geographic.texas.gov did not resolve from this network on 2026-10-12 (system resolver, 1.1.1.1 and 9.9.9.9 SERVFAIL; 8.8.8.8 answered intermittently with 100.30.16.196 and 18.211.134.113, and one connection to 100.30.16.196 timed out after 40 s). Independently, the 2026-09-30 evidence recorded that this MapServer layer rejects /query (\"capability not supported\", identify only), which the arcgis adapter requires. No descriptor was built or verified.",
+ "endpoint": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/0",
+ "requestsAttempted": [
+  "GET <endpoint>?f=json via node fetch: getaddrinfo ENOTFOUND",
+  "GET <endpoint>?f=json via curl pinned to 100.30.16.196 (Google DNS answer): TCP connect timeout after 40 s"
+ ],
+ "leads": [
+  "Year-specific TxGIO MapServers stratmap23_land_parcels_48 and stratmap24_land_parcels_48 exist on the same host (seen in web search); their query capability is unverified.",
+  "A 2019 statewide copy on another ArcGIS Online account (2019_Texas_Parcels_StratMap) is third-party and stale; not considered."
+ ],
+ "caveats": [
+  "Prior evidence: Harris County point returned nothing, so Houston coverage is unverified."
+ ]
+}

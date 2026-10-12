@@ -10,16 +10,20 @@
 //   coverage.liveCitiesAt(lat, lon) -> [{ cityId, km, via: 'radius'|'country' }]  every configured city
 //                                                       whose parcels cover the point (see below)
 //   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'territory'|'ocean'|'world', name, cc }  the chip name
+//   coverage.regionAt(lat, lon) -> region record | null  the state/province/UK nation outline holding a point
 //   coverage.searchPlaces(query, { limit }) -> Place[]  diacritic-insensitive, best first
 //   coverage.liveSummary -> { cityCount, countryCount } unique configured live-city and country counts
 //   coverage.tierColors / WorldCoverage.TIERS
 //
-// Place: { kind: 'live-city' | 'city' | 'country' | 'territory' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
-//          name, country, cc, note, lat, lon, placeKey, cityId?, coverage?, coverageSources? }
-//   Countries carry geographic coverage (full/partial/none/unknown), independently of app routing.
+// Place: { kind: 'live-city' | 'city' | 'region' | 'country' | 'territory' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
+//          name, country, cc, note, lat, lon, placeKey, cityId?, regionId?, coverage?, coverageSources? }
+//   Countries and regions carry geographic coverage (full/partial/none/unknown), independently of app
+//   routing. A region (US state, Canadian province, England, ...) answers for its part of a country,
+//   except inside a countrywide-live country, whose routing the country place carries.
 //   WorldCoverage.statusKey(place) selects the matching localized label/description prefix.
 //   cityId is set when tier is 'live' (the configured app city to open). placeKey is a stable id for
-//   city requests: registry city id, 'country:<ISO2>', 'territory:<source-id>' or 'point:<lat>,<lon>'.
+//   city requests: registry city id, 'region:<ISO 3166-2>', 'country:<ISO2>', 'territory:<source-id>'
+//   or 'point:<lat>,<lon>'.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -38,7 +42,9 @@
     const EARTH_RADIUS_KM = 6371.0088;
 
     function statusKey(place) {
-        return place.kind === 'country' ? 'world.coverage.' + place.coverage : 'world.tier.' + place.tier;
+        if (place.kind === 'country') return 'world.coverage.' + place.coverage;
+        if (place.kind === 'region') return 'world.regionCoverage.' + place.coverage;
+        return 'world.tier.' + place.tier;
     }
 
     function haversineKm(lat1, lon1, lat2, lon2) {
@@ -164,6 +170,7 @@
         }
         const countries = data.countries.map(c => Object.assign({}, c, { bbox: c.rings.length ? ringsBbox(c.rings) : null }));
         const territories = (data.territories || []).map(c => Object.assign({}, c, { bbox: c.rings.length ? ringsBbox(c.rings) : null }));
+        const regions = (data.regions || []).map(r => Object.assign({}, r, { bbox: r.rings.length ? ringsBbox(r.rings) : null }));
         const countryByCc = new Map(countries.map(c => [c.cc, c]));
         const liveCities = data.liveCities;
         const liveSummary = Object.freeze({
@@ -210,6 +217,16 @@
             };
         }
 
+        function regionAt(lat, lon) {
+            return outlineAt(regions, lat, lon);
+        }
+
+        function regionPlace(region, lat, lon) {
+            return { kind: 'region', tier: region.tier, coverage: region.coverage, coverageSources: region.coverageSources,
+                name: region.name, country: countryName(region.cc), cc: region.cc, regionId: region.id,
+                note: region.note, lat, lon, placeKey: 'region:' + region.id };
+        }
+
         function territoryPlace(territory, lat, lon) {
             return { kind: 'territory', tier: 'unknown', coverage: 'unknown', name: territory.name,
                 country: '', cc: null, note: '', lat, lon, placeKey: 'territory:' + territory.id };
@@ -227,6 +244,8 @@
                 };
             }
             const country = countryAt(lat, lon);
+            const region = country && country.tier === 'live' ? null : regionAt(lat, lon);
+            if (region) return regionPlace(region, lat, lon);
             if (country) {
                 const place = {
                     kind: 'country', tier: country.tier, coverage: country.coverage, coverageSources: country.coverageSources,
@@ -299,6 +318,9 @@
                 name: c.name, country: c.name, cc: c.cc, note: c.note,
                 lat: c.center[0], lon: c.center[1], placeKey: 'country:' + c.cc, keys: [normalizeText(c.name), c.cc.toLowerCase()]
             })),
+            regions.filter(r => r.center).map(r => Object.assign(regionPlace(r, r.center[0], r.center[1]), {
+                priority: 2, keys: [normalizeText(r.name)]
+            })),
             territories.filter(c => c.center).map(c => Object.assign(territoryPlace(c, c.center[0], c.center[1]), {
                 priority: 2, keys: [normalizeText(c.name)]
             }))
@@ -329,7 +351,7 @@
             });
         }
 
-        return { data, tierAt, liveCitiesAt, nameAt, searchPlaces, countries, territories, cities, liveCities, liveSummary };
+        return { data, tierAt, liveCitiesAt, nameAt, regionAt, searchPlaces, countries, regions, territories, cities, liveCities, liveSummary };
     }
 
     function load(url) {

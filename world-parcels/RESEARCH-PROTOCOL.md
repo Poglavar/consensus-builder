@@ -88,3 +88,40 @@ Output: `research/subnational/<ISO2>/<regionCode>.json`:
   "subregionsVerified": ["Denver County"], "portalsFound": [...], "requests": [...], "reuseStatus": "...", "remainingUncertainty": "...", "nextStep": "..." }
 ```
 Raw replies as `research/subnational/<ISO2>/<regionCode>-parcel-response.json` (ID + geometry only). Do not edit any other file.
+
+## Jurisdiction-first provider expansion (2026-10-12)
+
+Once a national or state provider has an executable adapter, its cities are found by
+jurisdiction, not by web search: every UN WUP 2025 city inside the provider's documented
+jurisdiction is probed. A 2026-10-12 pilot found parcels for 139 of 148 such cities, where
+reusing municipal providers by metadata extent had found 2 of 393 (280 of those probes went to one
+Californian city service, New York included).
+
+- **Each provider keeps its own rules** in its `source-catalog.json` entry under `discovery`:
+  `jurisdiction` (`countryCode`, optional ISO 3166-2 `admin1` / `excludeAdmin1`, a one-sentence
+  `basis`, and `evidence` files relative to `world-parcels/`), and optionally `paceMs`,
+  `searchRingsM` and `keepPublishedFields` (only when the adapter validates its full published
+  field list and every field is a parcel-ID part). A quirk found in one provider is fixed in that
+  provider's adapter or profile, never as a rule for all providers.
+- A metadata bounding box is never jurisdiction evidence. Admin-1 membership is a point-in-polygon
+  test on Natural Earth 10m admin-1 (`ne_10m_admin_1_states_provinces.geojson`, v5.1.2).
+- Search pattern: the 3x3 core grid around the UN point (~170 m), then rings at 400/1200/3000 m,
+  8 bearings, ~110 m boxes. The rings are part of the pair checkpoint, so changing them re-probes
+  earlier no-hits.
+- An HTTP 403/429 blocks the provider, not the city: the probe reports `blocked`, the controller
+  stops that provider for the run and records no pair result, so those cities are probed again later.
+
+```sh
+python3 scripts/build-provider-expansion-queue.py --source <WUP2025.csv.gz> \
+  --admin1 <ne_10m_admin_1_states_provinces.geojson> --registry world-parcels/registry.json \
+  --live-report frontend/data/parcel-coverage-report.json --output tmp/<run>/queue.json
+python3 scripts/run-parcel-provider-expansion.py --run --queue-json tmp/<run>/queue.json \
+  --source <WUP2025.csv.gz> --repo-root . --shared-root .
+```
+
+Qualification of the receipts: `scripts/build-qualification-queue.py` freezes a queue from
+`provider-expansion/completions`; `run-parcel-qualification.py --run --direct-only` runs the
+deterministic qualifier and leaves cities that need troubleshooting at `needs-llm`. An external
+worker fixes a city in a new `attempt-NN` directory and submits it with `--record-answer`; the
+runner re-verifies it (including the independent metric recomputation) before recording it.
+Qualification needs `scripts/requirements-parcel-qualification.txt` (pyproj, shapely) on `python3`.

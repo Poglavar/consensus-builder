@@ -4714,7 +4714,8 @@
         },
         "legend": {
             "toggle": "Legenda mape",
-            "title": "Pokrivenost parcelama po državi",
+            "title": "Pokrivenost parcelama po državama i regionima",
+            "full": "Potvrđeno za celu državu ili region",
             "cities": "Grad sa parcelama u aplikaciji"
         },
         "coverage": {
@@ -4733,6 +4734,24 @@
             "unknown": {
                 "short": "Nije provereno / nejasno",
                 "text": "Ova država nije proverena ili rezultat provere nije jasan. Nismo potvrdili da li su otvoreni podaci o parcelama dostupni."
+            }
+        },
+        "regionCoverage": {
+            "full": {
+                "short": "Potvrđeno za ceo region",
+                "text": "Otvoreni podaci o parcelama potvrđeni su za ceo ovaj region. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "partial": {
+                "short": "Deo podataka u regionu je otvoren",
+                "text": "Otvoreni podaci o parcelama potvrđeni su negde u ovom regionu. Pokrivenost na ovoj lokaciji ili u celom regionu nije potvrđena. Gradovi dostupni u aplikaciji označeni su zasebno."
+            },
+            "none": {
+                "short": "Provereno: u regionu ništa nije pronađeno",
+                "text": "Proverili smo da li u ovom regionu postoje otvoreni podaci o parcelama i nismo ih pronašli. To beleži rezultat pretrage, a ne dokazuje da izvor ne postoji."
+            },
+            "unknown": {
+                "short": "Region nije proveren / nejasno",
+                "text": "Ovaj region nije proveren ili rezultat provere nije jasan. Nismo potvrdili da li su otvoreni podaci o parcelama dostupni."
             }
         },
         "tier": {

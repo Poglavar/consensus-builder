@@ -130,6 +130,16 @@ class ProviderControllerTests(unittest.TestCase):
    return self.probe_result(out_dir,'no-hit')
   with patch.object(ctl,'run_probe',side_effect=probe): result=self.run_items(items)
   self.assertEqual(calls,['404','405','404']); self.assertEqual(result['counts']['no-hit'],2)
+ def test_provider_block_defers_its_remaining_pairs_without_holding_cities(self):
+  items=[self.item(410,'catastro'),self.item(411,'catastro'),self.item(412,'other')]; calls=[]
+  def probe(repo,task,out_dir,heartbeat):
+   calls.append(task['city']['cityCode'])
+   return self.probe_result(out_dir,'blocked' if task['provider']['descriptor']['sourceId']=='catastro' else 'no-hit')
+  with patch.object(ctl,'run_probe',side_effect=probe): result=self.run_items(items)
+  self.assertEqual(calls,['410','412']); self.assertEqual(result['counts'],{'blocked':1,'deferred-provider-blocked':1,'no-hit':1})
+  self.assertFalse((self.shared/'tmp/parcel-provider-expansion/results/410').exists())
+  with patch.object(ctl,'run_probe',side_effect=lambda *a:(calls.append('again') or self.probe_result(None,'no-hit'))): self.run_items([items[0]])
+  self.assertEqual(calls[-1],'again')
  def test_entire_pending_queue_busy_is_blocked(self):
   item=self.item(406); self.args.max_busy_rounds=0; claim=ctl.coord.acquire(self.shared,'406','other')
   with patch.object(ctl,'run_probe') as probe: result=self.run_items([item])

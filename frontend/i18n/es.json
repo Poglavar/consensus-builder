@@ -4725,7 +4725,8 @@
         },
         "legend": {
             "toggle": "Leyenda del mapa",
-            "title": "Cobertura catastral por país",
+            "title": "Cobertura catastral por país y región",
+            "full": "Cobertura completa del país o la región",
             "cities": "Ciudad con parcelas en la app"
         },
         "coverage": {
@@ -4744,6 +4745,24 @@
             "unknown": {
                 "short": "Sin revisar / resultado incierto",
                 "text": "Este país no se ha revisado o la comprobación no fue concluyente. No hemos confirmado si hay datos abiertos de parcelas disponibles."
+            }
+        },
+        "regionCoverage": {
+            "full": {
+                "short": "Cobertura completa de la región",
+                "text": "Los datos abiertos de parcelas están confirmados para toda esta región. Las ciudades disponibles en la app se marcan por separado."
+            },
+            "partial": {
+                "short": "Algunos datos abiertos en la región",
+                "text": "Los datos abiertos de parcelas están confirmados en algún lugar de esta región. No se confirma la cobertura en este lugar concreto ni en toda la región. Las ciudades disponibles en la app se marcan por separado."
+            },
+            "none": {
+                "short": "Revisado: nada encontrado en esta región",
+                "text": "Buscamos datos abiertos de parcelas en esta región y no encontramos ninguno. Esto registra el resultado de la búsqueda, no demuestra que no exista ninguna fuente."
+            },
+            "unknown": {
+                "short": "Región sin revisar / resultado incierto",
+                "text": "Esta región no se ha revisado o la comprobación no fue concluyente. No hemos confirmado si hay datos abiertos de parcelas disponibles."
             }
         },
         "tier": {

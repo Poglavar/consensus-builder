@@ -1,0 +1,556 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "ND",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "newOnEndpointWithScopedEntry",
+ "descriptorId": "us-nd-gishub-statewide-parcels",
+ "idPrefix": "US-ND-STATEWIDE-",
+ "sharesEndpointWithScopedEntry": "us-nd-burleigh-bismarck-parcels",
+ "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "7198",
+   "name": "Fargo",
+   "lat": 46.8614438595037,
+   "lon": -96.8024909909751,
+   "pop2025k": 98.08,
+   "rank": 6309
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+   "layerName": "Parcels",
+   "layerType": "Feature Layer",
+   "recordCount": 742310,
+   "maxRecordCount": 2000,
+   "currentVersion": 12,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 3857,
+   "descriptionExcerpt": null,
+   "copyrightText": null,
+   "publishedFields": [
+    "OBJECTID",
+    "GISID",
+    "UniqueGISID",
+    "CountyName",
+    "CountyFIPS",
+    "Lot",
+    "Block",
+    "SubdivisionPlat",
+    "Section",
+    "Township",
+    "Range",
+    "SectionNumber",
+    "TownshipNumber",
+    "RangeNumber",
+    "TownshipName",
+    "CalculatedAcres",
+    "FeatureType",
+    "Ownership",
+    "SourceID",
+    "SourceType",
+    "SourceDate",
+    "AutomationMethod",
+    "AutomationType",
+    "AutomationComment",
+    "LastUpdateDate",
+    "Editor",
+    "DateImported",
+    "GlobalID",
+    "Shape__Area",
+    "Shape__Length"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "UniqueGISID is the State Parcel Program key (county FIPS + \"-\" + GISID; every non-blank value matches 38___-%). Unique in Fargo. GISID alone is county-scoped.",
+  "fields": [
+   "UniqueGISID"
+  ]
+ },
+ "statewideChecks": [
+  {
+   "state": "ND",
+   "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+   "checkedAt": "2026-10-12T10:57:11.249Z",
+   "results": {
+    "nullId": {
+     "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+IS+NULL+OR+UniqueGISID+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+     "count": 38250
+    },
+    "counties": {
+     "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=1%3D1&outFields=CountyName&returnDistinctValues=true&returnGeometry=false&orderByFields=CountyName&f=json",
+     "values": [
+      "Adams",
+      "Barnes",
+      "Benson",
+      "Billings",
+      "Bottineau",
+      "Bowman",
+      "Burke",
+      "Burleigh",
+      "Cass",
+      "Cavalier",
+      "Dickey",
+      "Divide",
+      "Dunn",
+      "Eddy",
+      "Emmons",
+      "Foster",
+      "Golden Valley",
+      "Grand Forks",
+      "Grant",
+      "Griggs",
+      "Hettinger",
+      "Kidder",
+      "LaMoure",
+      "Logan",
+      "McHenry",
+      "McIntosh",
+      "McKenzie",
+      "McLean",
+      "Mercer",
+      "Morton",
+      "Mountrail",
+      "Nelson",
+      "Oliver",
+      "Pembina",
+      "Pierce",
+      "Ramsey",
+      "Ransom",
+      "Renville",
+      "Richland",
+      "Rolette",
+      "Sargent",
+      "Sheridan",
+      "Sioux",
+      "Slope",
+      "Stark",
+      "Steele",
+      "Stutsman",
+      "Towner",
+      "Traill",
+      "Walsh",
+      "Ward",
+      "Wells",
+      "Williams"
+     ]
+    },
+    "featureTypes": {
+     "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=1%3D1&outFields=FeatureType&returnDistinctValues=true&returnGeometry=false&orderByFields=FeatureType&f=json",
+     "values": [
+      null,
+      "<NA>",
+      "County ROW",
+      "Municipal ROW",
+      "Parcel",
+      "Private ROW",
+      "Railroad ROW",
+      "State ROW",
+      "Unknown",
+      "Unknown ROW",
+      "Water"
+     ]
+    }
+   }
+  }
+ ],
+ "patternChecks": {
+  "ND": [
+   {
+    "where": "UniqueGISID IS NOT NULL AND UniqueGISID NOT IN ('',' ') AND UniqueGISID NOT LIKE '38___-%'",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+IS+NOT+NULL+AND+UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+NOT+LIKE+%2738___-%25%27&returnCountOnly=true&f=json",
+    "count": 0
+   },
+   {
+    "where": "UniqueGISID LIKE '% ' OR UniqueGISID LIKE ' %'",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+LIKE+%27%25+%27+OR+UniqueGISID+LIKE+%27+%25%27&returnCountOnly=true&f=json",
+    "count": 486
+   }
+  ]
+ },
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:52:47.103Z",
+   "fieldsRequested": [
+    "OBJECTID",
+    "GISID",
+    "UniqueGISID",
+    "CountyFIPS",
+    "CountyName",
+    "FeatureType"
+   ],
+   "cities": [
+    {
+     "city": "Fargo",
+     "cityCode": "7198",
+     "bbox": [
+      -96.807491,
+      46.856444,
+      -96.797491,
+      46.866444
+     ],
+     "count": 855,
+     "rowsRead": 855,
+     "keys": {
+      "UniqueGISID": {
+       "blanks": 0,
+       "distinct": 855,
+       "repeatedValues": 0
+      },
+      "GISID": {
+       "blanks": 0,
+       "distinct": 855,
+       "repeatedValues": 0
+      },
+      "CountyFIPS+GISID": {
+       "blanks": 0,
+       "distinct": 855,
+       "repeatedValues": 0
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:53:00.199Z",
+     "method": "GET",
+     "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-96.807491%2C46.856444%2C-96.797491%2C46.866444&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:04.131Z",
+     "method": "GET",
+     "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-96.807491%2C46.856444%2C-96.797491%2C46.866444&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CGISID%2CUniqueGISID%2CCountyFIPS%2CCountyName%2CFeatureType&returnGeometry=false&orderByFields=OBJECTID&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [],
+ "liveVerification": {
+  "descriptorId": "us-nd-gishub-statewide-parcels",
+  "verifiedAt": "2026-10-12T11:07:02.915Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Fargo",
+    "cityCode": "7198",
+    "unPoint": [
+     46.8614438595037,
+     -96.8024909909751
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -96.802991,
+       46.860944,
+       -96.801991,
+       46.861944
+      ],
+      "features": 16
+     }
+    ],
+    "bbox": [
+     -96.802991,
+     46.860944,
+     -96.801991,
+     46.861944
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "featureCount": 16
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00490-000",
+      "nativeId": "38017-1-2040-00490-000",
+      "type": "Polygon",
+      "geometrySha256": "b312efdfda26d50d0011ccebc19c88ad2868e4e184bdfb878f829fd201aa0843",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00730-000",
+      "nativeId": "38017-1-2040-00730-000",
+      "type": "Polygon",
+      "geometrySha256": "e65f4a91f924a15f9c857af0a469eac055beaf323f357af1db0171543887444b",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01350-000",
+      "nativeId": "38017-1-0020-01350-000",
+      "type": "Polygon",
+      "geometrySha256": "6cefe2748737888f22d8ead4b1712f3533b93c7a36049cd3cf7e530663a5e899",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01390-000",
+      "nativeId": "38017-1-0020-01390-000",
+      "type": "Polygon",
+      "geometrySha256": "28b83424faa047270041b2f44ace88321c5f153b02ba6b6cb2501fd7053857aa",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00720-000",
+      "nativeId": "38017-1-2040-00720-000",
+      "type": "Polygon",
+      "geometrySha256": "5b59c7820b7955030579fc4dfeba1b611dc4223177fbc4330e1c5a2042d0bbbf",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00710-000",
+      "nativeId": "38017-1-2040-00710-000",
+      "type": "Polygon",
+      "geometrySha256": "380156050951366b4ace2e58730545cacfb3713ebf8b839b6a53a6bc56e9bab9",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01420-000",
+      "nativeId": "38017-1-0020-01420-000",
+      "type": "Polygon",
+      "geometrySha256": "c9e056beb7dcbad9fe00cc4f3767aa70c33d4d1559ee3ec08f2a2e0a2e359ef7",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01400-000",
+      "nativeId": "38017-1-0020-01400-000",
+      "type": "Polygon",
+      "geometrySha256": "3d568d15b16251c3120a3b1ccdab0e7d97f881b2e4228e681c60d0235433fabc",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01430-000",
+      "nativeId": "38017-1-0020-01430-000",
+      "type": "Polygon",
+      "geometrySha256": "18c73a983158d4e71c840970c03daf77daef45d7f5bd557c0f9e672cbe83326a",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00510-000",
+      "nativeId": "38017-1-2040-00510-000",
+      "type": "Polygon",
+      "geometrySha256": "633aca35ed81ce4caad78d0301be1a8000327f08620bfa7da0f08401a5782b09",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00480-000",
+      "nativeId": "38017-1-2040-00480-000",
+      "type": "Polygon",
+      "geometrySha256": "9ea1cdd630049851a0cc88c263e9c2fb607335402290d9f6a348b5472099a266",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01360-000",
+      "nativeId": "38017-1-0020-01360-000",
+      "type": "Polygon",
+      "geometrySha256": "5da283e25c39eb649480cde50d07085d129f733aa23c50c49dfbc34fad707723",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01380-000",
+      "nativeId": "38017-1-0020-01380-000",
+      "type": "Polygon",
+      "geometrySha256": "57a0ba92364dd09fbc2348fa3168096ef28b575c3db840aca92dbaf1aa63919d",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00700-000",
+      "nativeId": "38017-1-2040-00700-000",
+      "type": "Polygon",
+      "geometrySha256": "a534a577028dcf891eee13fe3564c8fe19fe52d7c9b6a5c2b4b19c48aa65001d",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-0020-01410-000",
+      "nativeId": "38017-1-0020-01410-000",
+      "type": "Polygon",
+      "geometrySha256": "700ab204d5833a7497fc799d4661d363e63a4c727db755bf2bc8283da5a83af9",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-ND-STATEWIDE-38017-1-2040-00500-000",
+      "nativeId": "38017-1-2040-00500-000",
+      "type": "Polygon",
+      "geometrySha256": "f4ba76fa656d0a441308e64974163e14ecd6fa0abff715603db45611432b7d1a",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-ND-STATEWIDE-38017-1-2040-00490-000",
+      "US-ND-STATEWIDE-38017-1-2040-00730-000",
+      "US-ND-STATEWIDE-38017-1-0020-01350-000"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "features": [
+      {
+       "id": "US-ND-STATEWIDE-38017-1-2040-00490-000",
+       "geometrySha256": "b312efdfda26d50d0011ccebc19c88ad2868e4e184bdfb878f829fd201aa0843"
+      },
+      {
+       "id": "US-ND-STATEWIDE-38017-1-2040-00730-000",
+       "geometrySha256": "e65f4a91f924a15f9c857af0a469eac055beaf323f357af1db0171543887444b"
+      },
+      {
+       "id": "US-ND-STATEWIDE-38017-1-0020-01350-000",
+       "geometrySha256": "6cefe2748737888f22d8ead4b1712f3533b93c7a36049cd3cf7e530663a5e899"
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:07:04.334Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&geometry=-96.802991%2C46.860944%2C-96.801991%2C46.861944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:07.092Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&geometry=-96.802991%2C46.860944%2C-96.801991%2C46.861944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:08.709Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&outFields=OBJECTID%2CUniqueGISID&returnGeometry=true&outSR=4326&f=geojson&objectIds=71099670%2C71106381%2C71109557%2C71112185%2C71112653%2C71115439%2C71130371%2C71131670%2C71142124%2C71156636%2C71157263%2C71160600%2C71162433%2C71167040%2C71168332%2C71172602",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:11.865Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=%28UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL%29+AND+%28UniqueGISID+IN+%28%2738017-1-2040-00490-000%27%2C%2738017-1-2040-00730-000%27%2C%2738017-1-0020-01350-000%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:13.617Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=%28UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL%29+AND+%28UniqueGISID+IN+%28%2738017-1-2040-00490-000%27%2C%2738017-1-2040-00730-000%27%2C%2738017-1-0020-01350-000%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:15.517Z",
+      "method": "GET",
+      "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&outFields=OBJECTID%2CUniqueGISID&returnGeometry=true&outSR=4326&f=geojson&objectIds=71109557%2C71099670%2C71106381",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [],
+ "idBatchCheck": {
+  "file": "batch-ids.json",
+  "id": "us-nd-gishub-statewide-parcels",
+  "city": "Fargo",
+  "result": {
+   "bbox": [
+    -96.803991,
+    46.859944,
+    -96.800991,
+    46.862944
+   ],
+   "boundsFeatures": 108,
+   "idsRequested": 80,
+   "returned": 80,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 10343
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:14:32.741Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&geometry=-96.803991%2C46.859944%2C-96.800991%2C46.862944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 378
+   },
+   {
+    "ts": "2026-10-12T11:14:36.165Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&geometry=-96.803991%2C46.859944%2C-96.800991%2C46.862944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 496
+   },
+   {
+    "ts": "2026-10-12T11:14:40.360Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&outFields=OBJECTID%2CUniqueGISID&returnGeometry=true&outSR=4326&f=geojson&objectIds=71099442%2C71099670%2C71099996%2C71100444%2C71100477%2C71100677%2C71101421%2C71101479%2C71101653%2C71102343%2C71103176%2C71103517%2C71…",
+    "status": 200,
+    "ms": 1388
+   },
+   {
+    "ts": "2026-10-12T11:14:43.239Z",
+    "method": "POST",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query",
+    "bodyBytes": 2618,
+    "status": 200,
+    "ms": 376
+   },
+   {
+    "ts": "2026-10-12T11:14:47.084Z",
+    "method": "POST",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query",
+    "bodyBytes": 2616,
+    "status": 200,
+    "ms": 333
+   },
+   {
+    "ts": "2026-10-12T11:14:50.695Z",
+    "method": "GET",
+    "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?where=UniqueGISID+NOT+IN+%28%27%27%2C%27+%27%29+AND+UniqueGISID+IS+NOT+NULL&outFields=OBJECTID%2CUniqueGISID&returnGeometry=true&outSR=4326&f=geojson&objectIds=71155562%2C71139412%2C71128443%2C71115387%2C71131586%2C71124990%2C71100444%2C71155922%2C71114175%2C71132636%2C71123575%2C71113897%2C71…",
+    "status": 200,
+    "ms": 631
+   }
+  ]
+ },
+ "coverageCaveats": [
+  "The layer includes right-of-way, water and unknown feature types alongside parcels; FeatureType is null in some counties (e.g. Cass), so no type filter is applied and such polygons appear with their own UniqueGISID.",
+  "Rows with null or blank UniqueGISID (38,250 statewide on 2026-10-12) are excluded; 486 values carry leading or trailing spaces and are kept verbatim.",
+  "Same endpoint as us-nd-burleigh-bismarck-parcels (CountyName=Burleigh, key GISID under US-ND-BURLEIGH-); Burleigh County parcels would exist under both namespaces."
+ ]
+}

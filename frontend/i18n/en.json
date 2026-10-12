@@ -4674,7 +4674,8 @@
         },
         "legend": {
             "toggle": "Map legend",
-            "title": "Country parcel coverage",
+            "title": "Parcel coverage by country and region",
+            "full": "Full country or region coverage",
             "cities": "City with parcels in the app"
         },
         "coverage": {
@@ -4693,6 +4694,24 @@
             "unknown": {
                 "short": "Unchecked / inconclusive",
                 "text": "This country has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available."
+            }
+        },
+        "regionCoverage": {
+            "full": {
+                "short": "Full region coverage",
+                "text": "Open parcel data is confirmed for this whole region. Cities available in the app are marked separately."
+            },
+            "partial": {
+                "short": "Some open data in this region",
+                "text": "Open parcel data is confirmed somewhere in this region. Coverage at this specific location, or across the whole region, is not confirmed. Cities available in the app are marked separately."
+            },
+            "none": {
+                "short": "Checked: none found in this region",
+                "text": "We checked for open parcel data in this region and found none. This records the result of our search, not proof that no source exists."
+            },
+            "unknown": {
+                "short": "Region unchecked / inconclusive",
+                "text": "This region has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available."
             }
         },
         "tier": {

@@ -38,6 +38,19 @@ describe('Spanish cadastral GML WFS', () => {
         await createCatastroWfsParcelSource(descriptor, { fetchImpl }).queryBounds([2.167, 41.386, 2.168, 41.387]);
         expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('srsName')).toBe('EPSG::25831');
     });
+    it('re-reads parcels east of 0° in UTM31 so exact and Barcelona viewport geometry agree', async () => {
+        const proj4 = (await import('proj4')).default;
+        const utm = zone => `+proj=utm +zone=${zone} +ellps=GRS80 +units=m +no_defs`;
+        const ring = [[2.1670, 41.3860], [2.1672, 41.3860], [2.1672, 41.3862], [2.1670, 41.3862], [2.1670, 41.3860]];
+        const posList = zone => ring.map(p => proj4('EPSG:4326', utm(zone), p).map(v => v.toFixed(2)).join(' ')).join(' ');
+        const parcel = zone => gml({ zone }).replace(/<g:posList>[^<]*</, `<g:posList>${posList(zone)}<`);
+        const fetchImpl = vi.fn(async url => new Response(parcel(new URL(url).searchParams.get('SRSNAME') === 'EPSG::25830' ? 30 : 31)));
+        const viewport = await createCatastroWfsParcelSource(descriptor, { fetchImpl }).queryBounds([2.1669, 41.3859, 2.1673, 41.3863]);
+        const exact = await createCatastroWfsParcelSource(descriptor, { fetchImpl }).queryIds([viewport.features[0].id]);
+        expect(fetchImpl.mock.calls.slice(1).map(([url]) => new URL(url).searchParams.get('SRSNAME'))).toEqual(['EPSG::25830', 'EPSG::25831']);
+        expect(JSON.stringify(exact.features[0].geometry)).toBe(JSON.stringify(viewport.features[0].geometry));
+        expect(JSON.stringify(parcel(30))).not.toBe(JSON.stringify(parcel(31)));
+    });
     it.each([gml({ matched: 2 }), gml({ returned: 2 }), gml({ key: 'transport-row' }), '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1"><ows:Exception exceptionCode="OperationProcessingFailed">No se ha encontrado</ows:Exception></ows:ExceptionReport>'])('rejects truncated, inconsistent, invalid-ID and HTTP200 exception collections', async body => {
         await expect(createCatastroWfsParcelSource(descriptor, { fetchImpl: async () => new Response(body) }).queryBounds(bounds)).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
     });

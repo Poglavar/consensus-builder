@@ -230,11 +230,25 @@ describe('tierAt', () => {
         expect(coverage.tierAt(30, -40)).toMatchObject({ kind: 'ocean', tier: 'unknown', cc: null, placeKey: 'point:30.0,-40.0' });
     });
 
-    it('falls back to the country polygon away from any city', () => {
+    it('falls back to the region, then the country polygon, away from any city', () => {
         const kansas = coverage.tierAt(38.5, -98.5);
-        expect(kansas).toMatchObject({ kind: 'country', cc: 'US', tier: 'source', placeKey: 'country:US' });
+        expect(kansas).toMatchObject({
+            kind: 'region', regionId: 'US-KS', name: 'Kansas', cc: 'US', country: 'United States of America',
+            tier: 'source', coverage: 'partial', placeKey: 'region:US-KS'
+        });
         const siberia = coverage.tierAt(62, 100);
         expect(siberia).toMatchObject({ kind: 'country', cc: 'RU' });
+    });
+
+    it('answers England and Wales as full regions inside a partial United Kingdom', () => {
+        const lakeDistrict = coverage.tierAt(54.45, -3.05);
+        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'full', tier: 'source', country: 'United Kingdom' });
+        expect(lakeDistrict.note).toMatch(/registered freehold/);
+        expect(lakeDistrict.coverageSources.length).toBeGreaterThan(0);
+        expect(coverage.tierAt(52.3, -3.6)).toMatchObject({ kind: 'region', regionId: 'GB-WLS', coverage: 'full' });
+        expect(coverage.tierAt(57.3, -4.9)).toMatchObject({ kind: 'region', regionId: 'GB-SCT', coverage: 'partial' });
+        expect(coverage.searchPlaces('United Kingdom')[0]).toMatchObject({ kind: 'country', cc: 'GB', coverage: 'partial' });
+        expect(coverage.searchPlaces('England')[0]).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'full' });
     });
 
     it('prefers a live city over a registry city at the same place', () => {
@@ -272,6 +286,43 @@ describe('country coverage axis', () => {
     it('keeps city and live-city labels on their operational tier', () => {
         expect(WorldCoverage.statusKey({ kind: 'city', tier: 'source', coverage: 'full' })).toBe('world.tier.source');
         expect(WorldCoverage.statusKey({ kind: 'live-city', tier: 'live', coverage: 'unknown' })).toBe('world.tier.live');
+    });
+});
+
+describe('region coverage axis', () => {
+    const square = (x0, y0, x1, y1) => [x0, y0, x1, y0, x1, y1, x0, y1, x0, y0];
+    const sample = live => WorldCoverage.create({
+        schemaVersion: 1,
+        countries: [{ cc: 'AA', name: 'Sampleland', tier: live ? 'live' : 'source', coverage: 'partial', note: 'Some regions',
+            center: [0.5, 1], rings: [square(0, 0, 2, 1)] }],
+        regions: [
+            { id: 'AA-ONE', cc: 'AA', name: 'Uplands', tier: 'source', coverage: 'full', note: 'Reviewed regional scope',
+                coverageSources: [{ title: 'Scope', url: 'https://scope.example.test/one' }], center: [0.5, 0.5], rings: [square(0, 0, 1, 1)] }
+        ],
+        cities: [], liveCities: live ? [{ id: 'capital', name: 'Capital', label: 'Capital', cc: 'AA', lat: 0.5, lon: 1.9 }] : []
+    });
+
+    it('answers a point inside a region with the region and its coverage, and the rest of the country with the country', () => {
+        const coverage = sample(false);
+        expect(coverage.tierAt(0.5, 0.5)).toMatchObject({
+            kind: 'region', regionId: 'AA-ONE', name: 'Uplands', country: 'Sampleland', cc: 'AA', tier: 'source', coverage: 'full',
+            note: 'Reviewed regional scope', coverageSources: [{ title: 'Scope', url: 'https://scope.example.test/one' }], placeKey: 'region:AA-ONE'
+        });
+        expect(coverage.tierAt(0.5, 1.5)).toMatchObject({ kind: 'country', cc: 'AA', coverage: 'partial' });
+        expect(coverage.regionAt(0.5, 0.5).id).toBe('AA-ONE');
+        expect(coverage.regionAt(0.5, 1.5)).toBeNull();
+    });
+
+    it('keeps a countrywide live country routing its own places', () => {
+        expect(sample(true).tierAt(0.5, 0.5)).toMatchObject({ kind: 'country', tier: 'live', cityId: 'capital' });
+    });
+
+    it('finds regions by name and labels them on the region coverage axis', () => {
+        const hit = sample(false).searchPlaces('upl')[0];
+        expect(hit).toMatchObject({ kind: 'region', regionId: 'AA-ONE', coverage: 'full', lat: 0.5, lon: 0.5, country: 'Sampleland' });
+        for (const level of ['full', 'partial', 'none', 'unknown']) {
+            expect(WorldCoverage.statusKey({ kind: 'region', tier: 'source', coverage: level })).toBe(`world.regionCoverage.${level}`);
+        }
     });
 });
 

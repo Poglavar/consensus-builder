@@ -25,6 +25,22 @@ export function probeLocations(point, step = 0.0005) {
         return { point:p, bbox:[p[0]-step/2,p[1]-step/2,p[0]+step/2,p[1]+step/2] };
     });
 }
+// Where to look: the 3x3 core grid around the UN point, then rings (metres) at 8 bearings with
+// ~110 m boxes. The queue states each provider's rings, so a changed pattern is a new pair.
+const RING_BOX_DEG = 0.001;
+export function searchLocations(point, ringsM) {
+    if (!Array.isArray(ringsM) || ringsM.some(r => !Number.isFinite(r) || r <= 0 || r > 20_000)) throw new Error('Search rings must be positive metre radii');
+    const [lat, lon] = point;
+    const out = probeLocations(point).map(location => ({ ...location, ringM: 0 }));
+    const metresPerDegLon = 111_320 * Math.cos(lat * Math.PI / 180);
+    for (const ringM of ringsM) for (let k = 0; k < 8; k++) {
+        const bearing = k * Math.PI / 4;
+        const p = [lon + ringM * Math.sin(bearing) / metresPerDegLon, lat + ringM * Math.cos(bearing) / 111_320];
+        const h = RING_BOX_DEG / 2;
+        out.push({ point:p, bbox:[p[0]-h,p[1]-h,p[0]+h,p[1]+h], ringM });
+    }
+    return out;
+}
 export function safeDescriptor(source) {
     const d = structuredClone(source);
     const fields = new Set([d.idField, d.objectIdField, d.idNamespace?.field, ...(d.idFields || []), ...(d.partMatchFields || [])]);
@@ -33,8 +49,14 @@ export function safeDescriptor(source) {
     if (d.adapter === 'bev-tiles') for (const f of ['kg','gnr','rstatus']) fields.add(f);
     fields.delete(undefined); fields.delete(null);
     if ([...fields].some(f => unsafe.test(f))) throw new Error('Provider cannot be probed with the safe field allowlist');
-    if (d.outFields) d.outFields = [...fields];
-    delete d.parcelNumberField;
+    // A provider whose adapter validates its full published field list declares so in its own
+    // discovery profile (after review that every field is an ID part); others are narrowed.
+    if (d.discovery?.keepPublishedFields === true) {
+        if ([...(d.outFields || []), d.parcelNumberField].some(f => f && unsafe.test(f))) throw new Error('Provider cannot be probed with the safe field allowlist');
+    } else {
+        if (d.outFields) d.outFields = [...fields];
+        delete d.parcelNumberField;
+    }
     if (d.adapter === 'wfs') {
         if (!d.geometryField) throw new Error('WFS requires a verified geometry field to request safe properties only');
         d.requestProperties = true;
@@ -105,14 +127,20 @@ async function main() {
     // A HMLR city can touch 32 council archives; each needs a session,
     // redirect and ZIP request, followed by an independent native-ID read.
     const hmlr = task.provider.descriptor.adapter === 'hmlr-browser';
-    const requestLimit = hmlr ? 300 : 60;
+    // Rings add up to 24 sample boxes after the 9 core cells.
+    const requestLimit = hmlr ? 300 : 150;
     const requestTimeoutMs = hmlr ? 180_000 : 25_000;
+    // Pacing is the provider's own rule (e.g. Catastro resets connections under bursts).
+    const paceMs = task.provider.descriptor.discovery?.paceMs ?? 1000;
+    if (!Number.isSafeInteger(paceMs) || paceMs < 250 || paceMs > 10_000) throw new Error('discovery.paceMs must be 250..10000 ms');
+    // A 403/429 blocks the provider, not this city: report it so the controller stops the provider.
+    let blockedStatus = null;
     const trackedFetch = async (input, init = {}) => {
         if (attempts.length >= requestLimit) throw Object.assign(new Error(`Provider city probe reached its ${requestLimit}-request limit`), { code: 'provider-probe-request-budget' });
         const u = new URL(typeof input === 'string' ? input : input.url || String(input));
         if (u.protocol !== 'https:') throw new Error('Provider discovery requires verified HTTPS');
         if ([...u.searchParams.keys()].some(k => /token|api.?key|password/i.test(k))) throw new Error('Credentialed provider request is not allowed');
-        const pause = 1000 - (Date.now() - lastRequest);
+        const pause = paceMs - (Date.now() - lastRequest);
         if (pause > 0) await new Promise(r=>setTimeout(r,pause));
         lastRequest = Date.now();
         const evidence = {stage,method:init.method || 'GET',url:safeRequestUrl(u),checkedAt:new Date().toISOString()};
@@ -120,8 +148,10 @@ async function main() {
         const timeout = AbortSignal.timeout(requestTimeoutMs);
         const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
         try {
-            const r = await original(input,{...init,signal}); evidence.httpStatus=r.status; return r;
-        } catch (error) { evidence.error=error.name; throw error; }
+            const r = await original(input,{...init,signal}); evidence.httpStatus=r.status;
+            if (r.status === 403 || r.status === 429) blockedStatus = r.status;
+            return r;
+        } catch (error) { evidence.error=error.cause?.code || error.name; throw error; }
     };
     try {
         if (!task.provider.scopeEvidence?.length || task.provider.descriptor.countryCode !== task.city.iso2) throw new Error('Provider scope and target country require positive evidence');
@@ -130,8 +160,18 @@ async function main() {
         globalThis.fetch = trackedFetch;
         const adapter = createParcelSource(d,{fetchImpl:trackedFetch});
         let selected=[];
-        for (const location of probeLocations(task.city.point)) {
-            const response = noArea ? await adapter.queryPoint(location.point) : await adapter.queryBounds(location.bbox);
+        for (const location of searchLocations(task.city.point, task.provider.searchRingsM)) {
+            let response;
+            // One retry for a transport failure at this location; HTTP errors and blocks are final.
+            for (let tryNo = 0; ; tryNo++) {
+                try { response = noArea ? await adapter.queryPoint(location.point) : await adapter.queryBounds(location.bbox); break; }
+                catch (error) {
+                    const transport = attempts.at(-1)?.error && attempts.at(-1).httpStatus === undefined;
+                    if (blockedStatus || !transport || tryNo === 1 || error.code === 'provider-probe-request-budget') throw error;
+                    await new Promise(r=>setTimeout(r,5000));
+                }
+            }
+            if (blockedStatus) break;
             if (response?.complete !== true || response.returnsWGS84 !== true || !Array.isArray(response.features)) {
                 throw new Error('Provider response was incomplete or not normalized to WGS84');
             }
@@ -139,9 +179,11 @@ async function main() {
                 selected=response.features.slice(0,3);
                 for (const f of selected) safeSample(f,d.id,response);
                 result.verifiedQuery = noArea ? {point:location.point} : {bbox:location.bbox};
+                result.hitRingM = location.ringM;
                 break;
             }
         }
+        if (blockedStatus) throw new Error(`Provider blocked access (HTTP ${blockedStatus})`);
         if (!selected.length) result.status='no-hit';
         else {
             stage='independent-native-id-read';
@@ -149,6 +191,7 @@ async function main() {
             if (new Set(ids).size !== ids.length) throw new Error('Provider returned duplicate native parcel IDs');
             const fresh=createParcelSource(d,{fetchImpl:trackedFetch});
             const exact=await fresh.queryIds(ids);
+            if (blockedStatus) throw new Error(`Provider blocked access (HTTP ${blockedStatus})`);
             if (exact.complete !== true || exact.returnsWGS84 !== true || exact.features?.length !== ids.length
                 || exact.absentIds?.length !== 0) throw new Error('Native ID reread did not return the complete WGS84 requested set');
             const found = new Map(exact.features.map(f=>[f.properties.parcelId,f]));
@@ -157,7 +200,7 @@ async function main() {
             await fs.writeFile(path.join(output,'samples.geojson'),JSON.stringify(sample)+'\n');
             result={...result,status:'discovered',sourceId:d.id,sampleFile:'samples.geojson',nativeIds:sample.features.map(f=>f.properties.id),geometryHashes:sample.features.map(f=>hash(f.geometry)),descriptor:d};
         }
-    } catch(error) { result={...result,status:'held',reason:String(error.message).slice(0,400)}; }
+    } catch(error) { result={...result,status:blockedStatus ? 'blocked' : 'held',reason:String(error.message).slice(0,400)}; }
     finally { globalThis.fetch=original; }
     await fs.writeFile(path.join(output,'probe.json'),JSON.stringify(result,null,2)+'\n');
     console.log(JSON.stringify({status:result.status,cityCode:task.city.cityCode,sourceId:task.provider.descriptor.id,requests:attempts.length,reason:result.reason}));

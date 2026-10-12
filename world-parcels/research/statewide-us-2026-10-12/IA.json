@@ -1,0 +1,1127 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "IA",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "profileForExisting",
+ "existingSourceId": "us-ia-des-moines-parcels",
+ "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "7009",
+   "name": "Urbandale",
+   "lat": 41.6149025063095,
+   "lon": -93.6594933902087,
+   "pop2025k": 166.296,
+   "rank": 3644
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+   "layerName": "Parcels_20171102",
+   "layerType": "Feature Layer",
+   "recordCount": 2450589,
+   "maxRecordCount": 2000,
+   "currentVersion": 12,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 3857,
+   "descriptionExcerpt": null,
+   "copyrightText": null,
+   "publishedFields": [
+    "OBJECTID",
+    "COUNTYNAME",
+    "STATEPARID",
+    "UNPARCELID",
+    "PARCELNUMB",
+    "PARCELCLAS",
+    "DEEDHOLDER",
+    "Shape__Area",
+    "Shape__Length"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "Existing entry key STATEPARID (county-qualified); 4 keys in Urbandale span several rows, handled by the existing parts mode."
+ },
+ "statewideChecks": [
+  {
+   "state": "IA",
+   "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+   "checkedAt": "2026-10-12T10:57:11.250Z",
+   "results": {
+    "nullId": {
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IS+NULL+OR+STATEPARID+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+     "count": 0
+    },
+    "counties": {
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=COUNTYNAME&returnDistinctValues=true&returnGeometry=false&orderByFields=COUNTYNAME&f=json",
+     "values": [
+      "ADAIR",
+      "ADAMS",
+      "ALLAMAKEE",
+      "APPANOOSE",
+      "AUDUBON",
+      "BENTON",
+      "BLACK HAWK",
+      "BOONE",
+      "BREMER",
+      "BUCHANAN",
+      "BUENA VISTA",
+      "BUTLER",
+      "CALHOUN",
+      "CARROLL",
+      "CASS",
+      "CEDAR",
+      "CERRO GORDO",
+      "CHEROKEE",
+      "CHICKASAW",
+      "CLARKE",
+      "CLAY",
+      "CLAYTON",
+      "CLINTON",
+      "CRAWFORD",
+      "DALLAS",
+      "DAVIS",
+      "DECATUR",
+      "DELAWARE",
+      "DES MOINES",
+      "DICKINSON",
+      "DUBUQUE",
+      "EMMET",
+      "FAYETTE",
+      "FLOYD",
+      "FRANKLIN",
+      "FREMONT",
+      "GREENE",
+      "GRUNDY",
+      "GUTHRIE",
+      "HAMILTON",
+      "HANCOCK",
+      "HARDIN",
+      "HARRISON",
+      "HENRY",
+      "HOWARD",
+      "HUMBOLDT",
+      "IDA",
+      "IOWA",
+      "JACKSON",
+      "JASPER",
+      "JEFFERSON",
+      "JOHNSON",
+      "JONES",
+      "KEOKUK",
+      "KOSSUTH",
+      "LEE",
+      "LINN",
+      "LOUISA",
+      "LUCAS",
+      "LYON",
+      "MADISON",
+      "MAHASKA",
+      "MARION",
+      "MARSHALL",
+      "MILLS",
+      "MITCHELL",
+      "MONONA",
+      "MONROE",
+      "MONTGOMERY",
+      "MUSCATINE",
+      "O' BRIEN",
+      "OSCEOLA",
+      "PAGE",
+      "PALO ALTO",
+      "PLYMOUTH",
+      "POCAHONTAS",
+      "POLK",
+      "POTTAWATTAMIE",
+      "POWESHIEK",
+      "RINGGOLD",
+      "SAC",
+      "SCOTT",
+      "SHELBY",
+      "SIOUX",
+      "STORY",
+      "TAMA",
+      "TAYLOR",
+      "UNION",
+      "VAN BUREN",
+      "WAPELLO",
+      "WARREN",
+      "WASHINGTON",
+      "WAYNE",
+      "WEBSTER",
+      "WINNEBAGO",
+      "WINNESHIEK",
+      "WOODBURY",
+      "WORTH",
+      "WRIGHT"
+     ]
+    }
+   }
+  }
+ ],
+ "patternChecks": {},
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:52:47.103Z",
+   "fieldsRequested": [
+    "OBJECTID",
+    "STATEPARID",
+    "PARCELNUMB",
+    "COUNTYNAME"
+   ],
+   "cities": [
+    {
+     "city": "Urbandale",
+     "cityCode": "7009",
+     "bbox": [
+      -93.664493,
+      41.609903,
+      -93.654493,
+      41.619903
+     ],
+     "count": 850,
+     "rowsRead": 850,
+     "keys": {
+      "STATEPARID": {
+       "blanks": 0,
+       "distinct": 843,
+       "repeatedValues": 4,
+       "sampledRepeats": 4,
+       "sampledRepeatsWithDistinctGeometry": 4,
+       "repeatSamples": [
+        {
+         "value": "77-10000156000000",
+         "oids": [
+          1704939,
+          1708471,
+          1769428
+         ],
+         "distinctGeometries": 3
+        },
+        {
+         "value": "77-08002101000000",
+         "oids": [
+          1727397,
+          1772128
+         ],
+         "distinctGeometries": 2
+        },
+        {
+         "value": "77-08005644001000",
+         "oids": [
+          1732136,
+          1732137,
+          1757057,
+          1757058
+         ],
+         "distinctGeometries": 2
+        },
+        {
+         "value": "77-08002840000000",
+         "oids": [
+          1768110,
+          1776608
+         ],
+         "distinctGeometries": 2
+        }
+       ]
+      },
+      "PARCELNUMB": {
+       "blanks": 0,
+       "distinct": 843,
+       "repeatedValues": 4,
+       "sampledRepeats": 4,
+       "sampledRepeatsWithDistinctGeometry": 4,
+       "repeatSamples": [
+        {
+         "value": "10000156000000",
+         "oids": [
+          1704939,
+          1708471,
+          1769428
+         ],
+         "distinctGeometries": 3
+        },
+        {
+         "value": "08002101000000",
+         "oids": [
+          1727397,
+          1772128
+         ],
+         "distinctGeometries": 2
+        },
+        {
+         "value": "08005644001000",
+         "oids": [
+          1732136,
+          1732137,
+          1757057,
+          1757058
+         ],
+         "distinctGeometries": 2
+        },
+        {
+         "value": "08002840000000",
+         "oids": [
+          1768110,
+          1776608
+         ],
+         "distinctGeometries": 2
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:53:00.051Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.664493%2C41.609903%2C-93.654493%2C41.619903&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:02.067Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.664493%2C41.609903%2C-93.654493%2C41.619903&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSTATEPARID%2CPARCELNUMB%2CCOUNTYNAME&returnGeometry=false&orderByFields=OBJECTID&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:05.702Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?objectIds=1704939%2C1708471%2C1769428%2C1727397%2C1772128%2C1732136%2C1732137%2C1757057%2C1757058%2C1768110%2C1776608&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:16.804Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?objectIds=1704939%2C1708471%2C1769428%2C1727397%2C1772128%2C1732136%2C1732137%2C1757057%2C1757058%2C1768110%2C1776608&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [
+  {
+   "state": "IA",
+   "key": "STATEPARID",
+   "groups": [
+    {
+     "city": "Urbandale",
+     "value": "77-10000156000000",
+     "rows": [
+      {
+       "oid": 1704939,
+       "props": {
+        "OBJECTID": 1704939,
+        "STATEPARID": "77-10000156000000",
+        "PARCELNUMB": "10000156000000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 1492.99,
+       "geomType": "Polygon",
+       "hash": "d2cf0792e68f"
+      },
+      {
+       "oid": 1708471,
+       "props": {
+        "OBJECTID": 1708471,
+        "STATEPARID": "77-10000156000000",
+        "PARCELNUMB": "10000156000000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 3077.29,
+       "geomType": "Polygon",
+       "hash": "23c52d4ec4db"
+      },
+      {
+       "oid": 1769428,
+       "props": {
+        "OBJECTID": 1769428,
+        "STATEPARID": "77-10000156000000",
+        "PARCELNUMB": "10000156000000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 1491.71,
+       "geomType": "Polygon",
+       "hash": "7d351519fdbd"
+      }
+     ],
+     "pairs": [
+      {
+       "a": 1704939,
+       "b": 1708471,
+       "intersectM2": 0,
+       "touches": false
+      },
+      {
+       "a": 1704939,
+       "b": 1769428,
+       "intersectM2": 0,
+       "touches": false
+      },
+      {
+       "a": 1708471,
+       "b": 1769428,
+       "intersectM2": 0,
+       "touches": false
+      }
+     ]
+    },
+    {
+     "city": "Urbandale",
+     "value": "77-08002101000000",
+     "rows": [
+      {
+       "oid": 1727397,
+       "props": {
+        "OBJECTID": 1727397,
+        "STATEPARID": "77-08002101000000",
+        "PARCELNUMB": "08002101000000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 765.85,
+       "geomType": "Polygon",
+       "hash": "99df3f0a94b1"
+      },
+      {
+       "oid": 1772128,
+       "props": {
+        "OBJECTID": 1772128,
+        "STATEPARID": "77-08002101000000",
+        "PARCELNUMB": "08002101000000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 4401.18,
+       "geomType": "Polygon",
+       "hash": "faebdff65ebf"
+      }
+     ],
+     "pairs": [
+      {
+       "a": 1727397,
+       "b": 1772128,
+       "intersectM2": 0,
+       "touches": false
+      }
+     ]
+    },
+    {
+     "city": "Urbandale",
+     "value": "77-08005644001000",
+     "rows": [
+      {
+       "oid": 1732136,
+       "props": {
+        "OBJECTID": 1732136,
+        "STATEPARID": "77-08005644001000",
+        "PARCELNUMB": "08005644001000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 743.5,
+       "geomType": "Polygon",
+       "hash": "dcddbc05d74d"
+      },
+      {
+       "oid": 1732137,
+       "props": {
+        "OBJECTID": 1732137,
+        "STATEPARID": "77-08005644001000",
+        "PARCELNUMB": "08005644001000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 743.5,
+       "geomType": "Polygon",
+       "hash": "dcddbc05d74d"
+      },
+      {
+       "oid": 1757057,
+       "props": {
+        "OBJECTID": 1757057,
+        "STATEPARID": "77-08005644001000",
+        "PARCELNUMB": "08005644001000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 195.24,
+       "geomType": "Polygon",
+       "hash": "a0f89149fa44"
+      },
+      {
+       "oid": 1757058,
+       "props": {
+        "OBJECTID": 1757058,
+        "STATEPARID": "77-08005644001000",
+        "PARCELNUMB": "08005644001000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 195.24,
+       "geomType": "Polygon",
+       "hash": "a0f89149fa44"
+      }
+     ],
+     "pairs": [
+      {
+       "a": 1732136,
+       "b": 1732137,
+       "intersectM2": 743.5,
+       "touches": true
+      },
+      {
+       "a": 1732136,
+       "b": 1757057,
+       "intersectM2": 0,
+       "touches": false
+      },
+      {
+       "a": 1732136,
+       "b": 1757058,
+       "intersectM2": 0,
+       "touches": false
+      },
+      {
+       "a": 1732137,
+       "b": 1757057,
+       "intersectM2": 0,
+       "touches": false
+      },
+      {
+       "a": 1732137,
+       "b": 1757058,
+       "intersectM2": 0,
+       "touches": false
+      },
+      {
+       "a": 1757057,
+       "b": 1757058,
+       "intersectM2": 195.24,
+       "touches": true
+      }
+     ]
+    },
+    {
+     "city": "Urbandale",
+     "value": "77-08002840000000",
+     "rows": [
+      {
+       "oid": 1768110,
+       "props": {
+        "OBJECTID": 1768110,
+        "STATEPARID": "77-08002840000000",
+        "PARCELNUMB": "08002840000000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 9413.12,
+       "geomType": "Polygon",
+       "hash": "2c14496c0c2b"
+      },
+      {
+       "oid": 1776608,
+       "props": {
+        "OBJECTID": 1776608,
+        "STATEPARID": "77-08002840000000",
+        "PARCELNUMB": "08002840000000",
+        "COUNTYNAME": "POLK"
+       },
+       "areaM2": 1168.57,
+       "geomType": "Polygon",
+       "hash": "c7781f813577"
+      }
+     ],
+     "pairs": [
+      {
+       "a": 1768110,
+       "b": 1776608,
+       "intersectM2": 0,
+       "touches": false
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "liveVerification": {
+  "descriptorId": "us-ia-des-moines-parcels",
+  "verifiedAt": "2026-10-12T11:07:02.915Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Urbandale",
+    "cityCode": "7009",
+    "unPoint": [
+     41.6149025063095,
+     -93.6594933902087
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -93.659993,
+       41.614403,
+       -93.658993,
+       41.615403
+      ],
+      "features": 11
+     }
+    ],
+    "bbox": [
+     -93.659993,
+     41.614403,
+     -93.658993,
+     41.615403
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "sourceRows": 11,
+     "featureCount": 11
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-IA-77-10013494003000",
+      "nativeId": "77-10013494003000",
+      "type": "Polygon",
+      "geometrySha256": "bb466817b996cbb8a9d129b250ed1c7c962046df6b4e992908157819c23aab42",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10013498003000",
+      "nativeId": "77-10013498003000",
+      "type": "Polygon",
+      "geometrySha256": "46b0bb6e3ce2cf7a7414116b690a87005f877bc7c126a1077424afe26ac15d53",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10013494002000",
+      "nativeId": "77-10013494002000",
+      "type": "Polygon",
+      "geometrySha256": "1a3348f1f4b596bc1581222a8296fb782532e1bcef6051c5895c3dfc25d36de7",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10013494001000",
+      "nativeId": "77-10013494001000",
+      "type": "Polygon",
+      "geometrySha256": "7ad7642f67821161ea9328578160864e4a4832225aa54e85a89d82bb62a9c75b",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10013493000000",
+      "nativeId": "77-10013493000000",
+      "type": "Polygon",
+      "geometrySha256": "bdf946161ac91a5ac1443ad21943e3acc64fcee5d53b482bc4795b0932f6eb00",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10009869002000",
+      "nativeId": "77-10009869002000",
+      "type": "Polygon",
+      "geometrySha256": "eb3f91b525fb1933405ff651ba367ef240b0ab51003315bf209f914bf41fbff4",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10009869001002",
+      "nativeId": "77-10009869001002",
+      "type": "Polygon",
+      "geometrySha256": "87bcb053b71d636e37b8a268f3ac834f9348d7f895a0ad06d5a5aa02285c09ea",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10009869001003",
+      "nativeId": "77-10009869001003",
+      "type": "Polygon",
+      "geometrySha256": "b0c155007f06ba353bcf419decc5e663d82e0e240211d48a0686ea97f2edeadb",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10013498001002",
+      "nativeId": "77-10013498001002",
+      "type": "Polygon",
+      "geometrySha256": "afa8245ea7e46e3cdd7866012389df9526ae5408a3fc8b29b74c10fb88341357",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10013671000000",
+      "nativeId": "77-10013671000000",
+      "type": "Polygon",
+      "geometrySha256": "ea1eeedcf193c5ad9919d0f38d54e25cfb59b3854b928d1bc54ac71c2da27058",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IA-77-10013518001000",
+      "nativeId": "77-10013518001000",
+      "type": "Polygon",
+      "geometrySha256": "1f834f36b69e5e8b9bfc25ec155c055343247bf0f99346ec36193c40f03bc568",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-IA-77-10013494003000",
+      "US-IA-77-10013498003000",
+      "US-IA-77-10013494002000"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "sourceRows": 3,
+     "features": [
+      {
+       "id": "US-IA-77-10013494003000",
+       "geometrySha256": "bb466817b996cbb8a9d129b250ed1c7c962046df6b4e992908157819c23aab42",
+       "parts": 1
+      },
+      {
+       "id": "US-IA-77-10013498003000",
+       "geometrySha256": "46b0bb6e3ce2cf7a7414116b690a87005f877bc7c126a1077424afe26ac15d53",
+       "parts": 1
+      },
+      {
+       "id": "US-IA-77-10013494002000",
+       "geometrySha256": "1a3348f1f4b596bc1581222a8296fb782532e1bcef6051c5895c3dfc25d36de7",
+       "parts": 1
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:07:05.134Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.659993%2C41.614403%2C-93.658993%2C41.615403&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:07.170Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.659993%2C41.614403%2C-93.658993%2C41.615403&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:08.897Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1699889%2C1699944%2C1700112%2C1700299%2C1703625%2C1767272%2C1767438%2C1767509%2C1826031%2C1826314%2C1826376",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:13.541Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10013494003000%27%2C%2777-10013498003000%27%2C%2777-10013494002000%27%2C%2777-10013494001000%27%2C%2777-10013493000000%27%2C%2777-10009869002000%27%2C%2777-10009869001002%27%2C%2777-10009869001003%27%2C%2777-10013498001002%27%2C%2777-10013671000000%27%2C%2777-10013518001000%27%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:15.946Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10013494003000%27%2C%2777-10013498003000%27%2C%2777-10013494002000%27%2C%2777-10013494001000%27%2C%2777-10013493000000%27%2C%2777-10009869002000%27%2C%2777-10009869001002%27%2C%2777-10009869001003%27%2C%2777-10013498001002%27%2C%2777-10013671000000%27%2C%2777-10013518001000%27%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:17.520Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1699889%2C1699944%2C1700112%2C1700299%2C1703625%2C1767272%2C1767438%2C1767509%2C1826031%2C1826314%2C1826376",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:24.286Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10013494003000%27%2C%2777-10013498003000%27%2C%2777-10013494002000%27%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:26.310Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10013494003000%27%2C%2777-10013498003000%27%2C%2777-10013494002000%27%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:28.082Z",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1699889%2C1699944%2C1700112",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [
+  {
+   "sourceId": "us-ia-des-moines-parcels",
+   "parcelId": "US-IA-77-08005644001000",
+   "ids": {
+    "absentA": [],
+    "absentB": [],
+    "sourceRows": 4,
+    "parts": 4,
+    "type": "MultiPolygon",
+    "hashA": "a7a2a81aea97791bdbeb98decb62aa2a0770ea6ee20d9d1ebfd5ce2a9ff9579e",
+    "hashB": "a7a2a81aea97791bdbeb98decb62aa2a0770ea6ee20d9d1ebfd5ce2a9ff9579e",
+    "identical": true
+   },
+   "bounds": {
+    "bbox": [
+     -93.657029,
+     41.61205,
+     -93.656629,
+     41.61245
+    ],
+    "featureCount": 6,
+    "sourceRows": 9,
+    "viewportSourceRows": 7,
+    "found": true,
+    "hash": "a7a2a81aea97791bdbeb98decb62aa2a0770ea6ee20d9d1ebfd5ce2a9ff9579e",
+    "identical": true
+   },
+   "ok": true,
+   "requests": [
+    {
+     "ts": "2026-10-12T11:12:52.903Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-08005644001000%27%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:53.581Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-08005644001000%27%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:54.977Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1732136%2C1732137%2C1757057%2C1757058",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:55.791Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-08005644001000%27%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:56.787Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-08005644001000%27%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:57.829Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1732136%2C1732137%2C1757057%2C1757058",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:59.236Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.657029%2C41.61205%2C-93.656629%2C41.61245&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:00.530Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.657029%2C41.61205%2C-93.656629%2C41.61245&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:01.339Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1727085%2C1727086%2C1732128%2C1732484%2C1757057%2C1757058%2C1789358",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:02.603Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-08004836001000%27%2C%2777-08004833001000%27%2C%2777-08004834002000%27%2C%2777-08005639000000%27%2C%2777-08005644001000%27%2C%2777-08007851001001%27%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:03.510Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-08004836001000%27%2C%2777-08004833001000%27%2C%2777-08004834002000%27%2C%2777-08005639000000%27%2C%2777-08005644001000%27%2C%2777-08007851001001%27%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:05.682Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1727085%2C1727086%2C1732128%2C1732136%2C1732137%2C1732484%2C1757057%2C1757058%2C1789358",
+     "status": 200
+    }
+   ]
+  },
+  {
+   "sourceId": "us-ia-des-moines-parcels",
+   "parcelId": "US-IA-77-10000156000000",
+   "ids": {
+    "absentA": [],
+    "absentB": [],
+    "sourceRows": 3,
+    "parts": 3,
+    "type": "MultiPolygon",
+    "hashA": "b88ca744983f408285211d35effc964b87b91c58e4f86a06d64f97f47754f4ed",
+    "hashB": "b88ca744983f408285211d35effc964b87b91c58e4f86a06d64f97f47754f4ed",
+    "identical": true
+   },
+   "bounds": {
+    "bbox": [
+     -93.660002,
+     41.618385,
+     -93.659602,
+     41.618785
+    ],
+    "featureCount": 7,
+    "sourceRows": 9,
+    "viewportSourceRows": 7,
+    "found": true,
+    "hash": "b88ca744983f408285211d35effc964b87b91c58e4f86a06d64f97f47754f4ed",
+    "identical": true
+   },
+   "ok": true,
+   "requests": [
+    {
+     "ts": "2026-10-12T11:13:06.880Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000156000000%27%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:07.239Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000156000000%27%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:08.281Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1704939%2C1708471%2C1769428",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:09.232Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000156000000%27%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:10.297Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000156000000%27%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:11.462Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1704939%2C1708471%2C1769428",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:12.662Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.660002%2C41.618385%2C-93.659602%2C41.618785&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:13.782Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.660002%2C41.618385%2C-93.659602%2C41.618785&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:14.932Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1676917%2C1678983%2C1678984%2C1679259%2C1679260%2C1769428%2C1826341",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:15.997Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000116000000%27%2C%2777-10000117000000%27%2C%2777-10000118000000%27%2C%2777-10012983000000%27%2C%2777-10012982000000%27%2C%2777-10000156000000%27%2C%2777-10013522000000%27%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:17.129Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000116000000%27%2C%2777-10000117000000%27%2C%2777-10000118000000%27%2C%2777-10012983000000%27%2C%2777-10012982000000%27%2C%2777-10000156000000%27%2C%2777-10013522000000%27%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:13:18.697Z",
+     "method": "GET",
+     "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1676917%2C1678983%2C1678984%2C1679259%2C1679260%2C1704939%2C1708471%2C1769428%2C1826341",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "idBatchCheck": {
+  "file": "batch-ids-us-ia-des-moines-parcels-us-nj-trenton-parcels-us-va-richmond-parcels-us-mt-helena-parcels.json",
+  "id": "us-ia-des-moines-parcels",
+  "city": "Urbandale",
+  "result": {
+   "bbox": [
+    -93.660993,
+    41.613403,
+    -93.657993,
+    41.616403
+   ],
+   "boundsFeatures": 89,
+   "idsRequested": 80,
+   "returned": 80,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 2887
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:19:11.795Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.660993%2C41.613403%2C-93.657993%2C41.616403&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 1784
+   },
+   {
+    "ts": "2026-10-12T11:19:12.886Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.660993%2C41.613403%2C-93.657993%2C41.616403&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 1090
+   },
+   {
+    "ts": "2026-10-12T11:19:13.329Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1699855%2C1699874%2C1699889%2C1699923%2C1699941%2C1699942%2C1699944%2C1699958%2C1699959%2C1699963%2C1700094%2C1700099%2C1700112%2C1700184%2C1700185%2C1700299%2C1703572%2C1703587%2C1703593%2C1703620%…",
+    "status": 200,
+    "ms": 433
+   },
+   {
+    "ts": "2026-10-12T11:19:15.746Z",
+    "method": "POST",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query",
+    "bodyBytes": 2131,
+    "status": 200,
+    "ms": 1750
+   },
+   {
+    "ts": "2026-10-12T11:19:17.247Z",
+    "method": "POST",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query",
+    "bodyBytes": 2129,
+    "status": 200,
+    "ms": 1493
+   },
+   {
+    "ts": "2026-10-12T11:19:17.844Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1699855%2C1699874%2C1699889%2C1699923%2C1699941%2C1699942%2C1699944%2C1699958%2C1699959%2C1699963%2C1700094%2C1700099%2C1700112%2C1700184%2C1700185%2C1700299%2C1703572%2C1703587%2C1703593%2C1703620%…",
+    "status": 200,
+    "ms": 588
+   },
+   {
+    "ts": "2026-10-12T11:19:19.441Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000105001000%27%2C%2777-10009866000000%27%2C%2777-08007851001001%27%2C%2777-10013498001002%27%2C%2777-10010168000000%27%2C%2777-10010562000000%27%2C%2777-10013671000000%27%2C%2777-10013522000000%27%2C%2777-10013518001000%27%29&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 1084
+   },
+   {
+    "ts": "2026-10-12T11:19:20.667Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID+IN+%28%2777-10000105001000%27%2C%2777-10009866000000%27%2C%2777-08007851001001%27%2C%2777-10013498001002%27%2C%2777-10010168000000%27%2C%2777-10010562000000%27%2C%2777-10013671000000%27%2C%2777-10013522000000%27%2C%2777-10013518001000%27%29&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 1209
+   },
+   {
+    "ts": "2026-10-12T11:19:21.365Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1769474%2C1778522%2C1789358%2C1826031%2C1826297%2C1826313%2C1826314%2C1826341%2C1826376",
+    "status": 200,
+    "ms": 696
+   },
+   {
+    "ts": "2026-10-12T11:19:22.069Z",
+    "method": "POST",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query",
+    "bodyBytes": 2131,
+    "status": 200,
+    "ms": 298
+   },
+   {
+    "ts": "2026-10-12T11:19:23.392Z",
+    "method": "POST",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query",
+    "bodyBytes": 2129,
+    "status": 200,
+    "ms": 519
+   },
+   {
+    "ts": "2026-10-12T11:19:24.241Z",
+    "method": "GET",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&outFields=STATEPARID%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=1699855%2C1699874%2C1699889%2C1699923%2C1699941%2C1699942%2C1699944%2C1699958%2C1699959%2C1699963%2C1700094%2C1700099%2C1700112%2C1700184%2C1700185%2C1700299%2C1703572%2C1703587%2C1703593%2C1703620%…",
+    "status": 200,
+    "ms": 263
+   }
+  ]
+ },
+ "proposedDiscovery": {
+  "jurisdiction": {
+   "countryCode": "US",
+   "admin1": [
+    "US-IA"
+   ],
+   "excludeAdmin1": [],
+   "basis": "Iowa Statewide Parcel Data 2017 snapshot (layer Parcels_20171102) carries all 99 Iowa counties on 2026-10-12; historical, not current.",
+   "evidence": [
+    "research/statewide-us-2026-10-12/IA.json",
+    "research/subnational/US/IA.json"
+   ]
+  },
+  "paceMs": 1000
+ },
+ "existingEntryKey": {
+  "idField": "STATEPARID",
+  "idType": "string",
+  "attributeFilters": null,
+  "nativeGeometryMode": "parts",
+  "cityIds": [
+   "des_moines"
+  ]
+ },
+ "coverageCaveats": []
+}

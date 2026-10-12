@@ -160,6 +160,51 @@ class QualificationRunnerTests(unittest.TestCase):
             self.assertLess(dict(started)["10004"], dict(finished)["10000"])
             self.assertFalse(job.active)
 
+    def test_direct_only_stops_at_needs_llm_and_external_answer_is_runner_verified(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            queue = root / "queue.json"
+            queue.write_text(json.dumps(queue_records(1)))
+            args = SimpleNamespace(repo_root=str(root), queue=str(queue), source_root=str(root), state_dir="state",
+                                   workers=3, llm_workers=1, max_retries=2, direct_only=True, record_answer=None)
+            job = runner.Runner(args)
+            job.initialize()
+            city = job.records[0]
+            code = city["cityCode"]
+            attempt = job.city_dir(code) / "attempt-01"
+            attempt.mkdir(parents=True)
+            (attempt / "direct.log").write_text("Exact-ID gate did not pass")
+            answer = attempt / "worker-answer.json"
+            answer.write_text(json.dumps({"executionMode": "direct", "data": {
+                "cityCode": code, "status": "needs-llm", "summary": "Exact-ID gate needs investigation",
+                "evidenceFiles": ["attempt-01/direct.log"]}}))
+            entry = job.state["cities"][code]
+            entry.update(status="running", phase="direct", attempts=1, phaseAttempts=1)
+            job._finish_item({"city": city, "cityDir": attempt.parent, "attemptDir": attempt, "answerPath": answer,
+                              "attempt": 1, "phase": "direct", "process": SimpleNamespace(pid=7)})
+            self.assertEqual(entry["status"], "needs-llm")
+            job.save()
+            # An external worker's held answer is recorded; a qualified claim without artifacts is refused.
+            fixed = job.city_dir(code) / "attempt-02"
+            fixed.mkdir()
+            (fixed / "notes.md").write_text("adapter needs a provider-specific ID codec")
+            (fixed / "worker-answer.json").write_text(json.dumps({"data": {"cityCode": code, "status": "technical-qualified",
+                "summary": "claimed", "evidenceFiles": ["attempt-02/notes.md"]}}))
+            with self.assertRaises(Exception):
+                runner.record_answer(SimpleNamespace(**{**vars(args), "record_answer": str(fixed)}))
+            (fixed / "worker-answer.json").write_text(json.dumps({"data": {"cityCode": code, "status": "held",
+                "summary": "needs a provider-specific ID codec", "evidenceFiles": ["attempt-02/notes.md"]}, "model": "sonnet"}))
+            self.assertEqual(runner.record_answer(SimpleNamespace(**{**vars(args), "record_answer": str(fixed)}))["status"], "held")
+            state = json.loads((root / "state" / "state.json").read_text())
+            self.assertEqual(state["cities"][code]["status"], "held")
+            self.assertEqual(state["cities"][code]["externalWorker"], "sonnet")
+            # Without --direct-only a later run takes the needs-llm city into its LLM phase.
+            state["cities"][code]["status"] = "needs-llm"
+            (root / "state" / "state.json").write_text(json.dumps(state))
+            later = runner.Runner(SimpleNamespace(**{**vars(args), "direct_only": False}))
+            later.initialize()
+            self.assertEqual((later.state["cities"][code]["status"], later.state["cities"][code]["phase"]), ("pending", "llm"))
+
     def test_metric_and_nested_check_schema_are_independently_verified(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

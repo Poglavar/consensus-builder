@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NM",
+ "checkedAt": "2026-10-12",
+ "status": "held",
+ "category": "held",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "5743",
+   "name": "Albuquerque",
+   "lat": 35.1087162408547,
+   "lon": -106.564811229385,
+   "pop2025k": 410.81,
+   "rank": 1373
+  },
+  {
+   "cityCode": "5695",
+   "name": "Atrisco",
+   "lat": 35.083689169037,
+   "lon": -106.71735884105,
+   "pop2025k": 157.131,
+   "rank": 3856
+  },
+  {
+   "cityCode": "5719",
+   "name": "Paradise Hills",
+   "lat": 35.2189523210244,
+   "lon": -106.693952262824,
+   "pop2025k": 109.496,
+   "rank": 5641
+  }
+ ],
+ "endpoint": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/{countyLayerId}",
+ "reason": "TCP connection to port 443 timed out from this network on every attempt (no HTTP response). Unverified; no descriptor staged.",
+ "attempts": [
+  {
+   "ts": "2026-10-12T10:49:12Z",
+   "tool": "node fetch",
+   "result": "UND_ERR_CONNECT_TIMEOUT (10 s), service and layer 0 metadata"
+  },
+  {
+   "ts": "2026-10-12T11:02:54Z",
+   "tool": "curl",
+   "result": "connect timeout after 25 s"
+  }
+ ],
+ "layerTemplate": "All three uncovered UN cities (Albuquerque, Atrisco, Paradise Hills) fall in Bernalillo County, which prior evidence maps to layer 0. One fixed-layer arcgis descriptor (endpoint .../MapServer/0) would therefore cover them without template support, but its discovery jurisdiction would have to be Bernalillo County, narrower than the admin-1 profile can express.",
+ "priorNotes": "Prior evidence (research/subnational/US/NM.json) recorded UPC (with AccountNumber) per county layer; uniqueness and adapter behaviour remain unverified."
+}

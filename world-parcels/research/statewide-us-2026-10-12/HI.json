@@ -1,0 +1,347 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "HI",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "newOnEndpointWithScopedEntry",
+ "descriptorId": "us-hi-statewide-tmk-parcels",
+ "idPrefix": "US-HI-STATEWIDE-",
+ "sharesEndpointWithScopedEntry": "us-hi-honolulu-parcels",
+ "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "1",
+   "name": "Honolulu",
+   "lat": 21.3363322966914,
+   "lon": -157.886535031835,
+   "pop2025k": 540.683,
+   "rank": 1022
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+   "layerName": "Statewide TMKs",
+   "layerType": "Feature Layer",
+   "recordCount": 384035,
+   "maxRecordCount": 1000,
+   "currentVersion": 11.5,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 3750,
+   "descriptionExcerpt": "TMK Parcels for the State of Hawaii as of May 2026. Sources: County of Hawaii: 4/27/26; County of Maui: 4/15/26; County of Kauai: 5/11/26; City and County of Honolulu: 4/30/26. Hawaii Statewide GIS Program projected to a common projection/datum (UTM Zone 4, NAD 83 HARN) and merged all counties' parcel data into one layer. Where necessary, the State standardized field names or added fields to the c",
+   "copyrightText": "Counties of Hawaii, Honolulu, Kauai and Maui; Hawaii Statewide GIS Program",
+   "publishedFields": [
+    "objectid",
+    "shape",
+    "tmk",
+    "tmk_txt",
+    "county",
+    "division",
+    "island",
+    "zone",
+    "section",
+    "plat",
+    "plat1",
+    "parcel",
+    "parcel1",
+    "gisacres",
+    "cty_tmk",
+    "qpub_link",
+    "st_area(shape)",
+    "st_perimeter(shape)"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "tmk is the 9-digit statewide Tax Map Key (no nulls; all values 9 digits); unique in Honolulu.",
+  "fields": [
+   "tmk"
+  ]
+ },
+ "statewideChecks": [
+  {
+   "state": "HI",
+   "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+   "checkedAt": "2026-10-12T10:57:11.249Z",
+   "results": {
+    "nullId": {
+     "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=tmk+IS+NULL&returnCountOnly=true&f=json",
+     "count": 0
+    },
+    "counties": {
+     "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&outFields=county&returnDistinctValues=true&returnGeometry=false&orderByFields=county&f=json",
+     "values": [
+      "Hawaii",
+      "Honolulu",
+      "Kauai",
+      "Maui"
+     ]
+    }
+   }
+  }
+ ],
+ "patternChecks": {
+  "HI": [
+   {
+    "where": "tmk < 100000000 OR tmk > 999999999",
+    "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=tmk+%3C+100000000+OR+tmk+%3E+999999999&returnCountOnly=true&f=json",
+    "count": 0
+   }
+  ]
+ },
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:54:19.907Z",
+   "fieldsRequested": [
+    "objectid",
+    "tmk",
+    "tmk_txt",
+    "county"
+   ],
+   "cities": [
+    {
+     "city": "Honolulu",
+     "cityCode": "1",
+     "bbox": [
+      -157.891535,
+      21.331332,
+      -157.881535,
+      21.341332
+     ],
+     "count": 209,
+     "rowsRead": 209,
+     "keys": {
+      "tmk": {
+       "blanks": 0,
+       "distinct": 209,
+       "repeatedValues": 0
+      },
+      "tmk_txt": {
+       "blanks": 0,
+       "distinct": 209,
+       "repeatedValues": 0
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:54:21.477Z",
+     "method": "GET",
+     "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.891535%2C21.331332%2C-157.881535%2C21.341332&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:54:21.775Z",
+     "method": "GET",
+     "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.891535%2C21.331332%2C-157.881535%2C21.341332&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Ctmk%2Ctmk_txt%2Ccounty&returnGeometry=false&orderByFields=objectid&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [],
+ "liveVerification": {
+  "descriptorId": "us-hi-statewide-tmk-parcels",
+  "verifiedAt": "2026-10-12T11:07:02.914Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Honolulu",
+    "cityCode": "1",
+    "unPoint": [
+     21.3363322966914,
+     -157.886535031835
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -157.887035,
+       21.335832,
+       -157.886035,
+       21.336832
+      ],
+      "features": 3
+     }
+    ],
+    "bbox": [
+     -157.887035,
+     21.335832,
+     -157.886035,
+     21.336832
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "featureCount": 3
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-HI-STATEWIDE-111008001",
+      "nativeId": "111008001",
+      "type": "MultiPolygon",
+      "geometrySha256": "c290d36972f6313c3f68c86f25e0bcef3d753571dfa9f3a6636f9bc7f4794b15",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-HI-STATEWIDE-112016006",
+      "nativeId": "112016006",
+      "type": "Polygon",
+      "geometrySha256": "40e64a0ab758454e1b9fd7e4cefeda90b7ffe5c8e4e2543383f1b6d41630a95b",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-HI-STATEWIDE-112016007",
+      "nativeId": "112016007",
+      "type": "Polygon",
+      "geometrySha256": "d9013af864c9a545936e2bdd31094129d23590e9d7cd30bf23605bcc2f19cc72",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-HI-STATEWIDE-111008001",
+      "US-HI-STATEWIDE-112016006",
+      "US-HI-STATEWIDE-112016007"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "features": [
+      {
+       "id": "US-HI-STATEWIDE-111008001",
+       "geometrySha256": "c290d36972f6313c3f68c86f25e0bcef3d753571dfa9f3a6636f9bc7f4794b15"
+      },
+      {
+       "id": "US-HI-STATEWIDE-112016006",
+       "geometrySha256": "40e64a0ab758454e1b9fd7e4cefeda90b7ffe5c8e4e2543383f1b6d41630a95b"
+      },
+      {
+       "id": "US-HI-STATEWIDE-112016007",
+       "geometrySha256": "d9013af864c9a545936e2bdd31094129d23590e9d7cd30bf23605bcc2f19cc72"
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:07:04.359Z",
+      "method": "GET",
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.887035%2C21.335832%2C-157.886035%2C21.336832&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:04.688Z",
+      "method": "GET",
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.887035%2C21.335832%2C-157.886035%2C21.336832&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:06.876Z",
+      "method": "GET",
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&outFields=objectid%2Ctmk&returnGeometry=true&outSR=4326&f=geojson&objectIds=250828%2C250829%2C245312",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:07.214Z",
+      "method": "GET",
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=tmk+IN+%28111008001%2C112016006%2C112016007%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:08.302Z",
+      "method": "GET",
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=tmk+IN+%28111008001%2C112016006%2C112016007%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:09.359Z",
+      "method": "GET",
+      "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&outFields=objectid%2Ctmk&returnGeometry=true&outSR=4326&f=geojson&objectIds=245312%2C250828%2C250829",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [],
+ "idBatchCheck": {
+  "file": "batch-ids.json",
+  "id": "us-hi-statewide-tmk-parcels",
+  "city": "Honolulu",
+  "result": {
+   "bbox": [
+    -157.888035,
+    21.334832,
+    -157.885035,
+    21.337832
+   ],
+   "boundsFeatures": 9,
+   "idsRequested": 9,
+   "returned": 9,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 3396
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:14:31.613Z",
+    "method": "GET",
+    "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.888035%2C21.334832%2C-157.885035%2C21.337832&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 1457
+   },
+   {
+    "ts": "2026-10-12T11:14:31.904Z",
+    "method": "GET",
+    "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.888035%2C21.334832%2C-157.885035%2C21.337832&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 278
+   },
+   {
+    "ts": "2026-10-12T11:14:32.986Z",
+    "method": "GET",
+    "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&outFields=objectid%2Ctmk&returnGeometry=true&outSR=4326&f=geojson&objectIds=245312%2C250823%2C250828%2C250829%2C250840%2C250850%2C250851%2C250854%2C250855",
+    "status": 200,
+    "ms": 260
+   },
+   {
+    "ts": "2026-10-12T11:14:34.181Z",
+    "method": "GET",
+    "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=tmk+IN+%28111008001%2C112015006%2C112016006%2C112016007%2C112016030%2C112018010%2C112018011%2C112018014%2C112018015%29&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 354
+   },
+   {
+    "ts": "2026-10-12T11:14:35.371Z",
+    "method": "GET",
+    "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=tmk+IN+%28111008001%2C112015006%2C112016006%2C112016007%2C112016030%2C112018010%2C112018011%2C112018014%2C112018015%29&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 442
+   },
+   {
+    "ts": "2026-10-12T11:14:36.374Z",
+    "method": "GET",
+    "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&outFields=objectid%2Ctmk&returnGeometry=true&outSR=4326&f=geojson&objectIds=245312%2C250823%2C250828%2C250829%2C250840%2C250850%2C250851%2C250854%2C250855",
+    "status": 200,
+    "ms": 345
+   }
+  ]
+ },
+ "coverageCaveats": [
+  "Provider describes TMK boundaries as visual reference, not survey-level accuracy.",
+  "Same endpoint as us-hi-honolulu-parcels (county=Honolulu, same tmk key under US-HI-HONOLULU-); Honolulu County parcels would exist under both namespaces."
+ ]
+}

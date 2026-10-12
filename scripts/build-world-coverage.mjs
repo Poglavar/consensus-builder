@@ -2,6 +2,8 @@
 // Compiles world parcel research, optional UN WUP 2025 city demographics, and the app's configured
 // cities (frontend/js/city-config.js, read as TEXT, never imported) into the compact
 // frontend/data/world-coverage.json that the globe (frontend/js/world/) paints and queries.
+// Region outlines (world-parcels/regions.geojson, from scripts/extract-world-regions.mjs), region
+// reviews and the parcel source catalog add a region layer painted over the country fills.
 // Population joins use exact app-city or explicitly configured WUP identities only; WUP values
 // describe settlements and need not match administrative city boundaries.
 //
@@ -21,20 +23,31 @@
 //                       countryProbes status national_online_cadastre_verified_sample | partial_or_unofficial_sample
 //                       | covered_by_parent_source (an overseas territory served by its parent's cadastre)
 //                       | subnational_only when subnationalCoverage lists regionWide or partial regions
-//              region   subnationalCoverage bucket regionWide | partial | ruralRegistryOnly
 //   none     Researched, nothing open found:
 //              city     no_verified_open_endpoint_after_attempts
 //              country  no_online_cadastre_found | national_cadastre_credentialed_or_paid | national_cadastre_viewer_only
-//              region   none | credentialed | viewerOnly
 //   unknown  Not researched, or the check could not complete: temporarily_unavailable, not_probed,
 //            no_verified_sample_candidate_* (a candidate that was never verified), subnational_only
 //            without any listed open region, and every country with no probe at all.
+//
+// Regions (US states, Canadian provinces, Länder, cantons, England/Wales/Scotland/N. Ireland, ...;
+// one record per outline in world-parcels/regions.geojson) take the same coverage axis, derived
+// for the region alone and painted over their country, which keeps its own honest fill:
+//   full     A dated region review (region-coverage-reviews.json) passing the country-review gates:
+//            a verified source for the region, https scope evidence, and no geographic exclusions.
+//   partial  Verified parcel data somewhere in the region: subnationalCoverage bucket regionWide |
+//            partial, a source-catalog provider whose discovery.jurisdiction.admin1 names the region
+//            (or one of its admin-1 members), or a verified registry city inside the outline.
+//   none     subnationalCoverage bucket none | credentialed | viewerOnly, nothing positive.
+//   unknown  Everything else (unavailable, ruralRegistryOnly, not researched at region level).
+// A region's tier follows its coverage (source/none/unknown). No region is `live`: a configured
+// city covers its own radius, and `live` means parcels open anywhere in the area (Croatia).
 //
 // Output is deterministic (sorted, rounded, no wall-clock timestamp) so a rebuild with unchanged
 // inputs is a byte-identical no-op. Outlines are Douglas-Peucker simplified and rounded to 0.01°,
 // which is still sub-pixel on a 4096×2048 equirectangular texture (0.088°/px).
 //
-// Usage: node scripts/build-world-coverage.mjs --run [--tolerance 0.06] [--out path]
+// Usage: node scripts/build-world-coverage.mjs --run [--tolerance 0.06] [--region-tolerance 0.1] [--out path]
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
@@ -45,10 +58,16 @@ const DEFAULTS = {
     registry: path.join(REPO, 'world-parcels/registry.json'),
     countryReviews: path.join(REPO, 'world-parcels/country-coverage-reviews.json'),
     countries: path.join(REPO, 'world-parcels/countries.geojson'),
+    regions: path.join(REPO, 'world-parcels/regions.geojson'),
+    regionReviews: path.join(REPO, 'world-parcels/region-coverage-reviews.json'),
+    catalog: path.join(REPO, 'backend/parcels/source-catalog.json'),
     demographics: path.join(REPO, 'world-parcels/report/city-demographics.json'),
     cityConfig: path.join(REPO, 'frontend/js/city-config.js'),
     out: path.join(REPO, 'frontend/data/world-coverage.json'),
-    tolerance: 0.06
+    tolerance: 0.06,
+    // Region fills are clipped to the country land on the globe, so their coast detail is never
+    // drawn; 0.1° is about one pixel of the 4096-wide texture (0.088°/px).
+    regionTolerance: 0.1
 };
 
 export const TIER_RANK = { live: 3, source: 2, none: 1, unknown: 0 };
@@ -87,13 +106,18 @@ export function countryCoverageTier(status) {
 }
 
 // Full coverage is a reviewed scope claim plus independently verified geometry, never an inference
-// from samples, a national-looking endpoint name, or the app's configured city list.
-export function countryCoverageLevel({ probe, coverage, subnational, hasVerifiedLocalSource = false, review, verifiedSourceIds = [] }) {
+// from samples, a national-looking endpoint name, or the app's configured city list. The same gates
+// apply to country and region reviews.
+export function reviewGrantsFull(review, verifiedSourceIds = []) {
     const reviewedSource = review?.sourceIds?.some(id => verifiedSourceIds.includes(id));
     const scopeEvidence = review?.evidence?.some(source => source.title && /^https:\/\//.test(source.url || ''));
     const datedReview = /^\d{4}-\d{2}-\d{2}$/.test(review?.checkedAt || '');
-    if (review?.coverage === 'full' && datedReview && reviewedSource && scopeEvidence
-        && Array.isArray(review.exclusions) && review.exclusions.length === 0) return 'full';
+    return review?.coverage === 'full' && datedReview && !!reviewedSource && !!scopeEvidence
+        && Array.isArray(review.exclusions) && review.exclusions.length === 0;
+}
+
+export function countryCoverageLevel({ probe, coverage, subnational, hasVerifiedLocalSource = false, review, verifiedSourceIds = [] }) {
+    if (reviewGrantsFull(review, verifiedSourceIds)) return 'full';
     const tier = strongest(
         countryProbeTier(probe?.status, subnational), countryCoverageTier(coverage?.status),
         hasVerifiedLocalSource ? 'source' : 'unknown'
@@ -101,11 +125,38 @@ export function countryCoverageLevel({ probe, coverage, subnational, hasVerified
     return tier === 'source' ? 'partial' : tier;
 }
 
+// A subnationalCoverage bucket's tier for that region alone. SICAR-style rural registries
+// (ruralRegistryOnly) are self-declared perimeters, not cadastral parcels, so they stay unknown.
 export function regionBucketTier(bucket) {
-    if (bucket === 'regionWide' || bucket === 'partial' || bucket === 'ruralRegistryOnly') return 'source';
+    if (bucket === 'regionWide' || bucket === 'partial') return 'source';
     if (bucket === 'none' || bucket === 'credentialed' || bucket === 'viewerOnly') return 'none';
     return 'unknown';
 }
+
+export function regionCoverageLevel({ buckets = [], hasProvider = false, hasVerifiedCity = false, review, verifiedSourceIds = [] }) {
+    if (reviewGrantsFull(review, verifiedSourceIds)) return 'full';
+    const tier = strongest(...buckets.map(regionBucketTier), hasProvider ? 'source' : 'unknown', hasVerifiedCity ? 'source' : 'unknown');
+    return tier === 'source' ? 'partial' : tier;
+}
+
+// Registry subnational codes that are not the `<cc>-<code>` ISO 3166-2 code of their outline.
+export const REGION_CODE_ALIASES = {
+    MY: { JHR: 'MY-01', KDH: 'MY-02', KTN: 'MY-03', MLK: 'MY-04', NSN: 'MY-05', PHG: 'MY-06', PNG: 'MY-07', PRK: 'MY-08',
+        PLS: 'MY-09', SGR: 'MY-10', TRG: 'MY-11', SBH: 'MY-12', SWK: 'MY-13', KUL: 'MY-14', LBN: 'MY-15', PJY: 'MY-16' }
+};
+export const regionIdFor = (cc, code) => REGION_CODE_ALIASES[cc]?.[code] || `${cc}-${code}`;
+// subnationalCoverage countries painted only as a country, and why. Any other unpainted country
+// fails the build, so a newly researched country cannot silently lose its region detail.
+export const UNPAINTED_SUBNATIONAL = {
+    RW: 'Registry regions are the 30 districts; Natural Earth admin-1 has only the five provinces.'
+};
+
+const BUCKET_NOTES = {
+    none: 'No open regional parcel source found',
+    credentialed: 'Regional cadastre needs credentials or payment',
+    viewerOnly: 'Regional cadastre is a viewer only (no data service)',
+    unavailable: 'Check could not complete (service unreachable)'
+};
 
 const PROBE_NOTES = {
     national_online_cadastre_verified_sample: 'National online cadastre (verified sample)',
@@ -233,6 +284,128 @@ export function pointInRings(lat, lon, rings) {
 const isoOf = props => [props.ISO_A2, props.ISO_A2_EH].find(code => /^[A-Z]{2}$/.test(code || '')) || null;
 const truncate = (text, max = 110) => (!text ? '' : text.length <= max ? text : `${text.slice(0, max - 1).trimEnd()}…`);
 
+function ringsBbox(rings) {
+    const box = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const ring of rings) {
+        for (let i = 0; i < ring.length; i += 2) {
+            box[0] = Math.min(box[0], ring[i]); box[2] = Math.max(box[2], ring[i]);
+            box[1] = Math.min(box[1], ring[i + 1]); box[3] = Math.max(box[3], ring[i + 1]);
+        }
+    }
+    return box;
+}
+
+const listNames = names => (names.length <= 2 ? names.join(' and ') : `${names.slice(0, 2).join(', ')} and ${names.length - 2} more`);
+
+// Explains a derived (unreviewed) region coverage from its strongest evidence.
+function regionNote(region, coverage) {
+    if (coverage === 'partial') {
+        const provider = region.providers[0];
+        if (provider) return provider.discovery.jurisdiction.basis;
+        const row = region.buckets.find(b => regionBucketTier(b.bucket) === 'source');
+        if (row) {
+            const scope = row.bucket === 'regionWide' ? 'Region-wide source' : 'Partial source';
+            return row.sourceName ? `${scope}: ${truncate(row.sourceName)}; full coverage is not reviewed` : `${scope} verified; full coverage is not reviewed`;
+        }
+        const names = [...new Set(region.cities.map(city => city.name))].sort();
+        return `Open parcel data verified in ${listNames(names)}; region-wide coverage is unconfirmed`;
+    }
+    const row = region.buckets.find(b => b.bucket === 'ruralRegistryOnly');
+    if (coverage === 'unknown' && row) return row.mergeNote || 'Rural property registry only, not the cadastre';
+    const known = region.buckets.find(b => BUCKET_NOTES[b.bucket]);
+    return known ? BUCKET_NOTES[known.bucket] : 'No open parcel source verified in this region yet';
+}
+
+// One record per outline in world-parcels/regions.geojson: { id, cc, name, tier, coverage, note,
+// coverageSources?, center, rings }. See the header for how coverage is derived.
+export function buildRegions({ outlines, registry, catalog = [], reviews = [], tolerance = DEFAULTS.regionTolerance }) {
+    const regions = outlines.features.map(feature => {
+        const p = feature.properties;
+        if (!/^[A-Z]{2}-[A-Z0-9]{1,3}$/.test(p.id || '') || p.id.slice(0, 2) !== p.cc) throw new Error(`region outline with a malformed id: ${p.id}`);
+        // Point-in-region joins use the outline at extraction precision, not the display rings.
+        const fine = (feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates)
+            .flat().map(ring => ring.flat());
+        return {
+            id: p.id, cc: p.cc, name: p.name, codes: p.codes || [p.id], members: p.members || [],
+            center: Number.isFinite(p.labelLat) && Number.isFinite(p.labelLon) ? [round2(p.labelLat), round2(p.labelLon)] : null,
+            rings: compileRings(feature.geometry, tolerance), fine, bbox: ringsBbox(fine), buckets: [], providers: [], cities: []
+        };
+    });
+    const byCode = new Map();
+    for (const region of regions) {
+        for (const code of new Set([...region.codes, ...region.members])) {
+            if (byCode.has(code)) throw new Error(`region code ${code} is in both ${byCode.get(code).id} and ${region.id}`);
+            byCode.set(code, region);
+        }
+    }
+    const painted = new Set(regions.map(region => region.cc));
+
+    for (const sub of registry.subnationalCoverage) {
+        if (!painted.has(sub.countryCode)) {
+            if (UNPAINTED_SUBNATIONAL[sub.countryCode]) continue;
+            throw new Error(`subnationalCoverage lists ${sub.countryCode} without region outlines; extract them (scripts/extract-world-regions.mjs) or record why in UNPAINTED_SUBNATIONAL`);
+        }
+        for (const row of sub.regions) {
+            const id = regionIdFor(sub.countryCode, row.code);
+            const region = byCode.get(id);
+            if (!region || !region.codes.includes(id)) throw new Error(`subnational region ${sub.countryCode}/${row.code} (${row.name}) has no outline ${id}`);
+            region.buckets.push(row);
+        }
+    }
+
+    for (const source of [...catalog].sort((a, b) => a.id.localeCompare(b.id))) {
+        const admin1 = source.discovery?.jurisdiction?.admin1;
+        if (!Array.isArray(admin1)) continue;
+        for (const code of admin1) {
+            if (!painted.has(code.slice(0, 2))) continue;
+            const region = byCode.get(code);
+            if (!region) throw new Error(`catalog provider ${source.id} names admin-1 ${code}, which no region outline holds`);
+            if (!region.providers.includes(source)) region.providers.push(source);
+        }
+    }
+
+    for (const city of registry.cities) {
+        if (cityStatusTier(city.parcelStatus) !== 'source' || !Array.isArray(city.centerLatLon)) continue;
+        const [lat, lon] = city.centerLatLon;
+        const region = regions.find(r => r.cc === city.countryCode && lon >= r.bbox[0] && lon <= r.bbox[2]
+            && lat >= r.bbox[1] && lat <= r.bbox[3] && pointInRings(lat, lon, r.fine));
+        if (region) region.cities.push(city);
+    }
+
+    const byId = new Map(regions.map(region => [region.id, region]));
+    const reviewById = new Map();
+    for (const review of reviews) {
+        if (!byId.has(review.regionCode)) throw new Error(`region review for ${review.regionCode}, which is not a region outline id`);
+        if (reviewById.has(review.regionCode)) throw new Error(`more than one region review for ${review.regionCode}`);
+        reviewById.set(review.regionCode, review);
+    }
+    const verifiedByCountry = new Map();
+    for (const source of registry.sources) {
+        if (!source.verificationStatus?.startsWith('verified_')) continue;
+        if (!verifiedByCountry.has(source.countryCode)) verifiedByCountry.set(source.countryCode, []);
+        verifiedByCountry.get(source.countryCode).push(source.sourceId);
+    }
+
+    return regions.map(region => {
+        const review = reviewById.get(region.id);
+        // A review may cite a verified source of the region's country or an executable provider
+        // whose jurisdiction names the region; its scope evidence carries the regional claim.
+        const verifiedSourceIds = [...(verifiedByCountry.get(region.cc) || []), ...region.providers.map(source => source.id)];
+        const coverage = regionCoverageLevel({
+            buckets: region.buckets.map(row => row.bucket), hasProvider: region.providers.length > 0,
+            hasVerifiedCity: region.cities.length > 0, review, verifiedSourceIds
+        });
+        const reviewed = review && review.coverage === coverage && review.evidence?.length;
+        return {
+            id: region.id, cc: region.cc, name: region.name,
+            tier: coverage === 'full' || coverage === 'partial' ? 'source' : coverage, coverage,
+            note: reviewed ? review.note : regionNote(region, coverage),
+            ...(reviewed ? { coverageSources: review.evidence.map(({ title, url }) => ({ title, url })) } : {}),
+            center: region.center, rings: region.rings
+        };
+    }).sort((a, b) => a.id.localeCompare(b.id));
+}
+
 function demographicPopulation(demographics, cityId, countryCode, idField) {
     if (!demographics || !Array.isArray(demographics.cities) || !cityId) return null;
     const matches = demographics.cities.filter(row => idField === 'appCityIds'
@@ -265,7 +438,8 @@ function demographicSourceMetadata(demographics) {
     };
 }
 
-export function buildCoverage({ registry, countries, cityConfigSource, countryReviews = [], demographics = null, tolerance = DEFAULTS.tolerance }) {
+export function buildCoverage({ registry, countries, cityConfigSource, countryReviews = [], demographics = null, tolerance = DEFAULTS.tolerance,
+    regions = null, regionReviews = [], catalog = [], regionTolerance = DEFAULTS.regionTolerance }) {
     const sourcesById = new Map(registry.sources.map(s => [s.sourceId, s]));
     const probes = new Map(registry.countryProbes.map(p => [p.countryCode, p]));
     const coverage = new Map(registry.countryCoverage.map(c => [c.countryCode, c]));
@@ -325,11 +499,6 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
             entry.note = review.note;
             entry.coverageSources = review.evidence.map(({ title, url }) => ({ title, url }));
         }
-        if (sub) {
-            entry.regions = [...sub.regions]
-                .sort((a, b) => a.code.localeCompare(b.code))
-                .map(r => [r.code, r.name, regionBucketTier(r.bucket)]);
-        }
         if (LIVE_COUNTRIES[entry.cc]) entry.tier = 'live';
     }
 
@@ -377,8 +546,8 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
     const countryList = [...byCode.values()]
         .filter(e => e.center || e.rings.length)
         .sort((a, b) => a.cc.localeCompare(b.cc))
-        .map(({ cc, name, tier, coverage, note, coverageSources, center, rings, regions }) => ({ cc, name, tier, coverage, note,
-            ...(coverageSources ? { coverageSources } : {}), center, ...(regions ? { regions } : {}), rings }));
+        .map(({ cc, name, tier, coverage, note, coverageSources, center, rings }) => ({ cc, name, tier, coverage, note,
+            ...(coverageSources ? { coverageSources } : {}), center, rings }));
     const populationSource = demographicSourceMetadata(demographics);
 
     return {
@@ -390,7 +559,8 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
         liveCities,
         cities,
         territories: territories.sort((a, b) => a.id.localeCompare(b.id)),
-        countries: countryList
+        countries: countryList,
+        regions: regions ? buildRegions({ outlines: regions, registry, catalog, reviews: regionReviews, tolerance: regionTolerance }) : []
     };
 }
 
@@ -399,11 +569,16 @@ function usage() {
 
 Builds frontend/data/world-coverage.json from world-parcels/registry.json,
 world-parcels/country-coverage-reviews.json, world-parcels/countries.geojson,
-world-parcels/report/city-demographics.json and frontend/js/city-config.js.
+world-parcels/regions.geojson, world-parcels/region-coverage-reviews.json,
+backend/parcels/source-catalog.json, world-parcels/report/city-demographics.json
+and frontend/js/city-config.js.
 
 Options:
   --run               actually build (without it, this help is printed)
   --tolerance <deg>   Douglas-Peucker tolerance in degrees (default ${DEFAULTS.tolerance})
+  --region-tolerance <deg>  tolerance for region outlines (default ${DEFAULTS.regionTolerance})
+  --regions <path>    region outlines (default world-parcels/regions.geojson; refresh it with
+                      scripts/extract-world-regions.mjs)
   --demographics <path> demographics input (default world-parcels/report/city-demographics.json)
   --out <path>        output file (default frontend/data/world-coverage.json)
   --help              show this help`);
@@ -414,16 +589,21 @@ function main(argv) {
     const opt = name => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
     const tolerance = opt('--tolerance') !== undefined ? Number(opt('--tolerance')) : DEFAULTS.tolerance;
     const out = path.resolve(opt('--out') || DEFAULTS.out);
+    const regionTolerance = opt('--region-tolerance') !== undefined ? Number(opt('--region-tolerance')) : DEFAULTS.regionTolerance;
     const demographicsPath = path.resolve(opt('--demographics') || DEFAULTS.demographics);
+    const regionsPath = path.resolve(opt('--regions') || DEFAULTS.regions);
     const ts = () => new Date().toISOString();
-    console.log(`[${ts()}] reading registry, outlines, city config and demographics`);
+    console.log(`[${ts()}] reading registry, outlines, reviews, source catalog, city config and demographics`);
     const result = buildCoverage({
         registry: JSON.parse(readFileSync(DEFAULTS.registry, 'utf8')),
         countryReviews: JSON.parse(readFileSync(DEFAULTS.countryReviews, 'utf8')).reviews,
         countries: JSON.parse(readFileSync(DEFAULTS.countries, 'utf8')),
+        regions: JSON.parse(readFileSync(regionsPath, 'utf8')),
+        regionReviews: JSON.parse(readFileSync(DEFAULTS.regionReviews, 'utf8')).reviews,
+        catalog: JSON.parse(readFileSync(DEFAULTS.catalog, 'utf8')).sources,
         cityConfigSource: readFileSync(DEFAULTS.cityConfig, 'utf8'),
         demographics: JSON.parse(readFileSync(demographicsPath, 'utf8')),
-        tolerance
+        tolerance, regionTolerance
     });
     const json = JSON.stringify(result);
     mkdirSync(path.dirname(out), { recursive: true });
@@ -433,6 +613,9 @@ function main(argv) {
     console.log(`[${ts()}] live cities: ${result.liveCities.map(c => `${c.id}(${c.cc})`).join(', ')}`);
     console.log(`[${ts()}] countries by tier: ${JSON.stringify(count(result.countries, 'tier'))}; outline points: ${points}`);
     console.log(`[${ts()}] countries by coverage: ${JSON.stringify(count(result.countries, 'coverage'))}`);
+    const regionPoints = result.regions.reduce((n, r) => n + r.rings.reduce((k, ring) => k + ring.length / 2, 0), 0);
+    console.log(`[${ts()}] regions by coverage: ${JSON.stringify(count(result.regions, 'coverage'))}; outline points: ${regionPoints}`);
+    console.log(`[${ts()}] full regions: ${result.regions.filter(r => r.coverage === 'full').map(r => r.id).join(', ') || 'none'}`);
     console.log(`[${ts()}] registry cities by tier: ${JSON.stringify(count(result.cities, 'tier'))}`);
     console.log(`[${ts()}] wrote ${path.relative(REPO, out)} (${(json.length / 1024).toFixed(1)} KB)`);
 }

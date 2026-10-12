@@ -1,7 +1,7 @@
 // Regression coverage for canonical, safely normalized WGS84 provider samples.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { safeRequestUrl, safeSample } from '../probe-parcel-provider.mjs';
+import { safeDescriptor, safeRequestUrl, safeSample, searchLocations } from '../probe-parcel-provider.mjs';
 
 test('logs the HMLR archive resource without its presigned S3 credentials', () => {
     assert.equal(safeRequestUrl('https://datapub-prd-s3-bucket.s3.amazonaws.com/inspire/oxford.zip?X-Amz-Credential=private&X-Amz-Signature=secret'),
@@ -43,4 +43,27 @@ test('rejects coordinates outside geographic longitude and latitude bounds', () 
     const projectedCoordinates = [[[500000,4400000],[500010,4400000],[500010,4400010],[500000,4400010],[500000,4400000]]];
     assert.throws(() => safeSample(feature({ type:'Polygon', coordinates:projectedCoordinates, crs:null }),
         'us-in-marion-indianapolis-parcels', { returnsWGS84:true }), /outside the canonical WGS84 polygon contract/);
+});
+
+test('searches the 3x3 core grid first, then each provider ring at eight bearings', () => {
+    const locations = searchLocations([45, 15], [400, 1200]);
+    assert.equal(locations.length, 9 + 16);
+    assert.deepEqual(locations.slice(0, 9).map(l => l.ringM), Array(9).fill(0));
+    const north = locations.find(l => l.ringM === 400);
+    assert.ok(Math.abs((north.point[1] - 45) * 111_320 - 400) < 1e-6 && north.point[0] === 15);
+    const east = locations.filter(l => l.ringM === 1200)[2];
+    assert.ok(Math.abs((east.point[0] - 15) * 111_320 * Math.cos(45 * Math.PI / 180) - 1200) < 1e-6);
+    assert.equal(searchLocations([45, 15], []).length, 9);
+    assert.throws(() => searchLocations([45, 15], undefined), /Search rings/);
+    assert.throws(() => searchLocations([45, 15], [-5]), /Search rings/);
+});
+
+test('keeps published fields only for a provider whose own profile declares them, never unsafe ones', () => {
+    const tkgm = { id:'tr', adapter:'tkgm-point', idField:'nativeId', parcelNumberField:'parselNo', outFields:['mahalleId','adaNo','parselNo'] };
+    assert.deepEqual(safeDescriptor(tkgm).outFields, ['nativeId']);
+    assert.equal(safeDescriptor(tkgm).parcelNumberField, undefined);
+    const declared = safeDescriptor({ ...tkgm, discovery:{ keepPublishedFields:true } });
+    assert.deepEqual(declared.outFields, ['mahalleId','adaNo','parselNo']);
+    assert.equal(declared.parcelNumberField, 'parselNo');
+    assert.throws(() => safeDescriptor({ ...tkgm, outFields:['mahalleId','ownerName'], discovery:{ keepPublishedFields:true } }), /safe field allowlist/);
 });

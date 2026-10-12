@@ -104,6 +104,16 @@ describe('TKGM point parcel source', () => {
         await expect(source(wrong).queryPoint(queried)).rejects.toMatchObject({ status: 502, upstreamStatus: 404 });
     });
 
+    it('requests 16-17 digit points at the 15 significant digits TKGM echoes in its no-hit message', async () => {
+        const queried = [28.988760004710398, 41.016055263170664];
+        const message = 'Parsel Bulunamadı: Enlem = 41,0160552631707 - Boylam=28,9887600047104 ';
+        const fetchImpl = vi.fn().mockResolvedValue(response({ Message: message }, 404));
+        await expect(source(fetchImpl).queryPoint(queried)).resolves.toMatchObject({
+            complete: true, queryType: 'point', point: [28.9887600047104, 41.0160552631707], features: []
+        });
+        expect(fetchImpl.mock.calls[0][0]).toBe(`${descriptor.endpoint}/41.0160552631707/28.9887600047104`);
+    });
+
     it('rejects HTTP 200 nulls as invalid point and exact-ID provider results', async () => {
         await expect(source(vi.fn().mockResolvedValue(response(null))).queryPoint(point))
             .rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
