@@ -236,11 +236,11 @@
             gl_FragColor = vec4(col * i * 0.95, i);
         }`;
     const POINTS_VERT = `
-        attribute float size; attribute vec3 color; attribute float pulse; attribute float opacity;
+        attribute float size; attribute vec3 color; attribute float pulse; attribute float opacity; attribute float painted;
         uniform float pixelRatio; uniform float time;
-        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity;
+        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity; varying float vPainted;
         void main() {
-            vColor = color; vPulse = pulse; vOpacity = opacity;
+            vColor = color; vPulse = pulse; vOpacity = opacity; vPainted = painted;
             vec4 mv = modelViewMatrix * vec4(position, 1.0);
             vec3 n = normalize(normalMatrix * normalize(position));
             vFade = smoothstep(0.0, 0.25, dot(n, normalize(-mv.xyz)));
@@ -248,15 +248,18 @@
             gl_PointSize = size * pixelRatio * grow;
             gl_Position = projectionMatrix * mv;
         }`;
+    // A city with proposals is a painted dot: a bright core inside a ring, at every scale,
+    // whether or not its label fits; the pulse and halo stay with the labelled/selected ones.
+    // (`active` is a reserved word in GLSL; the attribute is `painted`.)
     const POINTS_FRAG = `
-        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity;
+        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity; varying float vPainted;
         void main() {
             vec2 p = gl_PointCoord - 0.5; float r = length(p) * 2.0;
             if (r > 1.0) discard;
             float core = 1.0 - smoothstep(0.42, 0.55, r);
-            float ring = vPulse > 0.5 ? smoothstep(0.62, 0.74, r) * (1.0 - smoothstep(0.86, 1.0, r)) : 0.0;
+            float ring = (vPulse > 0.5 || vPainted > 0.5) ? smoothstep(0.62, 0.74, r) * (1.0 - smoothstep(0.86, 1.0, r)) : 0.0;
             float halo = vPulse > 0.5 ? (1.0 - r) * 0.35 : 0.0;
-            vec3 col = mix(vColor, vec3(1.0), core * 0.25);
+            vec3 col = mix(vColor, vec3(1.0), core * (vPainted > 0.5 ? 0.6 : 0.25));
             float a = max(max(core, ring * 0.9), halo) * vFade * vOpacity;
             gl_FragColor = vec4(col, a);
         }`;
@@ -295,7 +298,7 @@
     function buildCityPoints(THREE) {
         // A fixed-size GPU buffer: adding cities to the catalog cannot add draw work.
         const g = new THREE.BufferGeometry();
-        for (const [name, components] of [['position', 3], ['color', 3], ['size', 1], ['pulse', 1], ['opacity', 1]]) {
+        for (const [name, components] of [['position', 3], ['color', 3], ['size', 1], ['pulse', 1], ['opacity', 1], ['painted', 1]]) {
             g.setAttribute(name, new THREE.BufferAttribute(new Float32Array(CityDisplay.MAX_MARKERS * components), components)
                 .setUsage(THREE.DynamicDrawUsage));
         }
@@ -445,7 +448,11 @@
         root.appendChild(labelLayer);
         const liveLabels = Array.from({ length: CityDisplay.MAX_LABELS }, () => {
             const node = el('button', 'world-city-label world-city-label--hidden', { type: 'button' });
-            const item = { city: null, node, entry: null, placement: null };
+            const name = el('span', 'world-city-label__name');
+            const count = el('span', 'world-city-label__count');
+            count.hidden = true;
+            node.append(name, count);
+            const item = { city: null, node, name, count, entry: null, placement: null };
             node.addEventListener('click', ev => {
                 ev.stopPropagation();
                 // Pointer taps use the shared drag gesture; keyboard activation stays native.
@@ -680,24 +687,74 @@
             return { x: (tmp.x + 1) / 2 * viewport.w, y: (1 - tmp.y) / 2 * viewport.h };
         }
 
+        // The label reads "<city> <count>": the name, and a small count badge when the city has
+        // published proposals. The accessible name says the same in words.
+        function fillCityLabel(item, entry) {
+            const count = entry.count > 0 ? entry.count : 0;
+            item.name.textContent = entry.city.name;
+            item.count.textContent = count ? global.CbFormat.formatInteger(count) : '';
+            item.count.hidden = !count;
+            item.node.setAttribute('aria-label', count
+                ? entry.city.name + ', ' + t('agentDialog.proposalCount', '{{count}} proposals', { count })
+                : entry.city.name);
+        }
+
         function measureCityLabels() {
-            const node = liveLabels[0].node;
-            const previous = node.textContent;
-            node.textContent = 'M';
+            const { node, name, count } = liveLabels[0];
+            const previous = { name: name.textContent, count: count.textContent, hidden: count.hidden };
+            name.textContent = 'M';
+            count.textContent = '8';
+            count.hidden = false;
             const style = global.getComputedStyle(node);
+            const countStyle = global.getComputedStyle(count);
             const context = document.createElement('canvas').getContext('2d');
-            context.font = style.font;
             const extra = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
                 + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+            const countExtra = parseFloat(countStyle.marginLeft) + parseFloat(countStyle.marginRight)
+                + parseFloat(countStyle.paddingLeft) + parseFloat(countStyle.paddingRight);
             const minimumWidth = parseFloat(style.minWidth) || 0;
             const height = node.offsetHeight;
             cityEntries.forEach(entry => {
                 if (!entry.live) return;
-                entry.labelWidth = Math.max(minimumWidth, Math.ceil(context.measureText(entry.city.name).width + extra));
+                context.font = style.font;
+                let width = context.measureText(entry.city.name).width + extra;
+                if (entry.count > 0) {
+                    context.font = countStyle.font;
+                    width += context.measureText(global.CbFormat.formatInteger(entry.count)).width + countExtra;
+                }
+                entry.labelWidth = Math.max(minimumWidth, Math.ceil(width));
                 entry.labelHeight = height;
             });
-            node.textContent = previous;
+            name.textContent = previous.name;
+            count.textContent = previous.count;
+            count.hidden = previous.hidden;
             cityLayoutDirty = true;
+        }
+
+        // Proposal counts arrive after the first frame. They re-rank the catalog in place (the
+        // label pool keeps pointing at the same entries), widen the labels that gain a badge, and
+        // mark the dots to paint. A failed read leaves the globe as it was: every count zero.
+        let countsRequest = null;
+        async function loadCityCounts() {
+            countsRequest = new AbortController();
+            try {
+                const base = String(global.getBackendBase()).replace(/\/+$/, '');
+                const response = await fetch(base + '/activity/cities', { cache: 'no-store',
+                    signal: AbortSignal.any([countsRequest.signal, AbortSignal.timeout(15000)]) });
+                if (!response.ok) throw new Error('City counts HTTP ' + response.status);
+                const payload = await response.json();
+                if (closed) return;
+                CityDisplay.applyCounts(cityEntries, payload.cities);
+                liveLabels.forEach(item => { if (item.entry) fillCityLabel(item, item.entry); });
+                measureCityLabels();
+                dirty = true;
+                schedule();
+                log('city counts loaded for ' + cityEntries.filter(entry => entry.count > 0).length + ' cities');
+            } catch (error) {
+                if (!closed) console.warn('[world] City counts could not load', error);
+            } finally {
+                countsRequest = null;
+            }
         }
 
         function cityObstacles() {
@@ -740,6 +797,7 @@
                 cityGeo.attributes.size.array[i] = marker.size;
                 cityGeo.attributes.pulse.array[i] = marker.glow ? 1 : 0;
                 cityGeo.attributes.opacity.array[i] = marker.opacity;
+                cityGeo.attributes.painted.array[i] = marker.painted ? 1 : 0;
             });
             Object.values(cityGeo.attributes).forEach(attribute => { attribute.needsUpdate = true; });
             cityGeo.setDrawRange(0, visibleMarkers.length);
@@ -754,7 +812,7 @@
             layout.labels.forEach(placement => {
                 const item = liveLabels.find(label => label.entry?.key === placement.entry.key)
                     || liveLabels.find(label => !label.entry);
-                if (item.entry !== placement.entry) item.node.textContent = placement.entry.city.name;
+                if (item.entry !== placement.entry) fillCityLabel(item, placement.entry);
                 item.entry = placement.entry;
                 item.city = placement.entry.city;
                 item.placement = placement;
@@ -1109,7 +1167,12 @@
         searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) onSearchInput(); });
         closeBtn.addEventListener('click', () => { global.WorldView.close(); if (typeof opts.onClose === 'function') opts.onClose(); });
         document.addEventListener('visibilitychange', onVisibility);
-        const onLanguage = () => { renderStaticText(); measureCityLabels(); dirty = true; };
+        const onLanguage = () => {
+            renderStaticText();
+            liveLabels.forEach(item => { if (item.entry) fillCityLabel(item, item.entry); });
+            measureCityLabels();
+            dirty = true;
+        };
         if (global.i18n && typeof global.i18n.onChange === 'function') global.i18n.onChange(onLanguage);
         global.addEventListener('i18n:translationsLoaded', onLanguage);
 
@@ -1136,6 +1199,7 @@
         render(performance.now());
         reachTimer = global.setTimeout(dismissReach, 8000);
         schedule();
+        loadCityCounts();
 
         const api = {
             root,
@@ -1143,6 +1207,7 @@
                 if (closed) return;
                 closed = true;
                 global.clearTimeout(reachTimer);
+                countsRequest?.abort();
                 root.__unregisterEscape?.();
                 if (raf) cancelAnimationFrame(raf);
                 if (flight) { flight.resolve(false); flight = null; }

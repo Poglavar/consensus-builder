@@ -83,6 +83,96 @@ describe('globe city detail selection', () => {
         expect(coverage.liveCities[2].population2025).toBeUndefined();
     });
 
+    it('ranks a city with proposals above bigger silent ones and paints its dot with the count on its label at every scale', () => {
+        const coverage = freezeDeep({
+            liveCities: [
+                { id: 'major', name: 'Major', population2025: 8_000_000 },
+                { id: 'sibenik', name: 'Šibenik', population2025: 40_000 },
+                { id: 'unknown', name: 'Unknown' }
+            ],
+            cities: [{ id: 'research', name: 'Research', population2025: 25_000_000 }]
+        });
+        const ranked = CityDisplay.rankCities(coverage);
+        expect(ranked.map(entry => entry.count)).toEqual([0, 0, 0, 0]);
+
+        const sameEntries = ranked.slice();
+        const reranked = CityDisplay.applyCounts(ranked, [
+            { id: 'sibenik', proposals: 275 }, { id: 'unknown', proposals: 2.9 }, { id: 'research', proposals: 9 },
+            { id: 'major', proposals: -3 }, { id: 'ghost', proposals: 4 }, { proposals: 1 }, null
+        ]);
+        expect(reranked).toBe(ranked);
+        expect(ranked.map(entry => entry.key)).toEqual(['live:sibenik', 'live:unknown', 'live:major', 'research:research']);
+        expect(ranked.map(entry => entry.count)).toEqual([275, 2, 0, 0]);
+        expect(ranked.every(entry => sameEntries.includes(entry))).toBe(true);
+        expect(coverage.liveCities[1].count).toBeUndefined();
+
+        const candidates = candidatesFor(ranked, entry => ({
+            'live:sibenik': [180, 300], 'live:unknown': [470, 300], 'live:major': [760, 300], 'research:research': [1040, 300]
+        }[entry.key]));
+        const world = CityDisplay.layout(candidates, { width: 1200, height: 800, altitudeKm: 20_000 });
+        // At world scale a 40,000-person city is far under the population gate; its proposals
+        // earn it a label anyway, and an unknown population is no longer held back either.
+        expect(world.labels.map(label => label.entry.key)).toEqual(['live:sibenik', 'live:unknown', 'live:major']);
+        const sibenik = world.markers.find(marker => marker.entry.key === 'live:sibenik');
+        const major = world.markers.find(marker => marker.entry.key === 'live:major');
+        expect(sibenik).toMatchObject({ painted: true, glow: true, size: 11, opacity: 1 });
+        expect(major).toMatchObject({ painted: false, glow: true, size: 11, opacity: 1 });
+
+        // With no room for its label, the city with proposals is still a painted dot, not a plain one.
+        const blocked = [{ x: 0, y: 250, w: 600, h: 100 }];
+        const crowded = CityDisplay.layout(candidatesFor(ranked, entry => ({
+            'live:sibenik': [700, 300], 'live:unknown': [470, 500], 'live:major': [760, 300], 'research:research': [1040, 300]
+        }[entry.key])), { width: 1200, height: 800, altitudeKm: 20_000 }, { blocked });
+        expect(crowded.labels.map(label => label.entry.key)).not.toContain('live:major');
+        const paintedSibenik = crowded.markers.find(marker => marker.entry.key === 'live:sibenik');
+        const plainMajor = crowded.markers.find(marker => marker.entry.key === 'live:major');
+        expect(paintedSibenik).toMatchObject({ painted: true, glow: true });
+        expect(plainMajor).toMatchObject({ painted: false, glow: false, size: 4.5, opacity: 0.65 });
+        // Panels on both sides leave the dot room but its label none.
+        const hemmedIn = [{ x: 0, y: 250, w: 600, h: 100 }, { x: 640, y: 250, w: 600, h: 100 }];
+        const unlabelled = CityDisplay.layout(candidatesFor(ranked, entry => ({
+            'live:sibenik': [620, 300], 'live:unknown': [470, 500], 'live:major': [760, 300], 'research:research': [1040, 300]
+        }[entry.key])), { width: 1200, height: 800, altitudeKm: 20_000 }, { blocked: hemmedIn });
+        expect(unlabelled.labels.map(label => label.entry.key)).not.toContain('live:sibenik');
+        expect(unlabelled.markers.find(marker => marker.entry.key === 'live:sibenik'))
+            .toMatchObject({ painted: true, glow: false, size: 9, opacity: 1 });
+    });
+
+    it('keeps labels off painted dots, covering only a lower-ranked one when no side is clear', () => {
+        const coverage = freezeDeep({
+            liveCities: [
+                { id: 'a', name: 'A', population2025: 800_000 }, { id: 'b', name: 'B', population2025: 100_000 },
+                { id: 'c', name: 'C', population2025: 9_000_000 }, { id: 'd', name: 'D', population2025: 50_000 },
+                { id: 'e', name: 'E', population2025: 50_000 }
+            ],
+            cities: []
+        });
+        const ranked = CityDisplay.applyCounts(CityDisplay.rankCities(coverage),
+            [{ id: 'a', proposals: 10 }, { id: 'b', proposals: 1 }, { id: 'd', proposals: 1 }, { id: 'e', proposals: 1 }]);
+        expect(ranked.map(entry => entry.key)).toEqual(['live:a', 'live:b', 'live:d', 'live:e', 'live:c']);
+        const points = { 'live:a': [400, 300], 'live:b': [470, 300], 'live:c': [700, 300], 'live:d': [770, 300], 'live:e': [630, 300] };
+        const candidates = candidatesFor(ranked, entry => points[entry.key]);
+        const viewport = { width: 1200, height: 800, altitudeKm: 20_000 };
+
+        // A's label would cover B's dot on the right, so it goes left; B keeps its own label.
+        const open = CityDisplay.layout(candidates, viewport);
+        const labelOf = (result, key) => result.labels.find(label => label.entry.key === key);
+        expect(labelOf(open, 'live:a').offsetX).toBeLessThan(0);
+        expect(labelOf(open, 'live:b').offsetX).toBeGreaterThan(0);
+        // C, silent, has a painted dot on either side: it loses its label rather than hide one.
+        expect(labelOf(open, 'live:c')).toBeUndefined();
+        expect(labelOf(open, 'live:d')).toBeDefined();
+        expect(labelOf(open, 'live:e')).toBeDefined();
+        expect(open.markers.find(marker => marker.entry.key === 'live:c')).toMatchObject({ painted: false, size: 4.5 });
+
+        // With its left blocked, A covers B's dot: B ranks below A, and the dot is still drawn.
+        const blocked = [{ x: 300, y: 250, w: 95, h: 100 }];
+        const hemmed = CityDisplay.layout(candidates, viewport, { blocked });
+        expect(labelOf(hemmed, 'live:a').offsetX).toBeGreaterThan(0);
+        expect(labelOf(hemmed, 'live:b')).toBeUndefined();
+        expect(hemmed.markers.find(marker => marker.entry.key === 'live:b')).toMatchObject({ painted: true, size: 9, glow: false });
+    });
+
     it('ranks regional-provider cities by their own populations and resolves zoom collisions per city', () => {
         const coverage = WorldCoverage.create({
             countries: [],

@@ -422,6 +422,26 @@ body.world-view-open {
     outline: none;
 }
 
+/* How many published proposals the city holds: a small pill after the name. Its line box stays
+   inside the name's, so a badge never changes the label height the layout was measured with. */
+.world-city-label__count {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--world-live) 22%, transparent);
+    color: var(--world-live);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    vertical-align: 1px;
+    font-variant-numeric: tabular-nums;
+}
+
+.world-city-label__count[hidden] {
+    display: none;
+}
+
 .world-city-label--hidden {
     visibility: hidden;
 }

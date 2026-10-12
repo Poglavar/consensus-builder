@@ -50,6 +50,9 @@ function nodeStub() {
     const classes = new Set();
     return {
         textContent: '',
+        hidden: false,
+        attributes: {},
+        setAttribute(name, value) { this.attributes[name] = value; },
         style: { values: {}, setProperty(key, value) { this.values[key] = value; } },
         classList: {
             add(name) { classes.add(name); },
@@ -63,14 +66,15 @@ function nodeStub() {
 function displayHarness(catalog, { altitudeKm = 1, width = 1200, height = 900, blocked = [] } = {}) {
     const projectCounter = { count: 0 };
     const labels = Array.from({ length: CityDisplay.MAX_LABELS }, () => ({
-        node: nodeStub(), city: null, entry: null, placement: null
+        node: nodeStub(), name: nodeStub(), count: nodeStub(), city: null, entry: null, placement: null
     }));
     const attributes = {
         position: { array: new Float32Array(CityDisplay.MAX_MARKERS * 3) },
         color: { array: new Float32Array(CityDisplay.MAX_MARKERS * 3) },
         size: { array: new Float32Array(CityDisplay.MAX_MARKERS) },
         pulse: { array: new Float32Array(CityDisplay.MAX_MARKERS) },
-        opacity: { array: new Float32Array(CityDisplay.MAX_MARKERS) }
+        opacity: { array: new Float32Array(CityDisplay.MAX_MARKERS) },
+        painted: { array: new Float32Array(CityDisplay.MAX_MARKERS) }
     };
     const state = {
         catalog,
@@ -97,6 +101,9 @@ function displayHarness(catalog, { altitudeKm = 1, width = 1200, height = 900, b
     vm.createContext(context);
     vm.runInContext(`
         const FOV = 40;
+        const global = { CbFormat: { formatInteger: value => String(value).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') } };
+        const t = (key, fallback, params) => Object.entries(params || {})
+            .reduce((text, [name, value]) => text.replace('{{' + name + '}}', value), fallback);
         const cityEntries = state.catalog;
         const liveLabels = state.labels;
         const cityGeo = {
@@ -125,6 +132,7 @@ function displayHarness(catalog, { altitudeKm = 1, width = 1200, height = 900, b
             toArray() { return this.value; }
         } };
         const GM = { raySphere: () => null, vectorToLatLon: () => ({ lat: 0, lon: 0 }) };
+        ${extractFunction('fillCityLabel')}
         ${extractFunction('updateCityDisplay')}
         ${extractFunction('positionCityLabels')}
         ${extractFunction('pickAt')}
@@ -162,7 +170,7 @@ function catalogOf({ live = 0, research = 0, position = (_, index) => [40 + (ind
 describe('globe city renderer orchestration', () => {
     it('allocates fixed dynamic GPU attributes and starts with an empty draw range', () => {
         const geometry = fixedGeometryHarness().build();
-        const components = { position: 3, color: 3, size: 1, pulse: 1, opacity: 1 };
+        const components = { position: 3, color: 3, size: 1, pulse: 1, opacity: 1, painted: 1 };
 
         expect(Object.keys(geometry.attributes).sort()).toEqual(Object.keys(components).sort());
         for (const [name, count] of Object.entries(components)) {
@@ -172,6 +180,13 @@ describe('globe city renderer orchestration', () => {
             expect(attribute.usage).toBe('dynamic-draw');
         }
         expect(geometry.drawRange).toEqual({ start: 0, count: 0 });
+        // Attribute names reach the vertex shader as identifiers; a GLSL keyword there fails the
+        // whole program and every city dot vanishes (2026-10-12: `active`).
+        const glslReserved = ['active', 'asm', 'cast', 'class', 'default', 'double', 'enum', 'extern', 'external',
+            'filter', 'fixed', 'flat', 'goto', 'half', 'inline', 'input', 'interface', 'long', 'namespace', 'noinline',
+            'output', 'packed', 'public', 'short', 'sizeof', 'static', 'superp', 'switch', 'template', 'this',
+            'typedef', 'union', 'unsigned', 'using', 'volatile'];
+        for (const name of Object.keys(geometry.attributes)) expect(glslReserved).not.toContain(name);
     });
 
     it('projects 2,000 catalog entries into a bounded GPU draw range and reuses the fixed label pool', () => {
@@ -190,7 +205,9 @@ describe('globe city renderer orchestration', () => {
         expect(h.labels.some(item => item.entry && !item.node.classList.contains('world-city-label--hidden'))).toBe(true);
         for (const item of h.labels.filter(label => label.entry)) {
             expect(item.placement.entry).toBe(item.entry);
-            expect(item.node.textContent).toBe(item.entry.city.name);
+            expect(item.name.textContent).toBe(item.entry.city.name);
+            expect(item.count.hidden).toBe(true);
+            expect(item.node.attributes['aria-label']).toBe(item.entry.city.name);
         }
         expect(h.labels.map(item => item.node)).toEqual(originalNodes);
         expect(Object.values(h.attributes).every(attribute => attribute.needsUpdate === true)).toBe(true);
@@ -215,6 +232,33 @@ describe('globe city renderer orchestration', () => {
         h.api.positionCityLabels();
         expect(h.labels.map(item => item.node)).toEqual(originalNodes);
         expect(h.api.state().visibleMarkers.length).toBeLessThanOrEqual(CityDisplay.MAX_MARKERS);
+    });
+
+    it('fills a labelled city with its proposal count and paints its dot once the counts arrive', () => {
+        const catalog = catalogOf({ live: 6, position: (_, index) => [150 + index * 180, 300] });
+        const h = displayHarness(catalog, { altitudeKm: 20_000 });
+        h.api.updateCityDisplay(1000);
+        const silent = h.api.state();
+        expect(Array.from(h.attributes.painted.array.slice(0, silent.drawRange.count))).toEqual(new Array(silent.drawRange.count).fill(0));
+        expect(h.labels.filter(item => item.entry).map(item => item.entry.key)).toContain('live:live-0000');
+
+        // The least populous city gains proposals: it leads the catalog, its label shows the count
+        // in words for assistive technology, and its dot is marked for painting.
+        CityDisplay.applyCounts(catalog, [{ id: 'live-0005', proposals: 1105 }]);
+        h.api.forceLayout();
+        h.api.updateCityDisplay(1200);
+        const painted = h.api.state();
+        const last = h.labels.find(item => item.entry?.key === 'live:live-0005');
+        expect(last).toBeDefined();
+        expect(last.name.textContent).toBe('Live 5');
+        expect(last.count.textContent).toBe('1,105');
+        expect(last.count.hidden).toBe(false);
+        expect(last.node.attributes['aria-label']).toBe('Live 5, 1105 proposals');
+        expect(painted.visibleMarkers[0].entry.key).toBe('live:live-0005');
+        expect(h.attributes.painted.array[0]).toBe(1);
+        expect(Array.from(h.attributes.painted.array.slice(1, painted.drawRange.count))).toEqual(new Array(painted.drawRange.count - 1).fill(0));
+        const first = h.labels.find(item => item.entry?.key === 'live:live-0000');
+        expect(first.count.hidden).toBe(true);
     });
 
     it('throttles ordinary projection to 100ms but lets forced layout changes through immediately', () => {

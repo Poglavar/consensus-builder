@@ -5,6 +5,7 @@ import { PublicKey } from '@solana/web3.js';
 import { buildAddressBook } from '../solana/address-book.js';
 import { decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
 import { formatAtomicAmount } from '../utils/x402-payment.js';
+import { normalizeCityCode } from './proposals.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CHAIN_ACTIONS = Object.freeze({
@@ -495,6 +496,21 @@ function runDetail(row, costs = [], book = null) {
     };
 }
 
+// Published proposals per city, for the globe's city markers: rows of GROUP BY city folded by
+// the city's id ('zg' and 'zagreb' are one city), largest first. Rows without a city are not a
+// place on the globe and are left out.
+export function cityProposalCounts(rows = []) {
+    const counts = new Map();
+    for (const row of rows) {
+        const id = normalizeCityCode(row?.city);
+        const proposals = Number(row?.proposals);
+        if (!id || !Number.isFinite(proposals) || proposals <= 0) continue;
+        counts.set(id, (counts.get(id) || 0) + Math.floor(proposals));
+    }
+    return Array.from(counts, ([id, proposals]) => ({ id, proposals }))
+        .sort((a, b) => b.proposals - a.proposals || a.id.localeCompare(b.id));
+}
+
 export function setupAgentActivityRoute(app, pool, {
     env = process.env,
     book = buildAddressBook({ env, personas: readPersonas() }),
@@ -580,6 +596,24 @@ export function setupAgentActivityRoute(app, pool, {
         } catch (error) {
             console.error('GET /activity/recent failed', error);
             return res.status(500).json({ error: 'Failed to read recent activity', source: 'live' });
+        }
+    });
+
+    // How many published proposals each city holds — what the globe paints its city dots and
+    // label badges with. One grouped count; a minute of caching is plenty for a globe.
+    app.get('/activity/cities', async (req, res) => {
+        res.set('Cache-Control', 'public, max-age=60');
+        try {
+            const { rows } = await pool.query(
+                `SELECT city, COUNT(*)::int AS proposals
+                   FROM proposal
+                  WHERE city IS NOT NULL AND LOWER(COALESCE(lifecycle_status, '')) <> 'draft'
+                  GROUP BY city`
+            );
+            return res.json({ cities: cityProposalCounts(rows) });
+        } catch (error) {
+            console.error('GET /activity/cities failed', error);
+            return res.status(500).json({ error: 'Failed to count proposals per city' });
         }
     });
 
