@@ -360,11 +360,11 @@ test.describe('Supporting pages @core', () => {
     });
 
     await page.goto('/hackathon-demo.html');
-    await expect(page.locator('#hackathon-demo')).toContainText('Demo readiness and recovery');
-    await expect(page.locator('#hackathon-demo')).toContainText('Evidence case');
+    await expect(page.locator('#hackathon-demo')).toContainText('Running now');
+    await expect(page.locator('#hackathon-demo')).toContainText('Two proposals, followed end to end');
     const beforeRetry = calls.get('/agent/activity') || 0;
-    await page.getByRole('button', { name: 'Retry live evidence' }).click();
+    await page.getByRole('button', { name: 'Refresh live data' }).click();
     await expect.poll(() => calls.get('/agent/activity') || 0).toBeGreaterThan(beforeRetry);
-    await expect(page.locator('#hackathon-demo')).toContainText('Demo readiness and recovery');
+    await expect(page.locator('#hackathon-demo')).toContainText('Running now');
   });
 });

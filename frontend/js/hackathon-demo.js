@@ -352,322 +352,237 @@
     function link(doc, label, href, className = '') {
         const item = node(doc, 'a', label, className);
         item.href = href;
-        if (/^https?:/.test(href)) { item.target = '_blank'; item.rel = 'noopener'; }
+        if (/^https?:/.test(href)) { item.target = '_blank'; item.rel = 'noopener noreferrer'; item.classList.add('is-external'); }
         return item;
     }
 
-    function addCard(container, title, card, links = []) {
-        const doc = container.ownerDocument;
-        const section = node(doc, 'article', null, `hd-card is-${card.tone}`);
-        const head = node(doc, 'div', null, 'hd-card-head');
-        head.append(node(doc, 'span', title, 'hd-eyebrow'), node(doc, 'span', card.tone === 'success' ? 'LIVE' : card.tone === 'error' ? 'ERROR' : 'PENDING', 'hd-pill'));
-        section.append(head, node(doc, 'h2', card.label), node(doc, 'p', card.detail, 'hd-muted'));
-        const actions = node(doc, 'div', null, 'hd-links');
-        links.filter(item => item.href).forEach(item => actions.append(link(doc, item.label, item.href)));
-        if (actions.childElementCount) section.append(actions);
-        container.append(section);
+    function explorerAddress(address) {
+        return `https://explorer.solana.com/address/${encodeURIComponent(address)}?cluster=devnet`;
     }
 
-    function caseSection(doc, card, eyebrow) {
-        const section = node(doc, 'section', null, `hd-case is-${card.tone}`);
+    function when(value) {
+        return value ? new Date(value).toLocaleString() : 'Not available';
+    }
+
+    function section(doc, title, intro = '', className = '') {
+        const item = node(doc, 'section', null, `hd-section ${className}`.trim());
+        item.append(node(doc, 'h2', title));
+        if (intro) item.append(node(doc, 'p', intro, 'hd-muted'));
+        return item;
+    }
+
+    function factList(doc, rows) {
+        const list = node(doc, 'dl', null, 'hd-facts');
+        rows.forEach(([label, value]) => {
+            const row = node(doc, 'div');
+            row.append(node(doc, 'dt', label), node(doc, 'dd', value));
+            list.append(row);
+        });
+        return list;
+    }
+
+    function linkRow(doc, links) {
+        const row = node(doc, 'div', null, 'hd-links');
+        links.filter(item => item?.href).forEach(item => row.append(link(doc, item.label, item.href)));
+        return row;
+    }
+
+    const STATUS_WORD = { success: 'Live', error: 'Error', waiting: 'Pending' };
+
+    // One proposal followed through every stage: outcome, a compact stage track, two ways in, and the
+    // signed transactions folded away for whoever wants to verify them.
+    function caseCard(doc, card, fallbackTitle) {
+        const article = node(doc, 'article', null, `hd-case is-${card.tone}`);
         const head = node(doc, 'div', null, 'hd-case__head');
-        const copy = node(doc, 'div');
-        copy.append(
-            node(doc, 'span', eyebrow, 'hd-eyebrow'),
-            node(doc, 'h2', card.label),
-            node(doc, 'p', card.detail, 'hd-muted')
+        head.append(
+            node(doc, 'h3', card.case ? card.label : fallbackTitle),
+            node(doc, 'span', card.marketOutcome ? `Resolved ${card.marketOutcome}` : String(card.state || 'pending').replaceAll('_', ' '), 'hd-pill')
         );
-        if (card.case) {
-            const facts = node(doc, 'dl', null, 'hd-case__facts');
-            [['Lifecycle', card.lifecycle || 'Not recorded'], ['Market outcome', card.marketOutcome || 'No market']].forEach(([label, value]) => {
-                const row = node(doc, 'div'); row.append(node(doc, 'dt', label), node(doc, 'dd', value)); facts.append(row);
-            });
-            copy.append(facts);
-        }
-        const links = node(doc, 'div', null, 'hd-links');
-        if (card.case?.links?.map) links.append(link(doc, 'Open parcel set + read-only Details', card.case.links.map));
-        // Same `?activity=proposal:<id>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
-        if (card.case?.id) links.append(link(doc, 'Every actor and action in the explorer', `/?activity=${encodeURIComponent(`proposal:${card.case.id}`)}`));
-        if (card.case?.links?.self) links.append(link(doc, 'Inspect aggregate JSON ↗', card.case.links.self));
-        copy.append(links);
-        head.append(copy, node(doc, 'span', String(card.state || 'unknown').replaceAll('_', ' ').toUpperCase(), 'hd-pill'));
-        section.append(head);
+        article.append(head);
+        article.append(node(doc, 'p', card.case ? `${card.lifecycle || 'No lifecycle recorded'} · ${card.detail}` : card.detail, 'hd-muted'));
         if (card.case?.stages?.length) {
-            const graph = node(doc, 'ol', null, 'hd-case__graph');
-            card.case.stages.forEach(item => {
-                const entry = node(doc, 'li', null, `is-${item.state}`);
-                entry.append(
-                    node(doc, 'span', String(item.state || 'pending').toUpperCase()),
-                    node(doc, 'strong', item.label),
-                    node(doc, 'small', item.detail)
-                );
-                graph.append(entry);
+            const stages = node(doc, 'ol', null, 'hd-stages');
+            card.case.stages.forEach(stage => {
+                const item = node(doc, 'li', stage.label, `is-${stage.state || 'pending'}`);
+                if (stage.detail) item.title = stage.detail;
+                stages.append(item);
             });
-            section.append(graph);
+            article.append(stages);
         }
-        if (card.transactions?.length) {
-            const txs = node(doc, 'div', null, 'hd-links hd-case__txs');
-            card.transactions.forEach(tx => txs.append(link(doc, `${tx.label} ↗`, tx.url)));
-            section.append(txs);
+        if (card.case) {
+            article.append(linkRow(doc, [
+                { label: 'Open on the map', href: card.case.links?.map },
+                // Same `?activity=proposal:<id>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
+                { label: 'Every action in the explorer', href: card.case.id ? `/?activity=${encodeURIComponent(`proposal:${card.case.id}`)}` : null }
+            ]));
+            const more = node(doc, 'details', null, 'hd-fold');
+            more.append(node(doc, 'summary', card.transactions.length ? `Transactions (${card.transactions.length})` : 'Raw record'));
+            more.append(linkRow(doc, [
+                ...card.transactions.map(tx => ({ label: tx.label, href: tx.url })),
+                { label: 'Case record (JSON)', href: card.case.links?.self }
+            ]));
+            article.append(more);
         }
-        if (card.case?.stages?.length) section.append(node(doc, 'p', 'Support, forecasting and owner action can begin in parallel. Evidence authorizes resolution; resolution unlocks payout or refund.', 'hd-proof-reason'));
-        if (card.ownerCaveat) section.append(node(doc, 'p', 'Honest boundary: the agent that accepted also holds the devnet ownership certificates for these parcels, so this proves the mechanics and payout, not real-owner consent.', 'hd-proof-reason'));
-        return section;
+        if (card.ownerCaveat) article.append(node(doc, 'p', 'The agent that accepted also holds the devnet ownership certificates, so this shows the mechanics and the payout, not a real owner’s consent.', 'hd-note'));
+        return article;
+    }
+
+    function statusRow(doc, name, card, primary) {
+        const row = node(doc, 'li', null, `hd-status__row is-${card.tone}`);
+        const word = node(doc, 'span', STATUS_WORD[card.tone] || 'Pending', 'hd-status__word');
+        const copy = node(doc, 'div', null, 'hd-status__copy');
+        copy.append(node(doc, 'strong', name), node(doc, 'span', card.label));
+        if (card.detail) copy.title = card.detail;
+        row.append(word, copy);
+        if (primary?.href) row.append(link(doc, primary.label, primary.href, 'hd-status__link'));
+        return row;
     }
 
     function render(element, model, { apiBase = backendBase() } = {}) {
         const doc = element.ownerDocument;
         element.replaceChildren();
 
+        // How it works: the one loop, said once.
+        const how = section(doc, 'How it works');
+        const steps = node(doc, 'ol', null, 'hd-steps');
+        [
+            ['Propose', 'A person or an agent proposes a change to real cadastral parcels.'],
+            ['Back', 'Supporters donate or pledge devnet USDC to the proposal.'],
+            ['Forecast', 'Anyone stakes YES or NO on whether it will happen.'],
+            ['Settle', 'A public record says what happened. The market resolves and pays out.']
+        ].forEach(([title, text]) => {
+            const item = node(doc, 'li');
+            item.append(node(doc, 'strong', title), node(doc, 'span', text));
+            steps.append(item);
+        });
+        how.append(steps);
+        element.append(how);
+
+        // The two proven proposals, NO and YES, side by side.
+        const cases = section(doc, 'Two proposals, followed end to end',
+            'One was cancelled and its market resolved NO. The other was carried out and resolved YES. Every stage is recorded on Solana devnet.');
+        cases.id = 'judge-path';
+        const caseGrid = node(doc, 'div', null, 'hd-cases');
+        caseGrid.append(caseCard(doc, model.canonicalCase, 'Cancelled case'), caseCard(doc, model.executedCase, 'Executed case'));
+        cases.append(caseGrid);
+        element.append(cases);
+
+        // Everything that runs on its own, one line each; the detail sits in the row's tooltip.
+        const running = section(doc, 'Running now', 'Read live from the public API. Anything not yet proven says Pending.');
+        const errorValues = Object.entries(model.errors || {});
+        if (errorValues.length) {
+            const errors = node(doc, 'ul', null, 'hd-errors');
+            errorValues.forEach(([source, message]) => errors.append(node(doc, 'li', `${source}: ${message}`)));
+            running.append(errors);
+        }
         const live = model.prospectiveMarket;
-        const liveMarket = node(doc, 'section', null, `hd-live-market is-${live.tone}`);
-        const liveCopy = node(doc, 'div', null, 'hd-live-market__copy');
-        const liveHead = node(doc, 'div', null, 'hd-card-head');
-        liveHead.append(node(doc, 'span', 'LIVE EXPERIMENT · GENUINELY PROSPECTIVE', 'hd-eyebrow'),
-            node(doc, 'span', String(live.state || 'unknown').replaceAll('_', ' ').toUpperCase(), 'hd-pill'));
-        liveCopy.append(liveHead, node(doc, 'h2', live.label), node(doc, 'p', live.detail, 'hd-muted'));
-        const liveLinks = node(doc, 'div', null, 'hd-links');
-        if (live.marketUrl) liveLinks.append(link(doc, 'Inspect market account ↗', live.marketUrl));
-        if (live.settlement?.evidence?.address) liveLinks.append(link(doc, 'Inspect resolving evidence ↗', `https://explorer.solana.com/address/${encodeURIComponent(live.settlement.evidence.address)}?cluster=devnet`));
-        if (live.settlement?.transactions?.resolution) liveLinks.append(link(doc, 'Verify resolution ↗', `https://explorer.solana.com/tx/${encodeURIComponent(live.settlement.transactions.resolution)}?cluster=devnet`));
-        if (live.settlement?.transactions?.claim) liveLinks.append(link(doc, 'Verify payout ↗', `https://explorer.solana.com/tx/${encodeURIComponent(live.settlement.transactions.claim)}?cluster=devnet`));
-        liveLinks.append(link(doc, 'Live resolver status ↗', `${apiBase}/oracle/markets/prospective/status`));
-        liveLinks.append(link(doc, 'Hackathon proof manifest ↗', `${apiBase}/hackathon/proof.json`));
-        liveCopy.append(liveLinks);
-        const liveFacts = node(doc, 'dl', null, 'hd-live-market__facts');
+        const rows = node(doc, 'ul', null, 'hd-status');
+        rows.append(
+            statusRow(doc, 'Prospective market', live, { label: 'Market', href: live.marketUrl }),
+            statusRow(doc, 'Court records oracle', model.publicRecords, { label: 'Schema', href: model.publicRecords.summary?.schemaUrl || `${apiBase}/oracle/public-records/summary` }),
+            statusRow(doc, 'Paid facts for agents', model.oracleFacts, model.oracleFacts.independentProof?.transactionUrl
+                ? { label: 'Payment', href: model.oracleFacts.independentProof.transactionUrl }
+                : { label: 'Discovery', href: model.oracleFacts.discoveryUrl || `${apiBase}/agent/discovery?resource=oracle-facts` }),
+            statusRow(doc, 'Paid proposals for agents', model.x402, { label: 'Discovery', href: model.x402.discoveryUrl || `${apiBase}/agent/discovery` }),
+            statusRow(doc, 'Agent tools (MCP)', model.agentTools, { label: 'Setup', href: `${apiBase}/docs/agents` }),
+            statusRow(doc, 'Daily proposer agent', model.algorithm, model.algorithm.run ? { label: 'Run', href: `${apiBase}/agent/runs/${encodeURIComponent(model.algorithm.run.id)}` } : null),
+            statusRow(doc, 'Supporter agent', model.supporter, model.supporter.transaction ? { label: 'Transaction', href: explorerTx(model.supporter.transaction) } : null),
+            statusRow(doc, 'Lifecycle oracle', model.oracle, { label: 'Events', href: `${apiBase}/oracle/events` }),
+            statusRow(doc, 'On-chain activity', model.evidence, { label: 'Explorer', href: '/actor-explorer.html' })
+        );
+        running.append(rows);
+        element.append(running);
+
+        // Reviewer detail, folded: the live market's facts, the retrospective proof's chronology,
+        // program ids and machine-readable endpoints.
+        const more = node(doc, 'details', null, 'hd-section hd-fold hd-fold--section');
+        more.append(node(doc, 'summary', 'Evidence details'));
+        more.append(node(doc, 'h3', live.label));
+        more.append(node(doc, 'p', live.detail, 'hd-muted'));
         const liveRows = [
             ['Market', live.market || 'Unavailable'],
             ['Pool', live.stakes ? `${live.stakes.pool} devnet USDC` : 'Unavailable'],
-            ['Trading close', live.closesAt ? new Date(live.closesAt).toLocaleString() : 'Unavailable'],
+            ['Trading closed', live.closesAt ? when(live.closesAt) : 'Unavailable'],
             ['Recipe', live.recipeHash || 'Unavailable'],
-            ['Last resolver check', live.resolver?.lastRun?.endedAt ? new Date(live.resolver.lastRun.endedAt).toLocaleString() : 'Awaiting public run ledger']
+            ['Last resolver check', live.resolver?.lastRun?.endedAt ? when(live.resolver.lastRun.endedAt) : 'Awaiting public run ledger']
         ];
         if (live.settlement?.chronology?.timestamps) liveRows.push(
-            ['Source publication', new Date(live.settlement.chronology.timestamps.sourceObservedAt).toLocaleString()],
-            ['Evidence first seen', new Date(live.settlement.chronology.timestamps.evidenceCreatedAt).toLocaleString()],
-            ['Payout claimed', new Date(live.settlement.chronology.timestamps.claimedAt).toLocaleString()]
+            ['Source publication', when(live.settlement.chronology.timestamps.sourceObservedAt)],
+            ['Evidence first seen', when(live.settlement.chronology.timestamps.evidenceCreatedAt)],
+            ['Payout claimed', when(live.settlement.chronology.timestamps.claimedAt)]
         );
-        liveRows.forEach(([label, value]) => {
-            const row = node(doc, 'div'); row.append(node(doc, 'dt', label), node(doc, 'dd', value)); liveFacts.append(row);
-        });
-        liveMarket.append(liveCopy, liveFacts);
+        more.append(factList(doc, liveRows), linkRow(doc, [
+            { label: 'Resolving evidence', href: live.settlement?.evidence?.address ? explorerAddress(live.settlement.evidence.address) : null },
+            { label: 'Resolution', href: live.settlement?.transactions?.resolution ? explorerTx(live.settlement.transactions.resolution) : null },
+            { label: 'Payout', href: live.settlement?.transactions?.claim ? explorerTx(live.settlement.transactions.claim) : null },
+            { label: 'Resolver status', href: `${apiBase}/oracle/markets/prospective/status` },
+            { label: 'Proof manifest', href: `${apiBase}/hackathon/proof.json` }
+        ]));
 
-        // The canonical (cancelled) case leads, its executed YES counterpart follows: one proposal per
-        // branch a judge can follow end to end before any detail.
-        element.append(
-            caseSection(doc, model.canonicalCase, 'CANONICAL CASE · ONE INSPECTABLE GRAPH'),
-            caseSection(doc, model.executedCase, 'EXECUTED CASE · THE YES COUNTERPART'),
-            liveMarket
-        );
+        const external = model.externalMarket;
+        more.append(node(doc, 'h3', external.label));
+        more.append(node(doc, 'p', external.prospective
+            ? 'The market and both stakes existed before the source record. After close, a court attestation chose the result, any wallet could resolve it, and the winner claimed the pool.'
+            : 'This proof runs the whole loop: committed recipe, stakes on both sides, resolution from a public record, payout. The record predates the market, so it proves the integration, not a prediction.', 'hd-muted'));
+        const chronology = external.chronology?.timestamps;
+        if (chronology) more.append(factList(doc, [
+            ['Market opened', when(chronology.marketCreatedAt)],
+            ['YES stake', when(chronology.yesStakeAt)],
+            ['NO stake', when(chronology.noStakeAt)],
+            ['Trading closed', when(chronology.marketClosesAt)],
+            ['Source publication', when(chronology.sourceObservedAt)],
+            ['Evidence first seen', when(chronology.evidenceCreatedAt)],
+            ['Market resolved', when(chronology.resolvedAt)],
+            ['Payout claimed', when(chronology.claimedAt)]
+        ]));
+        more.append(linkRow(doc, [
+            { label: 'Market account', href: external.market ? explorerAddress(external.market) : null },
+            { label: 'Evidence', href: external.evidence?.address ? explorerAddress(external.evidence.address) : null },
+            { label: 'Resolution', href: external.resolution ? explorerTx(external.resolution) : null },
+            { label: 'Payout', href: external.claim ? explorerTx(external.claim) : null }
+        ]));
 
-        const story = node(doc, 'section', null, 'hd-story');
-        const storyCopy = node(doc, 'div', null, 'hd-story-copy');
-        storyCopy.append(node(doc, 'span', model.externalMarket.prospective
-            ? 'PROSPECTIVE MARKET · VERIFIED CHRONOLOGY'
-            : 'RETROSPECTIVE INTEGRATION · LIVE DEVNET', 'hd-eyebrow'));
-        storyCopy.append(node(doc, 'h2', model.externalMarket.prospective
-            ? 'A possible land future became a verified outcome'
-            : 'A public land fact completed the market loop'));
-        storyCopy.append(node(doc, 'p', model.externalMarket.prospective
-            ? 'The market and both stakes existed before the source record. After close, a public court attestation selected the result, any wallet could resolve it, and the winner claimed the pool.'
-            : 'This first proof exercises recipe commitment, two-sided staking, permissionless public-record resolution and payout. Its attestation predates the market, so it proves the integration—not yet a prediction.'));
-        const storyLinks = node(doc, 'div', null, 'hd-links');
-        if (model.externalMarket.market) storyLinks.append(link(doc, 'Open market account ↗', `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.market)}?cluster=devnet`));
-        if (model.externalMarket.evidence?.address) storyLinks.append(link(doc, 'Inspect evidence ↗', `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.evidence.address)}?cluster=devnet`));
-        if (model.externalMarket.resolution) storyLinks.append(link(doc, 'Verify resolution ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet`));
-        if (model.externalMarket.claim) storyLinks.append(link(doc, 'Verify payout ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.claim)}?cluster=devnet`));
-        storyCopy.append(storyLinks);
-        const chronology = model.externalMarket.chronology;
-        if (chronology?.timestamps) {
-            const proofOrder = node(doc, 'dl', null, 'hd-proof-order');
-            [
-                ['Market opened', chronology.timestamps.marketCreatedAt],
-                ['YES stake', chronology.timestamps.yesStakeAt],
-                ['NO stake', chronology.timestamps.noStakeAt],
-                ['Trading closed', chronology.timestamps.marketClosesAt],
-                ['Source publication', chronology.timestamps.sourceObservedAt],
-                ['Evidence first seen', chronology.timestamps.evidenceCreatedAt],
-                ['Market resolved', chronology.timestamps.resolvedAt],
-                ['Payout claimed', chronology.timestamps.claimedAt]
-            ].forEach(([label, value]) => {
-                const row = node(doc, 'div');
-                row.append(node(doc, 'dt', label), node(doc, 'dd', value ? new Date(value).toLocaleString() : 'Not available'));
-                proofOrder.append(row);
-            });
-            storyCopy.append(proofOrder, node(doc, 'p', chronology.reason, 'hd-proof-reason'));
-        }
-        if (model.externalMarket.nextProof?.market) {
-            const next = model.externalMarket.nextProof;
-            storyCopy.append(
-                node(doc, 'p', `A separate V2 market is now open and two-sided. It closes ${new Date(next.closesAt).toLocaleString()} and can settle only from a matching later public record.`, 'hd-proof-reason'),
-                link(doc, 'Open prospective market ↗', `https://explorer.solana.com/address/${encodeURIComponent(next.market)}?cluster=devnet`)
-            );
-        }
-        const storyFlow = node(doc, 'ol', null, 'hd-story-flow');
+        more.append(node(doc, 'h3', 'Programs and endpoints'));
+        more.append(factList(doc, [
+            ['Market program', model.programs.market || 'Unavailable'],
+            ['Funding program', model.programs.support || 'Unavailable']
+        ]));
+        more.append(linkRow(doc, [
+            { label: 'Market program', href: model.programs.market ? explorerAddress(model.programs.market) : null },
+            { label: 'Funding program', href: model.programs.support ? explorerAddress(model.programs.support) : null },
+            { label: 'Agent recipe (JSON)', href: `${apiBase}/docs/agents.json` },
+            { label: 'Oracle health (JSON)', href: `${apiBase}/oracle/public-records/summary` },
+            { label: 'Latest lifecycle fact', href: model.oracle.event?.subject?.id ? `${apiBase}/agent/oracle/facts?subject=${encodeURIComponent(model.oracle.event.subject.id)}` : null },
+            { label: 'Source code', href: model.agentTools.source ? `https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/${model.agentTools.source}` : null }
+        ]));
+        element.append(more);
+
+        const limits = section(doc, 'Limits', '', 'hd-limits');
+        const limitList = node(doc, 'ul');
         [
-            ['01', 'Imagined', 'A parcel future becomes a falsifiable question.'],
-            ['02', 'Proposed', 'Its recipe and outcomes are committed by hash.'],
-            ['03', 'Backed', 'Capital enters both competing outcomes.'],
-            ['04', 'Forecast', 'YES and NO remain visible until close.'],
-            ['05', 'Attested', 'A trusted public record supplies evidence.'],
-            ['06', 'Realized', 'The program derives the result and pays out.']
-        ].forEach(([number, title, detail]) => {
-            const item = node(doc, 'li');
-            item.append(node(doc, 'span', number), node(doc, 'strong', title), node(doc, 'small', detail));
-            storyFlow.append(item);
-        });
-        story.append(storyCopy, storyFlow);
-        element.append(story);
+            'Everything runs on Solana devnet with test USDC that has no value.',
+            'One authoritative source is live: Croatian court records. Permit, imagery, news and OpenStreetMap collectors are future work.',
+            'The prospective market settles only from a record published after it closed, so it can wait a long time.'
+        ].forEach(text => limitList.append(node(doc, 'li', text)));
+        limits.append(limitList);
+        element.append(limits);
 
-        const proofStrip = node(doc, 'section', null, 'hd-proof-strip');
-        proofStrip.setAttribute('aria-label', 'Live public proof status');
-        model.proofChecks.forEach(check => {
-            const item = node(doc, 'article', null, `hd-proof-check is-${check.status}`);
-            item.append(
-                node(doc, 'span', check.status === 'success' ? 'VERIFIED' : check.status === 'error' ? 'ERROR' : 'PENDING'),
-                node(doc, 'strong', check.label)
-            );
-            proofStrip.append(item);
-        });
-        element.append(proofStrip);
+        const tryIt = node(doc, 'details', null, 'hd-section hd-fold hd-fold--section');
+        tryIt.append(node(doc, 'summary', 'Try it yourself'));
+        tryIt.append(node(doc, 'p', 'Switch your wallet to Solana devnet. SOL pays the transaction fees; Circle’s devnet USDC pays for stakes, donations and agent payments.', 'hd-muted'));
+        tryIt.append(linkRow(doc, [
+            { label: 'Solana faucet', href: 'https://faucet.solana.com' },
+            { label: 'Circle USDC faucet', href: 'https://faucet.circle.com' }
+        ]));
+        tryIt.append(node(doc, 'p', 'Without a wallet, open the map, expand Game, turn on game mode and choose New Game. It only resets this browser’s simulation; public records and devnet transactions stay as they are.', 'hd-muted'));
+        tryIt.append(linkRow(doc, [{ label: 'Open the map simulation', href: '/?reduceMotion=1' }]));
+        element.append(tryIt);
 
-        const cards = node(doc, 'section', null, 'hd-grid');
-        addCard(cards, 'x402', model.x402, [
-            { label: 'View discovery record ↗', href: model.x402.discoveryUrl || `${apiBase}/agent/discovery` },
-            { label: 'Agent recipe JSON ↗', href: `${apiBase}/docs/agents.json` },
-            { label: 'Quickstart ↗', href: `${apiBase}/docs/agents` }
-        ]);
-        addCard(cards, 'Paid oracle facts', model.oracleFacts, [
-            { label: 'View fact discovery ↗', href: model.oracleFacts.discoveryUrl || `${apiBase}/agent/discovery?resource=oracle-facts` },
-            model.oracle.event?.subject?.id
-                ? { label: 'Request this fact ↗', href: `${apiBase}/agent/oracle/facts?subject=${encodeURIComponent(model.oracle.event.subject.id)}` }
-                : {},
-            { label: 'Audit free event feed ↗', href: `${apiBase}/oracle/events` },
-            model.oracleFacts.independentProof?.transactionUrl
-                ? { label: 'Verify independent payment ↗', href: model.oracleFacts.independentProof.transactionUrl }
-                : {}
-        ]);
-        addCard(cards, 'Agent tool surface', model.agentTools, [
-            { label: 'MCP setup ↗', href: `${apiBase}/docs/agents` },
-            { label: 'Machine manifest ↗', href: `${apiBase}/docs/agents.json` },
-            model.agentTools.source
-                ? { label: 'Source ↗', href: `https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/${model.agentTools.source}` }
-                : {}
-        ]);
-        addCard(cards, 'Daily proposer', model.algorithm, model.algorithm.run ? [
-            { label: 'Run record ↗', href: `${apiBase}/agent/runs/${encodeURIComponent(model.algorithm.run.id)}` }
-        ] : []);
-        addCard(cards, 'Supporter persona', model.supporter, model.supporter.run ? [
-            { label: 'Run record ↗', href: `${apiBase}/agent/runs/${encodeURIComponent(model.supporter.run.id)}` },
-            model.supporter.transaction
-                ? { label: 'Verify support transaction ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.supporter.transaction)}?cluster=devnet` }
-                : {},
-            model.supporter.proposalId
-                ? { label: 'Open supported proposal', href: `/proposals/${encodeURIComponent(model.supporter.proposalId)}` }
-                : {}
-        ] : []);
-        addCard(cards, 'On-chain evidence', model.evidence, [
-            { label: 'Actor Explorer', href: '/actor-explorer.html' },
-            model.evidence.latestTransaction ? { label: 'Latest transaction ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.evidence.latestTransaction)}?cluster=devnet` } : {},
-            model.evidence.latestProposalId ? { label: 'Latest proposal', href: `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` } : {}
-        ]);
-        addCard(cards, 'Official public records', model.publicRecords, [
-            { label: 'Oracle health JSON ↗', href: `${apiBase}/oracle/public-records/summary` },
-            model.publicRecords.summary?.schemaUrl
-                ? { label: 'Solana attestation schema ↗', href: model.publicRecords.summary.schemaUrl }
-                : {}
-        ]);
-        addCard(cards, 'External market settlement', model.externalMarket, [
-            model.externalMarket.market
-                ? { label: 'Market account ↗', href: `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.market)}?cluster=devnet` }
-                : {},
-            model.externalMarket.resolution
-                ? { label: 'SAS resolution ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` }
-                : {},
-            model.externalMarket.claim
-                ? { label: 'Winning claim ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.claim)}?cluster=devnet` }
-                : {}
-        ]);
-        addCard(cards, 'Market resolution', model.oracle, [
-            { label: 'Oracle events ↗', href: `${apiBase}/oracle/events` },
-            model.oracle.event?.source?.transactionUrl
-                ? { label: 'Source transaction ↗', href: model.oracle.event.source.transactionUrl }
-                : {},
-            model.oracle.event?.subject?.id
-                ? { label: 'Resolution recipe ↗', href: `${apiBase}/oracle/recipes/${encodeURIComponent(model.oracle.recipeId)}?proposal=${encodeURIComponent(model.oracle.event.subject.id)}` }
-                : {}
-        ]);
-        element.append(cards);
-
-        const thesis = node(doc, 'section', null, 'hd-flow hd-thesis');
-        thesis.append(node(doc, 'span', 'THE PRODUCT', 'hd-eyebrow'));
-        thesis.append(node(doc, 'h2', 'The narrative can mobilize reality. It cannot declare itself true.'));
-        const thesisGrid = node(doc, 'div', null, 'hd-thesis-grid');
-        [
-            ['1', 'Possible future', 'A human or agent expresses a falsifiable change to exact cadastral parcels.'],
-            ['2', 'Causal force', 'Attention, negotiation, funding and forecasts organize around that future.'],
-            ['3', 'Reality check', 'Independent public records attest what actually happened in the world.'],
-            ['4', 'Settlement', 'A declared evidence recipe resolves the claim and unlocks the outcome.']
-        ].forEach(([number, title, detail]) => {
-            const item = node(doc, 'article');
-            item.append(node(doc, 'span', number, 'hd-step-number'), node(doc, 'strong', title), node(doc, 'p', detail));
-            thesisGrid.append(item);
-        });
-        thesis.append(thesisGrid);
-        element.append(thesis);
-
-        const flow = node(doc, 'section', null, 'hd-flow hd-judge-path');
-        flow.id = 'judge-path';
-        flow.append(node(doc, 'span', 'JUDGE MODE · ONE POSSIBLE CITY', 'hd-eyebrow'));
-        flow.append(node(doc, 'h2', 'Follow a parcel future from imagination to evidence'));
-        const list = node(doc, 'ol');
-        [
-            ['Imagine: open the parcel map and inspect a possible change.', '/?reduceMotion=1'],
-            ['Propose: inspect a live agent-authored proposal in read-only Details.', model.canonicalCase.case?.links?.map || (model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/')],
-            ['Back: compare an unconditional donation with a revocable pledge.', model.canonicalCase.case?.links?.map || (model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/')],
-            ['Forecast: inspect the open, two-sided, recipe-bound market.', model.externalMarket.nextProof?.market ? `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.nextProof.market)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
-            ['Attest: verify the court oracle’s source-timed SAS evidence.', `${apiBase}/oracle/public-records/summary`],
-            ['Resolve: follow the proven market outcome through its USDC payout.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`]
-        ].forEach(([label, href]) => {
-            const item = node(doc, 'li'); item.append(link(doc, label, href)); list.append(item);
-        });
-        flow.append(list);
-        const programs = node(doc, 'div', null, 'hd-programs');
-        if (model.programs.market) programs.append(link(doc, `Market program ${model.programs.market}`, `https://explorer.solana.com/address/${model.programs.market}?cluster=devnet`));
-        if (model.programs.support) programs.append(link(doc, `Funding program ${model.programs.support}`, `https://explorer.solana.com/address/${model.programs.support}?cluster=devnet`));
-        flow.append(programs);
-        element.append(flow);
-
-        const boundary = node(doc, 'section', null, 'hd-flow hd-boundary');
-        boundary.append(node(doc, 'span', 'HONEST BOUNDARY', 'hd-eyebrow'));
-        boundary.append(node(doc, 'h2', 'One authoritative source is live; broader geography still needs corroboration'));
-        boundary.append(node(doc, 'p', 'The live external market verifies the Croatian court SAS issuer. The V2 schema, source-time guard, attester and a two-sided prospective market are live on devnet; settlement now honestly waits for a matching public record published after the committed close. The reusable Lens evaluator is code-ready, while permit, imagery, news and OSM collectors remain future work. Everything shown here uses devnet assets with no monetary value.'));
-        element.append(boundary);
-
-        const readiness = node(doc, 'section', null, 'hd-flow hd-readiness');
-        readiness.append(node(doc, 'h2', 'Demo readiness and recovery'));
-        const readinessGrid = node(doc, 'div', null, 'hd-readiness-grid');
-        const wallet = node(doc, 'article');
-        wallet.append(node(doc, 'strong', 'Wallet checklist'), node(doc, 'p', 'Use Solana devnet. SOL pays market/support transaction fees; Circle devnet USDC pays x402, donations and stakes.'));
-        const faucets = node(doc, 'div', null, 'hd-links hd-static-links');
-        faucets.append(link(doc, 'Solana faucet ↗', 'https://faucet.solana.com'), link(doc, 'Circle USDC faucet ↗', 'https://faucet.circle.com'));
-        wallet.append(faucets);
-        const reset = node(doc, 'article');
-        reset.append(node(doc, 'strong', 'Resettable fallback'), node(doc, 'p', 'Open the map, expand Game, enable game mode, then choose New Game. This clears only browser-local simulation state; public records and devnet transactions remain untouched.'));
-        reset.append(link(doc, 'Open map simulation', '/?reduceMotion=1'));
-        const recover = node(doc, 'article');
-        recover.append(node(doc, 'strong', 'If a live service is slow'), node(doc, 'p', 'Pending and error cards remain explicit. Retry the evidence reads; the simulation fallback still demonstrates the shared actor/action UI.'));
-        const retry = node(doc, 'button', 'Retry live evidence', 'hd-retry');
-        retry.type = 'button'; retry.addEventListener('click', () => boot()); recover.append(retry);
-        readinessGrid.append(wallet, reset, recover);
-        readiness.append(readinessGrid);
-        const errorValues = Object.entries(model.errors || {});
-        if (errorValues.length) {
-            const list = node(doc, 'ul', null, 'hd-errors');
-            errorValues.forEach(([source, message]) => list.append(node(doc, 'li', `${source}: ${message}`)));
-            readiness.append(list);
-        }
-        element.append(readiness);
+        const refresh = node(doc, 'p', null, 'hd-refresh');
+        refresh.append(node(doc, 'span', `Live data read ${new Date(model.generatedAt).toLocaleTimeString()}.`));
+        const retry = node(doc, 'button', 'Refresh live data', 'hd-cta');
+        retry.type = 'button'; retry.addEventListener('click', () => boot()); refresh.append(retry);
+        element.append(refresh);
     }
 
     async function fetchJson(url) {
@@ -717,7 +632,7 @@
         const element = root?.document?.getElementById('hackathon-demo');
         if (!element) return;
         const base = backendBase();
-        element.textContent = 'Loading public run, activity, payment and oracle evidence…';
+        element.textContent = 'Loading live evidence…';
         const { values, errors } = await fetchEvidence(base);
         render(element, buildDemoModel({
             runs: values.runs?.runs || [],
