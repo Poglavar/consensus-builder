@@ -62,7 +62,8 @@
         "kind": "owner-consent",
         "priceUsdc": "0.01",
         "credentialName": "LensMember",
-        "identity": "devnet-registry"
+        "identity": "devnet-registry",
+        "rights": "~/.config/ugt/notary-01-rights.json"
       }
     },
     {

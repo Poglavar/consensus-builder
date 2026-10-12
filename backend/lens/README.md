@@ -188,6 +188,10 @@ node lens/run.mjs --dry-run --owners /tmp/owners.json --rights /tmp/rights.json 
 curl -s localhost:3095/lens/status   # .approval: { enabled, parcels, owners, signers, validitySeconds }
 ```
 
+The live notary-01 persona (`agents/lens-member-run.mjs --persona notary-01 --live`) reads its registry
+from the persona's `service.rights` path, `~/.config/ugt/notary-01-rights.json` on its host, and refuses
+to start when that file is missing. The registry lists signer wallets, so it stays on the host, like the keypair.
+
 ## Privacy
 
 - No person on chain. Attestations carry wallets, hashes and opaque references only.

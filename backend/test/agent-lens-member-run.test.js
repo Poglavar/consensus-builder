@@ -37,6 +37,23 @@ describe('lens-member persona runner', () => {
         expect(lensMemberCommand(persona).args).not.toContain('--announce');
     });
 
+    it('loads the persona rights registry only in live mode, and an explicit --rights in either', () => {
+        const persona = loadLensMemberPersona('notary-01');
+        const live = lensMemberCommand(persona, { live: true });
+        expect(live.rightsPath).toMatch(/\.config\/ugt\/notary-01-rights\.json$/);
+        expect(live.args.slice(live.args.indexOf('--rights'), live.args.indexOf('--rights') + 2)).toEqual(['--rights', live.rightsPath]);
+        expect(lensMemberCommand(persona).args).not.toContain('--rights');
+        expect(lensMemberCommand(persona, { rights: '/tmp/rights.json' }).args).toEqual(expect.arrayContaining(['--rights', '/tmp/rights.json']));
+        expect(lensMemberCommand(loadLensMemberPersona('lifecycle-01'), { live: true, sourceEnv: { AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN: 't' } }).rightsPath).toBeNull();
+    });
+
+    it('refuses to start when the named rights registry is missing', () => {
+        const run = spawnSync(process.execPath, [path.join(path.dirname(LENS_RUN), '..', 'agents', 'lens-member-run.mjs'),
+            '--persona', 'notary-01', '--dry-run', '--owners', '/tmp/owners.json', '--rights', '/nonexistent/rights.json', '--print'], { encoding: 'utf8' });
+        expect(run.status).toBe(1);
+        expect(run.stderr).toMatch(/rights registry \/nonexistent\/rights\.json does not exist/);
+    });
+
     it('refuses personas that are not lens members', () => {
         expect(() => loadLensMemberPersona('densifier-01')).toThrow(/not lens-member/);
         expect(() => loadLensMemberPersona('nobody')).toThrow(/no persona named/);

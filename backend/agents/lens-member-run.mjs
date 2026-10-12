@@ -25,6 +25,8 @@ function usage(code) {
         '  --live             sign real SAS attestations with the persona keypair (schemas must be registered',
         '                     first: scripts/register-lens-schemas.mjs; needs sas-lib and X402_* env)',
         '  --owners FILE      dry run only: devnet-registry rows in memory instead of consensus.lens_devnet_owner',
+        '  --rights FILE      lens-rights-registry/v1 for proposal approval; live runs default to the persona',
+        '                     service "rights" path. A named file must exist; with none, approval answers 503',
         '  --port N           override the persona service port',
         '  --print            print the lens/run.mjs command and exit',
         '  --help             this text'
@@ -47,9 +49,9 @@ export function loadLensMemberPersona(name, file = path.join(__dirname, 'persona
 
 /**
  * The lens/run.mjs argv and extra env for a persona. Pure; the caller spawns it.
- * @returns {{ args: string[], env: Record<string,string>, keypairPath: string|null }}
+ * @returns {{ args: string[], env: Record<string,string>, keypairPath: string|null, rightsPath: string|null }}
  */
-export function lensMemberCommand(persona, { live = false, owners = null, port = null, sourceEnv = {} } = {}) {
+export function lensMemberCommand(persona, { live = false, owners = null, rights = null, port = null, sourceEnv = {} } = {}) {
     const service = persona.service || {};
     const args = [LENS_RUN, live ? '--live' : '--dry-run', '--port', String(port ?? service.port)];
     if (service.kind) args.push('--kind', service.kind);
@@ -67,6 +69,10 @@ export function lensMemberCommand(persona, { live = false, owners = null, port =
     } else if (owners) {
         args.push('--owners', owners);
     }
+    // The rights registry (abstract owners, shares, areas, signer wallets) lives on the member's own host,
+    // like its keypair; the persona names it for live runs, a dry run takes it only from --rights.
+    const rightsPath = expandHome(rights ?? (live ? service.rights : null)) || null;
+    if (rightsPath) args.push('--rights', rightsPath);
     const env = service.priceUsdc ? { LENS_OWNERSHIP_PRICE_USDC: String(service.priceUsdc) } : {};
     if (live && service.publicUrl) env.LENS_PUBLIC_BASE_URL = service.publicUrl;
     // A member that issues verdicts (kind "lifecycle") reads its operator token from the variable the
@@ -77,7 +83,7 @@ export function lensMemberCommand(persona, { live = false, owners = null, port =
         if (token) env.LENS_OPERATOR_TOKEN = token;
         else if (live) throw new Error(`${persona.name} (kind ${service.kind}) issues verdicts; set ${service.operatorTokenEnv} before a live run`);
     }
-    return { args, env, keypairPath };
+    return { args, env, keypairPath, rightsPath };
 }
 
 function parseArgs(argv) {
@@ -106,9 +112,12 @@ function main() {
     const persona = loadLensMemberPersona(args.persona);
     const port = args.port === undefined ? null : Number(args.port);
     if (port !== null && (!Number.isInteger(port) || port <= 0)) throw new Error(`bad --port ${args.port}`);
-    const command = lensMemberCommand(persona, { live: Boolean(args.live), owners: args.owners ?? null, port, sourceEnv: process.env });
+    const command = lensMemberCommand(persona, { live: Boolean(args.live), owners: args.owners ?? null, rights: args.rights ?? null, port, sourceEnv: process.env });
     if (command.keypairPath && !fs.existsSync(command.keypairPath)) {
         throw new Error(`${persona.name} keypair ${command.keypairPath} does not exist; generate it (solana-keygen new -o ${persona.keypairPath}) and set its wallet in personas.json`);
+    }
+    if (command.rightsPath && !fs.existsSync(command.rightsPath)) {
+        throw new Error(`${persona.name} rights registry ${command.rightsPath} does not exist; write a lens-rights-registry/v1 file there (backend/lens/README.md) or remove the persona's service.rights`);
     }
     const line = `node ${command.args.join(" ")}`;
     console.log(`[${new Date().toISOString()}] [lens-member-run] ${persona.name} ${args.live ? 'LIVE' : 'dry run'}: ${line}${Object.keys(command.env).length ? ` (env ${Object.entries(command.env).map(([k, v]) => `${k}=${k === 'LENS_OPERATOR_TOKEN' ? '[set]' : v}`).join(' ')})` : ''}`);
