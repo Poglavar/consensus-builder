@@ -1,0 +1,14 @@
+# ParcelBench GPU environment. The Docker image supplies torch/torchvision with CUDA (bootstrap.sh reuses them
+# through --system-site-packages); everything else is installed here. Loose lower bounds; the laptop ML venv
+# that produced the spike had transformers 5.13, shapely 2.1, rasterio 1.5, timm 1.0.27 (2026-10-12).
+timm>=1.0
+huggingface_hub>=1.0
+safetensors
+numpy>=2.0
+scipy>=1.14
+shapely>=2.1
+pyproj>=3.7
+rasterio>=1.4
+Pillow>=11
+opencv-python-headless
+tqdm

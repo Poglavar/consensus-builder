@@ -219,6 +219,8 @@ python3 -m unittest discover -s world-parcels/guess-spike -p 'test_*.py'
 
 ## Next experiment
 
+**Superseded on 2026-10-12** by [`../parcel-bench/README.md`](../parcel-bench/README.md): the benchmark-first plan (frozen Zagreb manifest with untouched final tiles, one deterministic scorer, a results ledger, practice-region donor selection, training on a rented GPU). The list below is the pre-benchmark plan, kept for history.
+
 1. Label boundary **strokes** on several varied tiles: fences, walls, hedge lines, field edges, curbs, riverbanks, and observed parcel corners. Fit short straight or orthogonal segments where evidence supports them, then close a planar graph into polygons. Keep vacant plots and shared/attached buildings as explicit cases.
 2. Test visible feature masks such as fences, hedges and driveways, or supervised parcel-mask fine-tuning, against the no-model baseline on withheld tiles. The unchanged SAM 3 parcel prompts above did not beat that baseline. [Meta's training recipe](https://github.com/facebookresearch/sam3/blob/main/README_TRAIN.md) supports custom datasets; parcel training needs segmentation targets and mask losses enabled, since the example Roboflow configuration defaults to box detection.
 3. Evaluate several held-out neighbourhood types, boundary distance by feature type, polygon coverage/topology, and confidence calibration. Only then add manual corrections and an explicitly estimated layer to the app. Source imagery rights and OSM/Overture attribution need to be resolved for any publication.

@@ -31,16 +31,17 @@ def polygons(geom):
 
 
 def draw_polygon(mask, geom, bbox, value):
+    size = mask.shape[0]  # any square grid, not only GRID
     for poly in polygons(geom):
-        exterior = np.asarray([point(p, bbox) for p in poly[0]], np.int32)
+        exterior = np.asarray([point(p, bbox, size) for p in poly[0]], np.int32)
         cv2.fillPoly(mask, [exterior], value)
         for hole in poly[1:]:
-            cv2.fillPoly(mask, [np.asarray([point(p, bbox) for p in hole], np.int32)], 0)
+            cv2.fillPoly(mask, [np.asarray([point(p, bbox, size) for p in hole], np.int32)], 0)
 
 
-def draw_roads(features, bbox):
-    mask = np.zeros((GRID, GRID), np.uint8)
-    metres_per_pixel = (bbox[2] - bbox[0]) / GRID
+def draw_roads(features, bbox, size=GRID):
+    mask = np.zeros((size, size), np.uint8)
+    metres_per_pixel = (bbox[2] - bbox[0]) / size
     for feature in features:
         geom = feature['geometry']
         lines = [geom['coordinates']] if geom['type'] == 'LineString' else geom['coordinates']
@@ -48,14 +49,14 @@ def draw_roads(features, bbox):
         highway = feature['properties'].get('highway')
         width = float(width) if width and float(width) > 0 else ROAD_WIDTH.get(highway, 2.0)
         for line in lines:
-            pts = np.asarray([point(p, bbox) for p in line], np.int32)
+            pts = np.asarray([point(p, bbox, size) for p in line], np.int32)
             if len(pts) > 1:
                 cv2.polylines(mask, [pts], False, 1, max(1, round(width / metres_per_pixel)))
     return mask.astype(bool)
 
 
-def draw_water(features, bbox):
-    mask = np.zeros((GRID, GRID), np.uint8)
+def draw_water(features, bbox, size=GRID):
+    mask = np.zeros((size, size), np.uint8)
     for feature in features:
         draw_polygon(mask, feature['geometry'], bbox, 1)
     return mask.astype(bool)
@@ -71,8 +72,9 @@ def image_edges(rgb):
     return np.minimum(strength / scale, 1.0)
 
 
-def partition(seeds, barrier, edge):
+def partition(seeds, barrier, edge, edge_weight=8.0):
     """Multi-source shortest paths, paying to cross visual edges and avoiding barriers."""
+    height, width = seeds.shape
     labels = seeds.copy()
     distance = np.full(seeds.shape, np.inf, np.float32)
     distance[seeds > 0] = 0
@@ -86,9 +88,9 @@ def partition(seeds, barrier, edge):
             continue
         for dy, dx, step in neighbours:
             ny, nx = y + dy, x + dx
-            if not (0 <= ny < GRID and 0 <= nx < GRID) or barrier[ny, nx] or seeds[ny, nx]:
+            if not (0 <= ny < height and 0 <= nx < width) or barrier[ny, nx] or seeds[ny, nx]:
                 continue
-            next_cost = cost + step * (1.0 + 8.0 * max(edge[y, x], edge[ny, nx]))
+            next_cost = cost + step * (1.0 + edge_weight * max(edge[y, x], edge[ny, nx]))
             if next_cost + 1e-4 < distance[ny, nx]:
                 distance[ny, nx] = next_cost
                 labels[ny, nx] = labels[y, x]
@@ -98,6 +100,7 @@ def partition(seeds, barrier, edge):
 
 def vectorize(labels, bbox, method, building_ids=None, tile_id='synthetic'):
     x0, y0, x1, y1 = bbox
+    size = labels.shape[0]  # any square grid, not only GRID
     features = []
     for label in range(1, int(labels.max()) + 1):
         mask = np.uint8(labels == label)
@@ -115,8 +118,8 @@ def vectorize(labels, bbox, method, building_ids=None, tile_id='synthetic'):
                 if j == i or cv2.contourArea(contours[j]) >= 4:
                     coords = []
                     for px, py in cv2.approxPolyDP(contours[j], 0.6, True)[:, 0]:
-                        coords.append([round(x0 + float(px) * (x1 - x0) / GRID, 3),
-                                       round(y1 - float(py) * (y1 - y0) / GRID, 3)])
+                        coords.append([round(x0 + float(px) * (x1 - x0) / size, 3),
+                                       round(y1 - float(py) * (y1 - y0) / size, 3)])
                     if len(coords) >= 3:
                         coords.append(coords[0])
                         rings.append(coords)
