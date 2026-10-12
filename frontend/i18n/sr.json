@@ -5564,7 +5564,12 @@
         "unavailable": "Ovaj izvor parcela trenutno nije dostupan.",
         "loadedRemain": "Već učitane parcele ostaju vidljive. Pokušaj ponovo ili izaberi drugi izvor.",
         "loadedNone": "Još nema učitanih parcela. Pokušaj ponovo ili izaberi drugi izvor.",
-        "loadedCounts": "U memoriji je učitano {{inMemory}} parcela, od toga {{inView}} u ovom prikazu; ostaju na karti. Pokušaj ponovo ili izaberi drugi izvor."
+        "loadedCounts": "U memoriji je učitano {{inMemory}} parcela, od toga {{inView}} u ovom prikazu; ostaju na karti. Pokušaj ponovo ili izaberi drugi izvor.",
+        "knownLimit": {
+            "hourlyRequests": "Ovaj registar ograničava koliko zahteva svaka mreža sme da pošalje po satu i odbija nove dok se ograničenje ne obnovi. Pokušaj kasnije.",
+            "dailyRequests": "Ovaj registar ograničava koliko zahteva svaka mreža sme da pošalje dnevno i odbija nove do sledećeg dana. Pokušaj sutra.",
+            "networkRestricted": "Ovaj registar ne odgovara na zahteve iz nekih mreža, a tvoja je možda jedna od njih. Druga veza, na primer mobilni podaci, možda će raditi."
+        }
     },
     "dataSources": {
         "title": "Izvori podataka"

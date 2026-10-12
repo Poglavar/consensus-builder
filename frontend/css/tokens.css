@@ -104,9 +104,9 @@
     --cb-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
     --cb-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.18);
     --cb-shadow-lg: 0 16px 50px rgba(15, 23, 42, 0.35);
-
     /* Text set straight on the map with no box behind it (credits, scale bar): a surface-coloured halo. */
     --cb-text-halo: 0 0 2px var(--cb-surface), 0 0 3px var(--cb-surface), 0 0 6px var(--cb-surface);
+
     /* ---- Space (4px grid) ---- */
     --cb-space-1: 4px;
     --cb-space-2: 8px;
@@ -139,12 +139,12 @@
     --cb-z-banner: 100000;          /* multi-tab and explore banners */
     --cb-z-toast: 100001;
 
-    /* Native checkboxes, radios and ranges follow the primary colour everywhere. */
     /* ---- Live layout ---- */
     /* The height of the banner card under the top row, set on #map-container by js/ui/banner-stack.js
        as banners come and go; the notices sit below it. */
     --cb-banner-stack-height: 0px;
 
+    /* Native checkboxes, radios and ranges follow the primary colour everywhere. */
     accent-color: var(--cb-primary);
 }
 

@@ -33,6 +33,23 @@
         return { identify, invalidate: () => { sequence++; } };
     }
 
+    // A failed lookup that came from the parcel provider (a parcel-source-* code from the adapter
+    // worker) is reported the way a failed area load is: its message, with the provider's known
+    // access limit when the adapter matched one, and the same ways on. Anything else is our own
+    // failure and keeps the plain retry hint.
+    function reportLookupFailure(root, error, city, status) {
+        if (!/^parcel-source-/.test(String(error?.code || '')) || typeof root.reportParcelFetchFailure !== 'function') {
+            status('parcel_lookup_failed');
+            return false;
+        }
+        root.reportParcelFetchFailure(error, 'parcel point lookup');
+        const message = root.ParcelSourceHealth?.describeFailure?.(error, {
+            offline: root.navigator?.onLine === false, translate: root.i18n?.t?.bind(root.i18n)
+        });
+        root.ParcelGroundFallback?.onGroundUnavailable?.({ error, city, ...(message ? { message } : {}) });
+        return true;
+    }
+
     let installed = null;
     const messages = {
         tap_parcel_to_load: 'Tap a parcel to load its boundary. Area-wide parcel loading is unavailable.',
@@ -80,7 +97,7 @@
         const controller = createController({ city, canIdentify, repository: root.CadastralParcelRepository, status,
             failed: error => {
                 console.error('[PointParcelMap] Parcel lookup failed', error);
-                status('parcel_lookup_failed');
+                reportLookupFailure(root, error, sourceCity, status);
             },
             select: (id, event) => {
                 const parcelLayer = root.ParcelPresenter?.getLayer?.(id);
@@ -111,5 +128,5 @@
         status('tap_parcel_to_load');
     }
 
-    return { createController, install, sync: () => installed?.sync() };
+    return { createController, reportLookupFailure, install, sync: () => installed?.sync() };
 });

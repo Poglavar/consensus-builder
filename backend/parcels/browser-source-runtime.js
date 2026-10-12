@@ -23,7 +23,7 @@ import { createKazakhstanPkkSource } from './kazakhstan-pkk-source.js';
 import { createMsdaPointSource } from './msda-point-source.js';
 import { createTkgmPointSource } from './tkgm-point-source.js';
 import { createUldkPointSource } from './pl-uldk-point-source.js';
-import { upstreamError } from './source-contract.js';
+import { knownLimitFor, upstreamError } from './source-contract.js';
 import { withSourceControls } from './source-controls.js';
 
 function expectedEtagForUrl(descriptor, url) {
@@ -49,8 +49,16 @@ export const browserParcelFactories = Object.freeze({
     'nairobi-outlines': createNairobiOutlineSource, 'kazakhstan-pkk': createKazakhstanPkkSource,
     'msda-point': createMsdaPointSource, 'tkgm-point': createTkgmPointSource, 'pl-uldk-point': createUldkPointSource });
 
-export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.fetch, relayBase, now = Date.now } = {}) {
+// A provider that ignores some networks can leave the direct connection hanging rather than
+// failing it, which would spend the adapter's whole timeout and never reach the relay.
+const DIRECT_HEADERS_BUDGET_MS = 6000;
+
+export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.fetch, relayBase, now = Date.now,
+    directBudgetMs = DIRECT_HEADERS_BUDGET_MS } = {}) {
     const blocked = new Map();
+    // Only a source the catalog marks network-restricted gets a deadline for its direct answer's
+    // headers; past it, the request goes through the relay, which answers from a served network.
+    const directBudget = descriptor.knownLimit?.kind === 'network-restricted' ? directBudgetMs : null;
     const needsSession = descriptor.adapter === 'kerala-entebhoomi'
         || descriptor.adapter === 'dgu-wfs'
         || (descriptor.adapter === 'gml-snapshot' && new URL(descriptor.endpoint).hostname === 'use-land-property-data.service.gov.uk');
@@ -88,14 +96,21 @@ export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.
         const origin = new URL(url).origin;
         if (needsSession || (descriptor.adapter === 'hmlr-browser' && new URL(url).hostname === 'use-land-property-data.service.gov.uk') || (blocked.get(origin) || 0) > now()) return relay(url, options);
         let response;
+        const budget = directBudget === null ? null : new AbortController();
+        const timer = budget ? setTimeout(() => budget.abort(), directBudget) : null;
         try {
-            response = await fetchImpl(url, { ...options, credentials: 'omit' });
+            const signal = budget ? (options.signal ? AbortSignal.any([options.signal, budget.signal]) : budget.signal) : options.signal;
+            response = await fetchImpl(url, { ...options, ...(signal ? { signal } : {}), credentials: 'omit' });
         } catch (error) {
-            if (options.signal?.aborted || ['AbortError', 'TimeoutError'].includes(error.name)) throw error;
+            if (options.signal?.aborted) throw error;
+            if (!budget?.signal.aborted && ['AbortError', 'TimeoutError'].includes(error.name)) throw error;
             // Fetch cannot distinguish CORS/TLS from a network failure. Only a transport failure
-            // retries through the relay; an upstream HTTP denial stays a denial.
+            // (or a network-restricted provider's silence) retries through the relay; an upstream
+            // HTTP denial stays a denial.
             blocked.set(origin, now() + 5 * 60 * 1000);
             return relay(url, options);
+        } finally {
+            clearTimeout(timer);
         }
         if (response.ok && expectedEtagForUrl(descriptor, url) !== undefined && response.headers.get('etag') === null) {
             await response.body?.cancel();
@@ -175,6 +190,11 @@ export function createBrowserParcelRuntime(options = {}) {
                 const result = await instance[method](args[0], { signal });
                 if (result.complete !== true || !Array.isArray(result.features)) throw upstreamError('Browser parcel source returned incomplete data.');
                 return result;
+            } catch (error) {
+                // Only catalog sources declare a known limit; a visitor's own descriptor cannot.
+                const knownLimit = knownLimitFor(catalog.sources.find(source => source.id === sourceId), error);
+                if (knownLimit && error && typeof error === 'object') error.knownLimit = knownLimit;
+                throw error;
             } finally {
                 const listeners = progressListeners.get(sourceId);
                 listeners?.delete(listener);

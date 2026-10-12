@@ -10,6 +10,13 @@
     const MAX_COOLDOWNS = 128;
     const COOLDOWN_SECONDS = Object.freeze({ rateLimited: 30, blocked: 60, unavailable: 30 });
     const HEALTH_CODES = new Set(['parcel-source-blocked', 'parcel-source-rate-limited', 'parcel-source-unavailable']);
+    // A failure the parcel adapter put down to the provider's known access limit (the catalog's
+    // `knownLimit`, matched in the worker) is explained by that limit instead of a guess.
+    const KNOWN_LIMITS = Object.freeze({
+        'hourly-requests': { key: 'hourlyRequests', text: 'This register limits how many requests each network may send per hour, and refuses more until the limit resets. Try again later.' },
+        'daily-requests': { key: 'dailyRequests', text: 'This register limits how many requests each network may send per day, and refuses more until the next day. Try again tomorrow.' },
+        'network-restricted': { key: 'networkRestricted', text: 'This register does not answer requests from some networks, and yours may be one of them. Another connection, such as mobile data, may work.' }
+    });
 
     function parseRetryAfter(value, now = Date.now()) {
         if (typeof value !== 'string' && typeof value !== 'number') return undefined;
@@ -227,8 +234,10 @@
         const status = Number(error?.upstreamStatus ?? error?.status);
         const retry = Number.isSafeInteger(error?.retryAfterSeconds)
             ? Math.min(MAX_RETRY_AFTER_SECONDS, Math.max(0, error.retryAfterSeconds)) : COOLDOWN_SECONDS.rateLimited;
+        const knownLimit = Object.hasOwn(KNOWN_LIMITS, error?.knownLimit) ? KNOWN_LIMITS[error.knownLimit] : null;
         let message;
         if (offline) message = t('offline', 'You appear to be offline. Connect to the internet and try again.');
+        else if (knownLimit) message = t(`knownLimit.${knownLimit.key}`, knownLimit.text);
         else if (code === 'parcel-source-rate-limited' || status === 429) {
             message = t('rateLimited', `This parcel source is rate limited. Retry in ${retry} seconds.`, { seconds: retry });
         } else if (code === 'parcel-source-blocked' || status === 401 || status === 403) {

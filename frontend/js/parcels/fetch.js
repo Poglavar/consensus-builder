@@ -363,8 +363,11 @@
     // Sources whose per-query cost is shared overlap context are queried in blocks of cells. HMLR
     // re-read and re-resolved about 50 context parcels per 0.001-degree cell to publish about 8; a
     // measured Oxford view took 9.3 s per cell and 1.6 s in 5x5 blocks, with identical cells.
+    // GUGiK's collective EGiB WFS answers in about 3 s whatever the size: a 3x3 block of Polish
+    // city-centre cells (75-153 parcels) came back in one 3-4 s page (2026-10-12), where nine cells
+    // took nine such requests.
     // Other sources stay per cell: their per-query limits have not been measured for larger areas.
-    const CELL_BLOCK_SIDE_BY_SOURCE = Object.freeze({ 'gb-hmlr-browser-v1': 5 });
+    const CELL_BLOCK_SIDE_BY_SOURCE = Object.freeze({ 'gb-hmlr-browser-v1': 5, 'pl-gugik-egib-wfs': 3 });
 
     function cellBlockSide(options = {}) {
         const provider = cityConfig(String(options.city || currentCity()))?.parcels;

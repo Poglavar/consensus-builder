@@ -5564,7 +5564,12 @@
         "unavailable": "Ovaj izvor čestica trenutačno nije dostupan.",
         "loadedRemain": "Već učitane čestice ostaju vidljive. Pokušaj ponovno ili odaberi drugi izvor.",
         "loadedNone": "Još nema učitanih čestica. Pokušaj ponovno ili odaberi drugi izvor.",
-        "loadedCounts": "U memoriji je učitano {{inMemory}} čestica, od toga {{inView}} u ovom prikazu; ostaju na karti. Pokušaj ponovno ili odaberi drugi izvor."
+        "loadedCounts": "U memoriji je učitano {{inMemory}} čestica, od toga {{inView}} u ovom prikazu; ostaju na karti. Pokušaj ponovno ili odaberi drugi izvor.",
+        "knownLimit": {
+            "hourlyRequests": "Ovaj registar ograničava koliko zahtjeva svaka mreža smije poslati po satu i odbija nove dok se ograničenje ne obnovi. Pokušaj kasnije.",
+            "dailyRequests": "Ovaj registar ograničava koliko zahtjeva svaka mreža smije poslati dnevno i odbija nove do sljedećeg dana. Pokušaj sutra.",
+            "networkRestricted": "Ovaj registar ne odgovara na zahtjeve iz nekih mreža, a tvoja je možda jedna od njih. Druga veza, primjerice mobilni podaci, možda će raditi."
+        }
     },
     "dataSources": {
         "title": "Izvori podataka"

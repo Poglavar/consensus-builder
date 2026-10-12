@@ -102,6 +102,11 @@ describe('cadastral parcel fetch transport', () => {
         expect(result.absentIds).toEqual([]);
     });
 
+    it('queries Poland\'s collective EGiB WFS in 3x3 blocks, one ~3 s request per block', () => {
+        const poland = bootTransport('szczecin', vi.fn(), { source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', gridSize: 0.001 });
+        expect(poland.cellBlockSide({ city: 'szczecin' })).toBe(3);
+    });
+
     it('keeps every other source on per-cell queries', () => {
         const other = bootTransport('richmond', vi.fn(), { source: 'parcel-source', sourceId: 'us-va-richmond-parcels', gridSize: 0.001 });
         const legacy = bootTransport('zagreb', vi.fn(), { source: 'parcel-bg' });

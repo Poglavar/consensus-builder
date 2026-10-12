@@ -7,8 +7,13 @@
 // scope, registry, demographics, labels and an admission manifest in the schema
 // backend/test/qualified-city-release.test.js verifies. No provider is contacted.
 //
+// With --switch, a city that is already live moves to the source it newly qualified on (a better
+// source for the same place, e.g. an area service replacing a point lookup): its city config keeps
+// its id, centre and label, and only its parcel source, catalog scope and registry bindings change.
+// The manifest records the source it switched from.
+//
 // Usage: node scripts/admit-qualified-cities.mjs --state <qualification state dir> [--state ...]
-//          --release <name> [--exclude <code=reason>]... [--codes <a,b>] [--apply]
+//          --release <name> [--exclude <code=reason>]... [--codes <a,b>] [--switch] [--apply]
 // Without --apply nothing is written; the plan and any refusal are printed.
 
 import fs from 'node:fs';
@@ -53,7 +58,7 @@ const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const writeJson = (rel, value, indent = 2) => fs.writeFileSync(path.join(REPO, rel), `${JSON.stringify(value, null, indent)}\n`);
 
 function parseArgs(argv) {
-    const args = { states: [], exclude: new Map(), apply: false, release: null, codes: null };
+    const args = { states: [], exclude: new Map(), apply: false, release: null, codes: null, switch: false };
     for (let i = 0; i < argv.length; i++) {
         const flag = argv[i];
         if (flag === '--state') args.states.push(path.resolve(argv[++i]));
@@ -61,6 +66,7 @@ function parseArgs(argv) {
         else if (flag === '--exclude') { const [code, ...reason] = argv[++i].split('='); args.exclude.set(code, reason.join('=') || 'excluded at admission'); }
         else if (flag === '--codes') args.codes = new Set(argv[++i].split(','));
         else if (flag === '--apply') args.apply = true;
+        else if (flag === '--switch') args.switch = true;
         else if (flag === '--help') args.help = true;
         else throw new Error(`unknown argument ${flag}`);
     }
@@ -180,12 +186,29 @@ function sanitize(value) {
     return value;
 }
 
+const quote = s => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+
+function parcelsLine(descriptor) {
+    const point = POINT_ADAPTERS.has(descriptor.adapter);
+    const attribution = descriptor.attribution || `${descriptor.operator || descriptor.name} · parcels · adapted`;
+    return `            parcels: { strategy: ${point ? "'point'" : "'grid'"}, gridSize: ${point ? 0.0025 : 0.001}, source: 'parcel-source', sourceId: ${quote(descriptor.id)}, idPrefix: ${quote(descriptor.idPrefix)}, requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: ${quote(attribution)} },`;
+}
+
+// Replaces the one-line parcels setting of an existing city entry; nothing else in it changes.
+function switchParcelsLine(configText, appCityId, descriptor) {
+    const start = configText.indexOf(`\n        ${appCityId}: {\n`);
+    if (start < 0) throw new Error(`city-config.js has no entry ${appCityId}`);
+    const end = configText.indexOf('\n        },', start);
+    const block = configText.slice(start, end);
+    const lines = block.split('\n').filter(line => /^ {12}parcels: \{.*\},$/.test(line));
+    if (lines.length !== 1) throw new Error(`${appCityId}: expected one single-line parcels setting, found ${lines.length}`);
+    return configText.slice(0, start) + block.replace(lines[0], parcelsLine(descriptor)) + configText.slice(end);
+}
+
 function cityConfigEntry(item) {
     const { appCityId, code, label, center, descriptor, countryCode } = item;
     const [locale, currency] = CURRENCY[countryCode];
-    const point = POINT_ADAPTERS.has(descriptor.adapter);
-    const q = s => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
-    const attribution = descriptor.attribution || `${descriptor.operator || descriptor.name} · parcels · adapted`;
+    const q = quote;
     return [
         `        ${appCityId}: {`,
         `            id: ${q(appCityId)}, wupCityCode: ${q(code)},`,
@@ -193,7 +216,7 @@ function cityConfigEntry(item) {
         `            currency: { locale: ${q(locale)}, code: ${q(currency)} },`,
         `            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [${center[0]}, ${center[1]}], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },`,
         `            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [${center[0]}, ${center[1]}], fallbackDataset: [${center[1]}, ${center[0]}] },`,
-        `            parcels: { strategy: ${point ? "'point'" : "'grid'"}, gridSize: ${point ? 0.0025 : 0.001}, source: 'parcel-source', sourceId: ${q(descriptor.id)}, idPrefix: ${q(descriptor.idPrefix)}, requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: ${q(attribution)} },`,
+        parcelsLine(descriptor),
         `            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }`,
         `        },`
     ].join('\n');
@@ -269,8 +292,37 @@ async function main() {
             population2025: w?.pop ?? null, population2015: wup.get(code)?.['2015']?.pop ?? null, countryName: countryNames.en[countryCode] });
     }
 
+    // Switches: a live city whose newest technical-qualified evidence names another catalog source.
+    if (args.switch) {
+        for (const [code, ev] of [...evidence].sort((a, b) => Number(a[0]) - Number(b[0]))) {
+            const config = configs.find(c => String(c.wupCityCode) === code);
+            if (!config || (args.codes && !args.codes.has(code))) continue;
+            const candidate = readJson(ev.candidate);
+            const name = candidate.city?.name || code;
+            const catalogSource = catalogDoc.sources.find(s => s.id === candidate.descriptor?.id);
+            if (catalogSource && config.sourceId === catalogSource.id) continue;
+            if (args.exclude.has(code)) { refused.push({ code, name, reason: args.exclude.get(code) }); continue; }
+            const checked = verify(ev, catalogSource);
+            if (typeof checked === 'string') { refused.push({ code, name, reason: checked }); continue; }
+            if (catalogSource.defaultForCity === false) { refused.push({ code, name, reason: `${catalogSource.id} is an opt-in alternative (defaultForCity false)` }); continue; }
+            const countryCode = catalogSource.countryCode || config.countryCode;
+            const metricCrs = checked.metric.metricCrs || checked.qualification.checks.metric.metricCrs;
+            const point = checked.candidate.city.point; // [longitude, latitude]
+            plan.push({ code, appCityId: config.id, switchedFrom: config.sourceId, outcome: { cityName: name }, evidence: ev, ...checked,
+                catalogSource, countryCode, qualifier: '', name, label: null, center: [config.lat, config.lon], wupPoint: [point[1], point[0]],
+                metricSrid: Number(String(metricCrs).split(':')[1]), population2025: wup.get(code)?.['2025']?.pop ?? null,
+                population2015: wup.get(code)?.['2015']?.pop ?? null, countryName: countryNames.en[countryCode] });
+        }
+    }
+
     // Production descriptors as they will be after admission (scope + per-city metric frame).
     const nextCatalog = structuredClone(catalogDoc);
+    for (const item of plan.filter(entry => entry.switchedFrom)) {
+        const previous = nextCatalog.sources.find(s => s.id === item.switchedFrom);
+        if (!previous) continue;
+        previous.cityIds = (previous.cityIds || []).filter(id => id !== item.appCityId);
+        if (previous.metricSridByCity) delete previous.metricSridByCity[item.appCityId];
+    }
     for (const item of plan) {
         const source = nextCatalog.sources.find(s => s.id === item.catalogSource.id);
         source.cityIds = [...new Set([...(source.cityIds || []), item.appCityId])];
@@ -282,7 +334,7 @@ async function main() {
     }
     for (const item of plan) item.descriptor = nextCatalog.sources.find(s => s.id === item.catalogSource.id);
 
-    log(`plan: ${plan.length} cities to admit, ${refused.length} refused`);
+    log(`plan: ${plan.filter(item => !item.switchedFrom).length} cities to admit, ${plan.filter(item => item.switchedFrom).length} to switch source, ${refused.length} refused`);
     const bySource = {};
     for (const item of plan) bySource[item.descriptor.id] = (bySource[item.descriptor.id] || 0) + 1;
     log(`by source: ${JSON.stringify(bySource)}`);
@@ -310,7 +362,8 @@ async function main() {
             cityCode: item.code, appCityId: item.appCityId, cityName: item.name, qualificationCityName: item.candidate.city.name,
             cityId: (registry.cities.find(r => String(r.wupCityCode) === item.code)?.cityId) || `wup2025:${item.code}`,
             countryCode: item.countryCode, country: item.countryName, sourceId: item.descriptor.id,
-            appCenterLatLon: item.center, wupPointLatLon: item.center,
+            ...(item.switchedFrom ? { switchedFrom: item.switchedFrom } : {}),
+            appCenterLatLon: item.center, wupPointLatLon: item.wupPoint || item.center,
             candidate: { qualificationRecordedSha256: item.qualification.candidateSha256, evidenceOriginalSha256: c.original, evidenceExportSha256: c.exported },
             qualification: { status: 'technical-qualified', evidenceOriginalSha256: q.original, evidenceExportSha256: q.exported,
                 gates: Object.fromEntries(GATES.map(g => [g, true])), featureCount: item.qualification.featureCount,
@@ -359,6 +412,14 @@ async function main() {
         source.liveIntegration.cityIds = [...new Set([...(source.liveIntegration.cityIds || []), item.appCityId])];
         source.liveIntegration.additionalCityEvidence = { ...(source.liveIntegration.additionalCityEvidence || {}), [item.appCityId]: qualificationFile };
         source.appCityIds = [...new Set([...(source.appCityIds || []), item.appCityId])];
+        const previous = item.switchedFrom && registry.sources.find(s => s.sourceId === item.switchedFrom);
+        if (previous) {
+            previous.appCityIds = (previous.appCityIds || []).filter(id => id !== item.appCityId);
+            if (previous.liveIntegration) {
+                previous.liveIntegration.cityIds = (previous.liveIntegration.cityIds || []).filter(id => id !== item.appCityId);
+                if (previous.liveIntegration.additionalCityEvidence) delete previous.liveIntegration.additionalCityEvidence[item.appCityId];
+            }
+        }
 
         let demo = demographics.cities.find(r => String(r.wupCityCode) === item.code);
         if (!demo) {
@@ -396,15 +457,21 @@ async function main() {
         JSON.parse(updated);
         fs.writeFileSync(path.join(REPO, file), updated);
     }
-    // New entries go after the last configured city; that entry needs a trailing comma first.
-    const close = configText.indexOf('\n    };', configText.indexOf('const CITY_CONFIGS = {'));
-    const before = configText.slice(0, close).replace(/\}\s*$/, match => (match.trimEnd().endsWith(',') ? match : match.replace('}', '},')));
-    fs.writeFileSync(path.join(REPO, 'frontend/js/city-config.js'),
-        `${before}\n${plan.map(cityConfigEntry).join('\n')}${configText.slice(close)}`);
+    // Switched cities change only their parcels line; new entries go after the last configured city,
+    // and that entry needs a trailing comma first.
+    let nextConfigText = configText;
+    for (const item of plan.filter(entry => entry.switchedFrom)) nextConfigText = switchParcelsLine(nextConfigText, item.appCityId, item.descriptor);
+    const added = plan.filter(item => !item.switchedFrom);
+    if (added.length) {
+        const close = nextConfigText.indexOf('\n    };', nextConfigText.indexOf('const CITY_CONFIGS = {'));
+        const before = nextConfigText.slice(0, close).replace(/\}\s*$/, match => (match.trimEnd().endsWith(',') ? match : match.replace('}', '},')));
+        nextConfigText = `${before}\n${added.map(cityConfigEntry).join('\n')}${nextConfigText.slice(close)}`;
+    }
+    fs.writeFileSync(path.join(REPO, 'frontend/js/city-config.js'), nextConfigText);
 
     writeJson(`world-parcels/research/qualification-admission-${args.release}.json`, {
         schemaVersion: 1, verifiedAt: args.release.slice(0, 10), cityCount: manifestCities.length,
-        scope: `${manifestCities.length} technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.`,
+        scope: `${manifestCities.length} technically qualified city/source bindings admitted to the app${manifestCities.some(city => city.switchedFrom) ? ' (live cities moved to a newly qualified source carry switchedFrom)' : ''}. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.`,
         refused, cities: manifestCities
     });
     log(`applied: ${manifestCities.length} cities admitted; manifest world-parcels/research/qualification-admission-${args.release}.json`);

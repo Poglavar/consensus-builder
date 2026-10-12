@@ -12,9 +12,14 @@ const digest = file => createHash('sha256').update(read(file)).digest('hex');
 const manifests = [
     json('world-parcels/research/qualification-admission-2026-10-11.json'),
     json('world-parcels/research/qualification-admission-2026-10-11-round2.json'),
-    json('world-parcels/research/qualification-admission-2026-10-12-round2.json')
+    json('world-parcels/research/qualification-admission-2026-10-12-round2.json'),
+    json('world-parcels/research/qualification-admission-2026-10-12-pl-egib.json')
 ];
-const admittedCities = manifests.flatMap(manifest => manifest.cities);
+// A later admission that switched a live city to a newly qualified source (switchedFrom) replaces
+// its earlier binding; the earlier one stays in its manifest as history.
+const current = new Map();
+for (const manifest of manifests) for (const city of manifest.cities) current.set(city.cityCode, city);
+const admittedCities = [...current.values()];
 const registry = json('world-parcels/registry.json');
 const context = { console, URL, URLSearchParams }; context.window = context;
 runInNewContext(read('frontend/js/city-config.js').toString(), context);
@@ -22,10 +27,19 @@ const blockers = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometry
     'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
 
 describe('qualified city production admission', () => {
-    it('keeps both admission cohorts complete and uniquely bound to app cities', () => {
-        for (const manifest of manifests) expect(manifest.cities.length).toBe(manifest.cityCount);
+    it('keeps every admission cohort complete and uniquely bound to app cities', () => {
+        for (const manifest of manifests) {
+            expect(manifest.cities.length).toBe(manifest.cityCount);
+            expect(new Set(manifest.cities.map(city => city.cityCode)).size).toBe(manifest.cities.length);
+        }
         expect(new Set(admittedCities.map(city => city.appCityId)).size).toBe(admittedCities.length);
-        expect(new Set(admittedCities.map(city => city.cityCode)).size).toBe(admittedCities.length);
+        // A switch names the source the city was admitted on before, in an earlier manifest.
+        manifests.forEach((manifest, index) => {
+            for (const city of manifest.cities.filter(entry => entry.switchedFrom)) {
+                const earlier = manifests.slice(0, index).flatMap(entry => entry.cities).filter(entry => entry.cityCode === city.cityCode);
+                expect(earlier.at(-1)).toMatchObject({ appCityId: city.appCityId, sourceId: city.switchedFrom });
+            }
+        });
         expect(manifests[1].cityCount).toBe(108);
         expect(manifests[1].cities.every(city => city.primaryReview.status === 'admitted')).toBe(true);
         // The 2026-10-12 jurisdiction-first release, written by scripts/admit-qualified-cities.mjs.

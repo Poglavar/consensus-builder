@@ -57,6 +57,21 @@ export function providerHttpError(responseOrStatus, retryAfterOverride) {
     return error;
 }
 
+// A provider's known access limit, declared per source in the catalog as `knownLimit.kind`, names
+// the cause of a failure that looks the way that limit shows itself: a request quota refuses
+// (401/403/429), a provider that ignores some networks never answers the direct connection. A
+// relayed failure carries an upstream status, so it is never put down to the visitor's network.
+const KNOWN_LIMIT_FAILURES = Object.freeze({
+    'hourly-requests': error => ['parcel-source-blocked', 'parcel-source-rate-limited'].includes(error?.code),
+    'daily-requests': error => ['parcel-source-blocked', 'parcel-source-rate-limited'].includes(error?.code),
+    'network-restricted': error => error?.code === 'parcel-source-unavailable' && error.upstreamStatus === undefined
+});
+
+export function knownLimitFor(descriptor, error) {
+    const kind = descriptor?.knownLimit?.kind;
+    return Object.hasOwn(KNOWN_LIMIT_FAILURES, kind) && KNOWN_LIMIT_FAILURES[kind](error) ? kind : undefined;
+}
+
 export function validateBounds(bbox, maxKm2 = 25, limits = {}) {
     if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(value => typeof value === 'number' && Number.isFinite(value))) {
         throw new HttpError(400, 'Expected a finite WGS84 bbox: west,south,east,north.');

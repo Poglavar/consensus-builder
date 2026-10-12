@@ -69,6 +69,19 @@ export const GDANSK_GML_SCHEMA = Object.freeze({
     axisOrder: 'northing-easting',
     localIdPattern: '^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$'
 });
+// GUGiK's national collective EGiB WFS (launched 2026-07-16) cascades the county services into one
+// MapServer layer: geometry in ms:geom, PUWG 1992 (EPSG:2180) in the URN's northing-easting order,
+// verified on raw GetFeature samples from eleven cities on 2026-10-12.
+export const POLAND_EGIB_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://mapserver.gis.umn.edu/mapserver',
+    featureName: 'dzialki',
+    idField: 'ID_DZIALKI',
+    geometryField: 'geom',
+    gmlNamespace: GML32,
+    sourceCrs: 'EPSG:2180',
+    axisOrder: 'northing-easting',
+    localIdPattern: '^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$'
+});
 // Sosnowiec's own DescribeFeatureType and safe GetFeature samples verify these
 // fields and N,E axes. Its row gml:id is unrelated to the municipal cadastral ID.
 export const SOSNOWIEC_GML_SCHEMA = Object.freeze({
@@ -117,9 +130,10 @@ export const FINLAND_CP_GML_SCHEMA = Object.freeze({
     sourceCrs: 'EPSG:3067',
     axisOrder: 'easting-northing'
 });
-const CUSTOM_SCHEMAS = [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
+const CUSTOM_SCHEMAS = [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
 proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.1502,0.2470,0.8421,-20.4894 +units=m +no_defs');
 proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+proj4.defs('EPSG:2180', '+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 for (const zone of [30,31,32,33]) proj4.defs(`EPSG:258${zone}`, `+proj=utm +zone=${zone} +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`);
 // EPSG:3067 is EUREF-FIN / TM35FIN(E,N); the Finnish INSPIRE service emits E,N order.
 proj4.defs('EPSG:3067', '+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');

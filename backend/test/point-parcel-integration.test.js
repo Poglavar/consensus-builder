@@ -9,7 +9,8 @@ import { parcelSourceCatalog, withSourceConcurrency, withSourceCooldown } from '
 
 const require = createRequire(import.meta.url);
 const { createCadastralParcelRepository } = require('../../frontend/js/parcels/ground-service.js');
-const { createController } = require('../../frontend/js/parcels/point-map.js');
+const { createController, reportLookupFailure } = require('../../frontend/js/parcels/point-map.js');
+const health = require('../../frontend/js/parcels/source-health.js');
 const fetchTransportSource = readFileSync(new URL('../../frontend/js/parcels/fetch.js', import.meta.url), 'utf8');
 
 const descriptor = parcelSourceCatalog.sources.find(source => source.id === 'ge-msda-napr-registered-land-plots');
@@ -249,6 +250,24 @@ describe('point parcel lookup integration', () => {
         await cityClick;
         expect(repositoryStub.ensureIds).toHaveBeenCalledTimes(1);
         expect(select).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports a provider failure like an area load, with its known cause, and keeps the plain hint for our own errors', () => {
+        const root = { reportParcelFetchFailure: vi.fn(), ParcelSourceHealth: health, ParcelGroundFallback: { onGroundUnavailable: vi.fn() } };
+        const status = vi.fn();
+        const failure = Object.assign(new Error('ULDK parcel provider timed out.'), { code: 'parcel-source-unavailable', status: 504, knownLimit: 'network-restricted' });
+        expect(reportLookupFailure(root, failure, 'szczecin', status)).toBe(true);
+        expect(root.reportParcelFetchFailure).toHaveBeenCalledWith(failure, 'parcel point lookup');
+        const offered = root.ParcelGroundFallback.onGroundUnavailable.mock.calls[0][0];
+        expect(offered).toMatchObject({ error: failure, city: 'szczecin' });
+        expect(offered.message).toContain('does not answer requests from some networks');
+        expect(status).not.toHaveBeenCalled();
+
+        const ownBug = new Error('Loaded parcel has no map layer.');
+        expect(reportLookupFailure(root, ownBug, 'szczecin', status)).toBe(false);
+        expect(status).toHaveBeenCalledWith('parcel_lookup_failed');
+        expect(root.reportParcelFetchFailure).toHaveBeenCalledTimes(1);
+        expect(root.ParcelGroundFallback.onGroundUnavailable).toHaveBeenCalledTimes(1);
     });
 
     it('integrates cached point facts through ensureIds before selecting the parcel', async () => {

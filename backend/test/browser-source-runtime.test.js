@@ -2,6 +2,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
 import { createBrowserParcelRuntime } from '../parcels/browser-source-runtime.js';
+import catalog from '../parcels/source-catalog.json' with { type: 'json' };
+import { knownLimitFor, providerHttpError, upstreamError } from '../parcels/source-contract.js';
 
 const response = (status = 200, headers = {}) => new Response('data', { status, headers });
 
@@ -32,6 +34,27 @@ describe('createBrowserProviderFetch', () => {
         expect(result.url).toBe('https://provider.test/unreachable');
         expect(fetchImpl).toHaveBeenCalledTimes(3);
         expect(fetchImpl.mock.calls[2][0]).toContain('/parcel-provider-relay/source');
+    });
+
+    it('relays a network-restricted provider whose direct connection hangs, but waits on any other provider', async () => {
+        const hangs = (url, { signal }) => new Promise((_resolve, reject) => {
+            signal?.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')), { once: true });
+        });
+        const fetchImpl = vi.fn((url, options) => url.startsWith('https://relay.test') ? Promise.resolve(response(200)) : hangs(url, options));
+        const restricted = createBrowserProviderFetch({ id: 'pl-gugik-uldk', adapter: 'pl-uldk-point', knownLimit: { kind: 'network-restricted' } },
+            { fetchImpl, relayBase: 'https://relay.test', directBudgetMs: 20 });
+        await expect(restricted('https://provider.test/?request=GetParcelByXY')).resolves.toMatchObject({ status: 200 });
+        expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual(['https://provider.test/?request=GetParcelByXY',
+            'https://relay.test/parcel-provider-relay/pl-gugik-uldk']);
+        // The adapter's own deadline still ends the request without a relay.
+        const adapterDeadline = new AbortController();
+        const slowFetch = vi.fn(hangs);
+        const plain = createBrowserProviderFetch({ id: 'source', adapter: 'wfs' }, { fetchImpl: slowFetch, relayBase: 'https://relay.test', directBudgetMs: 20 });
+        const pending = plain('https://provider.test/wfs', { signal: adapterDeadline.signal });
+        await new Promise(resolve => setTimeout(resolve, 60));
+        adapterDeadline.abort();
+        await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+        expect(slowFetch.mock.calls.map(([url]) => url)).toEqual(['https://provider.test/wfs']);
     });
 
     it('restores a manual redirect carried as HTTP metadata without following it in fetch', async () => {
@@ -156,6 +179,39 @@ describe('createBrowserParcelRuntime', () => {
 
         resolveBQuery({ complete: true, features: [] });
         await expect(pendingB).resolves.toMatchObject({ complete: true });
+    });
+
+    it('names a catalog source\'s known access limit only on the failure that limit produces', async () => {
+        const failWith = error => createBrowserParcelRuntime({ factories: {
+            'catastro-wfs': async () => ({ queryBounds: async () => { throw error(); } }),
+            'pl-uldk-point': async () => ({ queryPoint: async () => { throw error(); } })
+        } });
+        const refused = () => providerHttpError(403);
+        const timedOut = () => upstreamError('ULDK parcel provider timed out.', 504);
+        await expect(failWith(refused).query('es-dgc-inspire-cp-wfs', 'queryBounds', [[2.1, 41.3, 2.2, 41.4]]))
+            .rejects.toMatchObject({ code: 'parcel-source-blocked', upstreamStatus: 403, knownLimit: 'hourly-requests' });
+        await expect(failWith(timedOut).query('pl-gugik-uldk', 'queryPoint', [[14.55, 53.43]]))
+            .rejects.toMatchObject({ code: 'parcel-source-unavailable', status: 504, knownLimit: 'network-restricted' });
+        // A provider outage is not a request quota, and a relayed failure (upstream status) is not
+        // the visitor's network.
+        const outage = await failWith(() => providerHttpError(503)).query('es-dgc-inspire-cp-wfs', 'queryBounds', [[2.1, 41.3, 2.2, 41.4]]).catch(error => error);
+        expect(outage).toMatchObject({ upstreamStatus: 503 });
+        expect(outage.knownLimit).toBeUndefined();
+        const relayed = await failWith(() => providerHttpError(502)).query('pl-gugik-uldk', 'queryPoint', [[14.55, 53.43]]).catch(error => error);
+        expect(relayed.knownLimit).toBeUndefined();
+    });
+
+    it('declares known limits only with kinds the matcher understands', () => {
+        const kinds = catalog.sources.filter(source => source.knownLimit).map(source => [source.id, source.knownLimit.kind]);
+        expect(kinds).toEqual(expect.arrayContaining([['es-dgc-inspire-cp-wfs', 'hourly-requests'],
+            ['tr-tkgm-parselsorgu-api', 'daily-requests'], ['pl-gugik-uldk', 'network-restricted']]));
+        for (const source of catalog.sources.filter(item => item.knownLimit)) {
+            expect(typeof source.knownLimit.evidence).toBe('string');
+            const refusal = providerHttpError(403), outage = upstreamError('x', 504);
+            expect(knownLimitFor(source, refusal) ?? knownLimitFor(source, outage)).toBe(source.knownLimit.kind);
+        }
+        expect(knownLimitFor({ knownLimit: { kind: 'constructor' } }, providerHttpError(403))).toBeUndefined();
+        expect(knownLimitFor(undefined, providerHttpError(403))).toBeUndefined();
     });
 
     it('coalesces cold adapter creation and applies its query cap before concurrent calls run', async () => {

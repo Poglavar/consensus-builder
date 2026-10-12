@@ -5572,7 +5572,12 @@
         "unavailable": "Esta fuente de parcelas no está disponible temporalmente.",
         "loadedRemain": "Las parcelas ya cargadas siguen visibles. Reintenta o elige otra fuente.",
         "loadedNone": "Todavía no hay parcelas cargadas. Reintenta o elige otra fuente.",
-        "loadedCounts": "Hay {{inMemory}} parcelas cargadas en memoria, {{inView}} de ellas en esta vista; siguen en el mapa. Reintenta o elige otra fuente."
+        "loadedCounts": "Hay {{inMemory}} parcelas cargadas en memoria, {{inView}} de ellas en esta vista; siguen en el mapa. Reintenta o elige otra fuente.",
+        "knownLimit": {
+            "hourlyRequests": "Este registro limita cuántas solicitudes puede enviar cada red por hora y rechaza las demás hasta que el límite se reinicia. Inténtalo más tarde.",
+            "dailyRequests": "Este registro limita cuántas solicitudes puede enviar cada red al día y rechaza las demás hasta el día siguiente. Inténtalo mañana.",
+            "networkRestricted": "Este registro no responde a solicitudes desde algunas redes, y la tuya puede ser una de ellas. Otra conexión, como los datos móviles, puede funcionar."
+        }
     },
     "dataSources": {
         "title": "Fuentes de datos"

@@ -2,7 +2,7 @@
 import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
-import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
+import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 
 function delay(ms, { signal } = {}) {
@@ -45,6 +45,20 @@ const PROFILES = Object.freeze({
         // Bounded qualification observed HTTP 429 on rapid sequential reads.
         // Pace normal requests; any denial still fails without retrying.
         requestDelayMs: 1000, version: '2.0.0', schema: SOSNOWIEC_GML_SCHEMA, verifiedUnknownEmptyHits: true
+    }),
+    // GUGiK's national collective of the county EGiB services. A county missing from the collective
+    // is missing here, so every city is qualified on its own before it uses this profile.
+    'pl-gugik-egib-wfs': Object.freeze({
+        endpoint: 'https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza',
+        typeName: 'ms:dzialki', idField: 'ID_DZIALKI', geometryField: 'geom',
+        featureNamespace: POLAND_EGIB_GML_SCHEMA.featureNamespace, idPrefix: 'PL-EGIB-',
+        responseCrs: 'EPSG:2180', responseCrsUrn: 'urn:ogc:def:crs:EPSG::2180',
+        propertyName: 'ms:ID_DZIALKI,ms:geom', sortBy: 'ms:ID_DZIALKI', namespaces: undefined,
+        // Each request takes about 3 s (it cascades to the county service). A page holding the
+        // whole matched set states numberMatched (verified 2026-10-12), so a cell usually costs
+        // one request instead of count + page + recount; larger and empty sets report "unknown".
+        // Its CountDefault is 1000: a 3x3 block of city-centre cells (75-153 parcels) fits one page.
+        version: '2.0.0', schema: POLAND_EGIB_GML_SCHEMA, pageMatchCount: true, maxPageSize: 1000
     }),
     // Official capabilities declare ImplementsResultPaging FALSE. Fetch the
     // entire bounded match set once; never infer completeness from a short page.
@@ -124,7 +138,7 @@ function validateDescriptor(descriptor) {
         && (!profile.unpaged || descriptor.version === '2.0.0')
         && (descriptor.maxBboxKm2 === undefined || (Number.isFinite(descriptor.maxBboxKm2) && descriptor.maxBboxKm2 > 0 && descriptor.maxBboxKm2 <= 25))
         && (descriptor.maxFeatures === undefined || (Number.isSafeInteger(descriptor.maxFeatures) && descriptor.maxFeatures > 0 && descriptor.maxFeatures <= 5000))
-        && (descriptor.pageSize === undefined || (Number.isSafeInteger(descriptor.pageSize) && descriptor.pageSize > 0 && descriptor.pageSize <= 100))
+        && (descriptor.pageSize === undefined || (Number.isSafeInteger(descriptor.pageSize) && descriptor.pageSize > 0 && descriptor.pageSize <= (profile.maxPageSize ?? 100)))
         && (descriptor.maxResponseBytes === undefined || (Number.isSafeInteger(descriptor.maxResponseBytes) && descriptor.maxResponseBytes > 0 && descriptor.maxResponseBytes <= 2 * 1024 * 1024))
         && (descriptor.maxTotalResponseBytes === undefined || (Number.isSafeInteger(descriptor.maxTotalResponseBytes) && descriptor.maxTotalResponseBytes > 0 && descriptor.maxTotalResponseBytes <= 16 * 1024 * 1024))
         && (descriptor.timeoutMs === undefined || (Number.isSafeInteger(descriptor.timeoutMs) && descriptor.timeoutMs >= 100 && descriptor.timeoutMs <= 30000))
@@ -282,7 +296,34 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         return { numberMatched: parsed.numberMatched, emptyDataVerified: false };
     }
 
+    // A page that states the query's own match count, equal to what it returned, is the whole set:
+    // one response is the proof. Only profiles verified to state it set pageMatchCount. Any other
+    // first page (an unknown count, a larger set) is kept as page one of the counted, paged read,
+    // so the same page is never requested twice.
+    async function readFirstPage(spec, exactIds, budget) {
+        const body = await request(makeParams({ ...spec, count: pageSize, startIndex: 0 }), budget);
+        const parsed = await parseGmlParcels(body, { schema: profile.schema, maxBytes: maxResponseBytes, maxFeatures: pageSize });
+        if (Date.now() >= budget.deadline) fail('Parcel WFS operation timed out.', 504);
+        if (parsed.numberMatched === undefined || parsed.numberMatched !== parsed.numberReturned
+            || parsed.featureCount !== parsed.numberReturned) return { page: parsed };
+        if (parsed.duplicateNativeCount) fail('Parcel WFS page repeated a native parcel identity.');
+        const byNativeId = new Map();
+        for (const feature of parsed.features) {
+            if (!safeNativeId(feature.id) || (exactIds && !exactIds.has(feature.id))) fail('Parcel WFS returned an unexpected native parcel identity.');
+            if (byNativeId.has(feature.id)) fail('Parcel WFS repeated a native parcel identity across pages.');
+            byNativeId.set(feature.id, feature);
+        }
+        return { complete: { features: [...byNativeId.values()].map(feature => canonicalParcelFeature(descriptor, feature, feature.id)),
+            complete: true, sourceId: descriptor.id, returnsWGS84: true, numberMatched: parsed.numberMatched, duplicateNativeCount: 0 } };
+    }
+
     async function readComplete(spec, exactIds = null, budget = newOperationBudget()) {
+        let firstPage = null;
+        if (profile.pageMatchCount) {
+            const first = await readFirstPage(spec, exactIds, budget);
+            if (first.complete) return first.complete;
+            firstPage = first.page;
+        }
         const before = await hitCount(spec, budget);
         const matchedBefore = before.numberMatched;
         const matched = matchedBefore;
@@ -298,8 +339,9 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         let rows = 0, duplicateNativeCount = 0;
         for (let startIndex = 0; startIndex < matched; startIndex += profile.unpaged ? matched : pageSize) {
             const count = profile.unpaged ? matched : Math.min(pageSize, matched - startIndex);
-            const body = await request(makeParams({ ...spec, count, ...(profile.unpaged ? {} : { startIndex }) }), budget);
-            const parsed = await parseGmlParcels(body, { schema: profile.schema, maxBytes: maxResponseBytes, maxFeatures: count });
+            const parsed = startIndex === 0 && firstPage ? firstPage : await parseGmlParcels(
+                await request(makeParams({ ...spec, count, ...(profile.unpaged ? {} : { startIndex }) }), budget),
+                { schema: profile.schema, maxBytes: maxResponseBytes, maxFeatures: count });
             if (Date.now() >= budget.deadline) fail('Parcel WFS operation timed out.', 504);
             // Hessen declares unknown on data responses. Actual returned/member
             // counts must equal the independently observed pre/post hit count.

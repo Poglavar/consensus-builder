@@ -5521,7 +5521,12 @@
         "unavailable": "This parcel source is temporarily unavailable.",
         "loadedRemain": "Already loaded parcels remain visible. Retry or choose another source.",
         "loadedNone": "No parcels are loaded yet. Retry or choose another source.",
-        "loadedCounts": "{{inMemory}} parcels are loaded in memory, {{inView}} of them in this view; they stay on the map. Retry or choose another source."
+        "loadedCounts": "{{inMemory}} parcels are loaded in memory, {{inView}} of them in this view; they stay on the map. Retry or choose another source.",
+        "knownLimit": {
+            "hourlyRequests": "This register limits how many requests each network may send per hour, and refuses more until the limit resets. Try again later.",
+            "dailyRequests": "This register limits how many requests each network may send per day, and refuses more until the next day. Try again tomorrow.",
+            "networkRestricted": "This register does not answer requests from some networks, and yours may be one of them. Another connection, such as mobile data, may work."
+        }
     },
     "dataSources": {
         "title": "Data sources"

@@ -187,6 +187,25 @@ describe('parcel source health requester', () => {
         expect(translate).toHaveBeenCalledWith('parcelSourceHealth.blocked', { status: 403 });
     });
 
+    it('explains a failure by the provider limit the adapter matched instead of guessing the cause', () => {
+        expect(health.describeFailure({ code: 'parcel-source-blocked', upstreamStatus: 403, knownLimit: 'hourly-requests' }))
+            .toBe('This register limits how many requests each network may send per hour, and refuses more until the limit resets. Try again later. Already loaded parcels remain visible. Retry or choose another source.');
+        expect(health.describeFailure({ code: 'parcel-source-blocked', upstreamStatus: 403, knownLimit: 'daily-requests' }))
+            .toContain('per day, and refuses more until the next day. Try again tomorrow.');
+        expect(health.describeFailure({ code: 'parcel-source-unavailable', status: 504, knownLimit: 'network-restricted' }))
+            .toContain('does not answer requests from some networks');
+        // The guess it replaces is gone, offline still wins, and an unknown kind changes nothing.
+        expect(health.describeFailure({ code: 'parcel-source-blocked', upstreamStatus: 403, knownLimit: 'daily-requests' }))
+            .not.toContain('restrict IP addresses');
+        expect(health.describeFailure({ code: 'parcel-source-blocked', knownLimit: 'daily-requests' }, { offline: true }))
+            .toContain('You appear to be offline');
+        expect(health.describeFailure({ code: 'parcel-source-blocked', upstreamStatus: 403, knownLimit: 'toString' }))
+            .toContain('restrict IP addresses');
+        const translate = vi.fn((key, values) => `${key}:${JSON.stringify(values)}`);
+        expect(health.describeFailure({ code: 'parcel-source-unavailable', knownLimit: 'network-restricted' }, { translate }))
+            .toContain('parcelSourceHealth.knownLimit.networkRestricted:{}');
+    });
+
     it('says how many parcels are still loaded, in memory and in view, when the counts are known', () => {
         const failure = { code: 'parcel-source-unavailable' };
         expect(health.describeFailure(failure, { loaded: { inMemory: 181, inView: 42 } }))
