@@ -150,23 +150,26 @@ body.site-tool-drawing .leaflet-container {
     stroke-opacity: 0.85;
 }
 
-/* ---- the site panel ---- */
+/* ---- the site panel ----
+   A compact card at the bottom left, above the bottom bar, right of the view buttons. It used to
+   span the whole bottom edge; the map stays visible around it, and the right side is free for the
+   site's proposal panel. */
 .site-panel {
-    position: absolute;
-    top: 64px;
-    left: 64px; /* right of the mode strip, under the search box; the right side keeps Layers/Settings */
-    z-index: 1060; /* over the map and the parcel/ground menus, under the sheets (1600) */
-    width: 320px;
-    max-width: calc(100% - 24px);
-    max-height: calc(100% - 150px);
+    position: fixed;
+    left: calc(var(--map-mode-strip) + var(--cb-space-2));
+    bottom: var(--map-shell-bottom-clearance);
+    z-index: var(--cb-z-notice);
+    width: 360px;
+    max-width: calc(100vw - var(--map-mode-strip) - 2 * var(--cb-space-2));
+    max-height: min(50dvh, calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance)));
     overflow-y: auto;
     box-sizing: border-box;
     padding: 10px 12px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-    color: #1f2937;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text);
     font-size: 13px;
 }
 
@@ -320,12 +323,6 @@ body.site-tool-drawing .leaflet-container {
     background: #1d4ed8;
 }
 
-.site-panel__palette {
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid #eef0f3;
-}
-
 /* A disabled palette tool says why (the parcel palette's buttons, css/panels.css). */
 .parcel-build-btn:disabled {
     opacity: 0.45;
@@ -371,20 +368,88 @@ body.site-tool-drawing .leaflet-container {
     font-size: 13px;
 }
 
-/* ---- phones: the panel is a bottom sheet ---- */
+/* ---- phones: a short sheet along the bottom, right of the view buttons ----
+   At most 40% of the screen, so the site being drawn stays in view; the rest scrolls inside. */
 @media (max-width: 767.98px) {
     .site-panel {
-        position: fixed;
-        top: auto;
         right: 0;
         bottom: 0;
-        left: 0;
-        z-index: 1700;
+        left: var(--map-mode-strip);
         width: auto;
         max-width: none;
-        max-height: 50vh;
+        max-height: 40dvh;
         padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
         border-radius: 16px 16px 0 0;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* ---- the site's proposal panel: the parcel panel's twin (js/site-drawing.js) ----
+   It uses the parcel panel's markup and the shared dock, header, tab and body classes; only what
+   #parcel-info-panel sets by ID is repeated here, plus where it docks while the site sheet is open. */
+#site-info-panel {
+    position: absolute;
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+    z-index: var(--cb-z-panel);
+}
+
+#site-info-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+#site-info-panel .panel-header {
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
+}
+
+#site-info-panel .panel-header h3 {
+    display: inline-flex;
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: baseline;
+    gap: 8px;
+    line-height: 1.2;
+}
+
+#site-info-panel.is-minimized {
+    height: auto;
+}
+
+#site-info-panel.is-minimized .parcel-tabs,
+#site-info-panel.is-minimized .panel-body {
+    display: none;
+}
+
+#site-info-panel .panel-header > button {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+}
+
+.site-info-panel__area {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    font-weight: normal;
+}
+
+@media (min-width: 768px) {
+    /* Docked bottom right like the parcel panel. In a window too narrow for both, it stands above
+       the site card (js/site-drawing.js measures the overlap into --site-sheet-clearance). */
+    #site-info-panel {
+        right: 10px;
+        bottom: calc(var(--site-sheet-clearance, 0px) + var(--map-shell-bottom-clearance));
+        height: min(50vh, calc(100% - var(--site-sheet-clearance, 0px) - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance)));
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Phones: the panel is the bottom sheet and stands in for the site sheet until it is closed. */
+    body.site-proposing .site-panel {
+        display: none;
     }
 }

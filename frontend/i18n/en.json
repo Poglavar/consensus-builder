@@ -4942,13 +4942,12 @@
         "titleDrawing": "Draw a site",
         "hint": {
             "drawing": "Click to add corners (they snap to parcel and building outlines; hold Alt not to). Click the first corner or press Enter to finish. Backspace removes the last corner, Esc cancels.",
-            "editing": "Drag corners to reshape, click an edge to add one. Then build on the site.",
+            "editing": "Drag corners to reshape, click an edge to add one. Then propose on the site.",
             "plots": "Plots are cut along the frontage edge (by default the one facing a street, else the longest). Click another edge of the site to use it instead."
         },
         "actions": {
             "finish": "Finish site",
             "undoCorner": "Remove last corner",
-            "build": "Build on this site",
             "redraw": "Redraw",
             "cancel": "Cancel"
         },

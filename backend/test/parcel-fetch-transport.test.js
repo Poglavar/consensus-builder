@@ -69,6 +69,46 @@ describe('cadastral parcel fetch transport', () => {
         ]);
     });
 
+    it('fetches HMLR cell blocks in one source query and answers each cell with the parcels overlapping it', async () => {
+        const square = (id, west, south, size) => ({ type: 'Feature', properties: { parcelId: id }, geometry: { type: 'Polygon',
+            coordinates: [[[west, south], [west + size, south], [west + size, south + size], [west, south + size], [west, south]]] } });
+        const west = square('WEST', 0.0002, 0.0002, 0.0002), across = square('ACROSS', 0.0008, 0.0002, 0.0004), east = square('EAST', 0.0015, 0.0002, 0.0002);
+        const queryBounds = vi.fn(async () => ({ complete: true, features: [west, across, east] }));
+        const hmlr = { source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', gridSize: 0.001 };
+        const transport = bootTransport('oxford', vi.fn(), hmlr, { queryBounds }, { datasetToWgs84: (e, n) => [n, e] });
+
+        expect(transport.cellBlockSide({ city: 'oxford' })).toBe(5);
+        const block = await transport.fetchCellBlock(null, { city: 'oxford', keys: ['0,0', '1,0'] });
+        expect(queryBounds).toHaveBeenCalledTimes(1);
+        expect(queryBounds.mock.calls[0][0]).toBe('gb-hmlr-browser-v1');
+        expect(queryBounds.mock.calls[0][1]).toEqual([0, 0, 0.002, 0.001]);
+        expect(block.cells.map(({ key, result }) => [key, result.features.map(item => item.properties.parcelId)]))
+            .toEqual([['0,0', ['WEST', 'ACROSS']], ['1,0', ['ACROSS', 'EAST']]]);
+    });
+
+    it('loads IDs saved under an earlier source from that source and current IDs from the current one', async () => {
+        const feature = id => ({ type: 'Feature', properties: { parcelId: id }, geometry: { type: 'Polygon', coordinates: [] } });
+        const queryIds = vi.fn(async (_source, ids) => ({ complete: true, features: ids.map(feature), absentIds: [] }));
+        const london = { source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-',
+            historicalSources: [{ sourceId: 'gb-hmlr-city-of-london', idPrefix: 'GB-HMLR-LONDON-' }] };
+        const transport = bootTransport('london', vi.fn(), london, { queryIds });
+
+        const result = await transport.fetchByIds(['GB-HMLR-LONDON-50654735', 'GB-HMLR-BROWSER-v1-7', 'GB-HMLR-LONDON-2']);
+
+        expect(queryIds.mock.calls.map(([source, ids]) => [source, ids])).toEqual([
+            ['gb-hmlr-city-of-london', ['GB-HMLR-LONDON-50654735', 'GB-HMLR-LONDON-2']],
+            ['gb-hmlr-browser-v1', ['GB-HMLR-BROWSER-v1-7']]
+        ]);
+        expect(result.absentIds).toEqual([]);
+    });
+
+    it('keeps every other source on per-cell queries', () => {
+        const other = bootTransport('richmond', vi.fn(), { source: 'parcel-source', sourceId: 'us-va-richmond-parcels', gridSize: 0.001 });
+        const legacy = bootTransport('zagreb', vi.fn(), { source: 'parcel-bg' });
+        expect(other.cellBlockSide({ city: 'richmond' })).toBe(1);
+        expect(legacy.cellBlockSide({ city: 'zagreb' })).toBe(1);
+    });
+
     it('loads Belgrade proposal ground through the Serbian parcel endpoint', async () => {
         const feature = {
             type: 'Feature',

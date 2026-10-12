@@ -4236,8 +4236,10 @@
             parcels: {
                 strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
                 sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-',
+                // IDs saved before the shared HMLR source still load from the source that issued them.
+                historicalSources: [{ sourceId: 'gb-arcgis-geodom-land-registry-inspire-2021', idPrefix: 'GB-HMLR-' }],
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
-                attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
+                attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -4382,8 +4384,10 @@
             parcels: {
                 strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
                 sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-',
+                // IDs saved before the shared HMLR source still load from the source that issued them.
+                historicalSources: [{ sourceId: 'gb-hmlr-city-of-london', idPrefix: 'GB-HMLR-LONDON-' }],
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
-                attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
+                attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -4405,8 +4409,10 @@
             parcels: {
                 strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
                 sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-',
+                // IDs saved before the shared HMLR source still load from the source that issued them.
+                historicalSources: [{ sourceId: 'gb-hmlr-manchester', idPrefix: 'GB-HMLR-MANCHESTER-' }],
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
-                attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
+                attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -7947,7 +7953,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.9872907396255, -1.55381600364981], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.9872907396255, -1.55381600364981], fallbackDataset: [-1.55381600364981, 54.9872907396255] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         oxford: {
@@ -7956,7 +7962,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7487806598031, -1.2342485885213], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7487806598031, -1.2342485885213], fallbackDataset: [-1.2342485885213, 51.7487806598031] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         cardiff: {
@@ -7965,7 +7971,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4941598754672, -3.18365738997209], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4941598754672, -3.18365738997209], fallbackDataset: [-3.18365738997209, 51.4941598754672] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bristol: {
@@ -7974,7 +7980,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4622070766796, -2.56948973765957], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4622070766796, -2.56948973765957], fallbackDataset: [-2.56948973765957, 51.4622070766796] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         stoke_on_trent: {
@@ -7983,7 +7989,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0159155643046, -2.17437344168429], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.0159155643046, -2.17437344168429], fallbackDataset: [-2.17437344168429, 53.0159155643046] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bournemouth: {
@@ -7992,7 +7998,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7377349576354, -1.90482883545276], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7377349576354, -1.90482883545276], fallbackDataset: [-1.90482883545276, 50.7377349576354] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leeds: {
@@ -8001,7 +8007,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.80098765836, -1.64273048308533], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.80098765836, -1.64273048308533], fallbackDataset: [-1.64273048308533, 53.80098765836] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         coventry: {
@@ -8010,7 +8016,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4197855108422, -1.50597012431852], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4197855108422, -1.50597012431852], fallbackDataset: [-1.50597012431852, 52.4197855108422] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         southampton: {
@@ -8019,7 +8025,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9183161488384, -1.39571519357], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.9183161488384, -1.39571519357], fallbackDataset: [-1.39571519357, 50.9183161488384] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sheffield: {
@@ -8028,7 +8034,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3706060761954, -1.45914222195097], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.3706060761954, -1.45914222195097], fallbackDataset: [-1.45914222195097, 53.3706060761954] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nottingham: {
@@ -8037,7 +8043,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.9581733581744, -1.18066491650301], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.9581733581744, -1.18066491650301], fallbackDataset: [-1.18066491650301, 52.9581733581744] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         middlesbrough: {
@@ -8046,7 +8052,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.560753928282, -1.26260886474088], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.560753928282, -1.26260886474088], fallbackDataset: [-1.26260886474088, 54.560753928282] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         portsmouth: {
@@ -8055,7 +8061,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8299919480642, -1.08350256594045], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8299919480642, -1.08350256594045], fallbackDataset: [-1.08350256594045, 50.8299919480642] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leicester: {
@@ -8064,7 +8070,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6309139939256, -1.125767851843], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6309139939256, -1.125767851843], fallbackDataset: [-1.125767851843, 52.6309139939256] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         brighton: {
@@ -8073,7 +8079,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.832718747559, -0.232087060115579], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.832718747559, -0.232087060115579], fallbackDataset: [-0.232087060115579, 50.832718747559] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hull: {
@@ -8082,7 +8088,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7628896052307, -0.354103477578705], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.7628896052307, -0.354103477578705], fallbackDataset: [-0.354103477578705, 53.7628896052307] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         southend_on_sea: {
@@ -8091,7 +8097,7 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5551240047725, 0.668467014701583], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5551240047725, 0.668467014701583], fallbackDataset: [0.668467014701583, 51.5551240047725] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         mongu: {

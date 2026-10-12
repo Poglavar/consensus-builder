@@ -32,6 +32,11 @@ describe('saved parcel integration history', () => {
         expect(parcelSourceCatalog.schemaVersion).toBe(2);
         for (const descriptor of parcelSourceCatalog.sources.filter(row => row.cityIds?.length > 0)) {
             const source = registry.sources.find(s => s.sourceId === descriptor.id);
+            // A retired source only answers for the IDs it issued; the registry marks it historical.
+            if (descriptor.historicalForIds === true && descriptor.defaultForCity === false) {
+                expect(source?.liveIntegration?.status, descriptor.id).toBe('historical_only');
+                continue;
+            }
             expect(source?.liveIntegration?.status, descriptor.id).toBe('enabled');
             expect(source.liveIntegration.cityIds.slice().sort()).toEqual(descriptor.cityIds.slice().sort());
         }

@@ -4981,13 +4981,12 @@
         "titleDrawing": "Nacrtaj lokaciju",
         "hint": {
             "drawing": "Kliknite za dodavanje kutova (prianjaju uz obrise čestica i zgrada; držite Alt da ne prianjaju). Kliknite prvi kut ili pritisnite Enter za kraj. Backspace briše zadnji kut, Esc odustaje.",
-            "editing": "Povucite kutove za promjenu oblika, kliknite rub za novi kut. Zatim gradite na lokaciji.",
+            "editing": "Povucite kutove za promjenu oblika, kliknite rub za novi kut. Zatim predložite na lokaciji.",
             "plots": "Čestice se režu uz rub pročelja (zadano onaj okrenut prema ulici, inače najdulji). Kliknite drugi rub lokacije da ga upotrijebite."
         },
         "actions": {
             "finish": "Završi lokaciju",
             "undoCorner": "Ukloni zadnji kut",
-            "build": "Gradi na ovoj lokaciji",
             "redraw": "Nacrtaj ponovno",
             "cancel": "Odustani"
         },

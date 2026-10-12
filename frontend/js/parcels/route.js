@@ -44,13 +44,16 @@
 
     function citiesForParcelId(rawId) {
         const id = String(rawId || '').trim().toUpperCase();
-        const matches = (global.CityConfigManager?.getAvailableCities?.() || [])
-            .filter(city => city.parcels?.idPrefix && id.startsWith(city.parcels.idPrefix.toUpperCase()));
+        // A city answers for its current prefix and for the prefixes of sources it used before, so
+        // a link saved under an earlier namespace still opens in that city.
+        const matchLength = city => Math.max(0, ...[city.parcels?.idPrefix, ...(city.parcels?.historicalSources || []).map(row => row.idPrefix)]
+            .filter(prefix => prefix && id.startsWith(String(prefix).toUpperCase())).map(prefix => prefix.length));
+        const matches = (global.CityConfigManager?.getAvailableCities?.() || []).filter(city => matchLength(city) > 0);
         // A legacy broad prefix may coexist with later city-specific namespaces from the same
         // provider (for example GB-HMLR- and GB-HMLR-LONDON-). Prefer the most specific match;
         // equally specific shared prefixes still resolve from feature geometry below.
-        const longestPrefix = Math.max(0, ...matches.map(city => city.parcels.idPrefix.length));
-        return matches.filter(city => city.parcels.idPrefix.length === longestPrefix);
+        const longestPrefix = Math.max(0, ...matches.map(matchLength));
+        return matches.filter(city => matchLength(city) === longestPrefix);
     }
 
     function isCroatianParcelId(rawId) {

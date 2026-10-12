@@ -219,9 +219,16 @@
             if (!Number.isSafeInteger(batchSize) || batchSize < 1 || batchSize > ID_BATCH_SIZE) {
                 throw new Error('Invalid parcel source ID batch size.');
             }
-            for (const batch of chunks(ids, batchSize)) {
+            // An ID saved under a source the city used before loads from that source: the longest
+            // matching prefix, the current source's included, picks it.
+            const sources = [{ sourceId: provider.sourceId, idPrefix: provider.idPrefix || '' }, ...(provider.historicalSources || [])];
+            const sourceFor = id => sources.filter(row => id.startsWith(row.idPrefix))
+                .sort((a, b) => b.idPrefix.length - a.idPrefix.length)[0]?.sourceId || provider.sourceId;
+            const groups = new Map();
+            ids.forEach(id => { const sourceId = sourceFor(id); if (!groups.has(sourceId)) groups.set(sourceId, []); groups.get(sourceId).push(id); });
+            for (const [sourceId, batch] of [...groups].flatMap(([sourceId, group]) => chunks(group, batchSize).map(part => [sourceId, part]))) {
                 if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
-                const payload = await global.BrowserParcelSources.queryIds(provider.sourceId, batch, { city });
+                const payload = await global.BrowserParcelSources.queryIds(sourceId, batch, { city });
                 if (payload.complete !== true || !Array.isArray(payload.features) || !Array.isArray(payload.absentIds)) {
                     throw new Error('Parcel source returned an incomplete ID response.');
                 }
@@ -279,8 +286,8 @@
         throw new Error('Dataset-to-WGS84 conversion is unavailable.');
     }
 
-    async function fetchCell(cell, context = {}) {
-        const gridSize = Number(context.gridSize);
+    // A grid cell's dataset bbox string and its WGS84 [west, south, east, north] box.
+    function cellBoxes(cell, gridSize, city) {
         if (!(gridSize > 0)) throw new Error('Parcel grid size is unavailable.');
         const [gridE, gridN] = String(cell).split(',').map(Number);
         if (![gridE, gridN].every(Number.isFinite)) throw new Error(`Invalid parcel grid key: ${cell}`);
@@ -288,10 +295,15 @@
         const swN = gridN * gridSize;
         const neE = (gridE + 1) * gridSize;
         const neN = (gridN + 1) * gridSize;
-        const bbox = `${swE},${swN},${neE},${neN}`;
-        const sw = datasetToLatLng(swE, swN, context.city);
-        const ne = datasetToLatLng(neE, neN, context.city);
-        const latLonBbox = `${Math.min(sw[1], ne[1])},${Math.min(sw[0], ne[0])},${Math.max(sw[1], ne[1])},${Math.max(sw[0], ne[0])}`;
+        const sw = datasetToLatLng(swE, swN, city);
+        const ne = datasetToLatLng(neE, neN, city);
+        return { bbox: `${swE},${swN},${neE},${neN}`,
+            latLon: [Math.min(sw[1], ne[1]), Math.min(sw[0], ne[0]), Math.max(sw[1], ne[1]), Math.max(sw[0], ne[0])] };
+    }
+
+    async function fetchCell(cell, context = {}) {
+        const { bbox, latLon } = cellBoxes(cell, Number(context.gridSize), context.city);
+        const latLonBbox = latLon.join(',');
         const override = groundOverride(context.city);
         if (override) {
             const answer = await override.fetchCell({ cell: String(cell), bbox, latLonBbox, city: context.city });
@@ -346,6 +358,55 @@
             startIndex += returned;
         }
         return { features, returnsWGS84 };
+    }
+
+    // Sources whose per-query cost is shared overlap context are queried in blocks of cells. HMLR
+    // re-read and re-resolved about 50 context parcels per 0.001-degree cell to publish about 8; a
+    // measured Oxford view took 9.3 s per cell and 1.6 s in 5x5 blocks, with identical cells.
+    // Other sources stay per cell: their per-query limits have not been measured for larger areas.
+    const CELL_BLOCK_SIDE_BY_SOURCE = Object.freeze({ 'gb-hmlr-browser-v1': 5 });
+
+    function cellBlockSide(options = {}) {
+        const provider = cityConfig(String(options.city || currentCity()))?.parcels;
+        if (provider?.source !== 'parcel-source' || groundOverride(String(options.city || currentCity()))) return 1;
+        return CELL_BLOCK_SIDE_BY_SOURCE[provider.sourceId] || 1;
+    }
+
+    function geometryBox(geometry) {
+        const box = [Infinity, Infinity, -Infinity, -Infinity];
+        const visit = value => {
+            if (typeof value?.[0] === 'number') {
+                box[0] = Math.min(box[0], value[0]); box[1] = Math.min(box[1], value[1]);
+                box[2] = Math.max(box[2], value[0]); box[3] = Math.max(box[3], value[1]);
+            } else if (Array.isArray(value)) value.forEach(visit);
+        };
+        visit(geometry?.coordinates);
+        return box;
+    }
+
+    // One source query for several grid cells, answered per cell. Each cell lists the parcels whose
+    // extent overlaps it: a superset of what a per-cell query returns, so no cell misses a parcel.
+    async function fetchCellBlock(_bounds, options = {}) {
+        const city = String(options.city || currentCity());
+        const keys = Array.from(new Set(Array.from(options.keys || []).map(String).filter(Boolean)));
+        if (!keys.length) throw new Error('A cell block needs repository grid keys.');
+        const provider = cityConfig(city)?.parcels;
+        if (provider?.source !== 'parcel-source') throw new Error('Cell blocks are only available for browser parcel sources.');
+        if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+        const gridSize = Number(provider.gridSize ?? global.ParcelsState?.getParcelGridSize?.()
+            ?? global.CityConfigManager?.getParcelGridSize?.() ?? global.PARCELS_GRID_SIZE);
+        const cells = keys.map(key => ({ key, box: cellBoxes(key, gridSize, city).latLon }));
+        const union = cells.reduce((all, { box }) => [Math.min(all[0], box[0]), Math.min(all[1], box[1]),
+            Math.max(all[2], box[2]), Math.max(all[3], box[3])], [Infinity, Infinity, -Infinity, -Infinity]);
+        const payload = await global.BrowserParcelSources.queryBounds(provider.sourceId, union, {
+            city, ...(options.signal ? { signal: options.signal } : {}),
+            ...(typeof options.onProgress === 'function' ? { onProgress: options.onProgress } : {})
+        });
+        if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
+        const boxes = payload.features.map(feature => geometryBox(feature.geometry));
+        const meets = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+        return { cells: cells.map(({ key, box }) => ({ key, result: { status: 'ready', returnsWGS84: true, absentIds: [],
+            features: payload.features.filter((_, index) => meets(boxes[index], box)) } })) };
     }
 
     async function fetchBounds(_bounds, options = {}) {
@@ -609,6 +670,8 @@
         fetchByIds,
         fetchPoint,
         fetchBounds,
+        cellBlockSide,
+        fetchCellBlock,
         fetchUnderGeometry,
         supportsRoadIds,
         fetchRoadIds

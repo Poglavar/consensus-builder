@@ -4981,13 +4981,12 @@
         "titleDrawing": "Nacrtaj lokaciju",
         "hint": {
             "drawing": "Kliknite da dodate uglove (prianjaju uz obrise parcela i zgrada; držite Alt da ne prianjaju). Kliknite prvi ugao ili pritisnite Enter za kraj. Backspace briše poslednji ugao, Esc odustaje.",
-            "editing": "Prevucite uglove da promenite oblik, kliknite ivicu za novi ugao. Zatim gradite na lokaciji.",
+            "editing": "Prevucite uglove da promenite oblik, kliknite ivicu za novi ugao. Zatim predložite na lokaciji.",
             "plots": "Placevi se seku duž ivice fronta (podrazumevano one okrenute ka ulici, inače najduže). Kliknite drugu ivicu lokacije da je upotrebite."
         },
         "actions": {
             "finish": "Završi lokaciju",
             "undoCorner": "Ukloni poslednji ugao",
-            "build": "Gradi na ovoj lokaciji",
             "redraw": "Nacrtaj ponovo",
             "cancel": "Odustani"
         },

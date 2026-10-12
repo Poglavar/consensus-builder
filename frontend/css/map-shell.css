@@ -163,7 +163,7 @@ body.three-mode-active :is(.map-editor-toolbar, .site-panel, .area-monitor-creat
     display: none;
 }
 
-body.site-tool-active .site-panel,
+/* The site tool's panel is a compact card of its own (site-tool.css). */
 .area-monitor-creation-panel {
     position: fixed;
     top: auto;

@@ -48,7 +48,7 @@ async function fixture(sample, descriptor) {
 
 describe.each(cases)('$city batch-seven configured runtime',sample => {
     it('selects its published source and resolves exact native IDs through the longest prefix',async()=>{
-        const {descriptor}=parcelSourceForCity(sample.city);
+        const {descriptor}=parcelSourceForCity(sample.city, sample.source);
         expect(descriptor.id).toBe(sample.source);expect(descriptor.metricSrid).toBe(sample.metric);
         expect(parcelSourceForIds([sample.prefix+sample.native]).descriptor.id).toBe(sample.source);
         const f=await fixture(sample,descriptor),adapter=createParcelSource(descriptor,{fetchImpl:f.fetchImpl});
@@ -66,7 +66,7 @@ describe.each(cases)('$city batch-seven configured runtime',sample => {
         }
     });
     it('serves complete bbox, exact IDs and footprint through the gateway',async()=>{
-        const {descriptor}=parcelSourceForCity(sample.city),f=await fixture(sample,descriptor);
+        const {descriptor}=parcelSourceForCity(sample.city, sample.source),f=await fixture(sample,descriptor);
         const app=express();app.use(express.json());setupParcelSourcesRoute(app,{sources:[descriptor],fetchImpl:f.fetchImpl});
         const path='/parcel-sources/'+sample.source;
         const bounds=await request(app).get(path).query({bbox:f.bounds.join(',')});
@@ -76,10 +76,10 @@ describe.each(cases)('$city batch-seven configured runtime',sample => {
         expect(exact.body.absentIds).toEqual([]);
     });
     it('binds through the actual runtime transport without reading imported parcel tables',async()=>{
-        const {descriptor}=parcelSourceForCity(sample.city),f=await fixture(sample,descriptor);
+        const {descriptor}=parcelSourceForCity(sample.city, sample.source),f=await fixture(sample,descriptor);
         vi.stubGlobal('fetch',f.fetchImpl);
         const db={query:vi.fn(async()=>{throw Error('Unexpected parcel database read');})};
-        const {binding}=await computeBinding(db,{city:sample.city,site:f.geometry});
+        const {binding}=await computeBinding(db,{city:sample.city,site:f.geometry,parcelSourceId:sample.source});
         expect(db.query).not.toHaveBeenCalled();expect(binding).toMatchObject({coverage:'complete',source:'server:'+sample.source});
         expect(binding.parcels.map(v=>v.parcelId)).toEqual([f.id]);
         if(sample.crs===27700) {

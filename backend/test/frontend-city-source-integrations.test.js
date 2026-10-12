@@ -11,8 +11,8 @@ const manager = cityContext.CityConfigManager;
 describe('new city parcel source configs', () => {
     it('keeps each integration within its verified source and metric footprint', () => {
         const expected = {
-            london: ['gb-hmlr-city-of-london', 'GB-HMLR-LONDON-', 32630, 1.5],
-            manchester: ['gb-hmlr-manchester', 'GB-HMLR-MANCHESTER-', 32630, 8],
+            london: ['gb-hmlr-browser-v1', 'GB-HMLR-BROWSER-v1-', 32630, 8],
+            manchester: ['gb-hmlr-browser-v1', 'GB-HMLR-BROWSER-v1-', 32630, 8],
             madrid: ['es-dgc-inspire-cp-wfs', 'ES-DGC-', 25830, 25],
             barcelona: ['es-dgc-inspire-cp-wfs', 'ES-DGC-', 25831, 25],
             savar: ['bd-dlrs-dhamsona-bds-sheet-001', 'BD-DLRS-201901-4105-010510026-001-', 32646, 0.35]
@@ -27,8 +27,12 @@ describe('new city parcel source configs', () => {
             expect(city.buildings.source).toBe('osm');
         }
         expect(manager.getCityConfig('savar').map.defaultZoom).toBe(19);
-        expect(manager.getCityConfig('london').parcels.attribution).toContain('City of London authority only');
-        expect(manager.getCityConfig('manchester').parcels.attribution).toContain('Manchester metropolitan borough only');
+        for (const city of ['london', 'manchester']) {
+            expect(manager.getCityConfig(city).parcels.attribution).toContain('HM Land Registry INSPIRE Index Polygons');
+        }
+        // IDs issued by the sources these cities used before still load from those sources.
+        expect(manager.getCityConfig('london').parcels.historicalSources).toEqual([{ sourceId: 'gb-hmlr-city-of-london', idPrefix: 'GB-HMLR-LONDON-' }]);
+        expect(manager.getCityConfig('manchester').parcels.historicalSources).toEqual([{ sourceId: 'gb-hmlr-manchester', idPrefix: 'GB-HMLR-MANCHESTER-' }]);
     });
 
     it('adds all city label translations in each supported locale', () => {

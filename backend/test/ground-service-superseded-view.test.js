@@ -73,3 +73,61 @@ describe('superseded viewport cells', () => {
         await expect(permanent).resolves.toMatchObject({ status: 'ready' });
     });
 });
+
+describe('grid cells fetched in blocks', () => {
+    function bootBlocks() {
+        const blockCalls = [], cellCalls = [], requests = new Map();
+        const answer = keys => ({ cells: keys.map(key => ({ key, result: { status: 'ready', complete: true, returnsWGS84: true,
+            absentIds: [], features: [feature(key)] } })) });
+        const pending = (keys, signal, shape) => new Promise((resolve, reject) => {
+            requests.set(keys.join('|'), { signal, resolve: () => resolve(shape(keys)) });
+            signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+        });
+        const transport = {
+            cellBlockSide: () => 5,
+            fetchCellBlock: vi.fn((_bounds, { keys, signal }) => { blockCalls.push(keys); return pending(keys, signal, answer); }),
+            fetchBounds: vi.fn((_bounds, { keys, signal }) => { cellCalls.push(keys); return pending(keys, signal,
+                ([key]) => ({ status: 'ready', complete: true, returnsWGS84: true, absentIds: [], ids: [`HR-${key}`], features: [feature(key)] })); })
+        };
+        const window = {
+            LiveParcelFabric: { featureId: item => String(item?.properties?.parcelId || ''), absentCadastreIds: () => [] },
+            __cadastralGroundTransport: transport,
+            getRequiredGridCells: bounds => bounds.keys,
+            withCorridorStripRefreshHeld: run => run()
+        };
+        vm.runInNewContext(source, { window, Promise, console, performance, AbortController });
+        return { repository: window.CadastralParcelRepository, blockCalls, cellCalls, requests };
+    }
+
+    it('groups requested cells into aligned blocks, one request each, and records every cell on its own', async () => {
+        const { repository, blockCalls, cellCalls, requests } = bootBlocks();
+        const loading = repository.ensureBounds(view(['0,0', '1,0', '4,4', '5,0']), { city: 'oxford' });
+        await settle();
+        expect(blockCalls).toEqual([['0,0', '1,0', '4,4']]);
+        expect(cellCalls).toEqual([['5,0']]);
+        requests.forEach(request => request.resolve());
+        const result = await loading;
+        expect(result.requestCount).toBe(2);
+        expect(result.features.map(item => item.properties.parcelId).sort()).toEqual(['HR-0,0', 'HR-1,0', 'HR-4,4', 'HR-5,0']);
+        const cached = await repository.ensureBounds(view(['4,4']), { city: 'oxford' });
+        expect(cached.cached).toBe(true);
+        expect(cached.features.map(item => item.properties.parcelId)).toEqual(['HR-4,4']);
+    });
+
+    it('keeps a block loading while a newer view still wants one of its cells, and cancels it when none is wanted', async () => {
+        const { repository, requests } = bootBlocks();
+        const older = new AbortController(), newer = new AbortController();
+        const oldView = repository.ensureBounds(view(['0,0', '1,0']), { city: 'oxford', signal: older.signal });
+        const oldOutcome = oldView.then(() => 'resolved', error => error.name);
+        await settle();
+        const newView = repository.ensureBounds(view(['1,0']), { city: 'oxford', signal: newer.signal });
+        older.abort();
+        await settle();
+        expect(await oldOutcome).toBe('AbortError');
+        expect(requests.get('0,0|1,0').signal.aborted).toBe(false);
+        newer.abort();
+        await expect(newView).rejects.toMatchObject({ name: 'AbortError' });
+        expect(requests.get('0,0|1,0').signal.aborted).toBe(true);
+    });
+});
+

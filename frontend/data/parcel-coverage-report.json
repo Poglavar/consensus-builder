@@ -11,12 +11,12 @@
     "checkedCityCount": 1521,
     "uncheckedCityCount": 78,
     "cityRegistryFoundCount": 1172,
-    "verifiedCitySampleCount": 429,
+    "verifiedCitySampleCount": 430,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 1325,
     "growthMatchedCount": 463,
-    "checkedCitiesMissingDate": 51,
+    "checkedCitiesMissingDate": 46,
     "wikiCityCount": 282,
     "configuredAppCityCount": 354,
     "unmatchedStatisticalAmounts": {
@@ -604,7 +604,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/acireale/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=37.60497&mlon=15.14705#map=12/37.60497/15.14705",
@@ -1454,7 +1453,9 @@
       "registryCityIds": [
         "wup2025:4314"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "aix_en_provence"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -1488,7 +1489,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4314/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -1507,7 +1507,9 @@
       "registryCityIds": [
         "wup2025:4902"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ajaccio"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -1541,7 +1543,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4902/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -2925,8 +2926,12 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": null,
-      "checkedDateEvidence": null,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
+        "field": "$.checkedAt"
+      },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -2940,7 +2945,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/alafaya/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.56455&mlon=-81.18844#map=12/28.56455/-81.18844",
@@ -3657,7 +3661,9 @@
       "registryCityIds": [
         "wup2025:3112"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "amiens"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -3691,7 +3697,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3112/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -4234,7 +4239,9 @@
       "registryCityIds": [
         "wup2025:1659"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "angers"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -4268,7 +4275,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1659/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -4495,7 +4501,9 @@
       "registryCityIds": [
         "wup2025:4577"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "annecy"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -4529,7 +4537,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4577/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -4548,7 +4555,9 @@
       "registryCityIds": [
         "wup2025:4614"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "annemasse"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -4582,7 +4591,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4614/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -5484,7 +5492,9 @@
       "registryCityIds": [
         "wup2025:6413"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "arlington"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -5499,8 +5509,12 @@
       "populationPlausibility2025": null,
       "populationMatch": null,
       "checked": true,
-      "checkedDate": null,
-      "checkedDateEvidence": null,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[16].verifiedAt"
+      },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -5514,7 +5528,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/qualification-admission-2026-10-11.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.71741&mlon=-97.07291#map=12/32.71741/-97.07291",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.71741%2C-97.07291",
@@ -5588,7 +5602,9 @@
       "registryCityIds": [
         "wup2025:3282"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "arras"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -5622,7 +5638,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3282/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -6818,7 +6833,9 @@
       "registryCityIds": [
         "wup2025:4111"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "avignon"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -6852,7 +6869,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4111/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -9572,7 +9588,9 @@
       "registryCityIds": [
         "wup2025:1367"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bayonne"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -9606,7 +9624,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1367/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -11267,7 +11284,9 @@
       "registryCityIds": [
         "wup2025:3800"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "beziers"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -11301,7 +11320,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3800/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -12897,7 +12915,9 @@
       "registryCityIds": [
         "wup2025:4119"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bohlokong"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -12927,7 +12947,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4119/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-28.20196&mlon=28.32678#map=12/-28.20196/28.32678",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-28.20196%2C28.32678",
@@ -13249,7 +13269,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-1566-bordeaux.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -13407,7 +13426,9 @@
       "registryCityIds": [
         "wup2025:2541"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "boulogne_sur_mer"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -13441,7 +13462,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2541/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -13879,7 +13899,9 @@
       "registryCityIds": [
         "wup2025:524"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "brest"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -13913,7 +13935,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/524/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -14103,7 +14124,9 @@
       "registryCityIds": [
         "wup2025:3946"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "brits"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -14133,7 +14156,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3946/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.61231&mlon=27.79187#map=12/-25.61231/27.79187",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.61231%2C27.79187",
@@ -14336,8 +14359,12 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": null,
-      "checkedDateEvidence": null,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
+        "field": "$.checkedAt"
+      },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -14351,7 +14378,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.35226&mlon=-81.37821#map=12/28.35226/-81.37821",
@@ -14448,7 +14474,9 @@
       "registryCityIds": [
         "wup2025:8207"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "buffalo"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -14463,8 +14491,12 @@
       "populationPlausibility2025": null,
       "populationMatch": null,
       "checked": true,
-      "checkedDate": null,
-      "checkedDateEvidence": null,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[14].verifiedAt"
+      },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -14478,7 +14510,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/qualification-admission-2026-10-11.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=42.93599&mlon=-78.83904#map=12/42.93599/-78.83904",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.93599%2C-78.83904",
@@ -15117,7 +15149,9 @@
       "registryCityIds": [
         "wup2025:3443"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bussy_saint_georges"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -15151,7 +15185,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3443/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -15223,7 +15256,9 @@
       "registryCityIds": [
         "wup2025:1838"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "caen"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -15257,7 +15292,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1838/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -15435,7 +15469,9 @@
       "registryCityIds": [
         "wup2025:2678"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "calais"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -15469,7 +15505,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2678/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -16067,7 +16102,9 @@
       "registryCityIds": [
         "wup2025:4760"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "cannes"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -16101,7 +16138,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4760/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -17674,7 +17710,9 @@
       "registryCityIds": [
         "wup2025:2466"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "chartres"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -17708,7 +17746,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2466/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -18320,7 +18357,9 @@
       "registryCityIds": [
         "wup2025:1261"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "cherbourg_en_cotentin"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -18354,7 +18393,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1261/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -19984,7 +20022,9 @@
       "registryCityIds": [
         "wup2025:3704"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "clermont_ferrand"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -20018,7 +20058,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3704/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -20037,7 +20076,9 @@
       "registryCityIds": [
         "wup2025:3762"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "coalbrook"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -20067,7 +20108,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3762/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.85555&mlon=27.86805#map=12/-26.85555/27.86805",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.85555%2C27.86805",
@@ -23950,7 +23991,9 @@
       "registryCityIds": [
         "wup2025:4153"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "dijon"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -23984,7 +24027,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4153/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -25176,7 +25218,9 @@
       "registryCityIds": [
         "wup2025:3602"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "douai"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -25210,7 +25254,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3602/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -25620,7 +25663,9 @@
       "registryCityIds": [
         "wup2025:3053"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "dunkirk"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -25654,7 +25699,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3053/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -26144,7 +26188,9 @@
       "registryCityIds": [
         "wup2025:4655"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ekangala"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -26174,7 +26220,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4655/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.67660&mlon=28.73811#map=12/-25.67660/28.73811",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.67660%2C28.73811",
@@ -26792,7 +26838,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/encinitas/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=33.06028&mlon=-117.26781#map=12/33.06028/-117.26781",
@@ -27397,7 +27442,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-3714-evaton.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.52523&mlon=27.85122#map=12/-26.52523/27.85122",
@@ -27415,7 +27459,9 @@
       "registryCityIds": [
         "wup2025:4975"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ezakheni"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -27445,7 +27491,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4975/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-28.61989&mlon=29.91296#map=12/-28.61989/29.91296",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-28.61989%2C29.91296",
@@ -30659,7 +30705,9 @@
       "registryCityIds": [
         "wup2025:4353"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "grenoble"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -30693,7 +30741,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -38108,7 +38155,9 @@
       "registryCityIds": [
         "wup2025:5395"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "jerusalem_za"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -38138,7 +38187,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5395/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.15519&mlon=31.12952#map=12/-25.15519/31.12952",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.15519%2C31.12952",
@@ -39961,7 +40010,9 @@
       "registryCityIds": [
         "wup2025:1945"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kabwe"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -39991,7 +40042,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1945/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-14.43360&mlon=28.44465#map=12/-14.43360/28.44465",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-14.43360%2C28.44465",
@@ -40164,7 +40215,9 @@
       "registryCityIds": [
         "wup2025:1396"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kafue"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -40194,7 +40247,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1396/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-15.76082&mlon=28.17496#map=12/-15.76082/28.17496",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-15.76082%2C28.17496",
@@ -43216,7 +43269,9 @@
       "registryCityIds": [
         "wup2025:3126"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "khuma"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -43246,7 +43301,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3126/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.85073&mlon=26.84726#map=12/-26.85073/26.84726",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.85073%2C26.84726",
@@ -43778,7 +43833,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-1774-kitwe.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-12.80993&mlon=28.22241#map=12/-12.80993/28.22241",
@@ -43838,8 +43892,8 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-4203-klipgat.json",
-        "research/qualification-admission-2026-10-12.json",
-        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
+        "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.47860&mlon=28.11502#map=12/-25.47860/28.11502",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.47860%2C28.11502",
@@ -45604,7 +45658,9 @@
       "registryCityIds": [
         "wup2025:1858"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kwanobuhle"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -45634,7 +45690,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1858/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.81654&mlon=25.38766#map=12/-33.81654/25.38766",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.81654%2C25.38766",
@@ -45817,7 +45873,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/la_rochelle/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -45925,7 +45980,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/lackawanna/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/qualification-admission-2026-10-11.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=42.84299&mlon=-78.81355#map=12/42.84299/-78.81355",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.84299%2C-78.81355",
@@ -46909,7 +46964,9 @@
       "registryCityIds": [
         "wup2025:1922"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "le_havre"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -46943,7 +47000,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1922/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -46962,7 +47018,9 @@
       "registryCityIds": [
         "wup2025:2005"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "le_mans"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -46996,7 +47054,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2005/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -47015,7 +47072,9 @@
       "registryCityIds": [
         "wup2025:3227"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "le_mee_sur_seine"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -47049,7 +47108,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3227/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -47353,7 +47411,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.34786&mlon=27.87603#map=12/-26.34786/27.87603",
@@ -47371,7 +47428,9 @@
       "registryCityIds": [
         "wup2025:3390"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "lens"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -47405,7 +47464,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3390/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -47955,7 +48013,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-3549-lille.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -48109,7 +48166,9 @@
       "registryCityIds": [
         "wup2025:2316"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "limoges"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -48143,7 +48202,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2316/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -48319,7 +48377,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/lindberg/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/qualification-admission-2026-10-11.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.64710&mlon=-97.14310#map=12/32.64710/-97.14310",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.64710%2C-97.14310",
@@ -48833,7 +48891,9 @@
       "registryCityIds": [
         "wup2025:429"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "livingstone"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -48863,7 +48923,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/429/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-17.84432&mlon=25.85798#map=12/-17.84432/25.85798",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-17.84432%2C25.85798",
@@ -49594,7 +49654,9 @@
       "registryCityIds": [
         "wup2025:666"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "lorient"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -49628,7 +49690,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/666/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -50015,7 +50076,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-13.14373&mlon=28.42281#map=12/-13.14373/28.42281",
@@ -50919,7 +50979,7 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
         "fr-ign-parcellaire-express"
@@ -51302,7 +51362,9 @@
       "registryCityIds": [
         "wup2025:5074"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "madadeni"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -51332,7 +51394,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5074/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-27.77086&mlon=30.08989#map=12/-27.77086/30.08989",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-27.77086%2C30.08989",
@@ -53077,7 +53139,9 @@
       "registryCityIds": [
         "wup2025:5197"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mankweng"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -53107,7 +53171,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5197/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-23.89279&mlon=29.72002#map=12/-23.89279/29.72002",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-23.89279%2C29.72002",
@@ -53240,7 +53304,9 @@
       "registryCityIds": [
         "wup2025:2412"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mansa"
+      ],
       "cohorts": [
         "growth200",
         "registry"
@@ -53283,7 +53349,7 @@
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2412/qualification.json",
         "research/india-africa-followup-2026-10-08/mansa-assessment.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-11.20273&mlon=28.89149#map=12/-11.20273/28.89149",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-11.20273%2C28.89149",
@@ -53909,7 +53975,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-4276-marseille.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -54328,7 +54393,9 @@
       "registryCityIds": [
         "wup2025:5476"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "matsulu"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -54358,7 +54425,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5476/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.50988&mlon=31.34358#map=12/-25.50988/31.34358",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.50988%2C31.34358",
@@ -54431,7 +54498,9 @@
       "registryCityIds": [
         "wup2025:2809"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "maurepas"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -54465,7 +54534,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2809/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -56128,7 +56196,9 @@
       "registryCityIds": [
         "wup2025:4429"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "metz"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -56162,7 +56232,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4429/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -57105,7 +57174,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/mongu/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-15.26983&mlon=23.15189#map=12/-15.26983/23.15189",
@@ -57842,7 +57910,9 @@
       "registryCityIds": [
         "wup2025:5167"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mpumalanga"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -57872,7 +57942,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/5167/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-29.81058&mlon=30.62678#map=12/-29.81058/30.62678",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-29.81058%2C30.62678",
@@ -58181,7 +58251,9 @@
       "registryCityIds": [
         "wup2025:838"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mumbwa"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -58211,7 +58283,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/838/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-14.98964&mlon=27.06147#map=12/-14.98964/27.06147",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-14.98964%2C27.06147",
@@ -59639,7 +59711,9 @@
       "registryCityIds": [
         "wup2025:4503"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "nancy"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -59673,7 +59747,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4503/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -61604,7 +61677,9 @@
       "registryCityIds": [
         "wup2025:4025"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "nimes"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -61638,7 +61713,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4025/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -63502,7 +63576,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-next-2026-10-09/city-7432-orlando.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.57185&mlon=-81.32244#map=12/28.57185/-81.32244",
@@ -63520,7 +63593,9 @@
       "registryCityIds": [
         "wup2025:2745"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "orleans"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -63554,7 +63629,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2745/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -64570,7 +64644,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-4616-palermo.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.12077&mlon=13.34782#map=12/38.12077/13.34782",
@@ -65120,7 +65193,7 @@
       "evidenceFiles": [
         "research/paris.json",
         "research/paris-live-wfs.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=48.84911&mlon=2.35557#map=12/48.84911/2.35557",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=48.84911%2C2.35557",
@@ -65336,7 +65409,9 @@
       "registryCityIds": [
         "wup2025:1749"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "pau"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -65370,7 +65445,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1749/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -66399,7 +66473,9 @@
       "registryCityIds": [
         "wup2025:2934"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "poissy"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -66433,7 +66509,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2934/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -66452,7 +66527,9 @@
       "registryCityIds": [
         "wup2025:2083"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "poitiers"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -66486,7 +66563,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2083/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -70116,7 +70192,9 @@
       "registryCityIds": [
         "wup2025:3847"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "reims"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -70150,7 +70228,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3847/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -70169,7 +70246,9 @@
       "registryCityIds": [
         "wup2025:1037"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rennes"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -70203,7 +70282,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1037/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -71239,7 +71317,9 @@
       "registryCityIds": [
         "wup2025:3294"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rustenburg"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -71269,7 +71349,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3294/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.64761&mlon=27.21368#map=12/-25.64761/27.21368",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.64761%2C27.21368",
@@ -71931,7 +72011,9 @@
       "registryCityIds": [
         "wup2025:799"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "saint_brieuc"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -71965,7 +72047,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/799/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -72198,7 +72279,9 @@
       "registryCityIds": [
         "wup2025:921"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "saint_nazaire"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -72232,7 +72315,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/921/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -72305,7 +72387,9 @@
       "registryCityIds": [
         "wup2025:2761"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "sakhrol"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -72335,7 +72419,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2761/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.89152&mlon=26.59470#map=12/-26.89152/26.59470",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.89152%2C26.59470",
@@ -73219,7 +73303,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-2295-san-diego.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.72893&mlon=-117.08697#map=12/32.72893/-117.08697",
@@ -79123,7 +79206,9 @@
       "registryCityIds": [
         "wup2025:1173"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "stellenbosch"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -79153,7 +79238,7 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/1173/qualification.json",
-        "research/qualification-admission-2026-10-12.json"
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.92201&mlon=18.85814#map=12/-33.92201/18.85814",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.92201%2C18.85814",
@@ -84584,7 +84669,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-2391-toulouse.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -84603,7 +84687,9 @@
       "registryCityIds": [
         "wup2025:2162"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "tours"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -84637,7 +84723,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/2162/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -84824,7 +84909,9 @@
       "registryCityIds": [
         "wup2025:3938"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "troyes"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -84858,7 +84945,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3938/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -85082,7 +85168,6 @@
       ],
       "evidenceFiles": [
         "research/overnight-cities-2026-10-08/city-11540-tuen-mun.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=22.42664&mlon=113.99637#map=12/22.42664/113.99637",
@@ -85181,8 +85266,12 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": null,
-      "checkedDateEvidence": null,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
+        "field": "$.checkedAt"
+      },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -85196,7 +85285,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/tung_chung/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=22.28625&mlon=113.94226#map=12/22.28625/113.94226",
@@ -86160,7 +86248,9 @@
       "registryCityIds": [
         "wup2025:4195"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "valence"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -86194,7 +86284,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/4195/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -86327,7 +86416,9 @@
       "registryCityIds": [
         "wup2025:3753"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "valenciennes"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -86361,7 +86452,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-11-round2/3753/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/paris-live-wfs.json",
         "research/lyon-live.json"
       ],
@@ -87519,7 +87609,6 @@
       ],
       "evidenceFiles": [
         "world-parcels/research/qualification-2026-10-12/vosman/qualification.json",
-        "research/qualification-admission-2026-10-12.json",
         "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.85734&mlon=29.11800#map=12/-25.85734/29.11800",

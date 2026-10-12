@@ -1,4 +1,4 @@
-// Exercise every action exposed by the site-first build palette through its real UI handlers.
+// Exercise every action of the site's proposal panel ("Propose here") through its real UI handlers.
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, PARCEL_ID } from '../helpers/runtime';
 
@@ -11,9 +11,10 @@ async function beginParcelSite(page: import('@playwright/test').Page) {
   const panel = page.locator('#site-panel');
   await expect(panel).toBeVisible();
   const site = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).SiteTool.current().site)));
-  await panel.locator('[data-site-action="palette"]').click();
-  await expect(panel.locator('.site-panel__palette')).toBeVisible();
-  return { panel, site };
+  await panel.locator('[data-site-action="propose"]').click();
+  const proposals = page.locator('#site-info-panel');
+  await expect(proposals).toBeVisible();
+  return { panel: proposals, site };
 }
 
 async function expectActiveDraftSite(page: import('@playwright/test').Page, site: any, adapterKey: string) {
@@ -40,9 +41,12 @@ test.describe('Site build palette controls @core', () => {
   ]) test(`${item.label} plot flow opens its editor draft on the authored site`, async ({ mockApi: page }) => {
     const { panel, site } = await beginParcelSite(page);
     await panel.locator(`.parcel-build-btn--${item.key}`).click();
-    await expect(panel.locator('[data-site-action="plots-continue"]')).toBeEnabled();
-    await expect(panel.locator('[data-site-action="plots-back"]')).toBeVisible();
-    await panel.locator('[data-site-action="plots-continue"]').click();
+    // Plot cutting continues on the site card; the proposal panel steps aside.
+    const card = page.locator('#site-panel');
+    await expect(panel).toBeHidden();
+    await expect(card.locator('[data-site-action="plots-continue"]')).toBeEnabled();
+    await expect(card.locator('[data-site-action="plots-back"]')).toBeVisible();
+    await card.locator('[data-site-action="plots-continue"]').click();
     await expect(page.locator(item.surface)).toBeVisible();
     await expectActiveDraftSite(page, site, item.adapter);
   });
@@ -80,11 +84,11 @@ test.describe('Site build palette controls @core', () => {
     await clickMapPoint(page, 15.98235, 45.80038);
     await expect(panel.locator('[data-site-action="finish"]')).toBeEnabled();
     await panel.locator('[data-site-action="finish"]').click();
-    await expect(panel.locator('[data-site-action="palette"]')).toBeEnabled();
+    await expect(panel.locator('[data-site-action="propose"]')).toBeEnabled();
     const openGroundArea = await page.evaluate(() => (window as any).__siteDraft.bindingSummary((window as any).SiteTool.current().preview).unsurveyedM2);
     expect(openGroundArea).toBeGreaterThan(0);
-    await panel.locator('[data-site-action="palette"]').click();
-    const subdivide = panel.locator('.parcel-build-btn--reparcellization');
+    await panel.locator('[data-site-action="propose"]').click();
+    const subdivide = page.locator('#site-info-panel .parcel-build-btn--reparcellization');
     await expect(subdivide).toBeEnabled();
     await expect(subdivide).toHaveText(/Subdivide/i);
     await subdivide.click();

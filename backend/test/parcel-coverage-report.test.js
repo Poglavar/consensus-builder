@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { nextSort, sortRows, filterCities, countryCategory, summarizeJurisdictions, mapLinks } from '../../frontend/js/parcel-coverage-report-model.mjs';
 import { buildParcelReport } from '../../scripts/build-parcel-coverage-report.mjs';
 import { reportMessages } from '../../frontend/js/parcel-coverage-report-i18n.mjs';
+import { readFileSync } from 'node:fs';
 
 function buildSmallReport({ registry, liveCities, enrichmentCities = [] }) {
     const statistics = { landAreaKm2: 10, builtUpAreaKm2: 2, population: 100 };
@@ -191,5 +192,16 @@ describe('parcel coverage report', () => {
             expect(Object.keys(messages).sort()).toEqual(Object.keys(reportMessages.en).sort());
             for (const key of Object.keys(reportMessages.en)) expect((messages[key].match(/\{\w+\}/g) || []).sort()).toEqual((reportMessages.en[key].match(/\{\w+\}/g) || []).sort());
         }
+    });
+
+    it('publishes an app binding for every city an enabled registry provider serves', () => {
+        // A release once replaced a provider's city list instead of extending it, and the committed
+        // report silently lost 67 of 354 bindings. The published report must cover the registry.
+        const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
+        const registry = read('../../world-parcels/registry.json'), report = read('../../frontend/data/parcel-coverage-report.json');
+        const published = new Set(report.cities.flatMap(city => city.appCityIds || []));
+        const missing = registry.sources.filter(source => source.liveIntegration?.status === 'enabled')
+            .flatMap(source => (source.liveIntegration.cityIds || []).filter(id => !published.has(id)).map(id => `${source.sourceId}:${id}`));
+        expect(missing).toEqual([]);
     });
 });

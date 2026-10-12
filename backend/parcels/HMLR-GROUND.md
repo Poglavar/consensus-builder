@@ -37,6 +37,14 @@ viewport or across a council boundary, while a long parcel's rectangle cannot pu
 in a neighbouring ZIP. Results keep full parcel footprints; the viewport never
 clips them.
 
+The map requests 0.001-degree grid cells, but HMLR cities fetch the cells a view
+needs in aligned 5x5 blocks: one adapter query per block, answered to each cell by
+parcel extent (`frontend/js/parcels/fetch.js`, `CELL_BLOCK_SIDE_BY_SOURCE`). Per cell,
+every query re-read and re-resolved the same overlap context; a warm Oxford view
+took 11.3 s in 105 queries and 3.1 s in 8 blocks, with the same 857 parcels. Blocks
+cover only requested cells, never fixed tiles, so a block cannot pull in a council
+ZIP the view does not need. Other sources stay per cell until measured.
+
 Grid cells and council loads are shared and cancellable. A newer whole-view fetch
 supersedes the previous one: cells only the older view wanted are cancelled (queued
 ones are never sent), and cells both views want keep loading. In the worker, a

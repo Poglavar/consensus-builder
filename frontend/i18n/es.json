@@ -4993,13 +4993,12 @@
         "titleDrawing": "Dibuja un sitio",
         "hint": {
             "drawing": "Haz clic para añadir vértices (se ajustan a los contornos de parcelas y edificios; mantén Alt para evitarlo). Haz clic en el primer vértice o pulsa Enter para terminar. Retroceso quita el último vértice, Esc cancela.",
-            "editing": "Arrastra los vértices para cambiar la forma; haz clic en un borde para añadir uno. Después construye en el sitio.",
+            "editing": "Arrastra los vértices para cambiar la forma; haz clic en un borde para añadir uno. Después propón en el sitio.",
             "plots": "Los lotes se cortan a lo largo del borde de fachada (por defecto el que da a una calle; si no, el más largo). Haz clic en otro borde del sitio para usarlo."
         },
         "actions": {
             "finish": "Terminar sitio",
             "undoCorner": "Quitar el último vértice",
-            "build": "Construir en este sitio",
             "redraw": "Volver a dibujar",
             "cancel": "Cancelar"
         },

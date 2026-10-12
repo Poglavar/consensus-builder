@@ -41,8 +41,8 @@ test.describe('Map context actions @features', () => {
 
     await page.locator('#selection-tray [data-command="selection.useAsSite"]').click();
     await expect(page.locator('#site-panel')).toBeVisible();
-    await page.locator('[data-site-action="palette"]').click();
-    await page.locator('#site-panel .parcel-build-btn--park').click();
+    await page.locator('[data-site-action="propose"]').click();
+    await page.locator('#site-info-panel .parcel-build-btn--park').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((p: any) => p.applied && p.structureProposal?.kind === 'park' && p.site))).toBe(true);
 

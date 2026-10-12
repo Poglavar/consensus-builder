@@ -2,7 +2,8 @@
 // and existing-building outlines, edit vertices — and see its binding as you go: bound parcels outlined, parcels reached into
 // by under half a metre flagged with the width, open ground hatched, a coverage label; a preview over
 // the loaded parcels first (labelled), then the server's answer (POST /proposals/binding). From the
-// site panel the build palette creates on the site: structures use it directly, a block uses it as
+// site panel, "Propose here" opens the site's proposal panel: the parcel panel's twin, with Info and
+// Proposals tabs and the same palette. Structures use the site directly, a block uses it as
 // its superparcel, detached and row houses cut synthetic plots along a frontage edge
 // (proposals/site-plots.js). The pure halves are proposals/site-draft.js and site-binding.js; the
 // map interaction reuses PolygonGeometryEditor. PARCEL-OPTIONAL.md, phase 2.
@@ -40,7 +41,10 @@
         renderer: null,
         drawingLayers: null,
         panel: null,
-        paletteOpen: false,
+        infoPanel: null,
+        proposeOpen: false,
+        proposeMinimized: false,
+        proposeTab: 'proposals',
         plotTool: null,
         frontageIndex: null,
         plots: [],
@@ -610,7 +614,7 @@
         if (state.phase === 'plots') {
             return t('siteTool.hint.plots', 'Plots are cut along the frontage edge (by default the one facing a street, else the longest). Click another edge of the site to use it instead.');
         }
-        return t('siteTool.hint.editing', 'Drag corners to reshape, click an edge to add one. Then build on the site.');
+        return t('siteTool.hint.editing', 'Drag corners to reshape, click an edge to add one. Then propose on the site.');
     }
 
     function siteErrorText(reason) {
@@ -716,8 +720,90 @@
             </div>`;
     }
 
+    // The site's proposal panel: the parcel panel's twin (same dock, header and tabs), opened by
+    // "Propose here". Regions are rewritten only when their content changes, so dragging a corner
+    // does not reset the palette's scroll position.
+    function ensureInfoPanel() {
+        if (state.infoPanel) return state.infoPanel;
+        const host = doc.getElementById('map-container') || doc.body;
+        const panel = doc.createElement('section');
+        panel.id = 'site-info-panel';
+        panel.className = 'info-panel right-dock-panel site-info-panel';
+        panel.setAttribute('role', 'region');
+        panel.innerHTML = `
+            <div class="panel-header">
+                <h3 data-site-region="title"></h3>
+                <button type="button" class="close-circle-btn close-circle-btn--lg" data-site-action="minimize-propose" aria-expanded="true"></button>
+                <button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-site-action="close-propose"></button>
+            </div>
+            <div class="parcel-tabs" role="tablist">
+                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="info"></button>
+                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="proposals"></button>
+            </div>
+            <div class="panel-body">
+                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="info"></div>
+                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="proposals"></div>
+            </div>`;
+        panel.addEventListener('click', onInfoPanelClick);
+        host.appendChild(panel);
+        state.infoPanel = panel;
+        return panel;
+    }
+
+    function setRegion(element, html) {
+        if (element && element.__siteHtml !== html) { element.innerHTML = html; element.__siteHtml = html; }
+    }
+
+    function renderInfoPanel() {
+        const open = isActive() && state.phase === 'editing' && Boolean(state.site) && state.proposeOpen;
+        doc.body.classList.toggle('site-proposing', open);
+        if (!open) { if (state.infoPanel) state.infoPanel.classList.remove('visible'); return; }
+        const panel = ensureInfoPanel();
+        const closeLabel = t('modal.common.close', 'Close');
+        setRegion(panel.querySelector('[data-site-region="title"]'),
+            `${escapeHtml(t('siteTool.title', 'Site'))} <span class="site-info-panel__area">${escapeHtml(areaText())}</span>`);
+        const close = panel.querySelector('[data-site-action="close-propose"]');
+        close.textContent = '×';
+        close.setAttribute('aria-label', closeLabel);
+        close.setAttribute('title', closeLabel);
+        // Folds to its header like the parcel panel, uncovering the map while the site is reshaped.
+        const minimize = panel.querySelector('[data-site-action="minimize-propose"]');
+        const minimizeLabel = state.proposeMinimized ? t('sidebar.areaMonitor.expand', 'Expand') : t('sidebar.areaMonitor.minimize', 'Minimize');
+        minimize.innerHTML = state.proposeMinimized ? '+' : '&#8722;';
+        minimize.setAttribute('aria-label', minimizeLabel);
+        minimize.setAttribute('title', minimizeLabel);
+        minimize.setAttribute('aria-expanded', String(!state.proposeMinimized));
+        panel.classList.toggle('is-minimized', state.proposeMinimized);
+        const labels = { info: t('panel.parcel.tabInfo', 'Info'), proposals: t('panel.parcel.tabProposals', 'Proposals') };
+        panel.querySelectorAll('[data-site-tab]').forEach(button => {
+            const tab = button.getAttribute('data-site-tab'), active = tab === state.proposeTab;
+            button.textContent = labels[tab];
+            button.classList.toggle('active', active);
+            button.setAttribute('aria-selected', String(active));
+        });
+        panel.querySelectorAll('[data-site-tab-panel]').forEach(region => {
+            const tab = region.getAttribute('data-site-tab-panel');
+            region.classList.toggle('active', tab === state.proposeTab);
+            setRegion(region, tab === 'info' ? bindingHtml() : paletteHtml());
+        });
+        panel.style.setProperty('--site-sheet-clearance', '0px');
+        panel.classList.add('visible');
+        // In a window too narrow for the site card and this panel side by side, stand above the card.
+        const sheet = state.panel && !state.panel.hidden ? state.panel.getBoundingClientRect() : null;
+        const own = panel.getBoundingClientRect();
+        if (sheet && sheet.width > 0 && own.width > 0 && sheet.left < own.right && own.left < sheet.right) {
+            panel.style.setProperty('--site-sheet-clearance', `${Math.ceil(sheet.height) + 8}px`);
+        }
+    }
+
+    function onInfoPanelClick(event) {
+        const tab = event.target.closest('[data-site-tab]');
+        if (tab) { state.proposeTab = tab.getAttribute('data-site-tab'); renderInfoPanel(); return; }
+        onPanelClick(event);
+    }
+
     function renderPanel() {
-        if (!isActive()) { if (state.panel) state.panel.hidden = true; return; }
+        if (!isActive()) { if (state.panel) state.panel.hidden = true; renderInfoPanel(); return; }
         const panel = ensurePanel();
         panel.hidden = false;
         panel.setAttribute('aria-label', t('siteTool.title', 'Site'));
@@ -727,7 +813,7 @@
             actions.push(`<button type="button" class="site-panel__btn site-panel__btn--primary" data-site-action="finish" ${state.ring.length >= 3 ? '' : 'disabled'}>${escapeHtml(t('siteTool.actions.finish', 'Finish site'))}</button>`);
             actions.push(`<button type="button" class="site-panel__btn" data-site-action="undo" ${state.ring.length ? '' : 'disabled'}>${escapeHtml(t('siteTool.actions.undoCorner', 'Remove last corner'))}</button>`);
         } else if (state.phase === 'editing') {
-            actions.push(`<button type="button" class="site-panel__btn site-panel__btn--primary" data-site-action="palette" ${state.site ? '' : 'disabled'} aria-expanded="${state.paletteOpen}">${escapeHtml(t('siteTool.actions.build', 'Build on this site'))}</button>`);
+            actions.push(`<button type="button" class="site-panel__btn site-panel__btn--primary" data-site-action="propose" ${state.site ? '' : 'disabled'} aria-expanded="${state.proposeOpen}">${escapeHtml(t('parcelMenu.actions.propose', 'Propose here'))}</button>`);
             actions.push(`<button type="button" class="site-panel__btn" data-site-action="redraw">${escapeHtml(t('siteTool.actions.redraw', 'Redraw'))}</button>`);
         }
         actions.push(`<button type="button" class="site-panel__btn" data-site-action="cancel">${escapeHtml(t('siteTool.actions.cancel', 'Cancel'))}</button>`);
@@ -742,8 +828,8 @@
             ${state.siteError && state.phase !== 'drawing' ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}
             ${state.siteError && state.phase === 'drawing' && state.ring.length >= 3 ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}
             <div class="site-panel__binding">${bindingHtml()}</div>
-            ${state.phase === 'plots' ? plotsHtml() : `<div class="site-panel__actions">${actions.join('')}</div>`}
-            ${state.phase === 'editing' && state.paletteOpen && state.site ? `<div class="site-panel__palette">${paletteHtml()}</div>` : ''}`;
+            ${state.phase === 'plots' ? plotsHtml() : `<div class="site-panel__actions">${actions.join('')}</div>`}`;
+        renderInfoPanel();
     }
 
     function onPanelClick(event) {
@@ -756,7 +842,16 @@
         const action = button.getAttribute('data-site-action');
         if (action === 'finish') finishDrawing();
         else if (action === 'undo') { state.ring.pop(); renderLayers(); renderPanel(); }
-        else if (action === 'palette') { state.paletteOpen = !state.paletteOpen; renderPanel(); }
+        else if (action === 'propose') {
+            // Like a parcel's "Propose here": the proposal panel opens on its Proposals tab.
+            try { if (typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel(); } catch (_) { }
+            state.proposeOpen = true;
+            state.proposeMinimized = false;
+            state.proposeTab = 'proposals';
+            renderPanel();
+        }
+        else if (action === 'close-propose') { state.proposeOpen = false; renderPanel(); }
+        else if (action === 'minimize-propose') { state.proposeMinimized = !state.proposeMinimized; renderInfoPanel(); }
         else if (action === 'redraw') redraw();
         else if (action === 'cancel') cancel();
         else if (action === 'plots-continue') continueWithPlots();
@@ -829,7 +924,7 @@
         if (!win.__sitePlots) { notify(t('siteTool.errors.plotsUnavailable', 'Plot cutting is not available.'), 'error'); return; }
         state.phase = 'plots';
         state.plotTool = toolKey;
-        state.paletteOpen = false;
+        state.proposeOpen = false;
         state.frontageIndex = win.__sitePlots.defaultFrontageEdge(state.site);
         destroyEditor();
         cutPlots();
@@ -904,7 +999,7 @@
         state.serverError = null;
         state.serverPending = false;
         state.serverSeq += 1;
-        state.paletteOpen = false;
+        state.proposeOpen = false;
         state.plotTool = null;
         state.plots = [];
         state.frontageIndex = null;
@@ -997,6 +1092,7 @@
         if (win.__mapEditLock) win.__mapEditLock.release(LOCK_OWNER);
         if (!options.keepSynthetic) state.synthetic.clear();
         reset();
+        renderInfoPanel();
     }
 
     function cancel() {

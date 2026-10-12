@@ -749,7 +749,8 @@
                     cell.interest -= 1;
                     if (cell.settled || cell.pinned || cell.interest > 0) return;
                     if (boundsInFlight.get(cell.cacheKey) === cell) boundsInFlight.delete(cell.cacheKey);
-                    cell.controller.abort(signal.reason);
+                    // A request serving several cells stops only when none of them is wanted.
+                    if (cell.request.cells.every(other => !other.pinned && other.interest === 0)) cell.request.controller.abort(signal.reason);
                 }, { once: true });
             };
             pendingKeys.forEach(key => {
@@ -763,6 +764,10 @@
                 const requestTransport = transport();
                 const fetchBounds = requestTransport && requestTransport.fetchBounds;
                 if (typeof fetchBounds !== 'function') throw new Error('Cadastral bounds transport is unavailable.');
+                // Sources whose queries share costly overlap context fetch aligned blocks of cells in
+                // one request; each cell is still accepted, recorded and provided on its own.
+                const blockSide = typeof requestTransport.fetchCellBlock === 'function' && typeof requestTransport.cellBlockSide === 'function'
+                    ? Number(requestTransport.cellBlockSide({ city })) || 1 : 1;
                 // One request and one provision per cell, at most BOUNDS_CONCURRENCY in flight. A
                 // cell's parcels reach the fabric as soon as that cell lands, as their own mutation,
                 // so a viewport of nine cells is nine small commits that paint progressively instead
@@ -779,40 +784,57 @@
                     const next = queue.shift();
                     if (next) next(); else active -= 1;
                 };
-                let done = 0;
+                const blocks = new Map();
                 ownKeys.forEach(key => {
-                    const cacheKey = scoped(city, key);
-                    const cell = { cacheKey, controller: new AbortController(), interest: 0, pinned: false, settled: false, progress: new Set() };
-                    const cellSignal = cell.controller.signal;
-                    const own = acquire()
+                    const [gridE, gridN] = String(key).split(',').map(Number);
+                    const blockKey = blockSide > 1 && Number.isFinite(gridE) && Number.isFinite(gridN)
+                        ? `${Math.floor(gridE / blockSide)},${Math.floor(gridN / blockSide)}` : `cell:${key}`;
+                    if (!blocks.has(blockKey)) blocks.set(blockKey, []);
+                    blocks.get(blockKey).push(key);
+                });
+                let done = 0;
+                blocks.forEach(keys => {
+                    const request = { controller: new AbortController(), cells: [], progress: new Set() };
+                    const requestSignal = request.controller.signal;
+                    const onProgress = detail => { if (detail?.phase) request.progress.forEach(listener => emit(listener, detail)); };
+                    const answers = acquire()
                         .then(() => {
-                            // A cell nobody wants any more is never sent.
-                            if (cellSignal.aborted) throw cellSignal.reason;
-                            return fetchBounds(bounds, { city, keys: [key], signal: cellSignal, onProgress: detail => {
-                                if (detail?.phase) cell.progress.forEach(listener => emit(listener, detail));
-                            } });
+                            // A request none of whose cells is wanted any more is never sent.
+                            if (requestSignal.aborted) throw requestSignal.reason;
+                            return keys.length > 1
+                                ? requestTransport.fetchCellBlock(bounds, { city, keys, signal: requestSignal, onProgress })
+                                : fetchBounds(bounds, { city, keys, signal: requestSignal, onProgress })
+                                    .then(result => ({ cells: [{ key: keys[0], result }] }));
                         })
-                        .then(result => acceptTransportResult(result, {
-                            city,
-                            skipConversion: result && result.returnsWGS84 === true
-                        }))
-                        .then(async result => {
-                            const ids = new Set((result.ids || []).map(String));
-                            loaded.set(key, ids);
+                        .then(async block => {
                             requestCount += 1;
-                            done += 1;
-                            emit(options.onProgress, { done, total: ownKeys.length });
-                            await provideFeatures(Array.from(ids, id => featureStore(city).get(id)).filter(Boolean), provision);
-                            return result;
+                            const accepted = new Map();
+                            for (const { key, result } of block.cells) {
+                                const answer = await acceptTransportResult(result, { city, skipConversion: result && result.returnsWGS84 === true });
+                                const ids = new Set((answer.ids || []).map(String));
+                                loaded.set(key, ids);
+                                done += 1;
+                                emit(options.onProgress, { done, total: ownKeys.length });
+                                await provideFeatures(Array.from(ids, id => featureStore(city).get(id)).filter(Boolean), provision);
+                                accepted.set(key, answer);
+                            }
+                            return accepted;
                         })
                         .finally(() => {
-                            cell.settled = true;
                             release();
-                            if (boundsInFlight.get(cacheKey) === cell) boundsInFlight.delete(cacheKey);
+                            request.cells.forEach(cell => {
+                                cell.settled = true;
+                                if (boundsInFlight.get(cell.cacheKey) === cell) boundsInFlight.delete(cell.cacheKey);
+                            });
                         });
-                    cell.promise = own;
-                    boundsInFlight.set(cacheKey, cell);
-                    join(cell);
+                    keys.forEach(key => {
+                        const cacheKey = scoped(city, key);
+                        const cell = { cacheKey, request, interest: 0, pinned: false, settled: false, progress: request.progress };
+                        cell.promise = answers.then(accepted => accepted.get(key));
+                        request.cells.push(cell);
+                        boundsInFlight.set(cacheKey, cell);
+                        join(cell);
+                    });
                 });
             }
             // Every cell arrival schedules a corridor strip refresh after its commit; hold them so a

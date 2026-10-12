@@ -310,14 +310,14 @@ test.describe('Editor button effects @features', () => {
     await clickMapPoint(page, 15.9822, 45.80025);
     await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
     await expect(page.locator('#site-panel')).toBeVisible();
-    await page.locator('#site-panel [data-site-action="palette"]').click();
-    await page.locator('#site-panel .parcel-build-btn--parcelBased').click();
+    await page.locator('#site-panel [data-site-action="propose"]').click();
+    await page.locator('#site-info-panel .parcel-build-btn--parcelBased').click();
     await expect(page.locator('#site-panel [data-site-action="plots-back"]')).toBeVisible();
     await expect(page.locator('#site-panel [data-site-action="plots-continue"]')).toBeEnabled();
     await page.locator('#site-panel [data-site-action="plots-back"]').click();
     await expect.poll(() => page.evaluate(() => (window as any).SiteTool.current().phase)).toBe('editing');
-    await page.locator('#site-panel [data-site-action="palette"]').click();
-    await page.locator('#site-panel .parcel-build-btn--parcelBased').click();
+    await page.locator('#site-panel [data-site-action="propose"]').click();
+    await page.locator('#site-info-panel .parcel-build-btn--parcelBased').click();
     await page.locator('#site-panel [data-site-action="plots-continue"]').click();
     await expect(page.locator('#site-panel')).toBeHidden();
     await expect(page.locator('#parcelbased-modal')).toBeVisible();

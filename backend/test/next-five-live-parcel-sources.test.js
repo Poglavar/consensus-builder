@@ -48,7 +48,7 @@ function fixture(descriptor, sample) {
 }
 describe.each(cases)('$city configured live source', sample => {
     it('keeps native parcel identity distinct from source row identity and display labels', async () => {
-        const { descriptor } = parcelSourceForCity(sample.city);
+        const { descriptor } = parcelSourceForCity(sample.city, sample.source);
         expect(descriptor.id).toBe(sample.source);
         expect(descriptor.metricSrid).toBe(sample.srid);
         const { fetchImpl, id, native } = fixture(descriptor, sample);
@@ -95,11 +95,11 @@ describe.each(cases)('$city configured live source', sample => {
         }
     });
     it('binds the footprint through the chosen source without imported parcel tables', async () => {
-        const { descriptor } = parcelSourceForCity(sample.city);
+        const { descriptor } = parcelSourceForCity(sample.city, sample.source);
         const { raw, fetchImpl, id } = fixture(descriptor, sample);
         vi.stubGlobal('fetch', fetchImpl);
         const db = { query: vi.fn(async () => { throw Error('Unexpected parcel database read'); }) };
-        const { binding } = await computeBinding(db, { city: sample.city, site: raw.geometry });
+        const { binding } = await computeBinding(db, { city: sample.city, site: raw.geometry, parcelSourceId: sample.source });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: 'server:' + descriptor.id });
         expect(binding.parcels.map(p => p.parcelId)).toEqual([id]);

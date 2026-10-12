@@ -3047,16 +3047,119 @@
         "wup2025:921",
         "wup2025:1469"
       ],
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/paris-live-wfs.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "paris",
+          "lyon",
+          "marseille",
+          "lille",
+          "toulouse",
+          "bordeaux",
+          "grenoble",
+          "rennes",
+          "cannes",
+          "tours",
+          "nancy",
+          "maurepas",
+          "orleans",
+          "dijon",
+          "clermont_ferrand",
+          "reims",
+          "le_havre",
+          "lens",
+          "angers",
+          "caen",
+          "le_mans",
+          "metz",
+          "brest",
+          "nimes",
+          "annecy",
+          "limoges",
+          "amiens",
+          "pau",
+          "troyes",
+          "valenciennes",
+          "bayonne",
+          "poitiers",
+          "le_mee_sur_seine",
+          "dunkirk",
+          "aix_en_provence",
+          "annemasse",
+          "lorient",
+          "poissy",
+          "valence",
+          "avignon",
+          "calais",
+          "boulogne_sur_mer",
+          "chartres",
+          "beziers",
+          "douai",
+          "ajaccio",
+          "arras",
+          "cherbourg_en_cotentin",
+          "saint_brieuc",
+          "bussy_saint_georges",
+          "saint_nazaire",
           "la_rochelle"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "evidenceFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json",
+        "verifiedAt": "2026-10-11",
+        "adapter": "wfs",
+        "cityEvidenceFiles": {
+          "grenoble": "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
+          "rennes": "world-parcels/research/qualification-2026-10-11-round2/1037/qualification.json",
+          "cannes": "world-parcels/research/qualification-2026-10-11-round2/4760/qualification.json",
+          "tours": "world-parcels/research/qualification-2026-10-11-round2/2162/qualification.json",
+          "nancy": "world-parcels/research/qualification-2026-10-11-round2/4503/qualification.json",
+          "maurepas": "world-parcels/research/qualification-2026-10-11-round2/2809/qualification.json",
+          "orleans": "world-parcels/research/qualification-2026-10-11-round2/2745/qualification.json",
+          "dijon": "world-parcels/research/qualification-2026-10-11-round2/4153/qualification.json",
+          "clermont_ferrand": "world-parcels/research/qualification-2026-10-11-round2/3704/qualification.json",
+          "reims": "world-parcels/research/qualification-2026-10-11-round2/3847/qualification.json",
+          "le_havre": "world-parcels/research/qualification-2026-10-11-round2/1922/qualification.json",
+          "lens": "world-parcels/research/qualification-2026-10-11-round2/3390/qualification.json",
+          "angers": "world-parcels/research/qualification-2026-10-11-round2/1659/qualification.json",
+          "caen": "world-parcels/research/qualification-2026-10-11-round2/1838/qualification.json",
+          "le_mans": "world-parcels/research/qualification-2026-10-11-round2/2005/qualification.json",
+          "metz": "world-parcels/research/qualification-2026-10-11-round2/4429/qualification.json",
+          "brest": "world-parcels/research/qualification-2026-10-11-round2/524/qualification.json",
+          "nimes": "world-parcels/research/qualification-2026-10-11-round2/4025/qualification.json",
+          "annecy": "world-parcels/research/qualification-2026-10-11-round2/4577/qualification.json",
+          "limoges": "world-parcels/research/qualification-2026-10-11-round2/2316/qualification.json",
+          "amiens": "world-parcels/research/qualification-2026-10-11-round2/3112/qualification.json",
+          "pau": "world-parcels/research/qualification-2026-10-11-round2/1749/qualification.json",
+          "troyes": "world-parcels/research/qualification-2026-10-11-round2/3938/qualification.json",
+          "valenciennes": "world-parcels/research/qualification-2026-10-11-round2/3753/qualification.json",
+          "bayonne": "world-parcels/research/qualification-2026-10-11-round2/1367/qualification.json",
+          "poitiers": "world-parcels/research/qualification-2026-10-11-round2/2083/qualification.json",
+          "le_mee_sur_seine": "world-parcels/research/qualification-2026-10-11-round2/3227/qualification.json",
+          "dunkirk": "world-parcels/research/qualification-2026-10-11-round2/3053/qualification.json",
+          "aix_en_provence": "world-parcels/research/qualification-2026-10-11-round2/4314/qualification.json",
+          "annemasse": "world-parcels/research/qualification-2026-10-11-round2/4614/qualification.json",
+          "lorient": "world-parcels/research/qualification-2026-10-11-round2/666/qualification.json",
+          "poissy": "world-parcels/research/qualification-2026-10-11-round2/2934/qualification.json",
+          "valence": "world-parcels/research/qualification-2026-10-11-round2/4195/qualification.json",
+          "avignon": "world-parcels/research/qualification-2026-10-11-round2/4111/qualification.json",
+          "calais": "world-parcels/research/qualification-2026-10-11-round2/2678/qualification.json",
+          "boulogne_sur_mer": "world-parcels/research/qualification-2026-10-11-round2/2541/qualification.json",
+          "chartres": "world-parcels/research/qualification-2026-10-11-round2/2466/qualification.json",
+          "beziers": "world-parcels/research/qualification-2026-10-11-round2/3800/qualification.json",
+          "douai": "world-parcels/research/qualification-2026-10-11-round2/3602/qualification.json",
+          "ajaccio": "world-parcels/research/qualification-2026-10-11-round2/4902/qualification.json",
+          "arras": "world-parcels/research/qualification-2026-10-11-round2/3282/qualification.json",
+          "cherbourg_en_cotentin": "world-parcels/research/qualification-2026-10-11-round2/1261/qualification.json",
+          "saint_brieuc": "world-parcels/research/qualification-2026-10-11-round2/799/qualification.json",
+          "bussy_saint_georges": "world-parcels/research/qualification-2026-10-11-round2/3443/qualification.json",
+          "saint_nazaire": "world-parcels/research/qualification-2026-10-11-round2/921/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged.",
+        "additionalCityEvidence": {
+          "la_rochelle": "world-parcels/research/qualification-2026-10-12/la_rochelle/qualification.json"
+        }
       },
       "integrationAttempts": [
         {
@@ -3129,6 +3232,57 @@
       },
       "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
       "appCityIds": [
+        "paris",
+        "lyon",
+        "marseille",
+        "lille",
+        "toulouse",
+        "bordeaux",
+        "grenoble",
+        "rennes",
+        "cannes",
+        "tours",
+        "nancy",
+        "maurepas",
+        "orleans",
+        "dijon",
+        "clermont_ferrand",
+        "reims",
+        "le_havre",
+        "lens",
+        "angers",
+        "caen",
+        "le_mans",
+        "metz",
+        "brest",
+        "nimes",
+        "annecy",
+        "limoges",
+        "amiens",
+        "pau",
+        "troyes",
+        "valenciennes",
+        "bayonne",
+        "poitiers",
+        "le_mee_sur_seine",
+        "dunkirk",
+        "aix_en_provence",
+        "annemasse",
+        "lorient",
+        "poissy",
+        "valence",
+        "avignon",
+        "calais",
+        "boulogne_sur_mer",
+        "chartres",
+        "beziers",
+        "douai",
+        "ajaccio",
+        "arras",
+        "cherbourg_en_cotentin",
+        "saint_brieuc",
+        "bussy_saint_georges",
+        "saint_nazaire",
         "la_rochelle"
       ]
     },
@@ -12744,7 +12898,7 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32611",
       "reuseStatus": "Public official GIS reference data; source conditions informational. Sample does not establish legal title, survey accuracy or municipal completeness.",
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json",
       "verifiedCityIds": [
         "wup2025:2295",
         "wup2025:2660"
@@ -12753,17 +12907,19 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "sandiego",
           "encinitas"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "evidenceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json",
+        "additionalCityEvidence": {
+          "encinitas": "world-parcels/research/qualification-2026-10-12/encinitas/qualification.json"
+        }
       },
       "cityScopes": {
         "wup2025:2295": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN."
       },
       "appCityIds": [
+        "sandiego",
         "encinitas"
       ]
     },
@@ -13092,7 +13248,7 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32735",
       "reuseStatus": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified.",
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
       "verifiedCityIds": [
         "wup2025:4203",
         "wup2025:3714",
@@ -13118,13 +13274,52 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "klipgat",
+          "evaton",
+          "madadeni",
+          "rustenburg",
+          "sakhrol",
+          "kwanobuhle",
+          "coalbrook",
+          "mpumalanga",
+          "stellenbosch",
+          "jerusalem_za",
+          "mankweng",
+          "ekangala",
+          "bohlokong",
+          "brits",
+          "ezakheni",
+          "matsulu",
+          "khuma",
           "lenasia",
           "vosman"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "evidenceFile": "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json",
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "cityEvidenceFiles": {
+          "madadeni": "world-parcels/research/qualification-2026-10-11-round2/5074/qualification.json",
+          "rustenburg": "world-parcels/research/qualification-2026-10-11-round2/3294/qualification.json",
+          "sakhrol": "world-parcels/research/qualification-2026-10-11-round2/2761/qualification.json",
+          "kwanobuhle": "world-parcels/research/qualification-2026-10-11-round2/1858/qualification.json",
+          "coalbrook": "world-parcels/research/qualification-2026-10-11-round2/3762/qualification.json",
+          "mpumalanga": "world-parcels/research/qualification-2026-10-11-round2/5167/qualification.json",
+          "stellenbosch": "world-parcels/research/qualification-2026-10-11-round2/1173/qualification.json",
+          "jerusalem_za": "world-parcels/research/qualification-2026-10-11-round2/5395/qualification.json",
+          "mankweng": "world-parcels/research/qualification-2026-10-11-round2/5197/qualification.json",
+          "ekangala": "world-parcels/research/qualification-2026-10-11-round2/4655/qualification.json",
+          "bohlokong": "world-parcels/research/qualification-2026-10-11-round2/4119/qualification.json",
+          "brits": "world-parcels/research/qualification-2026-10-11-round2/3946/qualification.json",
+          "ezakheni": "world-parcels/research/qualification-2026-10-11-round2/4975/qualification.json",
+          "matsulu": "world-parcels/research/qualification-2026-10-11-round2/5476/qualification.json",
+          "khuma": "world-parcels/research/qualification-2026-10-11-round2/3126/qualification.json"
+        },
+        "additionalCityEvidence": {
+          "lenasia": "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json",
+          "vosman": "world-parcels/research/qualification-2026-10-12/vosman/qualification.json"
+        }
       },
       "cityScopes": {
         "wup2025:4203": "201 valid, distinct Chief Surveyor-General Erven references verified in thirteen bounded cells around the unchanged ranked Klipgat WUP locator. The official DFFE-hosted service advertises GeoJSON but rejects that format in actual queries; explicit native Esri JSON queries succeed. A strict reader preserves every straight-ring coordinate and assigns native holes/components without repair; native curve representations and unsupported or ambiguous rings remain unavailable. Complete object-ID manifests, forced three-row paging (42 rows over fourteen pages), all 201 fresh native PRCL_KEY reads, explicit absence, footprint and source binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The sampled records all have publisher statuses R/C/E; no guessed lifecycle filter is applied. Citywide completeness, legal title, survey accuracy and broader identity uniqueness remain unverified.",
@@ -13146,6 +13341,23 @@
         "wup2025:3126": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
       },
       "appCityIds": [
+        "klipgat",
+        "evaton",
+        "madadeni",
+        "rustenburg",
+        "sakhrol",
+        "kwanobuhle",
+        "coalbrook",
+        "mpumalanga",
+        "stellenbosch",
+        "jerusalem_za",
+        "mankweng",
+        "ekangala",
+        "bohlokong",
+        "brits",
+        "ezakheni",
+        "matsulu",
+        "khuma",
         "lenasia",
         "vosman"
       ]
@@ -13392,7 +13604,7 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32650",
       "reuseStatus": "Retain Hong Kong Lands Department attribution and published approximate-boundary and survey notices.",
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
       "verifiedCityIds": [
         "wup2025:11540",
         "wup2025:11554"
@@ -13401,17 +13613,19 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "tuenmun",
           "tung_chung"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "evidenceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
+        "additionalCityEvidence": {
+          "tung_chung": "world-parcels/research/qualification-2026-10-12/tung_chung/qualification.json"
+        }
       },
       "cityScopes": {
         "wup2025:11540": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information."
       },
       "appCityIds": [
+        "tuenmun",
         "tung_chung"
       ]
     },
@@ -14051,7 +14265,7 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32735",
       "reuseStatus": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded.",
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
       "verifiedCityIds": [
         "wup2025:1774",
         "wup2025:2412",
@@ -14066,13 +14280,31 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "kitwe",
+          "mansa",
+          "kabwe",
+          "livingstone",
+          "kafue",
+          "mumbwa",
           "mongu",
           "luanshya"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "evidenceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "cityEvidenceFiles": {
+          "mansa": "world-parcels/research/qualification-2026-10-11-round2/2412/qualification.json",
+          "kabwe": "world-parcels/research/qualification-2026-10-11-round2/1945/qualification.json",
+          "livingstone": "world-parcels/research/qualification-2026-10-11-round2/429/qualification.json",
+          "kafue": "world-parcels/research/qualification-2026-10-11-round2/1396/qualification.json",
+          "mumbwa": "world-parcels/research/qualification-2026-10-11-round2/838/qualification.json"
+        },
+        "additionalCityEvidence": {
+          "mongu": "world-parcels/research/qualification-2026-10-12/mongu/qualification.json",
+          "luanshya": "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json"
+        }
       },
       "cityScopes": {
         "wup2025:1774": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
@@ -14083,6 +14315,12 @@
         "wup2025:838": "62 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
       },
       "appCityIds": [
+        "kitwe",
+        "mansa",
+        "kabwe",
+        "livingstone",
+        "kafue",
+        "mumbwa",
         "mongu",
         "luanshya"
       ]
@@ -14098,7 +14336,7 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:4326 output; metric audit EPSG:32633",
       "reuseStatus": "Public publisher geometry and attribution verified; provider conditions remain informational. Geometry does not establish legal title, survey accuracy or currentness. Personal fields excluded.",
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json",
       "verifiedCityIds": [
         "wup2025:4616",
         "wup2025:5104"
@@ -14107,17 +14345,19 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "palermo",
           "acireale"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "evidenceFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json",
+        "additionalCityEvidence": {
+          "acireale": "world-parcels/research/qualification-2026-10-12/acireale/qualification.json"
+        }
       },
       "cityScopes": {
         "wup2025:4616": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
       },
       "appCityIds": [
+        "palermo",
         "acireale"
       ]
     },
@@ -14398,7 +14638,7 @@
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
       "crs": "EPSG:2236 native bounds; EPSG:4326 output; EPSG:26917 independent metric audit",
       "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested.",
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
       "verifiedCityIds": [
         "wup2025:7432",
         "wup2025:7367",
@@ -14408,18 +14648,21 @@
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "orlando",
           "buenaventura_lakes",
           "alafaya"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
+        "additionalCityEvidence": {
+          "buenaventura_lakes": "world-parcels/research/qualification-2026-10-12/buenaventura_lakes/qualification.json",
+          "alafaya": "world-parcels/research/qualification-2026-10-12/alafaya/qualification.json"
+        }
       },
       "cityScopes": {
         "wup2025:7432": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness."
       },
       "appCityIds": [
+        "orlando",
         "buenaventura_lakes",
         "alafaya"
       ]
@@ -14989,19 +15232,29 @@
         "wup2025:8207",
         "wup2025:8193"
       ],
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "buffalo",
           "lackawanna"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
+        "cityEvidenceFiles": {
+          "buffalo": "world-parcels/research/qualification-2026-10-11/8207/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged.",
+        "additionalCityEvidence": {
+          "lackawanna": "world-parcels/research/qualification-2026-10-12/lackawanna/qualification.json"
+        }
       },
       "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
       "appCityIds": [
+        "buffalo",
         "lackawanna"
       ]
     },
@@ -15054,19 +15307,29 @@
         "wup2025:6413",
         "wup2025:6345"
       ],
-      "evidenceFile": "research/qualification-admission-2026-10-12.json",
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
+          "arlington",
           "lindberg"
         ],
-        "evidenceFile": "research/qualification-admission-2026-10-12.json",
-        "reason": "Bounded qualification and independent audit passed for each listed WUP locator; no citywide completeness claim.",
-        "technicalBlockers": [],
-        "termsAreInformational": true
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
+        "cityEvidenceFiles": {
+          "arlington": "world-parcels/research/qualification-2026-10-11/6413/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged.",
+        "additionalCityEvidence": {
+          "lindberg": "world-parcels/research/qualification-2026-10-12/lindberg/qualification.json"
+        }
       },
       "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
       "appCityIds": [
+        "arlington",
         "lindberg"
       ]
     },

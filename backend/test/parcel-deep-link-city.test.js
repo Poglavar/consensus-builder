@@ -47,6 +47,8 @@ describe('parcelIdToCityId — unambiguous and shared prefixes', () => {
         expect(route.parcelIdToCityId('GB-HMLR-23394370')).toBe('birmingham');
         expect(route.parcelIdToCityId('GB-HMLR-LONDON-23394370')).toBe('london');
         expect(route.parcelIdToCityId('GB-HMLR-MANCHESTER-23394370')).toBe('manchester');
+        // The shared HMLR namespace spans many cities; feature geometry decides, not the prefix.
+        expect(route.parcelIdToCityId('GB-HMLR-BROWSER-v1-23394370')).toBeNull();
         expect(route.parcelIdToCityId('BD-DLRS-201901-4105-010510026-001-0001')).toBe('savar');
         expect(route.parcelIdToCityId('ES-DGC-28079000000001')).toBeNull();
         expect(route.parcelIdToCityId('ZM-LUSAKA-GID-11111111-2222-3333-4444-555555555555')).toBe('lusaka');
