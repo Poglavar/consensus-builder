@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5758-tangail.json",
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "purpose": "Document Tangail's official land-record custodian and inspect the current public Bangladesh map services for safe anonymous parcel geometry.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord":3,"maxFullPolygonsRetainedInReview":0,"maxFullPolygonsRetainedInRepository":3,"ownerOrAddressDataRetained":false,"credentialsOrTokenValuesRetained":false,"citywideCompletenessAsserted":false},
+  "assessment": "Tangail local/state land-record custody is evidenced by the official Tangail Zonal Settlement Office and DLRS settlement portal. The current public map.land.gov.bd viewer exposes anonymous administrative and geometry routes in JavaScript, but its division-30 district response omitted Tangail and configured GeoServer metadata returned HTTP 503. No parcel geometry was retained and no absence inference was made.",
+  "registryAssessment": "Official local/state registry/cadastre custody is evidenced. This does not verify public parcel geometry, title, ownership, or citywide coverage.",
+  "coverageAssessment": {"claimedScope":"Official Bangladesh land-record/map portals, bounded anonymous endpoint checks, and Tangail custodian material.","verifiedOpenScope":null,"citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "officialPrimarySources": [
+    {"url":"https://map.land.gov.bd/","operator":"DLRS / Ministry of Land, Bangladesh","observation":"Public digital land-map viewer; current JS documents admin lookup and parcel WKT handling."},
+    {"url":"https://settlement.gov.bd/Map/MapSearch","operator":"DLRS / Ministry of Land, Bangladesh","observation":"Official public map-search workflow with survey, mouza, sheet, and plot selectors."},
+    {"url":"https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2","operator":"Tangail Zonal Settlement Office","observation":"Official page says the office prepares Tangail's mouza-based land records and maps under DLRS."}
+  ],
+  "searchQueries": [
+    {"language":"English","query":"Tangail Bangladesh official cadastral map land records mouza map GIS parcel","method":"Web discovery followed by first-party source and viewer review","actualResultUrls":["https://settlement.gov.bd/Map/MapSearch","https://map.land.gov.bd/","https://dlrs.gov.bd/","https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2"]},
+    {"language":"native/local","query":"টাঙ্গাইল সরকারি খতিয়ান মৌজা মানচিত্র ভূমি রেকর্ড","method":"Separate Bengali-language discovery followed by first-party source review","actualResultUrls":["https://settlement.gov.bd/home/","https://settlement.gov.bd/Map/MapSearch","https://map.land.gov.bd/","https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2"]}
+  ],
+  "attempts": [
+    "Fetched map.land.gov.bd over HTTPS and inspected its current JavaScript/configuration.",
+    "Anonymous POST /getAdminByCode division lookup returned seven divisions; division 30 district lookup returned Gopalganj, Kishoreganj, and Shariatpur only.",
+    "Anonymous POST thana lookups for tested candidate district codes 3093, 3090, and 3091 each returned an empty JSON array; this is not an absence finding.",
+    "Fetched configured official GIS WMS and wsDMMS WFS GetCapabilities endpoints; both returned HTTP 503 and no schema.",
+    "Fetched the official settlement map-search UI; it loaded and was not used for unsafe owner/address/titleholder lookup.",
+    "Reviewed the official Tangail Zonal Settlement Office page for local custodian evidence."
+  ],
+  "geometryEvidence": {"verified":false,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":"gid documented by viewer JS only; no Tangail value returned","exactWupPointTest":"Not run: no anonymous Tangail parcel layer or metadata schema was verified. Exact WUP point [24.2510956079166,89.9161176970175] preserved unchanged.","requestEvidence":[{"url":"https://map.land.gov.bd/","method":"GET; anonymous","httpStatus":200,"assessment":"Viewer shell loaded and JS/configuration inspected."},{"url":"https://map.land.gov.bd/getAdminByCode","method":"POST; anonymous; division lookup","httpStatus":200,"assessment":"Seven division records returned."},{"url":"https://map.land.gov.bd/getAdminByCode","method":"POST; anonymous; division 30 district lookup","httpStatus":200,"assessment":"Three district records returned; Tangail not returned by this route."},{"url":"https://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities","method":"GET; anonymous metadata only","httpStatus":503,"assessment":"No WMS capabilities returned."},{"url":"https://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&version=1.0.0&request=GetCapabilities","method":"GET; anonymous metadata only","httpStatus":503,"assessment":"No WFS capabilities returned."}]},
+  "safeFieldAllowlist": ["public stable parcel identifier if returned","survey/mouza/plot code if public","native geometry","source CRS","public layer metadata"],
+  "remainingUncertainty": "Tangail may be outside the current public viewer's digital coverage, represented under another code, or served through another official route. Current failures and empty administrative responses do not establish parcel absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

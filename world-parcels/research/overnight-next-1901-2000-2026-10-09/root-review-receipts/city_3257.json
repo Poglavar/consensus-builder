@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3257",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-3257-anantnag.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/anantnag-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:34:32.732979Z",
+  "reason": "WUP identity and English/Hindi executed search trace match. The live first-party district page establishes Anantnag land-record custody, consistent with registryFound true. The original JKLR JavaScript names its API, and a fresh anonymous district POST returns HTTP 401. No safe parcel ID/polygon or independent adapter/UI qualification exists; authentication is not citywide absence."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:8051",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8051-xingping.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/xingping-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:12:41.239960Z",
+  "reviewNote": "Separate English and Chinese searches and first-party government/map links are documented. Registry custody remains unresolved. The Shaanxi viewer bundle timed out before service discovery; no safe native parcel ID plus complete polygon response or independent adapter qualification. Timeout is not citywide absence; no admission."
+}

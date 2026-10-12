@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 1549,
+  "queueRank": 2806,
+  "name": "Palmira",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "iso3": "COL",
+  "point": [3.5327459144323, -76.2976115817712],
+  "population2025": 211585,
+  "population2025k": 211.585,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Palmira Colombia official cadastral parcel map GIS",
+        "result": "Found first-party IGAC national cadastral open-data documentation and ArcGIS REST metadata for a public cadastral service; found the official Palmira municipal IDEP cadastral viewer lead. Bounded anonymous parcel extraction was not completed because the service returned a pagination error and subsequent bounded requests timed out.",
+        "actualResultUrls": [
+          "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+          "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer?f=pjson",
+          "https://palmira.gov.co/wp-content/uploads/2023/11/2023-11-20_Circular_Datos_base_catastral_en_Datos_Abiertos_y_OTC.pdf",
+          "https://idep.palmira.gov.co/portal/apps/webappviewer/index.html?id=e0e42455dcb14780a62a3a1aafdde9c8"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Palmira Colombia visor geográfico catastro predios oficial",
+        "result": "Found the Alcaldía de Palmira circular identifying IDEP as the municipal cadastral cartography viewer, and IGAC’s official Spanish open-data page describing national cadastral data and geoservices. The municipal viewer and REST item routes returned HTTP 500 from this environment; the public IGAC service was inspectable but did not yield a bounded feature response.",
+        "actualResultUrls": [
+          "https://palmira.gov.co/wp-content/uploads/2023/11/2023-11-20_Circular_Datos_base_catastral_en_Datos_Abiertos_y_OTC.pdf",
+          "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+          "https://idep.palmira.gov.co/portal/apps/webappviewer/index.html?id=e0e42455dcb14780a62a3a1aafdde9c8",
+          "https://idep.palmira.gov.co/portal/sharing/rest/content/items/e0e42455dcb14780a62a3a1aafdde9c8/data?f=pjson"
+        ]
+      }
+    ],
+    "sources": [
+      "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+      "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer?f=pjson",
+      "https://palmira.gov.co/wp-content/uploads/2023/11/2023-11-20_Circular_Datos_base_catastral_en_Datos_Abiertos_y_OTC.pdf"
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A first-party Alcaldía de Palmira circular identifies the IDEP municipal geovisor as publishing Palmira cadastral cartography and associated alphanumeric data. First-party IGAC metadata also exposes a public national cadastral ArcGIS service. These establish custodians and service leads, not successful parcel extraction or source admission.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Palmira municipal cadastral cartography through IDEP; national cadastral data/geoservice through IGAC.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://idep.palmira.gov.co/portal/apps/webappviewer/index.html?id=e0e42455dcb14780a62a3a1aafdde9c8",
+      "method": "GET",
+      "status": "HTTP 500",
+      "summary": "Official municipal IDEP viewer route returned HTTP 500 with browser-like headers and cookie jar; viewer JavaScript/config could not be inspected. This is not evidence of absence."
+    },
+    {
+      "url": "https://idep.palmira.gov.co/portal/sharing/rest/content/items/e0e42455dcb14780a62a3a1aafdde9c8/data?f=pjson",
+      "method": "GET",
+      "status": "HTTP 500",
+      "summary": "Official ArcGIS item-data route returned HTTP 500; no layer URL or schema was obtained."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "IGAC first-party ArcGIS metadata loaded. It lists polygon layers R_TERRENO and U_TERRENO, supports JSON/geoJSON/PBF, and reports service CRS EPSG:4686 (GCS_MAGNA)."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "U_TERRENO layer metadata loaded. Polygon schema included safe candidate native fields FID (OID), CODIGO, MANZANA_CO, NUMERO_SUB, CODIGO_ANT, GLOBALID_S, and GlobalID. No owner, address, contact, titleholder, tax, or account fields were requested."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "method": "GET",
+      "status": "HTTP 400 then timeout",
+      "summary": "A small Palmira bbox in EPSG:4686 with returnGeometry=true, outFields=FID, outSR=4326 and a three-record bound returned HTTP 400 'Pagination is not supported'. Retried without the record bound and as a bounded ID-only query; requests timed out at 30-40 seconds. Exact WUP point was not shifted. No geometry or ID retained."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned", "geometry", "source CRS", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner/titleholder", "address/contact", "tax/account", "personal or protected cadastral data"],
+  "sourceFieldMapping": {
+    "FID": "ArcGIS object identifier (candidate native safe ID; no feature returned)",
+    "CODIGO": "native layer field; semantics not independently qualified",
+    "MANZANA_CO": "native layer field; semantics not independently qualified",
+    "NUMERO_SUB": "native layer field; semantics not independently qualified",
+    "CODIGO_ANT": "native layer field; semantics not independently qualified",
+    "GLOBALID_S": "native layer field; semantics not independently qualified",
+    "GlobalID": "native layer field; semantics not independently qualified"
+  },
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The municipal IDEP viewer bootstrap was unavailable, and IGAC’s public layer metadata could not be followed to a nonempty bounded Palmira feature response. Therefore current municipal service URL/configuration, live query behavior, parcel native identity semantics, geometry availability at the WUP point, and citywide completeness remain unverified. A zero exact-point hit, timeout, or HTTP 500/400 was not treated as citywide absence.",
+  "nextStep": "Retry the official IDEP viewer/configuration and IGAC U_TERRENO query when available, using a tiny Palmira bbox and only a stable native ID plus geometry; independently qualify any adapter before runtime admission."
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8603-gboko.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Benue’s official BENGIS and Ministry of Lands and Survey evidence local/state cadastral and land-record custody for Gboko, but no anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "BENGIS describes itself as the official geospatial-data custodian and describes digital cadastral/topographic maps and land-records management. The Benue State Ministry describes land-document registration and survey-related services. These are relevant state/local custodians, not proof of open citywide parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://bengis.benuestate.gov.ng/", "observation": "Official BENGIS site identifies the Benue Geographic Information System as a Benue State Government geospatial and land-services agency and references Gboko in its service material."},
+    {"url": "https://bengis.benuestate.gov.ng/scope-of-operations/", "observation": "Official BENGIS scope describes digital cadastral/topographic maps, geodatabase work, and digitization/management of historical land records."},
+    {"url": "https://lands.benuestate.gov.ng/", "observation": "Official Benue State Ministry of Lands and Survey site describes title-document processing and registration of Certificates of Occupancy, Deeds of Assignment, Powers of Attorney and Letters of Administration."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://bengis.benuestate.gov.ng/",
+    "observedTechnology": "Official pages were discoverable in search results, but bounded direct retrieval timed out; no current JavaScript/configuration was inspected.",
+    "observedControls": [],
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://bengis.benuestate.gov.ng/", "method": "GET", "normalTlsVerification": true, "result": "Bounded curl request failed to connect/timed out; no HTML, JavaScript, viewer configuration, API route, layer response, schema or CRS was retrieved."},
+    {"url": "https://lands.benuestate.gov.ng/", "method": "GET", "normalTlsVerification": true, "result": "No successful direct response was obtained in the bounded request attempt; no map/API configuration or parcel feature response was retrieved."},
+    {"url": "https://bengis.benuestate.gov.ng/", "method": "search discovery", "normalTlsVerification": true, "result": "Search-indexed official descriptive content was available and recorded as custody/scope evidence only; it did not expose a safe anonymous feature endpoint."},
+    {"url": "https://lands.benuestate.gov.ng/", "method": "search discovery", "normalTlsVerification": true, "result": "Search-indexed official descriptive content was available and recorded as custody/workflow evidence only; it did not expose a safe anonymous feature endpoint."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No WUP-point parcel query was submitted because the public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Benue state cadastral/geospatial and land-administration custody through BENGIS and the Ministry.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact viewer configuration, layer schema, CRS, native parcel identity, anonymous query shape, and coverage remain unverified. Connection timeout or unavailable UI is not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

@@ -1,0 +1,11 @@
+{
+  "taskId": "city:10187",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10187-jhusi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/jhusi-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:19:10Z",
+  "reason": "Official Prayagraj/UP custody is supported, but no full city parcel polygon or independently qualified native-ID adapter; the bounded point response cannot establish absence."
+}

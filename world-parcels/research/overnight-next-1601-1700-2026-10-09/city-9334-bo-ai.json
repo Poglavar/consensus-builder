@@ -1,0 +1,126 @@
+{
+  "cityCode": 9334,
+  "queueRank": 1683,
+  "name": "Bo'ai",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [35.1849514073411, 113.014882171013],
+  "population2025": 339876,
+  "population2025k": 339.876,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bo'ai County Henan China official cadastral map parcel GIS land registration map",
+        "result": "First-party discovery found the official Bo'ai County government portal, the Henan Tianditu provincial public geospatial platform, and its Jiaozuo city map page listing Bo'ai County. No public anonymous parcel feature service was identified in discovery.",
+        "actualResultUrls": [
+          "https://www.boai.gov.cn/",
+          "https://henan.tianditu.gov.cn/",
+          "https://henan.tianditu.gov.cn/jiaozuo/map.htm"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "博爱县 官方 不动产登记 地籍图 GIS 土地",
+        "result": "官方中文结果确认博爱县人民政府门户、河南天地图及焦作市地图节点；焦作节点可将地图中心定位到博爱县，但公开页面和检索结果未提供匿名、城市范围的宗地ID加完整几何响应。",
+        "actualResultUrls": [
+          "https://www.boai.gov.cn/2015/08-27/528805.html",
+          "https://henan.tianditu.gov.cn/jiaozuo/map.htm",
+          "https://henan.tianditu.gov.cn/downMap"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.boai.gov.cn/",
+      "operator": "Bo'ai County People's Government",
+      "observation": "Official local government portal; the county profile identifies Bo'ai County and its administrative status. No anonymous parcel geometry API was exposed by the fetched homepage."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/map.htm",
+      "operator": "Henan provincial surveying and mapping geospatial public-service platform / Jiaozuo node",
+      "observation": "Official Jiaozuo map viewer lists 博爱县 and a setCenterAndZoom(113.05,35.16) map-centering action. The viewer is a public basemap/POI map and did not expose a parcel feature layer or safe parcel identity response."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/",
+      "operator": "Henan Surveying and Mapping Geographic Information Technology Center and Henan Map Institute",
+      "observation": "Official provincial platform describes public map, web-service, data and map-download resources. This establishes a general geospatial custodian, not a verified Bo'ai cadastral adapter."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.boai.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 403,
+      "outcome": "Official host returned HTTP 403 to the direct request; no login, credential, CAPTCHA or bypass was attempted."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Fetched official provincial platform HTML. It exposed a public Tianditu JavaScript map API reference but no Bo'ai parcel layer or parcel schema."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/map.htm",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Fetched the current Jiaozuo viewer HTML and inspected its JavaScript/configuration. Bo'ai is a selectable map center; the viewer uses Tianditu basemap/POI functions and no anonymous parcel feature request was found."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/2019/js/2019map.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Inspected current viewer JavaScript. It configures Tianditu vector, imagery and search/map tools; no cadastral WMS/WFS/FeatureServer route or parcel field schema was present."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/js/publics.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Inspected supporting viewer JavaScript. It contains general map UI/search functions and no public parcel geometry endpoint."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/userServr.aspx",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 404,
+      "outcome": "Viewer-linked legacy route returned HTTP 404; no retry with credentials or private parameters."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/maptwo.aspx",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 404,
+      "outcome": "Viewer-linked legacy route returned HTTP 404; no parcel response."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Bo'ai County government portal is a local government custodian, and the official Henan/Jiaozuo Tianditu node is a public geospatial map route listing Bo'ai County. This is local/provincial custody and map evidence only; no open parcel adapter was qualified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "sourceCandidate": {
+    "operator": "Bo'ai County People's Government and Henan Tianditu/Jiaozuo public geospatial platform",
+    "viewerUrls": ["https://henan.tianditu.gov.cn/jiaozuo/map.htm"],
+    "crs": null
+  },
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Bo'ai local government and Henan/Jiaozuo public geospatial map resources.",
+    "verifiedOpenScope": "No anonymous Bo'ai city parcel feature, native parcel identity, parcel schema, or CRS was retrieved.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_and_provincial_map_routes_no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Cadastral data may exist in restricted, service-only, application-based, or unpublished systems. HTTP 403/404, viewer inspection, lack of an exact-point parcel hit, or absence of a discovered endpoint is not evidence of citywide absence. The WUP point was preserved and not shifted.",
+  "identityPolicy": "No native parcel identity was observed; no synthetic identity was created.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {},
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "retainedSample": null
+}

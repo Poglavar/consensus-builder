@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-5855-recanto-das-emas.json",
+  "cityCode": 5855,
+  "queueRank": 3273,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Portuguese first-party discovery identified SEDUH's public GeoPortal, the Parcelamentos do Solo portal listing RA-XV, and the IDE-DF Cadastro Territorial ArcGIS service. Layer 10 (Lotes Registrados) was inspected, its schema and CRS recorded, exact WUP-point queries returned zero features, and a bounded pu_ra=15 query returned three anonymous ID-plus-geometry features.",
+  "attemptedRoutes": [
+    {"route": "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/", "outcome": "Official SEDUH page reachable; describes a public GeoPortal with lot/cartographic lookup."},
+    {"route": "https://parcelamentosdosolo.seduh.df.gov.br/consulta", "outcome": "Official SEDUH parcelment portal reachable; lists RA-XV - Recanto das Emas."},
+    {"route": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer", "outcome": "Public ArcGIS REST service metadata reachable; SEDUH Cadastro Territorial, EPSG:31983, JSON/GeoJSON queries."},
+    {"route": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10", "outcome": "Lotes Registrados layer metadata reachable; polygon schema, native objectid, pu_ra field, and source CRS recorded."},
+    {"route": "layer 10 query at exact WUP point", "outcome": "HTTP 200 with zero features; treated only as exact-point miss."},
+    {"route": "layer 11 query at exact WUP point", "outcome": "HTTP 200 with zero identified-occupation features; not used as absence evidence."},
+    {"route": "IDEDF layer 123 query at exact WUP point", "outcome": "HTTP 200 identified the point in RA-XV / RECANTO DAS EMAS (ra_cira=15)."},
+    {"route": "layer 10 bounded query where pu_ra=15, resultRecordCount=3, outSR=4326", "outcome": "HTTP 200 GeoJSON with three full polygons and native objectids 2, 3, 4; exceededTransferLimit=true confirms additional records beyond retained bound."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": ["city-5855-recanto-das-emas-sample.geojson"],
+  "scopeLimits": [
+    "Exact WUP point [-15.912555703767, -48.0696353880458] was preserved in latitude/longitude order and was not shifted.",
+    "The sample contains at most three polygons and each feature properties object contains exactly one canonical native identity field: id.",
+    "Native source attributes, source field mapping, and administrative filter provenance are documented here and in the city record, not retained in GeoJSON properties.",
+    "No raw owner, address, contact, titleholder, personal, tax, account, or registration fields were requested or retained.",
+    "No registry/catalog/runtime configuration, global report, queue ledger, or another city's file was changed.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+  ],
+  "qualification": {"verifiedSample": true, "parcelGeometryVerified": true, "runtimeReadiness": "held", "reason": "A real public local Distrito Federal registered-lot polygon layer and stable native OID were verified, but independent serial adapter qualification remains required."},
+  "uncertainty": "The official Lotes Registrados layer may not represent the complete legal cadastral or title registry fabric. Exact-point nonintersection is local evidence only; the three-feature bounded sample does not establish citywide completeness or currentness.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for independent serial review and adapter qualification against the IDE-DF Cadastro Territorial layer; do not treat this packet as source integration/admission.",
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": true, "runtimeReadiness": "held", "nextAttemptNeeded": false}
+}

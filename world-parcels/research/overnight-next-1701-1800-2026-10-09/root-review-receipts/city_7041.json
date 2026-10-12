@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7041",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7041-abu-tig.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/abu-tig-service-review.json",
+    "tmp/valhalla-parcel-research/7041/egis-map-root.json"
+  ],
+  "checkedAt": "2026-10-10T14:14:17.040941Z",
+  "reason": "ESA establishes national survey/cadastral services, while original IDSC FeatureServer metadata lists Building, CITY, CENTER and STATE polygons, not parcels. No native parcel ID/full polygon response; paging, 13 cells, metric GEOS checks, source binding and headed Details check are unevidenced. CAPMAS timeout is not citywide absence. The packet point-query URL appears to encode ampersands inside the where parameter, so its claimed result is not accepted as a parcel metric.",
+  "sourceUrlsChecked": [
+    "https://www.esa.gov.eg/services.aspx",
+    "https://www.esa.gov.eg/benya.aspx",
+    "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer?f=pjson"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10261-dindigul.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Dindigul's official local cadastral custodian, Tamil Nadu land-record/GIS discovery, and bounded anonymous requests while separating registry evidence from geometry and runtime qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Dindigul district page establishes a local Survey and Land Records custodian and describes digitized textual records, FMS, and village-map work. Official Tamil Nadu e-Services and TNGIS routes were identified, but bounded anonymous requests to the state hosts timed out before current service configuration or a parcel API response could be inspected. No safe native ID, schema, CRS, or polygon geometry was verified, so no GeoJSON sample is retained and runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by the official Dindigul district Survey and Land Records page naming the local office and its survey/sub-division responsibilities, reinforced by the district's official land e-Services page. This does not establish citywide geometry completeness or ownership/title information.",
+  "coverageAssessment": {
+    "claimedScope": "Official Dindigul district Survey and Land Records custodian plus Tamil Nadu e-Services/TNGIS.",
+    "verifiedOpenScope": "Local custodian and official service identity only; no live anonymous parcel response obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "searchQueries": [
+    {"language": "English", "query": "Dindigul cadastral parcel map official Tamil Nadu land records GIS API", "actualResultUrls": ["https://dindigul.nic.in/service/e-services-anytime-anywhere-land/", "https://dindigul.nic.in/survey-and-land-records/", "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu", "https://www.tngis.tn.gov.in/apps.html"]},
+    {"language": "Tamil", "query": "திண்டுக்கல் நில அளவை வரைபடம் அதிகாரப்பூர்வ இணையதளம் பட்டா நிலப்பதிவு", "actualResultUrls": ["https://dindigul.nic.in/survey-and-land-records/", "https://dindigul.nic.in/service/e-services-anytime-anywhere-land/", "https://eservices.tn.gov.in/", "https://www.tngis.tn.gov.in/apps.html"]}
+  ],
+  "attempts": [
+    "Loaded the official Dindigul Survey and Land Records page over TLS (HTTP 200); it identifies the local office and describes F-line/sub-division survey, digitized A-Register/Chitta, FMS computerization, and village-map mosaicing in progress.",
+    "Loaded the official Dindigul land e-Services page over TLS (HTTP 200); it links Patta, FMB/Chitta/TSLR, A-Register, verification, and poramboke services.",
+    "Performed separate English and Tamil first-party discovery queries and recorded the actual result URLs.",
+    "Attempted anonymous access to https://eservices.tn.gov.in/; bounded request timed out after 15 seconds before service configuration or a response could be retained.",
+    "Attempted anonymous access to https://tngis.tn.gov.in/ and https://www.tngis.tn.gov.in/apps.html; bounded requests did not complete within the limits, so no JavaScript/configuration, API route, schema, CRS, ID, or geometry was retained.",
+    "Did not submit the WUP latitude/longitude to a local endpoint, did not shift the point, did not request owner/address/title/account/tax fields, did not log in, did not bypass CAPTCHA/Cloudflare, and did not disable TLS verification.",
+    "No sample GeoJSON was created because no full parcel polygon response or safe native parcel identity was verified."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "nativeCrs": null,
+    "exactWupPointTest": "Not run; exact WUP point [10.3645102514528, 77.9787829314499] preserved unchanged.",
+    "polygonResponse": "None; official district pages contained service prose only and state hosts timed out before a live response."
+  },
+  "nextStep": "Independent serial review of the current Tamil Nadu e-Services/TNGIS configuration and any public geometry-export capability; keep adapter/runtime held until real safe native IDs and polygon geometry are independently qualified.",
+  "remainingUncertainty": "The current service routes, native schema/CRS, parcel identity field, anonymous geometry capability, city-versus-rural layer selection, and Dindigul citywide coverage remain unverified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

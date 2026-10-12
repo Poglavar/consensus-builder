@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 4983,
+  "queueRank": 1886,
+  "cityId": "queue:1886",
+  "name": "Yarim",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "iso3": "YEM",
+  "point": [14.2980616795679, 44.3775140982435],
+  "centerLatLon": [14.2980616795679, 44.3775140982435],
+  "population2025": 304301,
+  "population2025k": 304.301,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yarim Yemen cadastral parcel map official land registry GIS",
+        "result": "First-party discovery identified Yemen's General Authority for Lands, Survey and Urban Planning (GALSUP) and official registry-law material, but no Yarim-specific public cadastral viewer or anonymous parcel feature service.",
+        "actualResultUrls": [
+          "https://galsup.gov.ye/",
+          "https://agoye.gov.ye/page.php?id=374"
+        ]
+      },
+      {
+        "language": "native/local (Arabic)",
+        "query": "الهيئة العامة للأراضي والمساحة والتخطيط العمراني اليمن خريطة عقارية اليريم",
+        "result": "Arabic first-party discovery found GALSUP's official site and an official Arabic service catalog describing property surveying, cadastral/detail maps, and map printing. It did not expose a Yarim map viewer, parcel layer, schema, CRS, or anonymous ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://galsup.gov.ye/",
+          "https://moh-alsaraf.site/",
+          "https://www.moj.gov.ye/NewsD/17448"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Arabic first-party discovery, followed by bounded TLS-verified GET attempts. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement was used."
+  },
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://galsup.gov.ye/",
+      "observation": "Official Yemen GALSUP domain identifies the national authority responsible for lands, survey, and urban planning. The bounded request timed out before a usable page or map/API configuration was obtained. No Yarim-specific local office or parcel layer was evidenced."
+    },
+    {
+      "url": "https://moh-alsaraf.site/",
+      "observation": "Arabic service catalog describes GALSUP-type surveying services including property survey/setting-out, detailed maps, aerial imagery, and map printing. The accessible HTML is procedural; it exposes no public parcel feature endpoint, native parcel IDs, CRS, or geometry. Its relationship to the official GALSUP domain was not independently established."
+    },
+    {
+      "url": "https://agoye.gov.ye/page.php?id=374",
+      "observation": "Official Yemen prosecution/legal page reproduces land-registry provisions: individual property records have numbers and maps, and registration relies on general and special cadastral maps. This is legal/procedural evidence, not a public map service or Yarim-specific registry response."
+    },
+    {
+      "url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/",
+      "observation": "Official Central Statistical Organization GIS-center page describes statistical/admin mapping and a planned interactive statistical map portal, not cadastral parcel data. No parcel endpoint was exposed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://galsup.gov.ye/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified request timed out after 20 seconds; no retry with TLS disabled or certificate exception was made."
+    },
+    {
+      "url": "https://www.moj.gov.ye/NewsD/17448",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "DNS resolution timed out after 12 seconds in the local request environment; the URL was retained from first-party discovery, and no further request was made."
+    },
+    {
+      "url": "https://moh-alsaraf.site/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Bounded HTML request succeeded. Page text and links were inspected for map/API/WMS/WFS/ArcGIS/GeoJSON routes; no public parcel feature service or safe native identity-plus-geometry response was found."
+    },
+    {
+      "url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Bounded official GIS-center page request succeeded. It exposed general statistical/admin GIS description and WordPress routes only; no cadastral parcel schema, CRS, or geometry endpoint was identified."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Yemen national land/survey and land-registry authorities and their published procedures; no Yarim-specific service was identified.",
+    "verifiedOpenScope": "National authority/procedural and legal evidence only; no anonymous parcel geometry or local Yarim registry coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "remainingUncertainty": "The current GALSUP viewer/API configuration, any Ibb Governorate or Yarim local registry endpoint, source layer schema, CRS, stable native parcel identity, geometry quality, update currency, and citywide completeness remain unresolved. The exact WUP point was preserved in latitude/longitude order and never shifted; no exact-point hit or miss inference was made. Packet completion records research evidence only and is not source integration or admission."
+}

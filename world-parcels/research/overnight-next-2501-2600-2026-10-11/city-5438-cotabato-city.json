@@ -1,0 +1,67 @@
+{
+  "cityCode": 5438,
+  "queueRank": 2539,
+  "name": "Cotabato City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "point": [7.21266802226799, 124.241394232733],
+  "population2025": 231649,
+  "population2025k": 231.649,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "registryFound": null,
+  "registryBasis": "The official Geoportal Philippines layer catalogue exposes a national Land Management Bureau (LMB) parcel-data layer, but no Cotabato City local cadastral custodian or city-specific public parcel procedure was verified. The City Planning page was found but did not expose a parcel service in this attempt.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cotabato City official cadastral parcel map GIS Philippines",
+        "result": "Found official Geoportal Philippines, its Parcel data catalogue entry, an LMB cadastral-map FOI record mentioning Cotabato City, the official Cotabato City Planning page, and a NAMRIA Cotabato City geodetic-station page. No bounded anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://geoportal.gov.ph/",
+          "https://www.foi.gov.ph/requests/cadastral-map-denrlmb-985310019182/",
+          "https://cityofcotabato.com/city-planning/",
+          "https://pagenet.namria.gov.ph/agn/2015PCOT.aspx"
+        ]
+      },
+      {
+        "language": "Filipino",
+        "query": "Cotabato City opisyal mapa cadastral lupa parcel Philippines",
+        "result": "Search results repeated official Philippine Geoportal and LMB cadastral-map material; no city-local public parcel API or safe parcel geometry response was exposed.",
+        "actualResultUrls": [
+          "https://geoportal.gov.ph/",
+          "https://www.foi.gov.ph/en/agencies/denrlmb/?page=23",
+          "https://cityofcotabato.com/city-planning/"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "name": "Geoportal Philippines / Parcel data",
+    "operator": "Land Management Bureau (LMB), as labelled by the official Geoportal layer catalogue",
+    "viewerUrl": "https://geoportal.gov.ph/",
+    "layerName": "denr_parcel_data",
+    "serviceUrl": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms",
+    "scope": "National Geoportal catalogue entry labelled Parcel data; Cotabato City coverage and citywide completeness were not verified.",
+    "crs": null,
+    "nativeIdentity": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_national_parcel_layer_catalogued_no_verified_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Geoportal Philippines national Parcel data layer.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "exactPointResult": "No exact-point parcel response was obtained; timeout is not evidence of absence."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source CRS", "geometry type", "source URL", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax", "account", "certificate", "title"],
+  "sampleGeojson": null,
+  "remainingUncertainty": "The current Geoportal JavaScript/configuration was inspected and identified /layers/fetchlayers, the LMB denr_parcel_data layer, and its GeoServer WMS endpoint. Layer metadata returned successfully. Bounded WFS GetCapabilities, WFS GetFeature with a small Cotabato bbox, and WMS GetFeatureInfo requests timed out without a response, so schema, CRS, native parcel fields, geometry, and city coverage remain unresolved.",
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used."
+}

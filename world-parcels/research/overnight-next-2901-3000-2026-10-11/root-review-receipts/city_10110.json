@@ -1,0 +1,29 @@
+{
+  "taskId": "city:10110",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-10110-xiangcheng.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/xiangcheng-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:47:16Z",
+  "reason": "Immutable WUP identity and English/Chinese searches match the paired evidence. Official Xiangcheng registry custody is supported, but the government host had a TLS-chain failure in the worker attempt and the accessible map portal yielded no verified anonymous full parcel polygon or stable native ID. No citywide absence is inferred; no independent adapter or headed Details qualification exists.",
+  "registryFound": true,
+  "bilingualExecutedSearchesRecorded": true,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+    "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

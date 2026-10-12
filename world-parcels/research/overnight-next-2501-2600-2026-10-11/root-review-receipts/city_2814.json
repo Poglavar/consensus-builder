@@ -1,0 +1,24 @@
+{
+  "taskId": "city:2814",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-2814-freiburg-im-breisgau.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/freiburg-im-breisgau-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/freiburg-im-breisgau-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T13:32:40.695522Z",
+  "reason": "Held: exact WUP identity and bilingual searches are present. A fresh first-party Freiburg WFS response returned three polygons with native flstkz; the one retained sample has only safe id and geometry, is valid in EPSG:25832, exactly equals its source polygon, and contains the exact transformed WUP point. No independently qualified production adapter, forced paging, 13 bounded cells, full metric GEOS overlap/operation checks, source binding, or headed Details verification is evidenced.",
+  "sourceCheck": {
+    "url": "https://geoportal.freiburg.de/wfs/verma_alkis/alkis_kora_wfs",
+    "request": "bounded WFS 2.0 GetFeature ms:flst with flstkz and the_geom, count=3",
+    "httpStatus": 200,
+    "returnedFeatures": 3,
+    "responseSha256": "211d0ac1c8200b54fd0354a6a23cc0b5b15a98daa8e3a8864f6883d628e11435",
+    "sampleNativeId": "085710-000-03473/0000",
+    "sampleSourceGeometryEqual": true,
+    "sampleContainsExactWupPoint": true
+  }
+}

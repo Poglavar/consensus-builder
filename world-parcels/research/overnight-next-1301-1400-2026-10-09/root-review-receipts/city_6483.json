@@ -1,0 +1,31 @@
+{
+  "taskId": "city:6483",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-6483-elaz.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/elaz-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/batman-attempt3/tkgm-doc.html"
+  ],
+  "checkedAt": "2026-10-09T15:20:52+00:00",
+  "reason": "TKGM Elazığ regional custody and public parcel-search documentation confirmed; no anonymous native-ID full-polygon response, adapter qualification, or headed Details evidence.",
+  "identity": {
+    "queueRank": 1369,
+    "countryCode": "TR",
+    "point": [
+      38.6719567712365,
+      39.2095480589786
+    ],
+    "populationPersons": 411268
+  },
+  "reviewFindings": {
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "adapterQualificationComplete": false,
+    "registryFound": true,
+    "integrationState": "held"
+  }
+}

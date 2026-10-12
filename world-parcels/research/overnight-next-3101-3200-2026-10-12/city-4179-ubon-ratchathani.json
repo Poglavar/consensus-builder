@@ -1,0 +1,132 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 4179,
+  "queueRank": 3132,
+  "name": "Ubon Ratchathani",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "iso3": "THA",
+  "locId": 764,
+  "capital": false,
+  "point": [15.2555003112286, 104.852928029751],
+  "population2025": 191866,
+  "population2025k": 191.866,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ubon Ratchathani official cadastral parcel map land department GIS Thailand",
+        "result": "First-party discovery identified the Department of Lands Landmap hub and the official Ubon Ratchathani Provincial Land Office page. The official material links LandsMaps as the parcel-search service, but no public anonymous parcel API response or geometry was obtained.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/landmap/home/",
+          "https://www.dol.go.th/ubonratchathani/home/",
+          "https://www.dol.go.th/en/home/"
+        ]
+      },
+      {
+        "language": "Thai (local)",
+        "query": "อุบลราชธานี แผนที่แปลงที่ดิน กรมที่ดิน ระบบสารสนเทศภูมิศาสตร์",
+        "result": "Thai-language first-party discovery identified the Department of Lands Landmap hub, the Ubon Ratchathani Provincial Land Office, and the National Statistical Office catalogue entry describing the Department of Lands internet parcel-search system. The result evidences a national DOL parcel service and a provincial custodian, but not an anonymous citywide geometry response.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/landmap/home/",
+          "https://www.dol.go.th/ubonratchathani/home/",
+          "https://gis.nso.go.th/?p=2170"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Thailand Department of Lands; Ubon Ratchathani Provincial Land Office",
+    "locality": "Ubon Ratchathani Province; city locality not separately qualified",
+    "evidenceUrls": [
+      "https://www.dol.go.th/ubonratchathani/home/",
+      "https://www.dol.go.th/landmap/home/"
+    ],
+    "scopeNote": "The official provincial office page identifies the Ubon Ratchathani land office and links the LandsMaps parcel-search service. This evidences a local registry/map custodian, not proof of complete municipal or citywide open parcel coverage."
+  },
+  "officialSources": [
+    {
+      "url": "https://www.dol.go.th/landmap/home/",
+      "observation": "Current Department of Lands Landmap hub retrieved over HTTPS; it presents DOL land-map services and links to public-facing map/search services."
+    },
+    {
+      "url": "https://www.dol.go.th/ubonratchathani/home/",
+      "observation": "Current official Ubon Ratchathani Provincial Land Office page retrieved; it identifies the provincial land office and lists LandsMaps among citizen services."
+    },
+    {
+      "url": "https://gis.nso.go.th/?p=2170",
+      "observation": "Official National Statistical Office catalogue entry describes the Department of Lands internet parcel-search system and records its advertised endpoint."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Department of Lands Landmap / LandsMaps",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "No anonymous parcel feature response was obtained. The exact WUP point was preserved and was not shifted or used as an absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.dol.go.th/landmap/home/",
+      "outcome": "200; official DOL Landmap hub HTML retrieved and inspected. Current page links and service labels were recorded; no parcel geometry endpoint was exposed in the hub HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.dol.go.th/ubonratchathani/home/",
+      "outcome": "200 in first-party discovery; official provincial land-office page identified and its LandsMaps citizen-service link was recorded. No parcel response requested from the page."
+    },
+    {
+      "method": "GET",
+      "url": "https://gis.nso.go.th/?p=2170",
+      "outcome": "First-party catalogue result identified the advertised DOL parcel-search endpoint http://dolwms.dol.go.th/intranet/."
+    },
+    {
+      "method": "HEAD",
+      "url": "https://dolwms.dol.go.th/intranet/",
+      "outcome": "Connection failed before an HTTP response (could not connect to port 443); no retry with credentials, private tokens, or TLS bypass."
+    },
+    {
+      "method": "HEAD",
+      "url": "http://dolwms.dol.go.th/intranet/",
+      "outcome": "Connection failed before an HTTP response (could not connect to port 80); no evidence of absence."
+    },
+    {
+      "method": "HEAD",
+      "url": "https://dolwms.dol.go.th/",
+      "outcome": "Connection failed before an HTTP response (could not connect to port 443); no service schema or CRS available."
+    }
+  ],
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Department of Lands national parcel-search service with Ubon Ratchathani provincial land-office presence.",
+    "verifiedOpenScope": "Official service existence and local custodian were evidenced; no anonymous citywide parcel geometry or bounded feature response was verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": [
+    "canonical native parcel identifier if later verified",
+    "full parcel geometry if later verified",
+    "source CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The advertised LandsMaps endpoint was unreachable from this environment, so current JavaScript/configuration, schema, CRS, and anonymous parcel response could not be inspected.",
+    "Official DOL and provincial-office pages evidence a registry/map service and local custodian, but do not establish citywide polygon coverage.",
+    "A connection failure or unusable route is not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9278-jiyuan.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh English and Chinese searches found an official Jiyuan real-estate registration center announcement for the local '以图查房' visual cadastral-map service. The official service entry page was reachable, but the map route redirected to a government login flow. The linked public map app exposed encrypted configuration/API responses and did not yield an anonymous safe parcel ID-plus-geometry response.",
+  "registryAssessment": "Local registry custody is evidenced, so registryFound is true. The official announcement identifies the Jiyuan demonstration-zone real-estate registration center and natural-resources bureau as operators of the map/query service. Geometry access and runtime qualification remain held.",
+  "officialPrimarySources": [
+    {"title": "Jiyuan real-estate registration center announcement", "url": "https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html", "observation": "Official announcement describes the '以图查房' visual cadastral/real-estate query service, its Jiyuan demonstration-zone scope, and privacy limitation."},
+    {"title": "Jiyuan natural-resources bureau public service entry", "url": "https://zrzyghj.jiyuan.gov.cn/bmfw/", "observation": "Official local service landing page; it links the visual cadastral query route and a public map application."},
+    {"title": "Jiyuan natural-resources information disclosure guide", "url": "https://zrzyghj.jiyuan.gov.cn/14195/17138/", "observation": "Official bureau page confirming the local natural-resources/registry information custodian."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Jiyuan China official cadastral parcel map GIS natural resources bureau public service", "executionMethod": "Executed separate web search", "resultUrls": ["https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html", "https://zrzyghj.jiyuan.gov.cn/bmfw/"]},
+    {"language": "Chinese", "query": "济源 地籍图 不动产登记 自然资源局 官方 地图 服务", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html", "https://zrzyghj.jiyuan.gov.cn/14195/17138/", "https://zrzyghj.jiyuan.gov.cn/bmfw/"]}
+  ],
+  "attempts": [
+    {"attempt": "official announcement", "url": "https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html", "result": "HTTP/search-visible official announcement: describes visual cadastral-map query for mapped/registered parcels and buildings; no raw feature endpoint or schema published.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official service landing page", "url": "https://zrzyghj.jiyuan.gov.cn/bmfw/", "result": "HTTP 200. HTML links DZZZXZ_jy.aspx and public map app http://221.13.152.245:7878/#/index.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official visual cadastral route", "url": "https://zrzyghj.jiyuan.gov.cn/bmfw/Views/XXQuery/DZZZXZ_jy.aspx", "result": "HTTP 302 chain to /userinfo/login.aspx, /ZWFWW/Authorized.aspx, and login.hnzwfw.gov.cn; no login or credentials attempted.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "linked public map application", "url": "http://221.13.152.245:7878/", "result": "HTTP 200 public JavaScript app. Current bundle exposes map/query routes including /api/ZdQsdc/readOnemapJson, /api/ZdQsdc/mainList, and /spatial/query, but request parameters/responses are encrypted or require token/session handling.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "public map config API", "url": "http://221.13.152.245:7878/api/ZdQsdc/readOnemapJson", "result": "HTTP 200 ciphertext; not decoded or used to infer fields, CRS, or parcel coverage.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "public map list API without parameters", "url": "http://221.13.152.245:7878/api/ZdQsdc/mainList", "result": "HTTP 200 服务端加密异常; no parcel response.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "public spatial endpoint without app request context", "url": "http://221.13.152.245:7878/spatial/query", "result": "HTTP 404; no geometry response.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response with stable native identity, schema, and CRS was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Official announcement states the visual query covers completed mapped/registered parcels and buildings in the Jiyuan demonstration zone.", "verifiedOpenScope": "No anonymous parcel geometry, schema, CRS, or citywide query coverage verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "Authenticated or browser-mediated access may expose safe parcel geometry; exact-point querying was not attempted because no anonymous usable feature request was identified.",
+  "runtimeReadiness": "held_unqualified"
+}

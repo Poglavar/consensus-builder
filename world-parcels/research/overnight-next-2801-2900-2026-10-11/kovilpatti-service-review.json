@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-10273-kovilpatti.json",
+  "cityCode": 10273,
+  "queueRank": 2874,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Kovilpatti Municipality for published municipal land/planning records; Tamil Nadu Government land-record services / Department of Survey and Settlement for state cadastral-record procedures",
+  "publicMapLead": "Tamil Nadu Government Land Management System and TNGIS: https://tnglms.in/ and https://tngis.tn.gov.in/apps/cumta/",
+  "queryOutcomes": "Separate English and Tamil discovery queries were performed. First-party Tamil Nadu land-record, TNGLMS, TNGIS, and Kovilpatti Municipality sources were found.",
+  "requestOutcomes": "Official pages and the current TNGLMS landing page were retrieved. The government service procedure documents urban TSLR/FMB lookup, and municipal pages expose survey-number land records. The TNGIS map route timed out during direct retrieval. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used; no parcel geometry was observed.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "geometryType": null, "fieldMapping": null, "compositeKeyProvenance": "No native parcel response was obtained; no identity was invented."},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only if source-proven", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [9.17274483300848, 77.8728653571237] was preserved and not moved.", "No exact-point parcel geometry response was verified; this is not evidence of citywide absence.", "Municipal tabular land records and a state lookup procedure do not establish citywide vector coverage.", "No retained sample GeoJSON is included because no safe native geometry and identity were observed.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Independent serial review is required before any adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "First-party cadastral procedures and local municipal land records are evidenced, but public parcel schema, native identity, CRS, geometry, and coverage were not independently verified."},
+  "uncertainty": "TNGLMS/TNGIS may expose additional public or authorized map functionality not resolved in this bounded anonymous attempt. The official urban TSLR/FMB procedure indicates cadastral records exist, but it requires administrative and survey inputs and does not itself provide an open vector parcel endpoint."
+}

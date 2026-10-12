@@ -1,0 +1,137 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 2719,
+  "queueRank": 2990,
+  "name": "Kisaran",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "capital": false,
+  "point": [2.97816080076381, 99.6378620900856],
+  "population2025": 200296,
+  "population2025k": 200.296,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kisaran Indonesia official cadastral parcel map land registry GIS Asahan ATR BPN",
+        "result": "First-party discovery identified ATR/BPN BHUMI and ATLAS, including the published Bidang Tanah layer. Official local Asahan evidence identified the Asahan Land Office (Kantor Pertanahan ATR/BPN Asahan) in land-mapping coordination, but no Kisaran-specific open parcel download was found.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://atlas.atrbpn.go.id/",
+          "https://bappenda.asahankab.go.id/post/bapenda-kab-asahan-lakukan-konsultasi-pendetilan-peta--znt"
+        ]
+      },
+      {
+        "language": "Indonesian (local)",
+        "query": "Kisaran peta bidang tanah resmi ATR BPN Asahan GIS",
+        "result": "Indonesian-language first-party discovery found BHUMI/ATLAS and an Asahan local-government page documenting coordination with ATR/BPN Asahan on land-value mapping. The Asahan geoportal was reachable only to a Cloudflare challenge page; no challenge was solved or bypassed.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/",
+          "https://atlas.atrbpn.go.id/",
+          "https://geoportal.asahankab.go.id/",
+          "https://bappenda.asahankab.go.id/post/strategi-peningkatan-pendapatan-asli-daerah-pad-melalui-pemetaan-zona-nilai-tanah-znt-di-kabupaten-asahan"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Kementerian ATR/BPN; local Kantor Pertanahan ATR/BPN Kabupaten Asahan",
+    "locality": "Kisaran, Kabupaten Asahan, Sumatera Utara",
+    "evidenceUrls": [
+      "https://bappenda.asahankab.go.id/post/bapenda-kab-asahan-lakukan-konsultasi-pendetilan-peta--znt",
+      "https://bhumi.atrbpn.go.id/",
+      "https://atlas.atrbpn.go.id/"
+    ],
+    "scopeNote": "The Asahan government page names coordination with ATR/BPN Asahan for land-value mapping covering Kisaran Timur and Kisaran Barat. This evidences a local land-information custodian, not open citywide cadastral geometry access."
+  },
+  "officialSources": [
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "observation": "Current ATR/BPN ATLAS catalog was retrieved and describes itself as the geospatial data portal; its catalog exposes a published Bidang Tanah layer."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "BHUMI help page identifies the interactive map as integrated with the ATR/BPN ATLAS geoportal."
+    },
+    {
+      "url": "https://bappenda.asahankab.go.id/post/bapenda-kab-asahan-lakukan-konsultasi-pendetilan-peta--znt",
+      "observation": "Official Asahan Bappenda page documents consultation with ATR/BPN Asahan and says the work began in Kisaran Timur and Kisaran Barat."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "ATR/BPN BHUMI / ATLAS published Bidang Tanah layer",
+    "nativeIdField": "nib (documented display field; no value retrieved)",
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "documentedNativeFields": ["penggunaan", "tipehak", "luas", "nib", "akurasibidang"],
+      "safeRetainedFields": ["canonical native parcel identity", "full parcel geometry", "geometry CRS"],
+      "compositeKeyProvenance": null
+    },
+    "note": "ATLAS catalog metadata exposed map_service_url /bhumigs/umum, vendor GeoServer, and layer umum:Persil with national bounds. No anonymous feature response or schema/CRS response was obtained for the exact WUP point, and no polygon is retained. The point was not shifted and was not used as an absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/",
+      "outcome": "200; current BHUMI application shell retrieved."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "outcome": "200; current public map application shell and JavaScript route retrieved."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/panel/items/layers?search=Bidang%20Tanah",
+      "outcome": "200; current catalog JSON exposed published Bidang Tanah metadata, GeoServer service path /bhumigs/umum, layer umum:Persil, national extent, and documented display fields."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities",
+      "outcome": "404; request was handled by the BHUMI web application rather than returning a WMS capabilities document."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&request=GetCapabilities",
+      "outcome": "404; no public WFS capabilities response was returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.asahankab.go.id/",
+      "outcome": "403; Cloudflare challenge page returned. No CAPTCHA/Cloudflare bypass attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://atlas.atrbpn.go.id/",
+      "outcome": "200; current ATLAS catalog page retrieved; no Kisaran-specific parcel feature response requested."
+    }
+  ],
+  "resultCategory": "city_registry_evidenced_no_public_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "ATR/BPN national BHUMI/ATLAS Bidang Tanah catalog and the local Asahan land-information custodian named by official local-government evidence.",
+    "verifiedOpenScope": "Catalog metadata and local custodian evidence only; no citywide or exact-point parcel geometry was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The published layer metadata documents parcel-related fields including NIB, rights type, area, use, and accuracy, but no values were requested or retained because no feature response was available.",
+    "The service path exposed by the current viewer did not provide anonymous WMS/WFS capabilities at the tested public URL; this may reflect proxy routing or access restrictions and is not evidence of cadastral absence.",
+    "The local Asahan geoportal returned a Cloudflare challenge; it was not bypassed.",
+    "A single exact-point request was not treated as a citywide coverage test; the WUP coordinate remains exact latitude/longitude order.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained."
+  ]
+}

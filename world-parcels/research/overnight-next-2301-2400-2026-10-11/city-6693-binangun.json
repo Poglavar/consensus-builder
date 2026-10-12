@@ -1,0 +1,119 @@
+{
+  "cityCode": 6693,
+  "queueRank": 2399,
+  "name": "Binangun",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-7.6616344762734, 109.269305775549],
+  "population2025": 243721,
+  "population2025k": 243.721,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Binangun Cilacap Indonesia official cadastral parcel map ATR BPN",
+        "result": "Discovery identified the official ATR/BPN BHUMI interactive map, the ATLAS geospatial portal, and the official Cilacap land-office site. No Binangun-specific public parcel endpoint or safe feature response was exposed in indexed first-party content.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://atlas.atrbpn.go.id/",
+          "https://atrbpncilacap.or.id/"
+        ]
+      },
+      {
+        "language": "Indonesian (local/native discovery language)",
+        "query": "Binangun Cilacap peta bidang tanah resmi ATR BPN",
+        "result": "Pencarian berbahasa Indonesia menemukan portal resmi BHUMI/ATLAS ATR/BPN dan situs Kantor Pertanahan Kabupaten Cilacap, tetapi tidak menemukan layanan publik khusus Binangun dengan respons bidang tanah anonim yang memuat ID asli dan geometri.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://atlas.atrbpn.go.id/",
+          "https://www.bpnkabcilacap.com/layanan/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Kantor Pertanahan Kabupaten Cilacap is the evidenced local land-office custodian, but its public site did not expose a Binangun parcel map/API in this attempt.",
+    "regionalOrNationalSources": [
+      "BHUMI ATR/BPN is the national ministry's public interactive geospatial map surface and states that it can present land parcels and other spatial layers.",
+      "ATLAS is the national ATR/BPN geospatial catalog. Its public landing page loaded, but the anonymous catalog response rendered zero published sources during the bounded request and no Binangun parcel dataset was identified.",
+      "The Cilacap land-office site documents land services and local office information, but general service prose is not parcel-vector evidence."
+    ],
+    "registryEvidence": "No city-specific public registry/map/procedure with usable Binangun parcel geometry and stable native identity was identified; registryFound remains null."
+  },
+  "requestOutcomes": "TLS-verified GET of https://bhumi.atrbpn.go.id/ returned HTTP 200 and referenced the current iframe https://konsolbhumi.atrbpn.go.id. TLS-verified GET of the iframe and inspection of its current JavaScript entrypoints found public application routes and token-gated service configuration, but no anonymous Binangun parcel feature request was safely exposed. TLS-verified GET of https://atlas.atrbpn.go.id/ returned HTTP 200; current Next.js assets and the public landing page were inspected, with no Binangun parcel layer, schema, CRS, native identity, or geometry response obtained. TLS-verified GET of https://atrbpncilacap.or.id/ and https://www.bpnkabcilacap.com/layanan/ was represented by indexed official content; no parcel vector endpoint was exposed. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disable was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Official BHUMI ATR/BPN map help and landing surface",
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "outcome": "Official help page confirms the interactive map is integrated with ATLAS and supports spatial layers including land parcels. This is national capability documentation, not evidence of Binangun coverage."
+    },
+    {
+      "route": "Official BHUMI public map application",
+      "url": "https://bhumi.atrbpn.go.id/",
+      "outcome": "HTTP 200; current page iframe and JavaScript entrypoints were followed to konsolbhumi.atrbpn.go.id. No safe anonymous Binangun parcel ID-plus-geometry response was obtained."
+    },
+    {
+      "route": "Official ATLAS geospatial catalog",
+      "url": "https://atlas.atrbpn.go.id/",
+      "outcome": "HTTP 200; current public catalog landing page and JavaScript assets were inspected. The rendered anonymous catalog showed zero published sources at inspection time and no Binangun parcel dataset, service URL, schema, CRS, or feature response was exposed."
+    },
+    {
+      "route": "Local land-office custodian site",
+      "url": "https://atrbpncilacap.or.id/",
+      "outcome": "Official-looking Kantor Pertanahan Kabupaten Cilacap site was identified, including local land-office context and land-value-zone material, but no public Binangun parcel vector service was found."
+    },
+    {
+      "route": "Cilacap land-office service page",
+      "url": "https://www.bpnkabcilacap.com/layanan/",
+      "outcome": "Public service page describes electronic/online land services and the local office. It does not expose an anonymous parcel layer or safe geometry endpoint."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-7.6616344762734, 109.269305775549] was preserved in latitude/longitude order; it was not shifted to force a parcel hit.",
+    "No exact-point hit or miss, map-extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+    "National capability documentation and local service prose do not establish Binangun parcel coverage.",
+    "No safe native parcel identifier plus full polygon response was obtained; no GeoJSON sample is retained.",
+    "Packet completion records research status only; runtimeReadiness remains held and independent serial review is required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "No parcel CRS response observed.",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable Binangun parcel-vector response; no hit/miss inference.",
+    "requestEvidence": [
+      "BHUMI and ATLAS official public surfaces were inspected without a Binangun parcel response.",
+      "Cilacap local-office service pages were inspected without an anonymous parcel-vector endpoint."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Indonesia national ATR/BPN discovery, Cilacap local land-office discovery, and bounded anonymous inspection of current BHUMI/ATLAS public application surfaces.",
+    "verifiedOpenScope": "Official national map/catalog and local office service surfaces were verified; no anonymous Binangun parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A parcel layer may exist behind authenticated, unindexed, or map-session requests. Its current Binangun coverage, public access conditions, native identity field, CRS, geometry endpoint, and completeness were not established through safe anonymous requests."
+}

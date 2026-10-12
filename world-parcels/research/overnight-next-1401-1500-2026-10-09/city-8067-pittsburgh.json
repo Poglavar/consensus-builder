@@ -1,0 +1,59 @@
+{
+  "cityCode": 8067,
+  "queueRank": 1475,
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [40.4196878479719, -79.9703261647027],
+  "population2025": 385498,
+  "population2025k": 385.498,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pittsburgh official cadastral parcel map GIS Allegheny County parcel viewer API",
+        "result": "Found the City of Pittsburgh GIS hub and its linked official/public mapping resources; the Allegheny County DCS-GIS OPENDATA Parcels ArcGIS service is a first-party county parcel layer covering Pittsburgh.",
+        "actualResultUrls": [
+          "https://www.pittsburghpa.gov/Business-Development/Geographic-Information-Systems-Mapping-Open-Data/Geographic-Information-System-GIS-Mapping",
+          "https://www.pittsburghpa.gov/Business-Development/Geographic-Information-Systems-Mapping-Open-Data/Geographic-Information-System-GIS-Mapping/Interactive-Apps-Maps-Dashboards",
+          "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer"
+        ]
+      },
+      {
+        "language": "English (local-language search unavailable; United States local administrative language is English)",
+        "query": "Pittsburgh Pennsylvania official parcel map GIS property parcels Allegheny County",
+        "result": "The second first-party discovery wording reached the same City GIS hub and county DCS-GIS parcel service. No separate non-English administrative-language source is applicable for this US locality.",
+        "actualResultUrls": [
+          "https://www.pittsburghpa.gov/Business-Development/Geographic-Information-Systems-Mapping-Open-Data/Geographic-Information-System-GIS-Mapping/Interactive-Apps-Maps-Dashboards",
+          "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Allegheny County Department of Court Records / GIS (DCS-GIS) public OPENDATA Parcels ArcGIS service, linked through the City of Pittsburgh GIS hub; the county is the evidenced parcel custodian.",
+    "localityEvidence": "The returned parcel is within the Allegheny County parcel layer and the exact WUP point lies in Pittsburgh; returned native PIN is 0013G00229000000 and map-block-lot is 13-G-229.",
+    "sourceScope": "Public parcel-boundary layer for Allegheny County, including Pittsburgh; exact-point evidence is not a citywide completeness claim.",
+    "geometryAccess": "Anonymous HTTPS ArcGIS REST query; no login, credentials, token, owner, address, titleholder, tax, contact, or personal fields requested."
+  },
+  "geometry": {
+    "verified": true,
+    "sampleCount": 1,
+    "sampleFile": "pittsburgh-parcel-sample.geojson",
+    "exactWupPointTest": "Exact WUP point [40.4196878479719, -79.9703261647027] returned one polygon; no coordinate shift was used.",
+    "crs": "Source layer native CRS EPSG:2272 / WKID 102729 (NAD83 Pennsylvania South State Plane feet); response was requested with outSR=4326 and retained as WGS84 GeoJSON longitude,latitude.",
+    "nativeIdentity": "0013G00229000000",
+    "nativeFieldMapping": {
+      "nativeIdentity": "PIN field",
+      "nativeSourceFields": ["PIN", "MAPBLOCKLOT", "OBJECTID"],
+      "safeRetainedFields": ["id", "geometry"]
+    }
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real public parcel response was verified, but adapter admission requires independent serial qualification.",
+    "adapterAdmission": false
+  }
+}

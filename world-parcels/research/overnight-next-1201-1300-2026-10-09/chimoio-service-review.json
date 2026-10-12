@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-966-chimoio.json",
+  "purpose": "Document first-party local-registry and public map discovery plus bounded anonymous requests for Chimoio.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "MOZGIS/ADE first-party national GIS infrastructure was discovered and its ArcGIS REST catalog was inspected. The exact WUP point intersects one administrative feature, but no Chimoio-specific parcel service or safe parcel geometry response was verified. The discovered parcel/talhao service is explicitly Matola municipal data.",
+  "registryAssessment": "registryFound=null is appropriate: national agency prose and administrative GIS do not evidence a Chimoio-local cadastre or public parcel registry. Chimoio municipal documentation mentions land registration/cadastre procedures, but no public parcel API or viewer was verified.",
+  "officialPrimarySources": [
+    {"url": "https://www.ade.gov.mz/", "observation": "Official Agência Nacional de Desenvolvimento Geo-espacial site links MOZGIS and national geospatial data functions."},
+    {"url": "https://www.mozgis.gov.mz/server/rest/services?f=pjson", "observation": "Official ArcGIS REST catalog retrieved and searched for Chimoio/Manica/cadastral terms."},
+    {"url": "https://www.mozgis.gov.mz/server/rest/services/Data/UnidadesAdministrativasCenso2017/MapServer/0", "observation": "Official INE administrative polygon layer; schema exposes OBJECTID and Id, not parcel fields."},
+    {"url": "https://cmchimoio.ac.mz/upload/CODIGO-DE-POSTURA-FINAL-12.8.2020-3-REVISAO-em-03-de-12-de-2020-1.pdf", "observation": "Official Chimoio municipal code refers to registration/cadastro documentation and land titles; it does not provide a public parcel feature service."},
+    {"url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/MapServer", "observation": "Official parcel/talhao service metadata, explicitly scoped to Matola municipality; excluded from Chimoio evidence."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Chimoio Mozambique official cadastral parcel map land registry GIS", "result": "Found official national MOZGIS/ADE and administrative GIS sources; no Chimoio parcel layer."},
+    {"language": "Portuguese", "query": "Chimoio Moçambique cadastro mapa parcelas registro predial oficial", "result": "Found official Chimoio municipal land-procedure material and national predial workflow; no anonymous Chimoio parcel endpoint."}
+  ],
+  "safeFieldAllowlist": ["OBJECTID", "Id"],
+  "geometryDecision": "No parcel geometry retained; the only returned feature was an administrative feature and was not retained as a parcel sample.",
+  "attempts": [
+    {"route": "MOZGIS ArcGIS REST service catalog", "method": "GET", "outcome": "Retrieved; no Chimoio-specific cadastral/parcel service name found."},
+    {"route": "INE administrative layer metadata", "method": "GET", "outcome": "Retrieved; administrative polygons only."},
+    {"route": "INE administrative layer exact WUP point query", "method": "GET", "outcome": "Returned one feature with safe administrative IDs; not parcel evidence."},
+    {"route": "MOZGIS Matola parcel/talhao service metadata", "method": "GET", "outcome": "Retrieved; explicitly Matola-only and excluded from Chimoio coverage."}
+  ],
+  "coverageAssessment": {"citywideVerified": false, "countrywideVerified": false, "geometryVerified": false, "note": "No Chimoio parcel layer was identified; non-discovery and administrative point results are not evidence of citywide parcel absence."},
+  "remainingUncertainty": "Unpublished/authenticated municipal cadastral services and non-indexed Chimoio parcel data remain possible.",
+  "runtimeReadiness": "held_pending_independent_serial_review"
+}

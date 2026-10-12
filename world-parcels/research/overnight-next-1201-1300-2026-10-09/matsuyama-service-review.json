@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3739-matsuyama.json",
+  "purpose": "Document first-party Matsuyama cadastral custody, public map review, catalog discovery, and bounded anonymous safe-ID geometry verification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Matsuyama City's official pages evidence local cadastral-survey custody and application/viewing procedures, and the public e~yo Machi Navi portal provides administrative map access. The G-Space CKAN catalog publishes a Ministry of Justice registry-map extract for Matsuyama; its anonymous GeoJSON was fetched and one safe-ID polygon intersected the exact WUP point. Runtime readiness remains held.",
+  "registryAssessment": "Local registry/cadastral procedure is evidenced by Matsuyama City's official地籍調査 page, including city-held results and district-specific viewing/application information. This establishes institutional custody, not admission of an anonymous citywide parcel runtime source.",
+  "safeFieldAllowlist": ["safe public parcel/source ID", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html", "observation": "Official Matsuyama page dated 2025-07-04 describes cadastral survey, cadastral maps/books, city custody, district eligibility, application/viewing and fees; it includes owner/lot concepts in explanatory text, but none were retained."},
+    {"url": "https://www2.wagmap.jp/matsuyamacity/Portal", "observation": "Official Matsuyama public map portal says it publishes administrative information maps online; public HTML did not expose a cadastral parcel geometry endpoint."},
+    {"url": "https://info-faq.city.matsuyama.ehime.jp/faq/show/1173?site_domain=default", "observation": "Official FAQ links e~yo Machi Navi and describes anonymous map viewing for urban-planning information; not a cadastral geometry response."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201", "observation": "Anonymous CKAN API response lists Matsuyama municipality code 38201 GeoJSON/SHP resources for 2022-2026 and the published download URLs."},
+    {"url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/38/aigid-moj-38201/38201_%E6%9D%BE%E5%B1%B1%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%A94%E7%B3%BB_%E7%AD%86R_2026.geojson", "observation": "Published GeoJSON fetched anonymously with TLS verification enabled; source FeatureCollection advertises CRS84 and safe ID field ID. The downloaded FeatureCollection name says 2025 despite the catalog URL/resource label saying 2026; this version-label uncertainty is recorded."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Matsuyama official cadastral parcel map GIS land parcel map city Japan", "result": "Official city cadastral and public-map pages plus the Matsuyama G-Space catalog record found; no official anonymous cadastral API was verified.", "resultUrls": ["https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html", "https://www2.wagmap.jp/matsuyamacity/Portal", "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201"]},
+    {"language": "Japanese", "query": "松山市 地籍図 公図 地番図 GIS 公式", "result": "Official Matsuyama cadastral-survey procedure and public administrative map portal found; no anonymous cadastral parcel API verified. Matsuyama registry-map GeoJSON cataloged by municipality code 38201.", "resultUrls": ["https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html", "https://www2.wagmap.jp/matsuyamacity/Portal", "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201"]}
+  ],
+  "geometryDecision": {"verified": true, "sourceId": "H000002385", "sampleCount": 1, "sampleFile": "sample-matsuyama-parcels.geojson", "exactWupPointTest": "A bounded 0.0000003-degree WGS84 window around exact unchanged WUP point [33.8263081285138, 132.766078613925] returned one intersecting source polygon (ID H000002385). This is not an absence/completeness test.", "requestEvidence": [{"url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/38/aigid-moj-38201/38201_%E6%9D%BE%E5%B1%B1%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%994%E7%B3%BB_%E7%AD%86R_2026.geojson", "method": "GET", "status": "HTTP 200", "response": "GeoJSON FeatureCollection; CRS84; native ID ID; bounded spatial filter produced one exact-point intersecting polygon."}]},
+  "attempts": [
+    {"url": "https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html", "method": "GET/web open", "status": "HTTP page found", "result": "Read official cadastral-survey and district application information; no parcel API exposed."},
+    {"url": "https://www2.wagmap.jp/matsuyamacity/Portal", "method": "GET; anonymous", "status": "HTTP page found", "result": "Read public administrative map portal; no cadastral endpoint exposed in public page."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200 JSON", "result": "Received catalog schema/resource metadata."},
+    {"url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/38/aigid-moj-38201/38201_%E6%9D%BE%E5%B1%B1%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%A94%E7%B3%BB_%E7%AD%86R_2026.geojson", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200", "result": "Fetched published GeoJSON; bounded filter returned one exact-point polygon; raw response kept only in ignored tmp."}
+  ],
+  "coverageAssessment": {"claimedScope": "Published Matsuyama municipality registry-map extract plus official city public-map/cadastral procedure pages.", "verifiedOpenScope": "Catalog/resource and one bounded exact-point geometry verified; citywide completeness and full public coverage not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "remainingUncertainty": "The city viewer's live JavaScript/configuration was not inspected for undocumented parcel layers; public registry-map coverage and 2025/2026 resource naming discrepancy remain unresolved. No unsafe record-specific fields were requested or retained."
+}

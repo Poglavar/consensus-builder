@@ -1,0 +1,85 @@
+{
+  "cityCode": 7553,
+  "queueRank": 1535,
+  "name": "Oyigbo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [4.90308005948624, 7.11669255188034],
+  "population2025": 371913,
+  "population2025k": 371.913,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oyigbo official cadastral parcel map land registry GIS Rivers State Nigeria",
+        "result": "First-party Rivers State sources identify the Ministry of Lands and Survey as the state land-administration and surveying custodian and describe the RIVLANDS e-filing/C-of-O workflow. The Office of the Surveyor General portal was also found. No public parcel viewer, vector layer, service configuration, schema, CRS, or safe anonymous parcel ID+geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://rsipa.riversstateapps.ng/lands-and-survey/",
+          "https://www.sgriv.com/",
+          "https://riversstate.gov.ng/"
+        ]
+      },
+      {
+        "language": "Igbo/local",
+        "query": "Oyigbo Igbo ala ndebanye aha map cadastral Rivers State Nigeria",
+        "result": "No first-party Igbo-language cadastral viewer or parcel-geometry service was located. English official Rivers State land-service material was the available procedural source; this is a discovery limitation, not evidence of citywide absence.",
+        "actualResultUrls": [
+          "https://rsipa.riversstateapps.ng/lands-and-survey/",
+          "https://www.sgriv.com/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Rivers State Ministry of Lands and Survey / Office of the Surveyor General, with the ministry service page placing the office at Point Block, Rivers State Secretariat Complex, Port Harcourt.",
+    "scope": "State land administration, surveying, land-use management, charting, survey review, C-of-O processing and deed registration are evidenced. The scope is state-level custody and workflow, not verified citywide parcel geometry coverage for Oyigbo.",
+    "urls": [
+      "https://rsipa.riversstateapps.ng/lands-and-survey/",
+      "https://www.sgriv.com/",
+      "https://riversstate.gov.ng/"
+    ]
+  },
+  "source": {
+    "sourceId": null,
+    "name": "Rivers State Ministry of Lands and Survey / Office of the Surveyor General",
+    "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+    "operator": "Rivers State Government",
+    "serviceType": "First-party land-registration and survey custodian and digital filing portal evidenced; public parcel geometry service not verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "The official-facing service pages describe applicant registration, survey-plan upload, charting, survey-officer review and C-of-O/deed registration. They do not expose a public parcel map/API or safe minimal parcel response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rivers State Ministry of Lands and Survey and Office of the Surveyor General are evidenced as relevant state land-registration and survey custodians for Oyigbo.",
+    "verifiedOpenScope": "No safe anonymous parcel ID+geometry response, native field, CRS, or public vector layer was verified. The unchanged WUP point was not used as a parcel hit/miss test.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_custody_evidenced_geometry_unverified",
+  "technicalBlocker": "The accessible first-party pages expose workflow and account-based filing routes, not a public map viewer or anonymous feature service. No credentials, registration, owner/address fields, or private tokens were used.",
+  "remainingUncertainty": "Whether RIVLANDS/SGRIV has a separate authorized public map or service endpoint, its native parcel identity and CRS, and whether any such service covers the unchanged Oyigbo WUP point.",
+  "nextStep": "Revisit only if an official public viewer configuration or vector endpoint is documented; qualify metadata and a bounded safe ID+geometry response before runtime admission.",
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "pointBasis": "WUP 2025 settlement point in latitude/longitude order; not a municipal boundary or parcel-coverage claim.",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1
+}

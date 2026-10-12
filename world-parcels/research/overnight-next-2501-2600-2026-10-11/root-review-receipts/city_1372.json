@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1372",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-1372-charleroi.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/charleroi-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_1372-first-party-tested-layer-metadata.json"
+  ],
+  "checkedAt": "2026-10-11T15:38:04Z",
+  "reason": "Federal cadastral custody and tested polygon schema are evidenced; the tested layer extent excludes Charleroi and no Charleroi parcel was returned. The zero result is a coverage miss, not citywide absence.",
+  "runtimeAdmission": false
+}

@@ -1,0 +1,41 @@
+{
+  "cityCode": 9862,
+  "queueRank": 2423,
+  "name": "Acheng",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [45.5435692926115, 126.974995418161],
+  "population2025": 242003,
+  "population2025k": 242.003,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Acheng China official cadastral parcel map land registration GIS Natural Resources Bureau",
+        "result": "Search found the official Acheng district government service portal and Harbin government credit/news pages identifying Acheng real-estate registration services, but no public anonymous parcel-vector API or safe downloadable parcel geometry.",
+        "actualResultUrls": [
+          "https://hrbacq.zwfw.hlj.gov.cn/",
+          "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=dd4fdb5bbdac4ad2bb9382a9a2cc199f&method=showDetailHtml",
+          "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=188f42718452446c9de21b37501c0b13&method=showDetailHtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "阿城区 官方 不动产登记 地籍 地图 宗地 自然资源局",
+        "result": "搜索确认阿城区政务服务门户及哈尔滨官方信息页面涉及区不动产登记中心/不动产登记服务，但未验证到无需登录即可返回阿城宗地安全身份和完整几何的公开接口。",
+        "actualResultUrls": [
+          "https://hrbacq.zwfw.hlj.gov.cn/",
+          "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=dd4fdb5bbdac4ad2bb9382a9a2cc199f&method=showDetailHtml",
+          "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=188f42718452446c9de21b37501c0b13&method=showDetailHtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Acheng local registration custody is evidenced by official government service/news pages, but no city-bounded anonymous parcel geometry, schema, CRS, or stable native parcel identity was obtained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "resultCategory": "local_registry_custodian_evidenced_no_anonymous_geometry",
+  "sampleGeoJSON": null
+}

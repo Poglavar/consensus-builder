@@ -1,0 +1,11 @@
+{
+  "taskId": "city:1291",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-1291-al-mahmudiya.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/al-mahmudiya-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:11:14.949409Z",
+  "reason": "ESA cadastral/map custody and Beheira work evidenced; no anonymous Al-Mahmudiya parcel feature response, native ID, or polygon. Adapter qualification and headed Details check are absent."
+}

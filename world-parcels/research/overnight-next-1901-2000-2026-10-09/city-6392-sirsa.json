@@ -1,0 +1,68 @@
+{
+  "cityCode": 6392,
+  "queueRank": 1910,
+  "name": "Sirsa",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [29.536704378771, 75.035515266935],
+  "population2025": 300414,
+  "population2025k": 300.414,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sirsa Haryana official cadastral parcel map geoportal land records GIS",
+        "result": "First-party results identified Haryana Revenue and Disaster Management Department, HARSAC Digital Land Record System, Web-HALRIS and the State GIS Portal. The Revenue department page specifically discusses digitization of some Sirsa district village maps; HARSAC's current public landing page describes cadastral maps and land information but requires public-login OTP for its map application.",
+        "actualResultUrls": ["https://revenueharyana.gov.in/computerisation-of-land-records/", "https://hsac.in/eodb/", "https://haryanait.gov.in/web-halris/", "https://stategisportal.nic.in/stategisportal/Home/Map/6"]
+      },
+      {
+        "language": "Hindi",
+        "query": "सिरसा हरियाणा आधिकारिक भू नक्शा cadastral parcel map जमीन रिकॉर्ड",
+        "result": "Search results did not expose a separate Sirsa-specific anonymous parcel API. They surfaced the official HARSAC Digital Land Record System and national NAKSHA programme; the Haryana first-party systems remain the relevant local/state custodians.",
+        "actualResultUrls": ["https://hsac.in/eodb/", "https://naksha.dolr.gov.in/NakshaPortal/", "https://revenueharyana.gov.in/document/map/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Haryana Revenue materials identify the state land-record/cadastral-map programme and explicitly mention Sirsa district village-map digitization; the Sirsa district revenue office/tehsil is listed by the same department. This establishes an official custodian and local administrative scope, not an open geometry feed.",
+  "officialSources": [
+    {"url": "https://revenueharyana.gov.in/computerisation-of-land-records/", "observation": "Official department page says some Sirsa district mussavis were given to HARSAC for digitization and describes integration of village maps with Jamabandi land records."},
+    {"url": "https://hsac.in/eodb/", "observation": "Current HARSAC Digital Land Record System landing page advertises Haryana cadastral maps and land information; public map access is behind OTP login."},
+    {"url": "https://haryanait.gov.in/web-halris/", "observation": "Official Haryana IT page identifies Web-HALRIS as the integrated deed-registration and land-records management system implemented in all tehsils."},
+    {"url": "https://revenueharyana.gov.in/field-offices/", "observation": "Official Revenue department field-office listing includes Sirsa."}
+  ],
+  "requests": [
+    {"name": "harsac-eodb-viewer", "method": "GET", "url": "https://hsac.in/eodb/", "httpStatus": 200, "contentType": "text/html", "outcome": "Viewer shell loaded; current JavaScript/configuration inspected."},
+    {"name": "harsac-runtime-config", "method": "GET", "url": "https://hsac.in/eodb/assets/runtimeConfig-COqCfvLu.js", "httpStatus": 200, "contentType": "text/javascript", "outcome": "Configuration exposed /eodb_backend and the map query route family; no private token used."},
+    {"name": "harsac-map-query-districts", "method": "GET", "url": "https://hsac.in/eodb_backend/land-query/districts", "httpStatus": 401, "contentType": "application/json", "outcome": "Authentication required; no anonymous response."},
+    {"name": "harsac-map-query-search", "method": "GET", "url": "https://hsac.in/eodb_backend/land-query/search?term=Sirsa&limit=10", "httpStatus": 401, "contentType": "application/json", "outcome": "Authentication required; no parcel IDs or geometry."},
+    {"name": "harsac-map-query-boundary", "method": "GET", "url": "https://hsac.in/eodb_backend/land-query/boundary-extent-at-point", "httpStatus": 401, "contentType": "application/json", "outcome": "Authentication required; no point query performed with credentials."},
+    {"name": "web-halris", "method": "GET", "url": "https://haryanait.gov.in/web-halris/", "httpStatus": 200, "contentType": "text/html", "outcome": "Official descriptive page loaded; no public parcel geometry endpoint identified."},
+    {"name": "jamabandi", "method": "GET", "url": "https://jamabandi.nic.in/", "outcome": "Timed out after 20 seconds; not treated as evidence of absence."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point was preserved in latitude/longitude order; no coordinate shift and no exact-point hit/miss inference was made.",
+    "Sirsa citywide parcel coverage, current layer schema, CRS and stable native parcel identity were not verified.",
+    "The HARSAC public map API route family was inspected, but its anonymous endpoints returned HTTP 401 authentication-required responses.",
+    "Official custodian and digitization statements do not prove an open vector parcel service or current citywide completeness.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable anonymous parcel geometry service was reached; no hit/miss inference.", "requestEvidence": ["harsac-map-query-districts", "harsac-map-query-search", "harsac-map-query-boundary"]},
+  "coverageAssessment": {"claimedScope": "Haryana state digital land-record/cadastral-map systems with Sirsa district administrative coverage", "verifiedOpenScope": "Official institutional custody and Sirsa digitization references only; anonymous parcel geometry not verified", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public viewer is OTP-gated. The backend's parcel schema, CRS, stable native identifier semantics, Sirsa city extent, dataset vintage and anonymous access path remain unresolved. No claim is made about parcel absence, ownership, legal title or completeness.",
+  "retainedSample": null
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11518-huangshan.json",
+  "cityCode": 11518,
+  "queueRank": 1775,
+  "city": "Huangshan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Huangshan's official Natural Resources and Planning Bureau documents a local cadastral-investigation and real-estate-registration custodian, a full-territory cadastral database, and an internal cadastral information platform. An official municipal ArcGIS REST service listing was discovered, but its endpoint returned 502 through the research fetcher and DNS resolution failed for the direct shell request. No safe anonymous parcel identity plus full polygon was verified, so no GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text, outcomes and actual URLs are recorded in city-11518-huangshan.json.",
+  "requestOutcomes": "Official Natural Resources and Planning Bureau pages were readable through first-party search/open results. The official ArcGIS REST service URL was identified from first-party search, but opening the service returned 502 Bad Gateway; a TLS-default direct GET from the shell failed DNS resolution. The standard-map page was identified as map-download material, not a parcel-feature endpoint. No login, credentials, private token, CAPTCHA bypass, unsafe field request or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Huangshan Natural Resources and Planning Bureau cadastral-investigation article",
+      "url": "https://zrzyj.huangshan.gov.cn/zwgk/public/6615726/11710316.html",
+      "outcome": "First-party page readable; describes local cadastral responsibilities, cadastral database, internal platform, and real-estate registration workflow; no public parcel feature response."
+    },
+    {
+      "route": "Huangshan municipal real-estate registration policy",
+      "url": "https://www.huangshan.gov.cn/zwgk/public/6615714/11566396.html",
+      "outcome": "First-party source identified local city/county natural-resources registration institutions; direct open returned 412 in the research fetcher; no parcel response."
+    },
+    {
+      "route": "Huangshan standard-map service",
+      "url": "https://zrzyj.huangshan.gov.cn/ztzl/hssbzdtfw/index.html",
+      "outcome": "First-party page identified downloadable standard and central-city maps; these are cartographic reference products, not verified parcel polygons or parcel identities."
+    },
+    {
+      "route": "Official Huangshan ArcGIS REST service directory",
+      "url": "https://plat.huangshan.gov.cn/hserver/rest/services/HS_TDT/HS_TDT_VEC_C/MapServer",
+      "outcome": "First-party search listing exposed the municipal service and layer directory; service open returned 502 Bad Gateway and direct shell GET failed DNS resolution. No schema, CRS, query response, identity, or geometry was retained."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [29.713806583161, 118.301808624261] was preserved in latitude/longitude order; no coordinate shift and no exact-point hit/miss inference was made.",
+    "Local custodial and cadastral-database evidence does not establish anonymous public parcel geometry access or complete citywide open coverage.",
+    "The GIS service access failure is an availability limitation, not evidence of cadastral absence.",
+    "No stable native parcel identity, parcel field schema, CRS response, or full parcel polygon was obtained; no sample GeoJSON is retained.",
+    "No owner, address, titleholder, contact, personal, tax, account, registration-detail, credential, or private-token fields were requested or retained.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter. Independent serial review remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no feature or service metadata response was retrieved",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a usable parcel feature service; no hit/miss inference.",
+    "requestEvidence": [
+      "Official ArcGIS REST service open returned 502 Bad Gateway.",
+      "Direct TLS-default shell GET failed DNS resolution for plat.huangshan.gov.cn."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Huangshan municipal natural-resources and real-estate registration/cadastral system, plus a municipal GIS service directory.",
+    "verifiedOpenScope": "Local custodian and internal cadastral-system documentation only; public parcel feature retrieval was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public GIS service availability, layer schema, CRS, safe native parcel identity, anonymous feature-query route, city-boundary relationship and citywide completeness remain unresolved. This review makes no claim about parcel absence, ownership, title, legal status or completeness.",
+  "retainedSample": null
+}

@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-7429-kulaura.json",
+  "cityCode": 7429,
+  "queueRank": 2864,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Local observed custodian: Kulaura Upazila Land Office, Moulvibazar. National map/survey custodian: Department of Land Records and Surveys (DLRS), Bangladesh.",
+  "publicMapLead": "Bangladesh DLRS Integrated Online Map Purchase System, https://map.settlement.gov.bd/",
+  "queryOutcomes": "Separate English and Bengali discovery queries were performed. Official Kulaura Upazila Land Office, DLRS map-purchase service, DLRS mouza-map guidance, and the national land-zoning viewer were found.",
+  "requestOutcomes": "The current DLRS JavaScript/configuration was inspected. Anonymous location enumeration and a bounded Kulaura mouza search succeeded, returning three public map-document records. The current land-zoning viewer's referenced GeoServer WFS request returned HTTP 503. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {"parcelSchema": {"canonicalId": "not established; map-document id only", "observedSourceFields": ["id", "division", "district", "upazila", "mouzaName", "jlNo", "sheetNo", "plotNo", "surveyType", "status", "isDigitized"]}, "nativeIdField": "No parcel identity verified; public map-document id observed but not promoted to parcel identity", "geometryCrs": null, "geometryType": null, "fieldMapping": {"mapDocumentId": "id", "mouza": "mouzaName", "sheet": "sheetNo", "plotRange": "plotNo", "survey": "surveyType"}, "compositeKeyProvenance": "No composite parcel key was evidenced. Kulaura/JL ৩৭/sheet identifiers describe map records, not a verified parcel polygon."},
+  "safeFieldAllowlist": ["stable public map-document identity", "public mouza/sheet/plot-range metadata", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [24.4994522082658, 92.0277906116876] was preserved and not moved.", "Three map-document records do not establish parcel-vector coverage or citywide completeness.", "The 503 WFS response is a service failure, not evidence of citywide absence.", "No raw source-specific attribute set or retained sample GeoJSON is included.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Independent serial review is required before any adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "A local registry office and public map-document service were evidenced, but no parcel geometry or parcel-native identity was returned anonymously in this attempt."},
+  "uncertainty": "The available Kulaura map records may require purchase or a separate viewer workflow; the map-purchase API does not expose parcel polygons. The land-zoning WFS route was unavailable at research time. Coverage, update cadence, municipal correspondence, parcel identity semantics, and CRS remain unverified."
+}

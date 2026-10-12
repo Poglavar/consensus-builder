@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:1496",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-1496-manisa.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/manisa-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/manisa-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/manisa/api.headers",
+    "tmp/valhalla-parcel-research/manisa/api.json"
+  ],
+  "checkedAt": "2026-10-10T08:04:52Z",
+  "reason": "Code 1496, rank 1417, Türkiye, exact point and 399014 persons match the immutable roster and queue. English and Turkish executed searches are recorded in both paired files. Original HTTP 200 TKGM response confirms the Manisa/Yunusemre/Yenimahalle parcel; retained full polygon exactly equals that response, contains the WUP point and carries only the safe composite native ID. Registry custody is true. One bounded point sample does not establish citywide coverage. Fresh adapter exact-ID reads, forced paging, 13 cells, metric GEOS overlap/operation checks, source binding and headed Details verification are not independently evidenced.",
+  "admission": false
+}

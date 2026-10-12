@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9395",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-9395-payyanur.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/payyanur-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:03:37Z",
+  "reason": "WUP rank 2437, India, exact point and 240715 persons match the immutable roster. English and Malayalam query text, outcomes, and URLs are recorded. First-party Payyanur taluk/village hierarchy and empty block lookup were inspected in the local response cache; zero hierarchy parcel counts and empty blocks do not establish citywide absence. Registry custody remains true, but no safe native parcel ID, full polygon, CRS or qualified adapter was obtained. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are missing."
+}

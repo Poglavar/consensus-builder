@@ -1,0 +1,21 @@
+{
+  "schemaVersion":"1.0",
+  "checkedAt":"2026-10-11",
+  "cityRecord":"city-6179-phan-thi-t.json",
+  "cohort":"overnight-next-2301-2400-2026-10-11",
+  "purpose":"Document first-party cadastral-source discovery and bounded anonymous service review for Phan Thiết.",
+  "assessment":"Official local custodianship was evidenced through Bình Thuận/Phan Thiết administration documents naming Chi nhánh Văn phòng Đăng ký đất đai Phan Thiết and cadastral extracts. The current official GDLA map configuration was inspected, but cadastral vector tiles and feature detail require authentication (401). No geometry is retained and runtime remains held.",
+  "registryAssessment":"registryFound=true is supported by official local government documents naming the Phan Thiết land-registration branch and its cadastral-extract role. National GDLA viewer evidence is recorded separately and is not, by itself, treated as local custody.",
+  "scopeLimits":{"maxFullPolygonsRetainedInCityRecord":3,"maxFullPolygonsRetainedInReview":0,"maxFullPolygonsRetainedInRepository":3,"ownerOrAddressDataRetained":false,"credentialsOrTokenValuesRetained":false,"citywideCompletenessAsserted":false,"exactPointAbsenceInferred":false},
+  "officialPrimarySources":[{"url":"https://maps.gdla.gov.vn/","operator":"Cục Quản lý đất đai / GDLA","scope":"Current official national map viewer and cadastral layer configuration."},{"url":"https://phanthiet.binhthuan.gov.vn/","operator":"UBND thành phố Phan Thiết","scope":"Official local administration portal."},{"url":"https://vanban.binhthuan.gov.vn/","operator":"UBND tỉnh Bình Thuận","scope":"Official provincial legal/document portal containing cadastral-extract references."}],
+  "searchQueries":[{"language":"English","query":"Phan Thiết cadastral parcel map official GIS land registry Vietnam","result":"Official GDLA map infrastructure and official local Bình Thuận/Phan Thiết documents found; no anonymous parcel feature response verified.","resultUrls":["https://maps.gdla.gov.vn/","https://phanthiet.binhthuan.gov.vn/","https://vanban.binhthuan.gov.vn/"]},{"language":"Vietnamese","query":"Phan Thiết bản đồ địa chính thửa đất cổng thông tin chính thức","result":"Official local documents found naming the Phan Thiết land-registration branch and cadastral extracts; no public anonymous parcel geometry verified.","resultUrls":["https://vanban.binhthuan.gov.vn/thongtin/filedinhkem/download?maSo=18c1703efcc46796de27548bfaa4766d.pdf","https://vanban.binhthuan.gov.vn/thongtin/filedinhkem/download?maSo=2055d44bc8202da8942d9cfd7c53a13c.pdf"]}],
+  "attempts":"See city-6179-phan-thi-t.json attemptsRecorded for every executed search and request, including statuses and outcomes.",
+  "safeFieldAllowlist":["native public parcel ID if available","native geometry","geometry type","source CRS","layer/schema metadata","administrative codes"],
+  "nativeFieldMapping":{"mathuadat":"configured native parcel code field; not returned","maxa":"configured administrative code field; not returned","sohieutobando":"configured map-sheet field; not returned","sothututhua":"configured parcel sequence field; not returned"},
+  "compositeKeyProvenance":null,
+  "geometryDecision":{"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not run against a verified parcel endpoint; exact point remains unchanged and no absence inference is made."},
+  "coverageAssessment":{"claimedScope":"Official GDLA viewer plus official Phan Thiết/Bình Thuận custodial documents.","verifiedOpenScope":"Viewer configuration and local custodial references only.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "remainingUncertainty":"The official cadastral routes may be available through an authenticated workflow or another current public service. The present authentication response does not establish parcel absence or coverage.",
+  "runtimeDecision":"held_not_enabled",
+  "integrationDecision":"not_integrated"
+}

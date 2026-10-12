@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-2864-oakville.json",
+  "cityCode": 2864,
+  "queueRank": 3159,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "custodian": "Town of Oakville municipal GIS; public maps.oakville.ca Oakville GIS ArcGIS server",
+  "discovery": {
+    "english": "First-party Oakville GIS REST service and official Town-linked open-data references found.",
+    "french": "No separate French-language Oakville municipal cadastral page found; the same first-party GIS REST service was usable."
+  },
+  "requests": [
+    {
+      "route": "First-party ArcGIS MapServer metadata",
+      "url": "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer?f=pjson",
+      "outcome": "Anonymous GET succeeded. Service reports one polygon layer, EPSG:26917, Map/Query/Data capability, JSON/geoJSON/PBF query formats, and maxRecordCount 2000."
+    },
+    {
+      "route": "First-party ArcGIS layer schema",
+      "url": "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer/0?f=pjson",
+      "outcome": "Anonymous GET succeeded. Layer is Assess_Parcels, Polygon, native OBJECTID field, with source fields including assessment identifiers/descriptions; no credentials requested."
+    },
+    {
+      "route": "Exact WUP-point bounded parcel query",
+      "url": "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer/0/query",
+      "parameters": "f=geojson; where=1=1; outFields=OBJECTID; returnGeometry=true; geometry=-79.7169186140335,43.4483939847174; geometryType=esriGeometryPoint; inSR=4326; spatialRel=esriSpatialRelIntersects; outSR=4326; resultRecordCount=3",
+      "outcome": "Anonymous GET succeeded and returned one Polygon feature with native OBJECTID 2591645. Raw unchanged response is in ignored tmp/valhalla-parcel-research/oakville/point-query.geojson."
+    },
+    {
+      "route": "Oakville GIS server info",
+      "url": "https://maps.oakville.ca/oakgis/rest/info",
+      "outcome": "Public server information was available via search evidence; it identifies the Oakville GIS ArcGIS server and a token service, but no token was requested or used."
+    }
+  ],
+  "schemaAndCrs": {
+    "layer": "Assess_Parcels",
+    "geometry": "Polygon",
+    "crs": "EPSG:26917 (NAD83 / UTM zone 17N)",
+    "nativeIdentity": "OBJECTID",
+    "compositeKeyContext": "No composite key was required for the bounded hit. ROLL_NUMBER, PROPCODE, CODEDESC, FULLDESC, ENTRY_UID, GISID and PARENTID were source fields inspected for mapping only and were not retained."
+  },
+  "safeFieldAllowlist": ["OBJECTID", "SHAPE"],
+  "scopeLimits": [
+    "No owner, address, contact, titleholder, tax, account, assessment-detail, or other personal/unsafe fields were requested or retained.",
+    "No login, credential, CAPTCHA bypass, Cloudflare defeat, private token, or TLS certificate exception was used.",
+    "No retained GeoJSON sample was written; raw request evidence remains under ignored tmp/.",
+    "The point hit is not a citywide completeness claim, and absence from any other extent would not establish absence.",
+    "Packet completion is not source integration, catalog admission, or runtime adapter qualification."
+  ],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "Municipal assessment parcel geometry may differ from legal cadastral/title boundaries and exposes assessment-oriented source fields.",
+    "Text-only discovery did not establish current viewer JavaScript configuration; direct REST metadata and query were independently usable.",
+    "The layer metadata does not by itself prove citywide completeness or a public download route."
+  ]
+}

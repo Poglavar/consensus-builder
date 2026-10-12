@@ -1,0 +1,34 @@
+{
+  "taskId": "city:9491",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-9491-gola-gokarannath.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/gola-gokarannath-service-review.json",
+    "tmp/valhalla-parcel-research/9491/level-1.json",
+    "tmp/valhalla-parcel-research/9491/level-2-153.json",
+    "tmp/valhalla-parcel-research/9491/level-3.json",
+    "tmp/valhalla-parcel-research/9491/mapinfo-217899.json",
+    "tmp/valhalla-parcel-research/9491/plot-at-xy.json",
+    "tmp/valhalla-parcel-research/9491/plot-by-no-1.json"
+  ],
+  "checkedAt": "2026-10-11T23:30:39Z",
+  "reason": "WUP 2025 source, immutable queue, packet and paired review agree on Gola Gokarannath, rank 2950, India, exact point and 201963 persons. English and Hindi query records carry result URLs. Official DARMS and saved first-party viewer responses support the Kheri/Gola tehsil administrative route. Village 217899 has an all-zero extent and empty exact-point/plot-number results; those diagnostics do not prove citywide absence. No safe native parcel ID or full polygon was returned, and independent adapter qualification is absent.",
+  "firstPartyUrlsChecked": [
+    "https://revenuedarms.up.gov.in/public_report?distCode=153&tehsilCode=00799",
+    "https://bor.up.nic.in/?search_key=HOMECENTER",
+    "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+  ],
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "observedBoundedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

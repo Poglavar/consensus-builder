@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4540",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-4540-toulon.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/toulon-service-review.json",
+    "tmp/valhalla-parcel-research/toulon/point-response.json",
+    "tmp/valhalla-parcel-research/toulon/polygon-response.json",
+    "tmp/valhalla-parcel-research/toulon/bbox-response.json"
+  ],
+  "checkedAt": "2026-10-10T18:42:29.563204Z",
+  "reason": "Queue identity matches rank 1925, France, point and 298777 persons. English and French search records are present. Original first-party caches show zero exact-point and small-polygon returns and five full MultiPolygon features with five unique native idu values in a wider bounded response. No durable sample exceeds the three-polygon cap. These bounded results do not demonstrate fresh exact-ID reads, forced paging, 13 cells, metric GEOS checks, source binding, or headed Details; keep geometry discovery held."
+}

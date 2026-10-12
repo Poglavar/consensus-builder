@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3178",
+  "cityName": "Tychy",
+  "sourceId": "pl-gugik-uldk",
+  "candidateSha256": "3f69880f926d4efd350dad8c642ba0b2033320813fe8e3062e1a7c6c11cc63b9",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 9,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 9,
+      "collectedUniqueCount": 9
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "13-point-sample",
+      "pointCount": 13,
+      "includesUnchangedWupPoint": true,
+      "areaCompleteness": false
+    },
+    "completeness": {
+      "passed": true,
+      "capability": "areaEnumeration:false",
+      "reason": "Adapter contract is point/exact-ID only; no area coverage claim."
+    },
+    "binding": {
+      "passed": true,
+      "geometryBinding": "unsupported-area-query",
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "ad154517e2f8af2eb388156fd05741b0ae59cb50d7032f3f7c140ad899ee6d3f",
+      "featureCount": 9,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32634",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "ad154517e2f8af2eb388156fd05741b0ae59cb50d7032f3f7c140ad899ee6d3f",
+  "featureCount": 9,
+  "sampleIds": [
+    "PL-ULDK-247701_1.0001.AR_2.5456/70"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [
+    {
+      "index": 0,
+      "point": [
+        18.987175031002,
+        50.1188429468754
+      ],
+      "count": 1,
+      "unchangedWupPoint": true
+    },
+    {
+      "index": 1,
+      "point": [
+        18.9865,
+        50.1175
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 2,
+      "point": [
+        18.987499999999997,
+        50.1175
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 3,
+      "point": [
+        18.988500000000002,
+        50.1175
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 4,
+      "point": [
+        18.9865,
+        50.1185
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 5,
+      "point": [
+        18.987499999999997,
+        50.1185
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 6,
+      "point": [
+        18.988500000000002,
+        50.1185
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 7,
+      "point": [
+        18.9865,
+        50.1195
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 8,
+      "point": [
+        18.987499999999997,
+        50.1195
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 9,
+      "point": [
+        18.988500000000002,
+        50.1195
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 10,
+      "point": [
+        18.987499999999997,
+        50.1165
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 11,
+      "point": [
+        18.987499999999997,
+        50.1205
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    },
+    {
+      "index": 12,
+      "point": [
+        18.985500000000002,
+        50.1185
+      ],
+      "count": 1,
+      "unchangedWupPoint": false
+    }
+  ],
+  "requestCount": 26,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:48.008Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 255
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:48.273Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:48.461Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:48.641Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 141
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:49.641Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 136
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:50.642Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 136
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:51.643Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 144
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:52.643Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 138
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:53.644Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:54.644Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 160
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:55.644Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 156
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:56.645Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 159
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:57.646Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 142
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:58.646Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 143
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:59:59.646Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 140
+    },
+    {
+      "stage": "13-point-pass-one",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:00.647Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 143
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:00.792Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 166
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:00.960Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:01.961Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:02.961Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:03.962Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:04.963Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:05.964Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:06.965Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 156
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:07.966Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 241
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "uldk.gugik.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:00:08.965Z",
+      "queryHash": "61bb1e3bdc90779bd792d7c1ccf458664901cfaba662186133357fceaf3f3a58",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 154
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Area enumeration is unsupported by descriptor; point/exact-ID checks do not imply area completeness."
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "taskId": "city:4042",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-4042-bosaso.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/bosaso-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-11T14:07:55Z",
+  "reason": "The Bosaso municipal portal exposes general services, not a verified current cadastral source. Historical land-administration evidence does not settle current registry custody. No safe native-ID polygon response or independently qualified adapter was evidenced.",
+  "identityCheck": {
+    "source": "2025 UN WUP bulk CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, and pending queue",
+    "rank": 2528,
+    "cityCode": 4042,
+    "country": "Somalia",
+    "pointLatLon": [
+      11.2750530944363,
+      49.1853460919017
+    ],
+    "populationPersons": 232410,
+    "matched": true
+  },
+  "searchLanguagesChecked": [
+    "English",
+    "Somali"
+  ],
+  "firstPartyPagesChecked": [
+    "https://bosaso.pl.so/"
+  ],
+  "registryFound": null,
+  "retainedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmission": false,
+  "absenceConclusion": null
+}

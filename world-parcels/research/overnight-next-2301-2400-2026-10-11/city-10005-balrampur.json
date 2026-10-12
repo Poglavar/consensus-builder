@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 10005,
+  "queueRank": 2347,
+  "name": "Balrampur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [27.424560059918, 82.1756840536558],
+  "population2025": 248830,
+  "population2025k": 248.83,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Balrampur Uttar Pradesh official cadastral map BhuNaksha parcel land records",
+        "result": "Found the official Uttar Pradesh BhuNaksha viewer, the Balrampur district land-record page, and Government of India DILRMP cadastral status. The public viewer hierarchy identifies Balrampur district code 182 and Balrampur tehsil code 00925.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+          "https://balrampur.nic.in/service/land-record/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/182"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "बलरामपुर उत्तर प्रदेश आधिकारिक भू नक्शा भूलेख खतौनी कैडस्ट्रल नक्शा",
+        "result": "Found the official Balrampur district Hindi land-record page and the current UP BhuNaksha viewer. The viewer returned the Hindi administrative hierarchy and showed an urban-area Balrampur village entry without a mapped extent.",
+        "actualResultUrls": [
+          "https://balrampur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+          "https://upbhulekh.gov.in/"
+        ]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "district": "Balrampur",
+    "districtCode": "182",
+    "tehsil": "Balrampur",
+    "tehsilCode": "00925",
+    "identityEvidence": "Current official UP BhuNaksha levelvalue responses returned district 182 बलरामपुर and tehsil 00925 बलरामपुर. This is administrative viewer identity, not parcel-hit evidence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "UP BhuNaksha public cadastral viewer with district, tehsil and village hierarchy; official DILRMP reports digitized and linked cadastral-map coverage for Balrampur district/tehsils.",
+    "verifiedOpenScope": "Anonymous public hierarchy and extent routes were exercised. The Balrampur tehsil list returned 268 villages; urban-area Balrampur code 216218 had zero extent, while nearby Balrampur Dehat code 173305 returned a bounded EPSG:32644 extent.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "exactPointHit": false,
+    "exactPointHitInterpretation": "The exact WUP point was preserved and submitted to the urban-area map hit-test; the response was {}. The urban-area extent was all zeros. This is a bounded map-service result only and is not evidence of citywide parcel absence."
+  },
+  "resultCategory": "official_registry_map_found_no_verified_parcel_polygon",
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "technicalBlocker": "The current public viewer exposed hierarchy and extent metadata but no usable anonymous parcel ID-plus-geometry response for the exact urban-area record. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe record fields were used.",
+  "remainingUncertainty": "Municipal/city boundary correspondence, urban-area map publication status, parcel vector route, safe native parcel identity field, and citywide parcel coverage remain unresolved.",
+  "nextStep": "Serial reviewer may independently inspect the current UP viewer or another first-party Balrampur parcel endpoint; runtime admission remains held."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:5838",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5838-minya-al-qamh.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/minya-al-qamh-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T07:57:39Z",
+  "reason": "Official Egyptian Survey Authority custody and a digital-map request workflow are evidenced; the retained official pages expose no anonymous Minya Al-Qamh native ID/full polygon response. Paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details proof are absent."
+}

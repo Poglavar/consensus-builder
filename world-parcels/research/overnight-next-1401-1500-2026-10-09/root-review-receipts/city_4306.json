@@ -1,0 +1,20 @@
+{
+  "taskId": "city:4306",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4306-villavicencio.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/villavicencio-service-review.json",
+    "tmp/valhalla-parcel-research/4306/home.html",
+    "tmp/valhalla-parcel-research/4306/service.json",
+    "tmp/valhalla-parcel-research/4306/layer.json",
+    "tmp/valhalla-parcel-research/4306/query-exact.json",
+    "tmp/valhalla-parcel-research/4306/query-near.json",
+    "tmp/valhalla-parcel-research/runs/20261009T174953-4db7a54f/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T07:56:01Z",
+  "finding": "WUP identity verified. Packet records English and Spanish searches; saved search action independently shows Spanish queries, so exact English execution remains uncorroborated in inspected log. Municipal first-party page supports registry custody; ArcGIS service metadata and original responses show one exact-point and three nearby CODIGO polygon hits. Three nearby polygons are metric-valid and nonoverlapping. ArcGIS-to-municipal source binding and full adapter/paging/13-cell/headed Details qualification are not evidenced; held."
+}

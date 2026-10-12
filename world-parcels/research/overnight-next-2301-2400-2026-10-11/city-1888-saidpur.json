@@ -1,0 +1,40 @@
+{
+  "cityCode": 1888,
+  "queueRank": 2373,
+  "name": "Saidpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [25.7795882685436, 88.898897730327],
+  "population2025": 245655,
+  "population2025k": 245.655,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saidpur Bangladesh cadastral parcel map official land record GIS",
+        "result": "First-party discovery found the Department of Land Records and Surveys (DLRS) official map-search service and the Bangladesh national land-map portal. The national portal explicitly lists Saidpur among covered upazilas. The current Settlement map viewer JavaScript documents public survey, mouza, sheet GeoJSON, parcel vector-tile, and metadata routes, but bounded anonymous requests did not return a parcel feature.",
+        "actualResultUrls": [
+          "https://dlrs.portal.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://map.settlement.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "সৈয়দপুর নীলফামারী মৌজা নকশা ভূমি রেকর্ড সরকারি মানচিত্র",
+        "result": "বাংলা-ভাষার প্রথম পক্ষের অনুসন্ধানে DLRS-এর সরকারি ম্যাপ অনুসন্ধান এবং ভূমি নকশা পোর্টাল পাওয়া গেছে। ভূমি নকশা পোর্টালের প্রকাশ্য নোটে সৈয়দপুরকে আওতাভুক্ত উপজেলা হিসেবে উল্লেখ করা হয়েছে। কোনো নিরাপদ বেনামী পার্সেল আইডি-সহ জ্যামিতি পাওয়া যায়নি।",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://dlrs.portal.gov.bd/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Bangladesh's national DLRS cadastral/map custodian and a public map service with Saidpur coverage are evidenced. This packet is not source integration or runtime admission. No exact-point hit or citywide absence conclusion was made.",
+  "runtimeReadiness": "held"
+}

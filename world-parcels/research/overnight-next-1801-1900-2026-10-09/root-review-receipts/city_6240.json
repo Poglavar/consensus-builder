@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6240",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6240-sapele.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/sapele-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:04:29Z",
+  "reviewNotes": "Official Delta State property-registration documentation supports state land-record custody true, but the claimed local/Pidgin search uses English wording and does not satisfy a distinct bilingual search. Official programme/procedure pages yield no safe Sapele native-ID polygon response. No parcel sample or qualifying adapter evidence exists; inaccessible geometry is not absence.",
+  "admissionGate": "No independently evidenced fresh native parcel-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. No runtime, catalog, or generated coverage admission."
+}

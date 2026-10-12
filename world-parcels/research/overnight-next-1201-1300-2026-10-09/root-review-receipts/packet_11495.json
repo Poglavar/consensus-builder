@@ -1,0 +1,27 @@
+{
+  "taskId": "packet:11495",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11495-purnia.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/purnia-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T11:49:00Z",
+  "reason": "Official Bihar BhuNaksha establishes cadastral-map custody and cached selector lists contain Purnia. Cached REST error HTML is not a successful count/feature response; the bounded extent body is empty and WMS request returned error HTML. No safe parcel polygon or native ID verified; empty extent is not citywide absence.",
+  "firstPartySourceUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+  "identityCheck": "Exact city code, rank, country, point, and population in persons match the immutable SHA-256 roster and pending queue.",
+  "searchCheck": "Executed English and local-language queries with result URLs recorded in both paired files.",
+  "polygonCheck": "Zero retained full parcel polygons; no safe native parcel ID/full-polygon response verified.",
+  "qualificationCheck": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification.",
+  "cacheArtifactsInspected": [
+    "tmp/valhalla-parcel-research/purnia-11495/index.html",
+    "tmp/valhalla-parcel-research/purnia-11495/levels0.out",
+    "tmp/valhalla-parcel-research/purnia-11495/purnia-east.out",
+    "tmp/valhalla-parcel-research/purnia-11495/extent.out",
+    "tmp/valhalla-parcel-research/purnia-11495/wms-capabilities.out"
+  ],
+  "integrationCheck": "Packet reviewed as held; no runtime, catalog, city configuration, or coverage report admission."
+}

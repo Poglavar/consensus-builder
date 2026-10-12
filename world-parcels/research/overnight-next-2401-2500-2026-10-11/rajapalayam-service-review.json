@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-10191-rajapalayam.json",
+  "cityCode": 10191,
+  "queueRank": 2443,
+  "name": "Rajapalayam",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [9.44850087810631, 77.5687641508353],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://eservices.tn.gov.in/","httpStatus":null,"outcome":"Official NIC Tamil Nadu announcement identifies Integrated Land Record as combining textual RoR, FMB/maps and Chitta. Direct curl request to the live service timed out after 20 seconds; no login, CAPTCHA bypass, or TLS exception was attempted."},
+    {"method":"GET","url":"https://tnglms.in/","httpStatus":200,"outcome":"Official Tamil Nadu Government Land Management System loaded. Its stated scope links RoR, cadastral maps/FMB, Tamil Nilam and CollabLand, and identifies the Department of Survey and Settlement as a stakeholder. The public landing page did not expose an anonymous parcel feature route."},
+    {"method":"GET","url":"https://tamilnilam.tn.gov.in/citizen","httpStatus":null,"outcome":"Official TamilNilam citizen route was identified by the NIC Tamil Nadu announcement and search results as the patta-transfer-history service. Direct request timed out after 15 seconds; no credentials or private fields were requested."},
+    {"method":"SEARCH","url":"https://rajapalayamlpa.com/","httpStatus":200,"outcome":"Official Rajapalayam Local Planning Area portal loaded and identifies District Town and Country Planning, Virudhunagar District. It publishes existing/proposed LPA, village and municipal land-use maps and lists Rajapalayam municipal area plus 15 revenue villages."},
+    {"method":"SEARCH","url":"https://rajapalayamlpa.com/wp-content/uploads/2023/08/230719_Volume_1_lowres.pdf","httpStatus":200,"outcome":"Official Rajapalayam LPA master-plan report search result states that maps with survey numbers from the Survey and Land Records Department were used for the cadastral framework. This is planning/cadastral-framework evidence, not an anonymous parcel feature response."},
+    {"method":"SEARCH","url":"https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu","httpStatus":200,"outcome":"India Government Services Portal describes Tamil Nadu e-Services for Patta and FMB/Chitta/TSLR extracts and specifies district/taluk/village or town/block/ward/survey/subdivision inputs. It is general government-service corroboration, not the local custodian itself."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "apiBase": "https://eservices.tn.gov.in/ and https://tamilnilam.tn.gov.in/citizen",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"No response obtained because the official live e-Services and TamilNilam routes timed out.","featureCount":0,"nativeIdentity":null}
+  },
+  "sourceFieldMapping": {"hierarchyFields":["district","taluk/town","village/block/ward","survey number","sub-division number"],"parcelFields":null,"compositeKeyProvenance":"Tamil Nadu service input hierarchy documented by the official government service description; no parcel identity was observed."},
+  "localCustodianAssessment":"The Rajapalayam LPA portal is direct local planning authority evidence and publishes local land-use maps. Tamil Nadu Department of Survey and Settlement/TamilNilam and TNGLMS are state-level first-party land-record custodians. The India.gov page is national corroboration only and was not treated as local registry evidence.",
+  "safeFieldAllowlist":["stable native parcel identity if later exposed anonymously","full parcel polygon only if later exposed anonymously and bounded","source service URL","source CRS and coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","certificate/title","personal data","citizenship","mobile number","OTP"],
+  "sampleGeoJSON":null,
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"First-party Tamil Nadu land-record and local Rajapalayam planning evidence is documented, but live parcel-service requests timed out and no anonymous parcel schema, CRS, safe native identity, or parcel geometry was independently qualified."},
+  "scopeLimits":["Exact WUP point [9.44850087810631,77.5687641508353] was preserved and not shifted.","No exact-point hit or miss was claimed; no parcel query response was obtained.","Service timeouts and the absence of a public feature response are transport/access outcomes, not evidence of citywide absence.","No full parcel polygon is retained.","No owner, address, contact, titleholder, tax/account, personal, certificate, citizenship, mobile, or OTP fields were requested or retained."],
+  "uncertainty":"The official state land-record custodian, public service scope, and Rajapalayam local planning/cadastral-framework evidence are verified. Anonymous parcel feature identity, geometry schema, CRS, citywide coverage, update cadence, and licensing remain unverified because the live parcel services timed out. Runtime adapter qualification remains held for serial review."
+}

@@ -68,6 +68,20 @@ class ValidatePacketTests(unittest.TestCase):
         self.assertFalse(result["valid"])
         self.assertTrue(any("registryFound=false" in error for error in result["errors"]))
 
+    def test_sample_accepts_canonical_or_legacy_id_and_rejects_source_attribute_sets(self):
+        polygon = {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1], [0, 0]]]}
+        sample = self.cohort / "sample.geojson"
+        for key in ("id", "OBJECTID", "PARCEL_ID"):
+            sample.write_text(json.dumps({"type": "FeatureCollection", "features": [
+                {"type": "Feature", "properties": {key: "native-1"}, "geometry": polygon}
+            ]}))
+            self.assertEqual(runner.validate_sample_file(sample)[1], [])
+        sample.write_text(json.dumps({"type": "FeatureCollection", "features": [
+            {"type": "Feature", "properties": {"ilId": "1", "ilceId": "2", "adaNo": "3"}, "geometry": polygon}
+        ]}))
+        errors = runner.validate_sample_file(sample)[1]
+        self.assertTrue(any("one canonical/native ID property only" in error for error in errors))
+        self.assertTrue(any("non-ID or sensitive attribute" in error for error in errors))
 
 class ResumeAndReceiptTests(unittest.TestCase):
     def test_new_cohort_returns_generated_queue_and_preserves_previous(self):
@@ -159,6 +173,15 @@ class ResumeAndReceiptTests(unittest.TestCase):
                 "answer": {"reviewedIds": task_ids, "heldIds": task_ids,
                            "summary": "reviewed and held", "systemicFailure": False}}
 
+    def test_reviewer_systemic_flag_does_not_poison_successful_cli_turn(self):
+        with tempfile.TemporaryDirectory() as raw:
+            instance, tasks = self._review_runner(Path(raw))
+            answer = self._review_result(tasks)
+            answer["answer"]["systemicFailure"] = True
+            success, _answer, systemic = instance._complete_review([], tasks, first_result=answer)
+            self.assertTrue(success)
+            self.assertFalse(systemic)
+
     def test_partial_reviews_accumulate_across_retry(self):
         with tempfile.TemporaryDirectory() as raw:
             instance, tasks = self._review_runner(Path(raw))
@@ -188,6 +211,77 @@ class ResumeAndReceiptTests(unittest.TestCase):
             self.assertTrue(success)
             self.assertEqual(set(answer["reviewedIds"]), set(tasks))
             self.assertEqual(len(calls), 2)
+
+    def _queue_builder_runner(self, root):
+        args = SimpleNamespace(repo_root=root, state_dir=Path("state"), queue=Path("queue.json"),
+                               source=Path("source.csv.gz"), job_name="test", codex="codex",
+                               timeout_seconds=60)
+        return runner.Runner(args)
+
+    def test_prebuilt_queue_reused_after_date_rollover(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            folder = root / "world-parcels" / "research" / "overnight-next-1301-1400-2026-10-08"
+            folder.mkdir(parents=True)
+            queue = folder / "pending-queue.json"
+            queue.write_text("{}")
+            instance = self._queue_builder_runner(root)
+            self.assertEqual(instance._write_queue_builder(1301, 1400), queue.resolve())
+
+    def test_ambiguous_prebuilt_cohorts_are_rejected(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            for date in ("2026-10-08", "2026-10-09"):
+                folder = root / "world-parcels" / "research" / f"overnight-next-1301-1400-{date}"
+                folder.mkdir(parents=True)
+                (folder / "pending-queue.json").write_text("{}")
+            instance = self._queue_builder_runner(root)
+            with self.assertRaisesRegex(RuntimeError, "multiple prebuilt cohort folders"):
+                instance._write_queue_builder(1301, 1400)
+
+    def test_prebuilt_folder_without_queue_is_rejected(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            folder = root / "world-parcels" / "research" / "overnight-next-1301-1400-2026-10-08"
+            folder.mkdir(parents=True)
+            marker = folder / "ranked-population.json"
+            marker.write_text("{}")
+            instance = self._queue_builder_runner(root)
+            with self.assertRaisesRegex(RuntimeError, "without pending queue"):
+                instance._write_queue_builder(1301, 1400)
+            self.assertTrue(marker.exists())
+
+
+class FailureClassificationAndPromptTests(unittest.TestCase):
+    def test_provider_403_in_tool_output_is_not_codex_systemic_failure(self):
+        stdout = json.dumps({"type": "item.completed", "item": {"type": "command_execution", "output": "provider HTTP 403"}})
+        self.assertFalse(runner.systemic_codex_failure(1, stdout, "command returned HTTP 403 from provider"))
+        self.assertFalse(runner.systemic_codex_failure(1, "shell output: HTTP 429", "process exited 22"))
+        failed_command = json.dumps({"type": "item.completed", "item": {"type": "command_execution",
+                                                                           "output": "HTTP 403: unauthorized"}})
+        self.assertFalse(runner.systemic_codex_failure(1, failed_command, "tool subprocess failed: HTTP 403"))
+
+    def test_codex_usage_and_auth_errors_are_systemic(self):
+        usage = json.dumps({"type": "turn.failed", "error": {"codex_error_info": "usage_limit_reached"}})
+        auth = json.dumps({"type": "error", "error": {"code": "auth_required", "message": "Please sign in"}})
+        self.assertTrue(runner.systemic_codex_failure(1, usage, ""))
+        self.assertTrue(runner.systemic_codex_failure(1, auth, ""))
+        self.assertTrue(runner.systemic_codex_failure(1, "", "ERROR: usage_limit_reached"))
+
+    def test_artifact_retry_prompt_includes_validation_errors_without_research(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            cohort = root / "cohort"
+            cohort.mkdir()
+            args = SimpleNamespace(repo_root=root, state_dir=Path("state"), queue=Path("queue.json"),
+                                   job_name="test", codex="codex", max_retries=3)
+            instance = runner.Runner(args)
+            city = {"cityCode": 1, "name": "Test City", "rank": 1, "country": "Example", "iso2": "EX",
+                    "point": [1, 2], "pop2025k": 10}
+            prompt = instance._build_research_prompt(city, cohort.resolve(), 2, ["sample feature 0 contains non-ID attribute 'ilId'"])
+            self.assertIn("sample feature 0 contains non-ID attribute 'ilId'", prompt)
+            self.assertIn("Do not repeat web searches, network/API requests, or source investigation", prompt)
+            self.assertIn("do not drop, simplify, transform, or reconstruct polygon coordinates", prompt)
 
 
 if __name__ == "__main__":

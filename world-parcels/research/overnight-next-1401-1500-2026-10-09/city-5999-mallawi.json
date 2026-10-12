@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5999,
+  "cityId": "wup2025:5999",
+  "name": "Mallawi",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "centerLatLon": [27.7420599364543, 30.8490857642207],
+  "point": [27.7420599364543, 30.8490857642207],
+  "queueRank": 1410,
+  "population2025": 401471,
+  "population2025k": 401.471,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mallawi Egypt official cadastral parcel map GIS land registry Minya",
+        "result": "Official Egyptian General Survey Authority (ESA) pages were found for cadastral/property mapping, digital map services, and map sales. No public Mallawi parcel viewer or anonymous parcel API was established.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://magic.minya.gov.eg/Mundc/Home/"
+        ]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "ملوي مصر خريطة مساحية كادسترية سجل عيني GIS المنيا الموقع الرسمي",
+        "result": "البحث العربي وجد هيئة المساحة المصرية كمصدر وطني للخرائط والسجل العيني، وبوابة مجمع الذكاء المكاني المتقدم بمحافظة المنيا. البوابة العامة أعادت واجهة تسجيل الدخول، ولم يظهر عارض قطع أراضٍ عام أو واجهة API مجهولة.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/segel.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://magic.minya.gov.eg/Surveying/Account/Login",
+          "https://magic.minya.gov.eg/Mundc/Home/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryAssessment": "The official ESA is evidenced as Egypt's national surveying, cadastral/property-map, and land-register program custodian. Minya's official MAGIC spatial portal is a local GIS lead, but the reviewed routes expose a login shell and not a public Mallawi registry or parcel service; therefore registryFound remains null.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "operator": "Egyptian General Survey Authority (ESA)",
+      "observation": "Official Arabic ESA page describes the national urban real-estate cadastre project and GIS-linked property database; it does not publish an anonymous parcel layer for Mallawi."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "operator": "Egyptian General Survey Authority (ESA)",
+      "observation": "Official service catalogue includes digital maps, coordinate certificates, boundary separation, and related survey products; no public parcel query endpoint is advertised."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "operator": "Egyptian General Survey Authority (ESA)",
+      "observation": "Official digital-map workflow requests location, scale, layers, format, and projection, indicating a product-request process rather than an anonymous parcel API."
+    },
+    {
+      "url": "https://magic.minya.gov.eg/Mundc/Home/",
+      "operator": "Minya Governorate Advanced Spatial Intelligence Center (MAGIC)",
+      "observation": "Official Minya spatial-portal route returned the same login application shell as the surveying login route; no public parcel layer or service configuration was exposed."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET; anonymous curl",
+      "httpStatus": 200,
+      "result": "Official service page loaded. Links include digital and historical maps and survey services; no WMS/WFS/REST/ArcGIS parcel endpoint, schema, or CRS was exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "method": "GET via official search/open",
+      "httpStatus": 200,
+      "result": "Official cadastral-program description reviewed; no anonymous Mallawi parcel response or public query route."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET via official site link",
+      "httpStatus": 200,
+      "result": "Digital-map procurement/request workflow reviewed; no downloadable anonymous parcel geometry or native ID response."
+    },
+    {
+      "url": "https://magic.minya.gov.eg/Mundc/Home/",
+      "method": "GET; anonymous curl",
+      "httpStatus": 200,
+      "result": "Returned a 371159-byte HTML login application shell; no anonymous map/API route or parcel schema was visible in the HTML/JavaScript bundle."
+    },
+    {
+      "url": "https://magic.minya.gov.eg/Surveying/Account/Login",
+      "method": "GET; anonymous curl",
+      "httpStatus": 200,
+      "result": "Returned the same login application shell. No login, credential use, CAPTCHA bypass, or protected-route probing was attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Egyptian national cadastral/map custodian plus Minya Governorate spatial-portal discovery.",
+    "verifiedOpenScope": "ESA service/custodian pages and existence of the Minya MAGIC portal only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "crs": null,
+    "queryExtent": null,
+    "exactWupPointTest": "Not run against a parcel layer because no anonymous Mallawi parcel layer or query route was available. Exact WUP point [27.7420599364543, 30.8490857642207] was preserved and not shifted; no absence inference was made.",
+    "retentionNote": "No GeoJSON retained: no safe native parcel identity plus full polygon response was obtained."
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or survey identity if publicly exposed", "geometry", "source CRS", "public layer/service name", "HTTP status/content type"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "A current official parcel viewer or API may exist behind the Minya portal or outside the reviewed ESA pages, or may require an ordinary official product request. Public parcel schema, CRS, exact-point inclusion, and citywide coverage remain unverified.",
+  "researchAttempt": 1,
+  "nextStep": "A serial reviewer should independently check whether the Minya surveying directorate, MAGIC portal, or ESA exposes a current anonymous geometry-only service before any adapter consideration."
+}

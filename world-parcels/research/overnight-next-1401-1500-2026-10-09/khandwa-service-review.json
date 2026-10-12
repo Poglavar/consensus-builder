@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9085-khandwa.json",
+  "purpose": "Document first-party cadastral discovery and bounded anonymous service attempts for Khandwa.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "The Khandwa district administration and Madhya Pradesh land-record services are verified first-party sources. Direct anonymous requests to the current MP Bhulekh/WebGIS and Khandwa GIS hosts timed out, so no parcel geometry or adapter qualification is claimed.",
+  "registryAssessment": "Local/district registry custodian found: the Khandwa district Office of the Superintendent of Land Records and its official public-service links are evidenced. The DILRMP page is national status reporting and is not treated as the local custodian.",
+  "officialPrimarySources": [
+    {"url": "https://khandwa.nic.in/en/service/land-records/", "observation": "District administration page identifies Khandwa land-record office and links MP Bhulekh for spatial and non-spatial records."},
+    {"url": "https://khandwa.nic.in/khandwa-gis/", "observation": "District administration page identifies the official Khandwa GIS platform."},
+    {"url": "https://mpbhulekh.gov.in/", "observation": "Official Madhya Pradesh land-record service linked by the district administration."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/450", "observation": "Government of India DILRMP status page reports Khandwa tehsil digitization and parcel counts."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Khandwa Madhya Pradesh official cadastral parcel map GIS land records", "result": "Official district land records, Khandwa GIS, MP Bhulekh, and DILRMP results found.", "actualResultUrls": ["https://khandwa.nic.in/en/service/land-records/", "https://khandwa.nic.in/khandwa-gis/", "https://mpbhulekh.gov.in/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/450"]},
+    {"language": "Hindi", "query": "खंडवा मध्य प्रदेश आधिकारिक भू-नक्शा खसरा नक्शा भूलेख", "result": "Official Hindi district land-record page and Khandwa GIS/MP Bhulekh service links found.", "actualResultUrls": ["https://khandwa.nic.in/service/भूमि-रिकॉर्ड्स/", "https://khandwagis.mp.gov.in/", "https://mpbhulekh.gov.in/"]}
+  ],
+  "attempts": [
+    {"url": "https://mpbhulekh.gov.in/", "method": "GET", "httpStatus": null, "result": "Timeout after 30 seconds; no response body."},
+    {"url": "https://webgis2.mpbhulekh.gov.in/", "method": "GET", "httpStatus": null, "result": "Timeout after 12 seconds; no current JavaScript/configuration or API route obtained."},
+    {"url": "https://khandwagis.mp.gov.in/", "method": "GET", "httpStatus": null, "result": "Timeout after 12 seconds; no public map/API response obtained."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/450", "method": "GET", "httpStatus": 200, "result": "First-party status page accessible via indexed result; it exposes aggregate digitization statistics, not parcel geometry."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry", "CRS", "source layer/service metadata"],
+  "nativeFieldMapping": {"sourceFieldsObserved": [], "retainedIdentity": null, "retainedIdentityProvenance": "No successful feature response."},
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No coordinate shift; direct viewer/API requests were unavailable by timeout before a point query could be formed.", "requestEvidence": [{"request": "MP Bhulekh GET", "httpStatus": null, "tlsVerification": "default", "outcome": "timeout"}, {"request": "MP WebGIS GET", "httpStatus": null, "tlsVerification": "default", "outcome": "timeout"}, {"request": "Khandwa GIS GET", "httpStatus": null, "tlsVerification": "default", "outcome": "timeout"}]},
+  "coverageAssessment": {"claimedScope": "Official Khandwa district land-record service and linked Madhya Pradesh public map services.", "verifiedOpenScope": "Custodian/service existence and aggregate DILRMP status only; no parcel schema, CRS, native ID, or polygon response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "Timeouts may be transient or may reflect environment-specific reachability. They do not evidence absence of a registry or parcels. No raw owner, address, contact, titleholder, tax/account, or other unsafe data was requested.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

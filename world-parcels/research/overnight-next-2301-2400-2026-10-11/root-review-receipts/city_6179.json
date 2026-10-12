@@ -1,0 +1,18 @@
+{
+  "taskId": "city:6179",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-6179-phan-thi-t.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/phan-thi-t-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:31:22Z",
+  "reviewFindings": {
+    "identity": "WUP roster and packet agree: Phan Thiết, Viet Nam, rank 2368, point [10.9387991301736, 108.102311687381], population 246665 persons.",
+    "research": "English and Vietnamese executed queries are recorded. Original GDLA cache shows HTTP 200 viewer shell/config but cadastral tile HTTP 401 with authentication-required JSON; no anonymous parcel geometry is established. The cited provincial PDF could not be independently refetched with verified TLS in this review.",
+    "custody": "Retain registryFound=true as supported by the paired packet citations to official Bình Thuận documents naming the Phan Thiết land-registration branch and cadastral extract workflow; this is custody, not public vector access. Independent PDF refetch remained unavailable due certificate-chain verification failure, so no stronger custody claim is made.",
+    "geometry": "No full polygon or native parcel ID response is retained; sample count 0. Configured cadastral field names are not observed feature identity.",
+    "admission": "Authentication wall and absent geometry preclude live adapter qualification, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed details-panel verification. Keep excluded and held; 401 is not citywide absence."
+  }
+}

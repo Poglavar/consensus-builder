@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3980",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-3980-ho.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ho-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T11:23:07Z",
+  "reason": "Official WUP row confirms code 3980, rank 2405, Ghana, exact point and 243211 persons. English and Ewe searches are recorded. Paired review identifies the official Lands Commission and its Ho regional office, but the online service and ELIS route do not yield an anonymous full parcel polygon or safe native ID; no original parcel response artifact or sample is retained. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are unevidenced. Login limitation is not citywide absence."
+}

@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-8066-banjarbaru.json",
+  "cityCode": 8066,
+  "queueRank": 2573,
+  "name": "Banjarbaru",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "pointLatLon": [-3.43380911020272, 114.835932888486],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method":"GET","url":"https://bapperida.banjarbarukota.go.id/277/","httpStatus":"200 via indexed first-party page; direct curl connection failed during this attempt","outcome":"Official BAPPERIDA page describes the Signature land-parcel WebGIS and links the public ArcGIS app."},
+    {"method":"GET","url":"https://geobjb.banjarbarukota.go.id/WebPortal/","httpStatus":200,"outcome":"Official city geoportal loaded and identifies the city's geospatial network node; categories include KADASTER."},
+    {"method":"GET","url":"https://geobjb.banjarbarukota.go.id/WebPortal/OneMap","httpStatus":200,"outcome":"Official city one-map page exposed public service URL/type controls and documented GeoServer, ESRI, Palapa and CSW service forms; no parcel service URL was enumerated in the page response."},
+    {"method":"GET","url":"https://ulmgis.maps.arcgis.com/sharing/rest/content/items/10b41c583693463ca2b73150da66ab4e/data?f=json","httpStatus":200,"outcome":"Current public app configuration identified web map item 9724b6b456994fb596e6f5f4353dba54."},
+    {"method":"GET","url":"https://ulmgis.maps.arcgis.com/sharing/rest/content/items/9724b6b456994fb596e6f5f4353dba54/data?f=json","httpStatus":200,"outcome":"Web map operational layer identified the public Banjarbaru_Utara Persil Lahan FeatureServer layer."},
+    {"method":"GET","url":"https://services7.arcgis.com/BFyPLWn03nBqwZGQ/arcgis/rest/services/Banjarbaru_Utara/FeatureServer/1?f=pjson","httpStatus":200,"outcome":"Layer metadata returned polygon geometry, EPSG-compatible spatial reference, objectIdField OBJECTID, source field list, and local layer extent."},
+    {"method":"GET","url":"https://services7.arcgis.com/BFyPLWn03nBqwZGQ/arcgis/rest/services/Banjarbaru_Utara/FeatureServer/1/query","httpStatus":200,"outcome":"Exact WUP point spatial-intersects query returned an empty GeoJSON FeatureCollection; bounded first-page query with where=1=1, outFields=OBJECTID, resultRecordCount=3 and outSR=4326 returned three full polygons. Only safe IDs and geometry were retained."},
+    {"method":"GET","url":"https://geobjb.banjarbarukota.go.id/geoserver/rest/services?f=pjson","httpStatus":401,"outcome":"Anonymous REST enumeration was unauthorized; this was recorded as an access limitation and not treated as service absence."},
+    {"method":"GET","url":"https://geobjb.banjarbarukota.go.id/arcgis/rest/services?f=pjson","httpStatus":200,"outcome":"Returned the Geoportal HTML shell rather than an ArcGIS REST directory; no service list was qualified from this route."}
+  ],
+  "schemaAndCrs": {
+    "geometryType": "Polygon",
+    "geometryCrs": "GeoJSON response declared EPSG:4326; coordinates are [longitude, latitude].",
+    "nativeFieldMapping": {"OBJECTID":"ArcGIS native object identifier; only retained identity field", "KODEPERSIL":"source parcel-code field, not requested or retained", "KELURAHAN":"source neighborhood field, not requested or retained", "PEMILIK":"unsafe owner field present in schema, not requested", "APEMILIK":"unsafe owner-address field present in schema, not requested"},
+    "compositeKeyProvenance": "Not applicable; native OBJECTID qualified by the FeatureServer service URL was used.",
+    "rawAttributesRetained": false
+  },
+  "sampleGeoJSON": "banjarbaru-parcels-sample.geojson",
+  "safeFieldAllowlist": ["stable native parcel identity", "full polygon geometry", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A real anonymous public parcel response is verified for Banjarbaru Utara, but exact-point coverage is empty, citywide coverage is unresolved, and adapter admission requires independent serial review."},
+  "scopeLimits": ["One bounded local-layer response is not citywide coverage evidence.","The exact-point miss, GeoServer 401, and HTML shell from the guessed ArcGIS REST route are not treated as absence.","The service layer's old edit timestamp and limited district scope make recency/completeness uncertain.","No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS verification disablement were used.","Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The official city geoportal and BAPPERIDA-linked public app expose an anonymous Banjarbaru Utara parcel layer with polygon geometry and native OBJECTID. Other districts, cadastral legal authority, current completeness, and citywide coverage remain unverified."
+}

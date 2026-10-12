@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8537",
+  "cityCode": 8537,
+  "wupCityCode": 8537,
+  "name": "Ratlam",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1561,
+  "queueRank": 1561,
+  "point": [23.3324144088455, 75.0384195046446],
+  "centerLatLon": [23.3324144088455, 75.0384195046446],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 366958,
+  "population2025k": 366.958,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Ratlam District Administration land-record page identifies the Tehsildar/Lok Seva Kendra in Ratlam and states that Ratlam district land-record spatial and non-spatial data, including Naksha, is published through the Madhya Pradesh land-record service. This establishes local service custody only, not anonymous parcel geometry or citywide coverage.",
+  "registryEvidenceUrls": [
+    "https://ratlam.nic.in/en/service/land-records/",
+    "https://ratlam.nic.in/en/ratlam-gis/",
+    "https://mpbhulekh.gov.in/mpbhulekh.do",
+    "https://ratlamgis.mp.gov.in/",
+    "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/440"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No safe anonymous native parcel ID plus complete polygon was verified. Official MP Bhulekh and Ratlam GIS routes were unavailable or timed out during bounded direct retrieval, and the district/DILRMP pages exposed service and digitization evidence rather than a qualifying feature response. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Ratlam District Administration land-record service custody, Madhya Pradesh Bhulekh/Naksha, Ratlam GIS, and DILRMP Ratlam digitization status.",
+    "verifiedOpenScope": "No anonymous complete parcel polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ratlam Madhya Pradesh official land records cadastral map GIS parcel map",
+        "scope": "Identify local registry custody and a safe public parcel geometry route.",
+        "result": "Search located the official Ratlam District land-record page, Ratlam GIS, MP Bhulekh, DILRMP Ratlam map-digitization status, and the Madhya Pradesh town-planning Ratlam khasra land-use page. Local land-record custody was verified; no safe anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://ratlam.nic.in/en/service/land-records/",
+          "https://ratlam.nic.in/en/ratlam-gis/",
+          "https://mpbhulekh.gov.in/mpbhulekh.do",
+          "https://ratlamgis.mp.gov.in/",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/440",
+          "https://mptownplan.gov.in/plan_Ratlam.html"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Hindi",
+        "query": "Ratlam जिला मध्य प्रदेश आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख",
+        "scope": "Independent Hindi-language search for local registry custody and public cadastral geometry.",
+        "result": "Search located the official Hindi Ratlam GIS page and MP land-record/Naksha references, including the district administration page and DILRMP status. No qualifying anonymous complete-polygon response was found.",
+        "actualResultUrls": [
+          "https://ratlam.nic.in/e0-a4-b0-e0-a4-a4-e0-a4-b2-e0-a4-be-e0-a4-ae-e0-a4-9c-e0-a5-80-e0-a4-86-e0-a4-88-e0-a48f-e0-a5-8d/",
+          "https://ratlam.nic.in/en/service/land-records/",
+          "https://mpbhulekh.gov.in/mpbhulekh.do",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/440"
+        ],
+        "executionMethod": "Separate Hindi-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was not shifted. Public parcel-layer availability, service schema, CRS, stable native identity, urban coverage, and citywide completeness remain unverified. A zero exact-point hit, map extent miss, timeout, or unusable UI is not treated as evidence of citywide parcel absence.",
+  "nextStep": "Serial reviewer should independently validate a first-party anonymous native parcel endpoint and a bounded Ratlam-area geometry response before any adapter qualification; keep runtime held."
+}

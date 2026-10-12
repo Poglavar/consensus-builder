@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11424-taizhou.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Taizhou sources establish a local real-estate-registration custodian and current public-service routes. The reachable service pages did not expose an anonymous safe parcel ID-plus-complete-polygon response, so no geometry was retained.",
+  "registryAssessment": "Local registry custody found through the official Taizhou government announcement, which assigns the Taizhou Real Estate Registration Center responsibility for municipal real-estate registration. The Jiangsu and Taizhou portals are service-navigation evidence, not proof of open parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.taizhou.gov.cn/zfxxgk/fdzdgknr/zcwj/qtwj/szfwj/art/2015/art_060e4c78bccd47a787b788dc4542c7e0.html",
+      "observation": "Official 2015 municipal announcement names the Taizhou Real Estate Registration Center and lists the registration classes and district service windows. No parcel geometry is included."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/col/col172885/",
+      "observation": "Official Jiangsu government-service page lists Taizhou real-estate-registration thematic service among city services. No parcel schema or feature response is exposed in the retrieved page."
+    },
+    {
+      "url": "https://tz.jszwfw.gov.cn/",
+      "observation": "Current official Taizhou government-service portal opened successfully and linked public-service navigation. Retrieved HTML exposed service links and embedded navigation, but no parcel layer endpoint or safe feature payload."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://tz.jszwfw.gov.cn/",
+    "observedServiceTypes": ["municipal government services", "Jiangsu real-estate-registration service directory", "Taizhou real-estate-registration thematic service"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.taizhou.gov.cn/zfxxgk/fdzdgknr/zcwj/qtwj/szfwj/art/2015/art_060e4c78bccd47a787b788dc4542c7e0.html",
+      "method": "GET/web open",
+      "normalTlsVerification": true,
+      "result": "Official page opened successfully; municipal registration center and registration scope observed. No parcel geometry or endpoint."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/col/col172885/",
+      "method": "GET/web open",
+      "normalTlsVerification": true,
+      "result": "Official Jiangsu landing page opened successfully and linked Taizhou thematic real-estate service. No parcel geometry, schema or CRS."
+    },
+    {
+      "url": "https://tz.jszwfw.gov.cn/",
+      "method": "GET/web open and public GET",
+      "normalTlsVerification": true,
+      "result": "Official Taizhou portal opened successfully; public HTML and linked/embedded navigation inspected. No current anonymous parcel-map configuration, service URL, schema, CRS or feature response was identified."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No parcel feature query submitted because no current public parcel endpoint was exposed by the inspected official routes."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal and provincial service pages cover Taizhou registration custody and public-service navigation.",
+    "verifiedOpenScope": "Official custody and current portal routes verified; no current anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "Public-page non-discovery is a route/access limitation only, not evidence of cadastral absence. Current service URL, parcel schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

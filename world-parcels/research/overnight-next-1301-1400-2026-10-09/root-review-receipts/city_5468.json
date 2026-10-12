@@ -1,0 +1,17 @@
+{
+  "taskId": "city:5468",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-5468-s-o-jos-do-rio-preto.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/s-o-jos-do-rio-preto-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T15:08:37.875685Z",
+  "reason": "Official municipal ArcGIS layer 2 is Quadras (blocks), EPSG:31982; a fresh count-only exact-point check returned one block, not a parcel. No native parcel ID/full parcel polygon or original parcel response artifact exists. Forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed details-panel qualification are absent. Municipal map and cadastral-service custody remains bounded; no citywide parcel absence inferred.",
+  "runtimeAdmission": false,
+  "sourceUrlsConsidered": [
+    "https://servicos.sp.gov.br/fcarta/65EDA651-6615-44DE-845E-968C744294CB",
+    "https://sig.riopreto.sp.gov.br/server/rest/services/Planejamento/Bairros_e_Quadras/MapServer/2?f=json"
+  ]
+}

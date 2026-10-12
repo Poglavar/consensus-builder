@@ -1,0 +1,24 @@
+{
+  "taskId": "city:11366",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-11366-jiangdu-district.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/jiangdu-district-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:26:44.570515Z",
+  "review": {
+    "queueIdentity": "Matched immutable roster and pending queue: code, rank, country, point, and population persons.",
+    "bilingualSearches": "Packet records executed English and Chinese searches with result URLs.",
+    "sampleCount": 0,
+    "sampleSafety": "No polygon retained.",
+    "sourceCacheInspection": {
+      "officialConfiguration": "tmp/valhalla-parcel-research/11366/json.js",
+      "loginPage": "tmp/valhalla-parcel-research/11366/redirect.html",
+      "districtCode": "321012"
+    },
+    "reason": "First-party Jiangsu configuration names Jiangdu code 321012 and its Yangzhou route; the cached destination is a login page. No anonymous parcel ID or geometry response was obtained, which does not establish citywide absence.",
+    "admissionGates": "No independently evidenced fresh adapter native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details-panel check."
+  }
+}

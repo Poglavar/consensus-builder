@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8660",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8660-modinagar.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/modinagar-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:18:34Z",
+  "reason": "UP first-party BhuNaksha and Modinagar authority establish custody and a tehsil viewer. Worker-reported village extents and ID boxes are not full polygons; the reported full-polygon route returned Authorization 403. No original full-polygon artifact, city-scoped live adapter qualification, or headed Details proof. Citywide geometry remains unresolved.",
+  "identityCheck": "Exact code, rank, country, WUP 2025 point and population persons verified against SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 source archive; packet and immutable queue agree.",
+  "searchCheck": "English and local-language executed query records inspected in paired packet/review.",
+  "sampleCheck": "Zero retained full polygons; safe native parcel ID plus full geometry unverified.",
+  "admissionGates": "Fresh native-ID read, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not independently evidenced."
+}

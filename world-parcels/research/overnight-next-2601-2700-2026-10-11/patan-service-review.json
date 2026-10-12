@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-5611-patan.json",
+  "cityCode": 5611,
+  "queueRank": 2629,
+  "name": "Patan",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "service": "Gujarat Revenue Department / AnyRoR and Patan district e-Dhara land records",
+  "official": true,
+  "registryFound": true,
+  "reviewStatus": "complete_but_held",
+  "queryAndRequestOutcome": "English and Gujarati first-party discovery found the official Patan district land-record page and Gujarat Revenue Department service documentation. The Patan page confirms Gujarat cadastral-survey/e-Dhara administration and links AnyRoR. The bounded anonymous AnyRoR GET timed out; no safe parcel identity or geometry was retrieved.",
+  "scopeLimits": [
+    "Patan district land-record documentation is not proof of citywide parcel geometry coverage",
+    "AnyRoR timeout prevented inspection of current public map/API configuration and parcel response schema",
+    "No exact-point parcel lookup or map extent was completed",
+    "No parcel sample GeoJSON is retained",
+    "A timeout is not evidence of absence",
+    "No owner, address, titleholder, contact, tax, account, or personal fields were requested"
+  ],
+  "safeFieldAllowlist": ["id", "plotNo", "surveyNo", "gisCode", "CRS", "geometry", "bounded extent"],
+  "nativeFieldMapping": {},
+  "compositeKeyProvenance": "No parcel composite key was observed. Administrative provenance is Patan district -> Gujarat Revenue Department/e-Dhara -> AnyRoR, but that navigation chain is not a parcel-native identity.",
+  "attemptedRoutes": [
+    {"route": "https://patan.nic.in/service/land-records/", "outcome": "HTTP 200; official Patan district page documents cadastral survey/e-Dhara land records and links AnyRoR."},
+    {"route": "https://revenuedepartment.gujarat.gov.in/webmaster", "outcome": "HTTP 200; official Gujarat Revenue service page lists AnyRoR and e-Milkat."},
+    {"route": "https://anyror.gujarat.gov.in/", "outcome": "Anonymous GET timed out after 20 seconds; no login, credentials, CAPTCHA bypass, or TLS exception used."},
+    {"route": "https://dilrmp.gov.in/physicalProgressReports/map/district-level/24", "outcome": "Identified as an official Gujarat map-digitization progress route during discovery; not used as parcel geometry evidence."}
+  ],
+  "uncertainty": "The packet establishes a relevant official local/district land-record custodian and state service routes, but not anonymous polygon access, a verified parcel-native identifier, CRS, or citywide completeness.",
+  "runtimeReadiness": "held",
+  "integrationAdmission": "not admitted; serial review required",
+  "sampleGeojson": null
+}

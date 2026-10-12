@@ -1,0 +1,18 @@
+{
+  "taskId": "city:2169",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2169-bergamo.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/bergamo-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/bergamo-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/bergamo/municipal-service.json",
+    "tmp/valhalla-parcel-research/bergamo/query-500m.geojson"
+  ],
+  "checkedAt": "2026-10-09T16:35:02Z",
+  "reason": "WUP code 2169, rank 1426, Italy, unchanged point and 398050 persons match the roster and queue. English and Italian search records and cached municipal ArcGIS metadata identify Particelle terreni layer 10 (EPSG:32632). The original bounded response has three native OBJECTIDs and exceededTransferLimit=true; each retained polygon exactly matches its raw geometry and only safe id remains in sample properties. Sample polygons are valid and mutually nonoverlapping in metric GEOS, but this truncated sample is not complete pagination or 13-cell qualification. Stable source identity, fresh exact-ID reads, full-parcel source binding and headed Details verification remain unproved. The worker query used outFields=* rather than minimum ID/geometry fields. Registry custody is supported; runtime remains held.",
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 3,
+  "admission": false
+}

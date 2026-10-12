@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11214",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11214-zhangshu.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/zhangshu-service-review.json",
+    "tmp/valhalla-parcel-research/11214/service.html"
+  ],
+  "checkedAt": "2026-10-11T21:46:41Z",
+  "identityCheck": "WUP rank 2865, China/CN/CHN, point [28.0505487238593,115.533846014701], 208055 persons; packet agrees with both rosters and original 2025 CSV.",
+  "custodyDecision": "registryFound remains null. The first-party Zhangshu government and service portals establish government and registration navigation, but no specific cadastral custodian or public ID-plus-geometry service.",
+  "sourceEvidence": "English and Chinese executed searches are recorded. The cached first-party service page contains the registration entry; no parcel response or full polygon is retained. No absence conclusion follows.",
+  "reason": "No native-ID geometry read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification. Research completion is not integration or admission."
+}

@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-1760-hammamet.json",
+  "cityCode": 1760,
+  "queueRank": 2563,
+  "name": "Hammamet",
+  "country": "Tunisia",
+  "countryCode": "TN",
+  "pointLatLon": [36.4360112673055, 10.6933185485658],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.otc.nat.tn/geoportail",
+      "httpStatus": 200,
+      "outcome": "Official OTC geoportal page loaded anonymously. It describes a cadastral information project and regional data management, but the current HTML exposed no interactive parcel viewer, public map/API URL, source configuration, parcel schema, CRS, or ID-plus-geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://nabeul.gov.tn/guide-administration/95/office-de-la-topographie-et-du-cadastre-nabeul-zaghouan/",
+      "httpStatus": "200 (search-indexed first-party page)",
+      "outcome": "Nabeul governorate directory identifies the regional Office de la Topographie et du Cadastre Nabeul/Zaghouan and its Nabeul address/telephone. No parcel data endpoint is provided."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.nabeul.gov.tn/fr/administration-du-gouvernorat/les-municipalites-2/",
+      "httpStatus": "200 (search-indexed first-party page)",
+      "outcome": "First-party governorate directory identifies Hammamet municipality and contact context. No cadastral service or parcel layer is provided."
+    },
+    {
+      "method": "GET",
+      "url": "https://services.gov.tn/biens-de-letat-et-affaires-immobilieres/",
+      "httpStatus": "200 (search-indexed first-party page)",
+      "outcome": "National administrative portal describes cadastral plans, boundary records and the regional cadastre service process; it is procedural prose, not an anonymous parcel geometry service."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tunisie.gov.tn/service/1536/74-%D8%A7%D9%84%D9%86%D9%81%D8%A7%D8%B0-%D8%B9%D9%86-%D8%A8%D8%B9%D8%AF-%D9%84%D9%84%D8%AE%D8%A7%D8%B1%D8%B7%D8%A9-%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9-%D9%84%D8%A3%D9%85%D9%84%D8%A7%D9%83%D8%A7%D9%84%D8%AF%D9%88%D9%84%D8%A9%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9.htm",
+      "httpStatus": "search result only",
+      "outcome": "Official government search result describes remote access to a digital map of state real estate. This was not treated as a general parcel cadastre and no request for unsafe ownership or title data was made."
+    }
+  ],
+  "schemaAndCrs": {
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "rawAttributesRetained": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full polygon geometry", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Only official institutional/local-custodian evidence was verified. No anonymous parcel response, native identity, geometry, or CRS was obtained."
+  },
+  "scopeLimits": [
+    "One geoportal page and regional directory evidence do not establish parcel coverage in Hammamet or Tunisia.",
+    "No exact-point response, map extent test, or parcel API response was obtained; this is not evidence of absence.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or global TLS exception were used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The OTC/Nabeul custodian chain is credible, but current anonymous parcel-service availability and Hammamet coverage remain unresolved."
+}

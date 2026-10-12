@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityId": "wup2025:4995",
+  "cityCode": 4995,
+  "wupCityCode": 4995,
+  "queueRank": 1326,
+  "rank": 1326,
+  "name": "Niigata",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso2": "JP",
+  "iso3": "JPN",
+  "point": [37.9036901987003, 139.048139919901],
+  "centerLatLon": [37.9036901987003, 139.048139919901],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 422238,
+  "population2025k": 422.238,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "aliases": ["niigata"],
+  "status": "complete",
+  "resultCategory": "official_municipal_gis_verified_no_safe_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "Niigata City's official site links to the public にいがたeマップ municipal GIS. The viewer supports address and lot-number search, but this attempt did not establish a public cadastral parcel geometry endpoint.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official viewer's exposed layer catalog returned tax-map/land-price thematic layers, not a verified parcel polygon layer; exact-point anonymous queries returned empty responses. This is not evidence of citywide absence.",
+  "source": {
+    "sourceId": "niigata-e-map",
+    "name": "にいがたeマップ (Niigata e-map)",
+    "url": "https://niigata.e-map.geogeo.jp/",
+    "operator": "Niigata City",
+    "serviceType": "Public municipal web GIS with JSON layer and location-search APIs",
+    "viewerLayerCatalog": "mid=14: 固定資産税標準宅地 / 固定資産税路線価 thematic layers; mid=30: 下水道台帳図 (図郭割図)",
+    "nativeCrs": "Viewer API accepts latitude/longitude; layer metadata exposes Web Mercator tile service and geographic extents; no parcel geometry response was obtained.",
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official Niigata municipal public GIS covering Niigata City thematic maps.",
+    "verifiedOpenScope": "Anonymous viewer HTML/JavaScript, layer-catalog JSON for mid=14 and mid=30, and location-search API responses.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Niigata City official cadastral map parcel map GIS",
+        "result": "Found Niigata City's official urban-planning/GIS pages and the official にいがたeマップ public municipal GIS. The indexed material describes thematic GIS and map services, not a downloadable cadastral parcel feature service.",
+        "actualResultUrls": ["https://www.city.niigata.lg.jp/shisei/tokei/toshikeikaku/index.html", "https://www.city.niigata.lg.jp/shisei/tokei/toshikeikaku/sistem/tokeijyouhou.html", "https://niigata.e-map.geogeo.jp/"]
+      },
+      {
+        "language": "Japanese",
+        "query": "新潟市 公式 地籍図 公図 筆界 GIS 地番 地図情報サービス",
+        "result": "Found the official にいがたeマップ, which states that lot-number (地番) search is available. The live layer catalog exposed fixed-asset tax and sewer ledger map themes; no safe cadastral parcel polygon response was obtained.",
+        "actualResultUrls": ["https://niigata.e-map.geogeo.jp/", "https://niigata.e-map.geogeo.jp/maps?lid=0&mid=14&mode=theme", "https://niigata.e-map.geogeo.jp/maps?lid=0&mid=30&mode=theme", "https://www.city.niigata.lg.jp/shisei/seisaku/it/open-data/opendata-gis/index.html"]
+      }
+    ],
+    "portals": [
+      {"url": "https://niigata.e-map.geogeo.jp/", "operator": "Niigata City", "scope": "Official public municipal GIS; viewer text says address and lot-number search are supported."},
+      {"url": "https://www.city.niigata.lg.jp/shisei/tokei/toshikeikaku/sistem/tokeijyouhou.html", "operator": "Niigata City, Urban Planning Division", "scope": "Official municipal page linking to にいがたeマップ urban-planning information."}
+    ],
+    "requests": [
+      {"url": "https://niigata.e-map.geogeo.jp/", "method": "GET; anonymous", "httpStatus": 200, "contentType": "text/html", "assessment": "Returned live viewer shell and embedded configuration."},
+      {"url": "https://niigata.e-map.geogeo.jp/assets/js/mbmaps/mbmaps-app.js?_=20260528", "method": "GET; anonymous", "httpStatus": 200, "contentType": "application/javascript", "assessment": "Returned current viewer JavaScript; configuration uses public JSON APIs including themes/getlayers.json and locsearch endpoints."},
+      {"url": "https://niigata.e-map.geogeo.jp/themes/getlayers.json?mid=14", "method": "GET; anonymous", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned four fixed-asset tax standard-residential-land/road-price layers; metadata exposed WMS/tile layer names and extents, not parcel polygons or a safe native parcel identity."},
+      {"url": "https://niigata.e-map.geogeo.jp/themes/getlayers.json?mid=30", "method": "GET; anonymous", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned one sewer ledger map sheet-index layer (図郭割図), not cadastral parcel geometry."},
+      {"url": "https://niigata.e-map.geogeo.jp/locsearch/attsbylatlng.json?mid=14&layerids=10502&zoomlevel=18&lat=37.9036901987003&lng=139.048139919901&mode=click&sort=0", "method": "GET; anonymous exact WUP point", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned [\"\"] with no feature attributes."},
+      {"url": "https://niigata.e-map.geogeo.jp/locsearch/attsbylatlng.json?mid=14&layerids=9000000005&zoomlevel=18&lat=37.9036901987003&lng=139.048139919901&mode=click&sort=0", "method": "GET; anonymous exact WUP point", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned [\"\"] with no feature attributes."},
+      {"url": "https://niigata.e-map.geogeo.jp/locsearch/attsbylatlng.json?mid=30&layerids=30174&zoomlevel=14&lat=37.9036901987003&lng=139.048139919901&mode=click&sort=0", "method": "GET; anonymous exact WUP point", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned [\"\"] with no feature attributes; not treated as evidence of absence."}
+    ],
+    "schemaCrs": {"viewerApi": "JSON location-search API with lat/lng parameters", "tileLayerCrs": "EPSG:900913/Web Mercator tile template", "parcelGeometrySchema": null}
+  },
+  "safeFieldAllowlist": ["public layer id/name", "public service URL", "geometry only if safely returned", "CRS/layer metadata", "HTTP status/content type"],
+  "remainingUncertainty": "The viewer advertises lot-number search, but the exposed layer catalog and bounded exact-point requests did not produce a safe parcel polygon or stable native parcel identity. The exact-point empty responses do not establish citywide absence, cadastral coverage, or service completeness. No owner, address, contact, titleholder, tax/account, or personal fields were retained.",
+  "registryEvidenceUrls": ["https://niigata.e-map.geogeo.jp/", "https://www.city.niigata.lg.jp/shisei/tokei/toshikeikaku/sistem/tokeijyouhou.html"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": ["niigata-e-map"],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently inspect the live viewer for a currently exposed cadastral/parcel layer or documented public export, then qualify identity, geometry, CRS, and coverage before any runtime admission; keep held meanwhile.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

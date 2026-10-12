@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2386",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2386-korhogo.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/korhogo-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T10:33:36.898225Z",
+  "reason": "WUP 2025 city code 2386, rank 1591, Côte d'Ivoire, exact point and 357761 persons match the original source and queue. Packet records separate English and French searches and cites Korhogo-specific official DGI custody. SIGFU direct retrieval encountered TLS trust failure; no anonymous native-ID plus complete polygon response was verified. No independent live adapter qualification, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification; TLS failure does not prove absence.",
+  "sourceAdmission": "not_admitted"
+}

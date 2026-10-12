@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-10325-vaniyambadi.json",
+  "cityCode": 10325,
+  "queueRank": 2961,
+  "city": "Vaniyambadi",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "reviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Tamil first-party discovery was completed. Tamil Nadu state land-record/FMB services, TamilNilam Geo-Info, TNGIS, and Vaniyambadi municipal ward/revenue pages were identified. Bounded anonymous requests did not yield a safe native parcel identity plus full polygon, so no sample GeoJSON was retained.",
+  "routesAttempted": [
+    {"route": "Tamil Nadu e-Services", "request": "GET https://eservices.tn.gov.in/eservicesnew/", "outcome": "Timed out after 20 seconds; no absence inference."},
+    {"route": "Vaniyambadi municipal ward map", "request": "GET https://www.tnurbantree.tn.gov.in/vaniyambadi/ward-map/", "outcome": "Timed out after 20 seconds; official page was independently identified by first-party discovery, but no map payload was obtained."},
+    {"route": "Vaniyambadi municipal revenue", "request": "GET https://www.tnurbantree.tn.gov.in/vaniyambadi/revenue/", "outcome": "Official local revenue custodian page identified; no parcel vector endpoint exposed."},
+    {"route": "TNGIS", "request": "GET https://www.tngis.tn.gov.in/apps.html", "outcome": "Official GIS application catalog retrieved/inspected; no bounded anonymous parcel response."},
+    {"route": "TamilNilam Geo-Info", "request": "GET https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam", "outcome": "Official app documentation retrieved; it describes FMB and survey/subdivision visualization, but contains no safe parcel vector response."},
+    {"route": "TNGLMS", "request": "GET https://tnglms.in/", "outcome": "Official Government of Tamil Nadu land-management page retrieved; cadastral/FMB integration is described, but no public parcel API was exposed."}
+  ],
+  "safeFieldAllowlist": ["canonical native parcel ID only if source-proven", "full parcel polygon or multipolygon geometry only", "public source/service URL", "native schema field names and field mapping in metadata only", "source CRS, query extent, response metadata, and retrieval date"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [12.6819626789653, 78.6196020428714] was preserved and not shifted.",
+    "No timeout, map miss, or unusable UI was treated as citywide absence.",
+    "No unsafe ownership or personal fields were requested or retained; no credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception were used.",
+    "No raw source-specific attribute set or synthetic row identity was retained.",
+    "Packet completion is research completion only; independent serial review is required before any adapter qualification."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No bounded anonymous public parcel vector response with qualified native identity, geometry, schema, CRS, and city relevance was obtained."},
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry against the current Tamil Nadu e-Services/TamilNilam/TNGIS configuration and Vaniyambadi municipal map payload."
+}

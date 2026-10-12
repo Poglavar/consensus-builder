@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6528",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-6528-bida.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/bida-service-review.json",
+    "tmp/valhalla-parcel-research/6528/nigis.html"
+  ],
+  "checkedAt": "2026-10-09T14:37:51Z",
+  "reason": "Bida identity and English/local-oriented searches were checked. The claimed Nupe/local query is in English, so a native-language search is not evidenced. Official Niger State custody is plausible but remains unresolved for Bida; no first-party parcel polygon/native ID or adapter qualification was obtained. No citywide absence inferred."
+}

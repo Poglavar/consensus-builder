@@ -1,0 +1,29 @@
+{
+  "taskId": "city:2036",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-2036-buraydah.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/buraydah-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T02:25:14.183496Z",
+  "city": "Buraydah",
+  "queueRank": 3079,
+  "registryFound": true,
+  "identityCheck": "Packet and paired review match the immutable pending queue, ranked roster, and checksum-verified original UN WUP 2025 row for code, rank, country, 2025 point, and population persons (WUP Pop thousands multiplied by 1,000).",
+  "searchCheck": "English and local-language queries are recorded with outcomes and actual result URLs in the packet.",
+  "polygonCheck": "No full polygon or parcel ID attributes retained; zero is within the three-polygon cap.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "Official Saudi Urban Maps page advertises land plots across Saudi cities; the packet records Qassim/Buraidah mapping context and a public viewer configuration with anonymous access disabled. No parcel schema, safe native ID, or full polygon response is evidenced.",
+  "firstPartyCheck": "Official Ministry Urban Maps page was opened and describes Saudi city land-plot layers; Qassim page could not be independently fetched due to TLS certificate validation failure.",
+  "scopeLimit": "Custody and public map descriptions do not establish anonymous vector access or citywide parcel completeness. No runtime, catalog, or report admission."
+}

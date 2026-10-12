@@ -1,0 +1,63 @@
+{
+  "cityCode": 5899,
+  "queueRank": 1690,
+  "name": "Ikere-Ekiti",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [7.49363135792797, 5.22656186909243],
+  "population2025": 338367,
+  "population2025k": 338.367,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ikere-Ekiti cadastral parcel map land registry official Nigeria",
+        "result": "Search found the official Ekiti State Geospatial Center, which describes an automated Land Geographic Information System, land registration, registration search and title-registration services. No public anonymous parcel map or geometry endpoint was found for Ikere-Ekiti.",
+        "actualResultUrls": ["https://www.ekitigeospatial.com/", "https://www.ekitistate.gov.ng/", "https://osgof.gov.ng/"]
+      },
+      {
+        "language": "Yoruba",
+        "query": "Ikere-Ekiti ìforúkọsílẹ ilẹ cadastral map Ekiti official",
+        "result": "Separate local-language discovery did not produce a first-party parcel-map result. The official Ekiti Geospatial Center remained the relevant local custodian identified by the research.",
+        "actualResultUrls": ["https://www.ekitigeospatial.com/", "https://www.ekitistate.gov.ng/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "sourceId": null,
+    "name": "Ekiti State Geospatial Center / EK-ILMIS",
+    "url": "https://www.ekitigeospatial.com/",
+    "operator": "Ekiti State Government",
+    "serviceType": "Official local land-information and land-registration custodian evidenced; public parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ekiti State Geospatial Center states that the government is implementing an automated Land Geographic Information System and provides land registration, registration search and title-registration services.",
+    "verifiedOpenScope": "The public pages reviewed expose service/application guidance; no anonymous parcel layer, schema, CRS, native parcel ID or geometry response was verified. This does not establish parcel absence or citywide absence.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "runtimeReadiness": "held_pending_serial_review",
+  "adapterReady": false,
+  "cohort": "overnight-next-1601-1700-2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "checkedAt": "2026-10-10"
+}

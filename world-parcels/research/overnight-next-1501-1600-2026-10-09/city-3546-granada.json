@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "cityCode": 3546,
+  "queueRank": 1558,
+  "name": "Granada",
+  "country": "Spain",
+  "countryCode": "ES",
+  "iso3": "ESP",
+  "point": [37.1713370150694, -3.60908353210738],
+  "population2025": 367226,
+  "population2025k": 367.226,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Granada Spain official cadastral map parcel viewer Catastro parcelas mapa oficial",
+        "result": "Official Spanish Directorate General for Cadastre sources document the public cadastral viewer, WMS, INSPIRE cadastral-parcel WFS, and municipal ATOM download services. The official Granada municipal site also exposes urban-planning/cadastral map documents, but no anonymous city API was identified.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+          "https://www.catastro.hacienda.gob.es/webinspire/index_eng.html",
+          "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+          "https://www.granada.org/urbanismo.nsf/c3abb01dbb6ecb39c125812100281f63/5d5354c666b7294dc12582ac0035faa0/$FILE/INF-08.1-A1.pdf"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Granada España visor catastral parcelas cartografía oficial Catastro Sede Electrónica",
+        "result": "La Dirección General del Catastro is the evidenced national cadastral custodian. Ayuntamiento de Granada material confirms municipal urban-planning documents using cadastral parcels and a municipal GeoGranada viewer, but no safe anonymous parcel-geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.catastro.hacienda.gob.es/es-es/acceso_infocat.html",
+          "https://www.catastro.hacienda.gob.es/ayuda/servicios_web.htm",
+          "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+          "https://www.granada.org/intranet/bolcalles.nsf/wenviados/2158C66F6ADA93A1C125882A003BAD5E",
+          "https://www.granada.org/inet/regiourb.nsf/fae0305c435d5f7ac12589b400238263/650ed8407143fc9ec125899000379477/$FILE/2021-14599%20Doc%20T%C3%A9cnico.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The national Dirección General del Catastro publishes the official public cadastral viewer and INSPIRE parcel services. Ayuntamiento de Granada first-party records confirm municipal cadastral-parcel use and GeoGranada map references. This establishes registry/service custody, not a verified city-specific adapter.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Spain-wide DGC cadastral parcel services, with Granada municipal planning/map references.",
+    "verifiedOpenScope": "Official service documentation and endpoint reachability were checked; no usable Granada parcel feature response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_cadastral_services_documented_geometry_unverified",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The exact WUP point was not used to infer citywide absence. The public DGC endpoint returned an HTML processing error for the attempted anonymous WFS requests, and the alternate WMS host returned HTTP 503; no parcel polygon or native parcel identity was retained."
+}

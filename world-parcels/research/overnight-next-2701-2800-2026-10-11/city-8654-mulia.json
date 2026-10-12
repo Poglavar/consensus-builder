@@ -1,0 +1,143 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel services for Mulia, Puncak Jaya, Central Papua, Indonesia; source and coverage claims are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 8654,
+  "queueRank": 2774,
+  "name": "Mulia",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-3.7076405742533, 137.973045856296],
+  "population2025": 213704,
+  "population2025k": 213.704,
+  "populationUnit": "persons",
+  "aliases": ["mulia"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mulia Papua Indonesia official cadastral parcel map ATR BPN BHUMI Puncak Jaya",
+        "result": "Found the official ATR/BPN BHUMI interactive land-information map and ATLAS geospatial catalog, plus official/legal evidence identifying Kantor Pertanahan Kabupaten Puncak Jaya. No indexed Mulia parcel layer or downloadable parcel response was found.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/", "https://jdih.atrbpn.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Mulia Papua Tengah peta bidang tanah resmi ATR BPN Puncak Jaya",
+        "result": "Found the Indonesian-language BHUMI/ATLAS official services and evidence for Kantor Pertanahan Kabupaten Puncak Jaya as the relevant land office. Search results did not expose a public Mulia parcel dataset or safe parcel feature response.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "https://peraturan.bpk.go.id/Download/94403/Lampiran%20Permen%20No.%209%20Tahun%202018_tata%20Naskah%20ATR-BPN.pdf"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "observation": "Official BHUMI ATR/BPN map application. The landing page describes an open geospatial land-information map, embeds the current public map console at https://konsolbhumi.atrbpn.go.id, and states that displayed information is not guaranteed complete or current.",
+      "custodian": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)"
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "observation": "Official ATR/BPN ATLAS catalog. Its current anonymous catalog response contained seven public datasets, none identified as cadastral parcels for Mulia or Puncak Jaya; the listed public datasets were offices, disaster, health-access, islands, and related non-parcel layers.",
+      "custodian": "ATR/BPN"
+    },
+    {
+      "url": "https://peraturan.bpk.go.id/Download/94403/Lampiran%20Permen%20No.%209%20Tahun%202018_tata%20Naskah%20ATR-BPN.pdf",
+      "observation": "Official-regulation mirror of ATR/BPN organizational appendix listing Kantor Pertanahan Kabupaten Puncak Jaya (office series 26-14). This evidences the local/district land-office custodian, not an open parcel geometry feed.",
+      "custodian": "Kantor Pertanahan Kabupaten Puncak Jaya / ATR-BPN"
+    },
+    {
+      "url": "https://ppid.puncakjayakab.go.id/statistik",
+      "observation": "Official Puncak Jaya PPID portal was checked for local administrative evidence; it showed a land-database/digital certificate inventory entry but no public parcel geometry service for Mulia.",
+      "custodian": "Pemerintah Kabupaten Puncak Jaya (administrative context only)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET landing HTML",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Loaded; embedded public console URL identified. No parcel data was returned by the landing document."
+    },
+    {
+      "url": "https://konsolbhumi.atrbpn.go.id/",
+      "method": "GET current public map-console HTML and JavaScript bundles",
+      "httpStatus": 200,
+      "contentType": "text/html / JavaScript",
+      "outcome": "Console assets loaded. The inspected anonymous bundle exposed Sentuh Tanahku/login-oriented routes; no safe anonymous parcel feature endpoint or public Mulia parcel layer was identified. No login, credentials, or CAPTCHA interaction was attempted."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "method": "GET official map documentation",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Confirmed BHUMI is an interactive spatial map and documents parcel/land layers and coordinate display, but the documentation page returned no Mulia feature data, native parcel schema, or CRS for a parcel response."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+      "method": "GET official catalog documentation",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Confirmed public catalog/import concepts and supported spatial formats; no Mulia parcel dataset or public download was returned."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000",
+      "method": "GET anonymous catalog API",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned total=7 public datasets. None was a Mulia/Puncak Jaya cadastral parcel layer; no parcel geometry, feature ID, field schema, or CRS was returned."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/api/bhumi/settings",
+      "method": "GET anonymous configuration API",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned ATLAS branding/configuration only; no parcel service endpoint or layer configuration."
+    },
+    {
+      "url": "https://geosrv-app.atrbpn.go.id/geoserver/geonode/wms?service=WMS&request=GetCapabilities",
+      "method": "GET WMS capabilities probe using host named in the public ATLAS catalog",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "DNS resolution failed from the research environment. This is an infrastructure/access failure, not evidence of absent coverage; no retry with TLS bypass or credentials was made."
+    },
+    {
+      "url": "https://geosrv-app.atrbpn.go.id/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET WFS capabilities probe using host named in the public ATLAS catalog",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "DNS resolution failed from the research environment. No feature request was sent and no geometry was obtained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A current official ATR/BPN public map/catalog was verified, and official organizational evidence identifies Kantor Pertanahan Kabupaten Puncak Jaya as the district land-office custodian. No local municipal parcel API or anonymous Mulia parcel geometry response was established.",
+  "registryEvidenceUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/", "https://peraturan.bpk.go.id/Download/94403/Lampiran%20Permen%20No.%209%20Tahun%202018_tata%20Naskah%20ATR-BPN.pdf"],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": "atr-bpn-bhumi-atlas",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "nativeSchema": {
+    "geometryType": "not observed",
+    "crs": "not observed",
+    "nativeIdentityUsed": null,
+    "nativeIdentityAlternativesObserved": [],
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": "No parcel feature response was returned; no native identity was inferred from city, district, office, or catalog metadata."
+  },
+  "resultCategory": "primary_source_investigated_registry_verified_geometry_unavailable",
+  "coverageAssessment": {
+    "claimedScope": "Indonesia-wide ATR/BPN land-information and geospatial catalog services, with district land-office responsibility for Puncak Jaya.",
+    "verifiedOpenScope": "Public BHUMI/ATLAS documentation and seven anonymous ATLAS catalog records; no open Mulia/Puncak Jaya parcel feature layer or geometry response.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "southeast-asia",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. BHUMI may expose additional parcel information through map interactions, restricted layers, or a service unavailable from this environment, but no anonymous safe ID-plus-geometry response was observed. Catalog absence, DNS failure, or an unusable/login-oriented UI is not treated as citywide absence. This packet is research evidence only and does not constitute source integration or admission."
+}

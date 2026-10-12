@@ -1,0 +1,13 @@
+{
+  "taskId": "city:131",
+  "decision": "held",
+  "checkedAt": "2026-10-12T05:52:14Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-131-oral.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/oral-service-review.json"
+  ],
+  "reason": "WUP archive SHA-256 and its 2025 row confirm Oral code 131, rank 3219 in the immutable queue, Kazakhstan, point [51.232322386835, 51.4030628215759], and 187483 persons. English and Kazakh searches with actual result URLs are recorded. The official West Kazakhstan announcement supports a cadastral-map publication, so registryFound true remains grounded. The retained original AIS proxy responses for the advertised route and layer suffixes are 404 HTML, with no native ID or full polygon; this is a route failure, not citywide absence. No sample polygon was retained. Fresh exact-ID reads, forced paging, thirteen bounded cells, metric geometry checks, source binding, and headed Details verification are missing. Runtime admission remains held."
+}

@@ -1,0 +1,28 @@
+{
+  "taskId": "city:9427",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-9427-auraiya.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/auraiya-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T15:52:53Z",
+  "reason": "Official Auraiya/UP land-record custody and village metadata/extent are evidenced; the observed plot endpoint returned an Authorization error. No anonymous full polygon, verified native parcel ID, or adapter qualification is available. The point lookup is not a citywide coverage finding.",
+  "custodyFinding": "true, supported by the cited official custodian source; public geometry remains unverified",
+  "firstPartyUrls": [
+    "https://auraiya.nic.in/service/land-records/",
+    "https://upbhunaksha.gov.in/"
+  ],
+  "qualification": {
+    "fullPolygonsRetained": 0,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

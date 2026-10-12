@@ -1,0 +1,125 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry context and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T12:16:00Z",
+  "cityCode": 6299,
+  "queueRank": 1250,
+  "cityId": "wup:6299",
+  "name": "Hawassa",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "centerLatLon": [7.047341148246, 38.488014071846],
+  "point": [7.047341148246, 38.488014071846],
+  "population2025": 444909,
+  "population2025k": 444.909,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hawassa Ethiopia official cadastral map land registry parcel GIS",
+        "result": "Found the official Hawassa City Administration site and its Land Administration and Investment Department page. The site identifies the local department and links a separate city municipality online-service portal, but no public parcel viewer, cadastral layer, schema, CRS, or anonymous geometry endpoint was exposed in the bounded review.",
+        "actualResultUrls": [
+          "https://www.hawassa.gov.et/en",
+          "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+          "https://www.hawassaudcd.gov.et/"
+        ]
+      },
+      {
+        "language": "Amharic",
+        "query": "ሀዋሳ ኢትዮጵያ ካዳስተር የመሬት ምዝገባ ካርታ",
+        "result": "Search results returned the official Hawassa City Administration site, including its Amharic service-category page and the city municipality online-service portal. The official material evidences a local land-administration department/service context, but no anonymous public parcel-vector route or geometry response was found.",
+        "actualResultUrls": [
+          "https://hawassa.gov.et/am/service_category",
+          "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+          "https://www.hawassaudcd.gov.et/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+      "observation": "Official Hawassa City Administration page names the Land Administration and Investment Department and gives its city-level remit; it does not expose parcel geometry or a public cadastral API."
+    },
+    {
+      "url": "https://www.hawassa.gov.et/en",
+      "observation": "Official city administration home page identifies Hawassa City Administration, links the Land Administration and Investment Department, and links the city municipality system."
+    },
+    {
+      "url": "https://hawassa.gov.et/am/service_category",
+      "observation": "Official Amharic service-category page lists Land Administration and Investment Department as a city service category; no public parcel layer or geometry payload is linked."
+    },
+    {
+      "url": "https://www.hawassaudcd.gov.et/",
+      "observation": "Officially linked Hawassa city municipality online-service portal requires users to register or sign in to request services; its public landing page exposes no cadastral vector layer or safe anonymous parcel endpoint. No account or service request was made."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.hawassa.gov.et/en",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "web result available",
+      "outcome": "Official page reviewed; it links the local land-administration department and municipality portal, but no map/API route was exposed in the indexed page."
+    },
+    {
+      "url": "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "web result available",
+      "outcome": "Official department page reviewed; remit and local custody context were found, but no parcel schema, CRS, service URL, or geometry response was exposed."
+    },
+    {
+      "url": "https://hawassa.gov.et/am/service_category",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "web result available",
+      "outcome": "Official Amharic service page reviewed; land administration is listed as a service category, with no safe anonymous parcel-vector route."
+    },
+    {
+      "url": "https://www.hawassaudcd.gov.et/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Public municipality portal landing page returned HTTP 200. It describes online service delivery and provides registration/login links; no cadastral map, public API, parcel schema, CRS, or geometry response was exposed. No login or credentialed request was attempted."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Hawassa City Administration material evidences a local Land Administration and Investment Department and a linked municipal online-service portal. This establishes local administrative/service custody context, not a public parcel-vector source, legal-title coverage, or runtime integration.",
+  "registryEvidenceUrls": [
+    "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+    "https://hawassa.gov.et/am/service_category",
+    "https://www.hawassaudcd.gov.et/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://www.hawassaudcd.gov.et/",
+    "kind": "Official Hawassa municipal online-service portal; no public cadastral vector endpoint verified",
+    "publisher": "Hawassa City Administration",
+    "scope": "Local administrative service portal; public parcel coverage, layer/schema, CRS, and anonymous geometry access were not verified.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a verified cadastral parcel endpoint because no public parcel feature service was exposed. Exact WUP point [7.047341148246, 38.488014071846] remains unchanged; no absence inference is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Hawassa City Administration pages and its linked municipal service portal establish local land-administration/service context.",
+    "verifiedOpenScope": "Local administrative custody context only; no anonymous safe full-polygon response, parcel schema, CRS, or citywide vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "An authenticated, non-indexed, or separately published municipal cadastral service may exist, but it was not accessed or verified. Exact-point hit testing, parcel identifiers, CRS, public geometry availability, and citywide completeness remain unknown. No owner, address, contact, titleholder, tax, or account fields were requested or retained."
+}

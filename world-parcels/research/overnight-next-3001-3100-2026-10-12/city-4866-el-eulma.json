@@ -1,0 +1,122 @@
+{
+  "cityCode": 4866,
+  "queueRank": 3007,
+  "name": "El Eulma",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "point": [36.1544897812602, 5.68648938016964],
+  "population2025": 198828,
+  "population2025k": 198.828,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "El Eulma Algeria official cadastral map viewer parcel cadastre Sétif DGDN Fada El Djazair",
+        "result": "First-party Algerian land-property services were identified through the Ministry of Finance / General Directorate of National Domains (DGDN) portal references. Search results also identified official and local evidence that the El Eulma land registry/cadastre jurisdiction is in Sétif Province. No public parcel vector endpoint was exposed by search results.",
+        "actualResultUrls": [
+          "https://fadaeldjazair.mf.gov.dz",
+          "https://www.mf.gov.dz/images/pdf/Revue_de_presse/Decembre2024/revue_de_presse_du_lundi_16_Decembre_2024.pdf",
+          "https://sawtsetif.dz/v/9503/"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "cadastre El Eulma Algérie plan cadastral officiel Sétif direction des domaines",
+        "result": "No additional first-party French-language parcel viewer or anonymous geometry endpoint was found. The DGDN/Ministry of Finance portal remained the relevant official service route.",
+        "actualResultUrls": [
+          "https://fadaeldjazair.mf.gov.dz",
+          "https://www.mf.gov.dz/"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "العلمة سطيف مخطط مسح الأراضي المحافظة العقارية أملاك الدولة فضاء الجزائر",
+        "result": "Arabic discovery identified the official Fada El Djazair digital land-property portal and independent local reporting naming the El Eulma land registry (المحافظة العقارية بالعلمة) under Sétif. It did not expose a safe anonymous parcel ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://fadaeldjazair.mf.gov.dz",
+          "https://news.radioalgerie.dz/ar/node/56816",
+          "https://sawtsetif.dz/v/9503/"
+        ]
+      }
+    ],
+    "sourceDiscoveryDate": "2026-10-12",
+    "sourceCitations": [
+      "https://fadaeldjazair.mf.gov.dz",
+      "https://www.mf.gov.dz/images/pdf/Revue_de_presse/Decembre2024/revue_de_presse_du_lundi_16_Decembre_2024.pdf",
+      "https://news.radioalgerie.dz/ar/node/56816",
+      "https://sawtsetif.dz/v/9503/"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Direction générale des domaines / المديرية العامة للأملاك الوطنية (DGDN), Ministry of Finance, with the Sétif wilaya land-survey and land-registry services",
+    "scope": "Algerian national land-property services; local evidence specifically names the El Eulma land registry under Sétif Province",
+    "evidence": "The Ministry of Finance/DGDN portal is identified as the official Fada El Djazair service; Sétif local reporting explicitly identifies the El Eulma land registry and cadastral services."
+  },
+  "service": {
+    "name": "Fada El Djazair / فضاء الجزائر",
+    "viewerUrl": "https://fadaeldjazair.mf.gov.dz",
+    "baseUrl": "https://fadaeldjazair.mf.gov.dz",
+    "viewerConfiguration": "The linked official host was tested directly; current JavaScript/configuration could not be retrieved anonymously because the host timed out from this environment.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET/HEAD",
+      "url": "https://fadaeldjazair.mf.gov.dz",
+      "status": "timeout",
+      "outcome": "Official portal host did not complete an anonymous request within 20 seconds; no login, CAPTCHA bypass, or credentialed retry was attempted."
+    },
+    {
+      "method": "GET/HEAD",
+      "url": "https://dzds.dz",
+      "status": 403,
+      "outcome": "Candidate cadastral-document host returned an anonymous 403; no access-control bypass was attempted. This is not evidence of citywide absence."
+    },
+    {
+      "method": "GET/HEAD",
+      "url": "https://www.dgdn.gov.dz",
+      "status": 503,
+      "outcome": "DGDN host returned service unavailable; no repeated or credentialed request was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://imadtbn.github.io/dz_portal/sectors/fadaeldjazair.html",
+      "status": 200,
+      "outcome": "Non-first-party directory page was inspected only to recover the official Fada El Djazair host and listed services; it was not treated as the registry custodian."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/4866/ (route headers and request notes; no raw owner/address/titleholder data retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [36.1544897812602, 5.68648938016964] was preserved in latitude/longitude order and was not shifted.",
+    "The official portal was not anonymously reachable in this run, so no viewer JavaScript/configuration, schema, CRS, bounded ID-plus-geometry response, or exact-point parcel result was obtained.",
+    "The local El Eulma registry evidence establishes a city/local cadastral custodian, not public citywide vector coverage.",
+    "A timeout, 403, 503, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The Fada El Djazair portal may expose cadastral-document or map services after normal browser interaction, but the current anonymous public route and API configuration could not be qualified.",
+    "Parcel coverage, positional accuracy, native identity fields, geometry CRS, and citywide completeness remain unverified.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

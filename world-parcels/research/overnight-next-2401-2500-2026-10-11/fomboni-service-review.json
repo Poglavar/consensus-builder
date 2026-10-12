@@ -1,0 +1,59 @@
+{
+  "cityRecord": "city-304-fomboni.json",
+  "cityCode": 304,
+  "queueRank": 2478,
+  "name": "Fomboni",
+  "country": "Comoros",
+  "countryCode": "KM",
+  "pointLatLon": [-12.2875705957458, 43.7459836687972],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.egouv.km/fr/",
+      "httpStatus": 200,
+      "outcome": "Official government portal loaded. Its service listing linked the Ministry of Economy e-Archivage (foncier) page. This is general national government discovery, not proof of a Fomboni parcel endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://minecon.egouv.km/fr/services/individuals-services/e-archivage-foncier/",
+      "httpStatus": 200,
+      "outcome": "Official Ministry of Economy page loaded over verified TLS. It describes a platform for digitization and centralization of land titles and links to https://e-archivage.gouv.km/. No viewer JavaScript, API configuration, parcel schema, CRS, or geometry was exposed in the page content."
+    },
+    {
+      "method": "GET",
+      "url": "https://e-archivage.gouv.km/",
+      "httpStatus": null,
+      "outcome": "Host could not be resolved by the request environment (curl error 6); the web fetch also reported a 502 Bad Gateway. No login was attempted and no certificate exception was used."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.urbanagendaplatform.org/sites/default/files/2020-09/Naitonal-Report-Comores-Fran%C3%A7ais.pdf",
+      "httpStatus": 200,
+      "outcome": "Documentary source reports Fomboni consultations with the Service cadastre de Mohéli and describes a 2014 national property-registration program intended to create a cadastral/land database. It is not a current public map/API and supplied no safe parcel IDs or geometry."
+    }
+  ],
+  "viewerInspection": {
+    "attempted": true,
+    "javascriptOrConfig": false,
+    "api": false,
+    "schema": false,
+    "crs": false,
+    "boundedAnonymousIdGeometryResponse": false,
+    "reason": "Linked e-archivage host was unavailable; the official landing page exposed only a platform link and no client bundle or endpoint."
+  },
+  "safeFieldAllowlist": ["stable native parcel ID", "geometry"],
+  "nativeFieldNames": [],
+  "nativeIdentityMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "uncertainty": [
+    "The official service listing establishes a national land-title digitization initiative, not an accessible Fomboni cadastre.",
+    "The documentary mention of Service cadastre de Mohéli does not establish a current anonymous data service.",
+    "No exact-point hit, map extent test, or citywide absence claim was made.",
+    "Runtime adapter qualification is held pending independent serial review and a real public parcel response."
+  ]
+}

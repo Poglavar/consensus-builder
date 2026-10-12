@@ -1,0 +1,58 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2852,
+  "queueRank": 2840,
+  "name": "Kaechon",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "point": [39.7029266389859, 125.892747264095],
+  "population2025": 209508,
+  "population2025k": 209.508,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaechon DPRK cadastral parcel map official land registry",
+        "result": "No Kaechon-specific first-party cadastral registry, parcel viewer, or public parcel API was found. The first-party Naenara result was general DPRK material and an unrelated Sinuiju International Economic Zone map; it does not evidence a Kaechon parcel service.",
+        "actualResultUrls": ["https://www.naenara.com.kp/", "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"]
+      },
+      {
+        "language": "Korean (local/native-language discovery)",
+        "query": "개천시 지적도 토지대장 공식",
+        "result": "Search results were Republic of Korea cadastral/land-record services (including K-GeoP and Korean local-government services), not DPRK or Kaechon sources. They were excluded as wrong-country evidence.",
+        "actualResultUrls": ["https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://irts.molit.go.kr/usr/estate/cntc/kab/RtecsLandRegstrSearchForm.do", "https://kras.gg.go.kr/land_info/info/landmap/landmap.do"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": null,
+  "officialSources": [
+    {"url": "https://www.naenara.com.kp/", "observation": "First-party DPRK Naenara landing page was identified by discovery, but no Kaechon cadastral service was exposed in the observed material."},
+    {"url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf", "observation": "First-party DPRK PDF contains an investment-zone map for Sinuiju, not a Kaechon parcel/cadastre service; it is not used as city evidence."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.naenara.com.kp/", "outcome": "TLS-verified curl failed with certificate-chain error (curl 60); no certificate exception was used. Web discovery independently identified the first-party page, but no parcel endpoint was observed."},
+    {"method": "GET", "url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf", "outcome": "TLS-verified curl failed with certificate-chain error (curl 60); no certificate exception was used. Search-indexed first-party result is unrelated to Kaechon cadastral coverage."},
+    {"method": "GET", "url": "https://www.gov.kp/", "outcome": "DNS resolution failed for www.gov.kp; no response and no parcel route inferred."},
+    {"method": "GET", "url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "outcome": "200 HTML, but this is a Republic of Korea cadastral viewer and was excluded because it is not a DPRK/Kaechon source."}
+  ],
+  "resultCategory": "no_city_registry_or_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "No local Kaechon cadastral/map service was identified.",
+    "verifiedOpenScope": "No Kaechon parcel response, native parcel identity, schema, CRS, or geometry was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "A zero discovery result and failed/unavailable routes do not prove citywide cadastral absence. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS-disabling exception was used. No GeoJSON sample is retained because no safe native parcel identity and polygon were observed. This packet is research evidence only and is not source integration or admission."
+}

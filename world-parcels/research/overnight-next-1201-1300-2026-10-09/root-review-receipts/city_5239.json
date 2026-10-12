@@ -1,0 +1,20 @@
+{
+  "taskId": "city:5239",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5239-sirajganj.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sirajganj-service-review.json",
+    "tmp/valhalla-parcel-research/5239/divisions.json",
+    "tmp/valhalla-parcel-research/5239/rajshahi-districts.json",
+    "tmp/valhalla-parcel-research/5239/surveys-rs.json",
+    "tmp/valhalla-parcel-research/5239/thanas.json"
+  ],
+  "checkedAt": "2026-10-09T12:07:51Z",
+  "identityAndSearchReview": "Sirajganj, Bangladesh/BD, rank 1245, point [24.4428147841435,89.6972650570864], 446632 persons. English and Bengali search records are present; zero polygons and no unsafe attributes are retained.",
+  "sourceReview": "Original first-party cached JSON names Rajshahi division 030000000, Sirajganj district 031000000/comcod 4156, and active BDS survey 201901; subsequent thanas.json is []. This supports DLRS district/survey custody, not citywide parcel geometry or absence.",
+  "firstPartyUrlsReviewed": [
+    "https://settlement.gov.bd/map/mapsearch"
+  ],
+  "admissionReview": "No safe full parcel polygon or native parcel ID response. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unevidenced; runtime remains held and shared admission state is unchanged."
+}

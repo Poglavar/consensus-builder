@@ -1,0 +1,80 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 11955,
+  "queueRank": 2832,
+  "name": "Kharupetia",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.5265608930125, 92.1541359795524],
+  "population2025": 209917,
+  "population2025k": 209.917,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kharupetia Assam cadastral parcel map land records official Dharitree",
+        "result": "First-party discovery found the Government of Assam ILRMS/Dharitree land-record service and the official Bhunaksha cadastral mapping viewer. The current Bhunaksha viewer exposes a public map backend and parcel click route.",
+        "actualResultUrls": ["https://ilrms.assam.gov.in/", "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC", "https://bhunaksha.assam.gov.in/"]
+      },
+      {
+        "language": "Assamese",
+        "query": "খাৰুপেটীয়া অসম ভূমি নক্সা মাটিৰ ৰেকৰ্ড চৰকাৰী",
+        "result": "Assamese-language first-party discovery found the Assamese Government of Assam ILRMS/Dharitree and Directorate of Land Records pages. Bhunaksha's first-party API enumerated Darrang, Dalgaon Rev Circle, and Kharupetia Town using Assamese and English labels.",
+        "actualResultUrls": ["https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC", "https://dlrs.assam.gov.in/as/contact-us", "https://bhunaksha.assam.gov.in/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Government of Assam ILRMS identifies Dharitree and Bhunaksha as land-record/cadastral services; the current first-party Bhunaksha viewer exposes Darrang district, Dalgaon circle, Kharupetia Town village selection, and parcel geometry/info routes.",
+    "localCustodianScope": "The observed local administrative scope is Darrang district, Dalgaon Revenue Circle, Kharupetia Town. This is evidence of a local registry/map service, not proof of complete municipal or citywide parcel coverage.",
+    "urls": ["https://ilrms.assam.gov.in/", "https://dlrs.assam.gov.in/", "https://bhunaksha.assam.gov.in/"]
+  },
+  "officialSources": [
+    {"url": "https://ilrms.assam.gov.in/", "observation": "Government of Assam ILRMS page describes Dharitree and Bhunaksha; Bhunaksha is identified as cadastral mapping software."},
+    {"url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC", "observation": "Current Dharitree citizen viewer provides district/circle/village selection and states that records are maintained by the Assam land-record system."},
+    {"url": "https://bhunaksha.assam.gov.in/", "observation": "Current first-party Bhunaksha viewer loads JavaScript configuration pointing to its public backend and parcel map services."},
+    {"url": "https://dlrs.assam.gov.in/", "observation": "Directorate of Land Records, Government of Assam, is the state land-records and survey authority."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "source": {
+    "name": "Government of Assam Bhunaksha / ILRMS parcel service",
+    "viewerUrl": "https://bhunaksha.assam.gov.in/",
+    "serviceBase": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd",
+    "administrativeSelection": {"districtCode": "08", "district": "Darrang", "circleCode": "080104", "circle": "Dalgaon", "villageCode": "080104020120001", "village": "Kharupeta Town"},
+    "nativeFieldMapping": {"canonicalId": "080104020120001:1472", "compositeKey": ["NIC_code", "DAG_NO"], "NIC_code": "080104020120001", "DAG_NO": "1472", "TEXTPARCEL": "1472", "OBJECTID": "1457"},
+    "compositeKeyProvenance": "The response's NIC_code identifies the selected village and DAG_NO/TEXTPARCEL identifies the parcel; the retained canonical identity is the composite village-code:DAG number. OBJECTID was observed as a source field but was not used alone.",
+    "crs": "EPSG:32646",
+    "geometryType": "MULTIPOLYGON"
+  },
+  "sourceIds": ["080104020120001:1472"],
+  "verifiedParcelResponse": {"nativeId": "080104020120001:1472", "locationCode": "080104020120001", "dagNo": "1472", "uniqueId": "84GFP3E64PJJH0", "geometryObserved": true, "geometryRetained": false, "sourceFieldsObserved": ["NIC_code", "DAG_NO", "TEXTPARCEL", "OBJECTID", "DISTRICT", "CIRCLE", "VILLAGE", "MOUZA", "TYPE"], "safeRetainedFields": ["canonical native parcel identity", "full parcel geometry", "geometry CRS"]},
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://ilrms.assam.gov.in/", "outcome": "200; official ILRMS landing page retrieved."},
+    {"method": "GET", "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC", "outcome": "200; current Dharitree HTML and JavaScript were retrieved; district/circle/village POST routes were identified."},
+    {"method": "GET", "url": "https://ilrms.assam.gov.in/dhar/application/views/js/dharitreecore.js", "outcome": "200; current first-party JavaScript inspected; public selection routes observed."},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/", "outcome": "200; current viewer HTML retrieved and JavaScript asset identified."},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/assets/index-qVUqnX9k.js", "outcome": "200; current JavaScript/configuration inspected; backend, API routes, EPSG:32646 parcel geometry, and safe field usage observed."},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts", "outcome": "200; Darrang district code 08 returned."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/circles", "outcome": "200; Darrang circle code 080104 returned for Dalgaon."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages", "outcome": "200; Kharupeta Town returned as village code 080104020120001."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/authKey", "outcome": "200; short-lived public viewer token obtained as the viewer does; token not retained."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/click_info", "outcome": "200; exact WUP point transformed to EPSG:32646 [415727.00, 2934277.10] and returned parcel DAG_NO 1472 with MULTIPOLYGON geometry in EPSG:32646. No owner or unsafe fields requested."}
+  ],
+  "resultCategory": "city_registry_and_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Bhunaksha parcel service for Darrang district and its published village/circle selections.",
+    "verifiedOpenScope": "One anonymous exact-point parcel response in Kharupetia Town was verified. Citywide polygon completeness, municipal boundary correspondence, and all-village coverage were not verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. The point hit one Bhunaksha parcel in Kharupetia Town, but a single hit does not establish citywide coverage or adapter readiness. No retained sample GeoJSON is included because the full native geometry was observed in ignored scratch evidence but not reserialized into a retained artifact during this attempt. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only and is not source integration or admission."
+}

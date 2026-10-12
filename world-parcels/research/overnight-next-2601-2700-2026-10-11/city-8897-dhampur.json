@@ -1,0 +1,59 @@
+{
+  "cityCode": 8897,
+  "queueRank": 2694,
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "name": "Dhampur",
+  "aliases": ["dhampur"],
+  "point": [29.3038818453793, 78.5112163319482],
+  "population2025": 219479,
+  "population2025k": 219.479,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registry": {
+    "custodian": "Board of Revenue, Uttar Pradesh / Government of Uttar Pradesh",
+    "localScope": "Bijnor district, Dhampur tehsil",
+    "evidence": "The first-party digitization dashboard identifies Bijnor > Dhampur and reports revenue-village, linked-Bhunaksha, and georeferencing counts; the Board of Revenue portal links Bhulekh/Bhu-Naksha services.",
+    "urls": [
+      "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134",
+      "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "https://upbhulekh.gov.in/"
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dhampur Uttar Pradesh official cadastral parcel map Bijnor Bhulekh GIS",
+        "result": "Found first-party UP Bhulekh digitization dashboard and Bhu-Naksha viewer references. The dashboard identifies Bijnor/Dhampur; current bundle inspection exposed https://upbhunaksha.gov.in/bhunakshaserver as the public map API base.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi (native/local)",
+        "query": "धामपुर उत्तर प्रदेश आधिकारिक भू नक्शा खसरा नक्शा बिजनौर",
+        "result": "Found the first-party Uttar Pradesh Board of Revenue/Bhulekh land-records portal and official Hindi-language dashboard/viewer references. Search results also identify Dhampur as a Bijnor tehsil and cite the public Bhu-Naksha service.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00715",
+          "https://upbhulekh.gov.in/"
+        ]
+      }
+    ]
+  },
+  "parcelEvidence": {
+    "sampleGeojson": null,
+    "retainedFeatureCount": 0,
+    "sourceFieldAllowlist": ["stable native parcel/gata identifier", "geometry"],
+    "nativeIdentityPolicy": "No polygon was retained; no source-specific attribute set was copied.",
+    "crs": "The current Bhunaksha JavaScript configuration uses the service response CRS for map extents and advertises UTM-style EPSG:32643/32644 handling in editing code; no parcel geometry response was accepted without a valid extent.",
+    "geometryResult": "No usable parcel geometry obtained. A POST to /bhunakshaserver/MapInfo/getVVVVExtentGeoref with gisLevels=09,134,00716 returned HTTP 200 and gisCode 0913400716 but xmin/ymin/xmax/ymax all 0.0. This is a bounded service/UI failure, not evidence of citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "notes": "Research packet only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order. Dhampur city point is not assumed to equal any revenue-village centroid or parcel."
+}

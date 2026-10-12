@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-3771-amran.json",
+  "cityCode": 3771,
+  "queueRank": 2883,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Arabic discovery found first-party GALSUP and an Amran branch report, but no public parcel viewer/API. The inspected public ArcGIS service is administrative-boundary data only. Bounded anonymous metadata and attribute-only requests succeeded; no parcel ID-plus-geometry response was obtained.",
+  "attemptedRoutes": [
+    {"route": "https://galsup.gov.ye/", "outcome": "Official public authority site retrieved by browser discovery; no parcel API exposed in inspected content."},
+    {"route": "https://galsup.gov.ye/?p=1046", "outcome": "Official Amran branch/planning report retrieved; no parcel geometry."},
+    {"route": "https://services1-nocdn.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7", "outcome": "HTTP 200 Feature Layer metadata; administrative boundaries, not parcels."},
+    {"route": ".../FeatureServer/7/query?where=1=1&outFields=*&returnGeometry=false&resultRecordCount=3&f=pjson", "outcome": "HTTP 200 bounded administrative attribute response; no geometry retained."},
+    {"route": "https://slrb.gov.ye/", "outcome": "DNS resolution failed; no TLS bypass or alternate unsafe access attempted."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [15.6607315656098, 43.9336407643564] was preserved and not shifted.",
+    "No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+    "No raw source-specific attribute sets, administrative geometry, or non-parcel geometry were retained as parcel samples.",
+    "A zero exact-point hit, map extent miss, timeout, DNS failure, login wall, or unusable UI is not evidence of citywide absence."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No anonymous public parcel vector with a qualified native identity, geometry, schema, and CRS was obtained; independent serial review remains required."},
+  "uncertainty": "GALSUP or a local branch may maintain operational cadastral records or maps not exposed anonymously on the public web. The official Amran report evidences local planning activity, not parcel API coverage.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with current official GALSUP/Amran service discovery and independent adapter qualification."
+}

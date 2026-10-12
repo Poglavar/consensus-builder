@@ -1,0 +1,55 @@
+{
+  "cityCode": 8674,
+  "queueRank": 2401,
+  "name": "Merauke",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso2": "ID",
+  "iso3": "IDN",
+  "point": [-8.50153904477425, 140.398973062248],
+  "population2025": 243395,
+  "population2025k": 243.395,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Merauke Indonesia official cadastral parcel map land registry ATR BPN",
+        "result": "Search identified the official ATR/BPN BHUMI interactive geospatial portal and ATLAS catalog, but no Merauke-specific public parcel feature endpoint or local cadastral map was identified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/landing"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Merauke peta bidang tanah kadaster resmi ATR BPN",
+        "result": "Search identified official Merauke government planning/land references and the national ATR/BPN BHUMI/ATLAS portals; it did not identify a public Merauke parcel geometry service.",
+        "actualResultUrls": ["https://merauke.go.id/", "https://portal.merauke.go.id/berita/profil-distrik-merauke", "https://dpmptsp.merauke.go.id/public/berita/detail/UmJWYAZl", "https://atlas.atrbpn.go.id/"]
+      }
+    ]
+  },
+  "requestOutcomes": [
+    {"route": "BHUMI landing", "url": "https://bhumi.atrbpn.go.id/", "method": "GET", "outcome": "HTTP 200 HTML retrieved; current page embeds the public map console at /konsolbhumi.html. No parcel schema or feature response in the landing HTML."},
+    {"route": "BHUMI interactive map", "url": "https://bhumi.atrbpn.go.id/peta", "method": "GET", "outcome": "HTTP 200 HTML retrieved; current Next.js client shell loaded. No anonymous parcel ID+geometry response was exposed by the inspected HTML/configuration."},
+    {"route": "BHUMI console wrapper", "url": "https://bhumi.atrbpn.go.id/konsolbhumi.html", "method": "GET", "outcome": "HTTP 200 HTML retrieved; wrapper embeds https://konsolbhumi.atrbpn.go.id."},
+    {"route": "BHUMI public console", "url": "https://konsolbhumi.atrbpn.go.id/", "method": "GET", "outcome": "HTTP 200 HTML and current JavaScript retrieved. The inspected anonymous shell exposed no safe public parcel feature endpoint; no login was attempted."},
+    {"route": "ATLAS catalog", "url": "https://atlas.atrbpn.go.id/", "method": "GET", "outcome": "HTTP 200 HTML retrieved. The rendered catalog showed zero published sources at request time; this is a catalog/UI outcome, not proof of absence."},
+    {"route": "Official national cadastral guidance", "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "method": "GET", "outcome": "Official help page describes BHUMI data catalog and parcel-layer concepts, but does not provide a Merauke-specific anonymous vector response."},
+    {"route": "Official Merauke planning reference", "url": "https://dpmptsp.merauke.go.id/public/berita/detail/UmJWYAZl", "method": "GET", "outcome": "Official local-government page evidences Merauke urban RDTR coordination with ATR/BPN; it is planning evidence, not a cadastral parcel API."}
+  ],
+  "runtimeReadiness": "held",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe anonymous native parcel ID plus complete polygon response was verified."},
+  "scopeLimits": [
+    "The exact WUP point [-8.50153904477425, 140.398973062248] is preserved in latitude/longitude order; no coordinate was shifted.",
+    "National ATR/BPN custody and BHUMI/ATLAS existence do not establish open parcel coverage for Merauke city.",
+    "The ATLAS zero-source display, lack of an exposed anonymous feature route, and any UI limitation are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "qualificationDecision": "hold",
+  "uncertainty": "A restricted, browser-only, authenticated, or currently unpublished ATR/BPN/local parcel service may exist. Stable parcel identity, schema, CRS, anonymous geometry access, and citywide coverage remain unresolved."
+}

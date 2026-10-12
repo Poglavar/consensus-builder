@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-4521-mollar-char.json",
+  "cityCode": 4521,
+  "queueRank": 2566,
+  "name": "Mollar Char",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "pointLatLon": [25.3531800220274, 89.7724438906983],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method":"GET","url":"https://settlement.gov.bd/Map/MapSearch","httpStatus":200,"outcome":"Official DLRS map-search HTML retrieved; current JavaScript/configuration route identified."},
+    {"method":"GET","url":"https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ","httpStatus":200,"outcome":"139619-byte current JavaScript retrieved; it exposed the public JSON and vector-tile route patterns recorded in city metadata."},
+    {"method":"POST","url":"https://settlement.gov.bd/Map/GetDivisionList","httpStatus":200,"outcome":"Returned division JSON including Rangpur unit code 080000000."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise","httpStatus":200,"outcome":"Returned district JSON; Gaibandha identified as unit code 080400000, comcod 4186."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise","httpStatus":200,"outcome":"Returned one survey for Gaibandha: rsnum 201901, RS (BRS), described as digital survey, status চলমান."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap","httpStatus":200,"outcome":"Returned HTTP 200 with an empty JSON list for comcod 4186, rsno1 201901, districtid 080400000; no downstream mouza, sheet, parcel, or geometry request could be safely qualified."},
+    {"method":"GET","url":"https://map.land.gov.bd/","httpStatus":"timeout","outcome":"Official integrated map-purchase host did not respond within a 12-second bounded TLS request; no TLS exception used."},
+    {"method":"GET","url":"https://gaibandha.judiciary.gov.bd/bn/servicve-box-detail/mouza-rate","httpStatus":"web-search result available","outcome":"Official Gaibandha page provides mouza-value context and links to district mouza PDFs; it did not provide parcel geometry."},
+    {"method":"GET","url":"https://oldweb.lged.gov.bd/uploadeddocument/Map/RANGPUR/gaibandha/gaibandha-s/gaibandha-s.pdf","httpStatus":"web-search result available","outcome":"Official Gaibandha Sadar reference map labels Mollar Char; it is not a parcel feature service."}
+  ],
+  "schemaAndCrs":{"geometryType":null,"geometryCrs":null,"nativeFieldMapping":null,"compositeKeyProvenance":"Viewer route requires survey, administrative/mouza codes, and sheet number; no parcel response obtained.","rawAttributesRetained":false,"inspection":"The viewer expects GeoJSON from GetSheetJsonBySurvey and uses Dag_No labels, plus vector tiles keyed by _fid, but neither a sheet response nor a stable native parcel identity was obtained."},
+  "sampleGeoJSON":null,
+  "safeFieldAllowlist":["stable native parcel identity if independently evidenced","full parcel polygon geometry if independently evidenced","source URL","observed coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","personal data","tax/account","certificate/title"],
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official source discovery and route inspection succeeded, but no Mollar Char parcel feature response, native identity, CRS, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits":["No exact-point parcel result was obtained; this is not evidence of absence.","No citywide extent or completeness claim is made.","No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.","No GeoJSON was retained because no safe native parcel identity and full polygon were obtained.","Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty":"The official Bangladesh cadastral viewer is evidenced and partially queryable, but the Gaibandha survey lookup returned no thana list for the one ongoing RS/BRS survey. Mollar Char parcel availability and all geometry/schema details remain unresolved."
+}

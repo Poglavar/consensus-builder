@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-7886-silvassa.json",
+  "cityCode": 7886,
+  "city": "Silvassa",
+  "country": "India",
+  "countryCode": "IN",
+  "queueRank": 1563,
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "result": "complete_research_held_runtime",
+  "registryFound": true,
+  "registryCustodian": "Mamlatdar Office, Silvassa, Dadra and Nagar Haveli, evidenced by the official DNH land-record portal contact page.",
+  "queryOutcomes": [
+    {"language":"English","query":"Silvassa Dadra Nagar Haveli official cadastral parcel map GIS land records survey city","outcome":"First-party DNH land-record/survey services and Silvassa Municipal Council GIS-survey evidence found; no safe anonymous parcel geometry endpoint verified.","urls":["https://dnh.nlrmp.in/psurveylive/Logininit.aspx","https://dnh.nlrmp.in/avanika/ContactUs.aspx","https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/","https://ddd.gov.in/notice/silvassa-municipal-council-silvassa-11/"]},
+    {"language":"Hindi","query":"सिलवासा दादरा नगर हवेली आधिकारिक भू-अभिलेख नक्शा जमीन सर्वेक्षण","outcome":"Official Hindi UT revenue page linked DNH Bhu-Naksha and DNH land records; anonymous map entrypoint returned HTTP 500 and no geometry/schema was exposed.","urls":["https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/","https://dnh.nlrmp.in/psurveylive/Logininit.aspx"]}
+  ],
+  "requestOutcomes": [
+    {"url":"https://dnh.nlrmp.in/psurveylive/Logininit.aspx","method":"GET","result":"HTTP 500; route unavailable for anonymous inspection; no parcel fields or geometry.","tls":"verified"},
+    {"url":"https://dnh.nlrmp.in/avanika/ContactUs.aspx","method":"GET","result":"HTTP 200; Silvassa Mamlatdar Office contact confirmed; no lookup submitted.","tls":"verified"},
+    {"url":"https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/","method":"GET","result":"HTTP 200; official service links confirmed.","tls":"verified"}
+  ],
+  "safeFieldAllowlist": ["native parcel ID only if independently published and stable", "geometry only if returned by an official public source", "source CRS", "service/layer metadata", "HTTP status and bounded response metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "survey-number lookup", "record-of-rights contents", "private tokens", "credentials"],
+  "schemaAndCrs": {"verified":false,"nativeIdField":null,"geometryType":null,"crs":null,"reason":"Map entrypoint failed with HTTP 500; no feature response."},
+  "sample": {"retained":false,"reason":"No full parcel polygon or safe native parcel identity was obtained."},
+  "scopeAndUncertainty": "The local custodian and official service route are evidenced, but service availability, citywide parcel completeness, currentness, anonymous API contract, schema, CRS, and parcel identity continuity remain uncertain. Exact WUP point [20.2574198438208, 73.01482517438] was preserved and not used to infer absence.",
+  "runtimeReadiness": "held",
+  "doNotInterpretAs": ["source integration", "adapter admission", "citywide parcel coverage", "legal title or ownership evidence"],
+  "scratchEvidenceDir": "tmp/valhalla-parcel-research/7886/"
+}

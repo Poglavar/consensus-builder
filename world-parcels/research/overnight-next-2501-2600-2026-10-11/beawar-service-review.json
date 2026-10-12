@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-7116-beawar.json",
+  "cityCode": 7116,
+  "queueRank": 2521,
+  "name": "Beawar",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [26.100820590642, 74.3188098496136],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html", "httpStatus": "timeout", "outcome": "Official Rajasthan Bhu-Naksha viewer did not respond within the bounded 15-second request; no HTML, JavaScript/configuration, schema, CRS, or parcel response was obtained."},
+    {"method": "GET", "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/821", "httpStatus": "web-open result available; shell TLS verification failed", "outcome": "Official DILRMP page identifies Rajasthan and Beawar district cadastral status context. The local shell certificate chain was not bypassed and no direct parcel request was made."},
+    {"method": "GET", "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html", "httpStatus": "web-open result available", "outcome": "Official Rajasthan Board of Revenue cadastral-map digitization page loaded in first-party discovery; it is procedure/status evidence, not a Beawar parcel response."},
+    {"method": "GET", "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "httpStatus": 200, "outcome": "Official Rajasthan Urban GIS portal loaded. Its current HTML identifies Khasra search and states that settlement-department khasra/village boundaries are for viewing; it does not establish Beawar parcel coverage by itself."},
+    {"method": "GET", "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js", "httpStatus": 200, "outcome": "Current public JavaScript configuration inspected. It exposes a JDA-specific ArcGIS Settlement_JDA Khasra layer and JDA scheme/planning services, not a Beawar-specific service."},
+    {"method": "GET", "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson", "httpStatus": "timeout", "outcome": "Configured JDA Khasra layer endpoint did not respond within the bounded 20-second request; no schema, CRS, or geometry obtained. Scope was not treated as Beawar evidence."},
+    {"method": "GET", "url": "https://rajdharaa.rajasthan.gov.in/RajdharaaCommonWebAPI/api/GenerateGISToken", "httpStatus": 405, "outcome": "Public API endpoint rejected GET because it requires another method. No token was requested or generated; no private authentication path was attempted."},
+    {"method": "GET", "url": "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx", "httpStatus": "web-open result available", "outcome": "Official Rajasthan Apna Khata land-record page was identified in Hindi discovery; no owner or unsafe record fields were requested and no parcel geometry was obtained."},
+    {"method": "GET", "url": "https://www.edharti.rajasthan.gov.in/LRCLogin.aspx", "httpStatus": "web-open result available", "outcome": "Official Rajasthan e-Dharti page was identified in Hindi discovery. It presents a login/captcha wall; no login, credentials, or bypass was attempted."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null, "rawAttributesRetained": false, "inspection": "No safe anonymous parcel feature response was obtained. The Bhu-Naksha viewer timed out; the only inspected ArcGIS configuration was JDA-specific and not qualified for Beawar."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official source discovery is recorded, but no Beawar parcel feature response, native identity, schema, CRS, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of absence.", "No citywide extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The official Rajasthan and DILRMP sources evidence cadastral services and Beawar district context, but the live parcel viewer was unreachable for bounded anonymous inspection. Beawar-specific parcel access and service schema remain unresolved."
+}

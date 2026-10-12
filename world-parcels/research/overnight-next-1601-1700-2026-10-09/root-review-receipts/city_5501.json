@@ -1,0 +1,20 @@
+{
+  "taskId": "city:5501",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5501-ngandajika.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ngandajika-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:03:57Z",
+  "reason": "National formal land-search procedure is evidenced, but local registry custody and an anonymous Ngandajika parcel geometry endpoint remain unverified. Registry custody remains null, with no absence inference.",
+  "qualificationGaps": [
+    "fresh native-ID parcel reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

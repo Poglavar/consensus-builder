@@ -1,0 +1,20 @@
+{
+  "taskId": "city:2255",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-2255-bila-tserkva.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/bila-tserkva-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:57:42Z",
+  "finding": "WUP code 2255, rank 3139, Ukraine, point [49.8009702357111,30.1190210589534], 191217 persons match the SHA-256-verified original 2025 WUP Pop field, ranked roster, queue, and packet. English and Ukrainian executed queries with result URLs are recorded. Official State Land Cadastre site links the public cadastral map and NSDI documents a WFS pattern, but examples are documentation, not a live Bila Tserkva parcel response. Verified map routes timed out and guessed NSDI routes returned 404; one TLS-disabled diagnostic in the packet is excluded from evidence. No native-ID full polygon or sample is present. Custody is supported, city coverage remains unresolved, and none of the independent adapter, 13-cell, metric GEOS, source-binding, or headed Details gates is evidenced; runtime remains held.",
+  "firstPartyUrlsChecked": [
+    "https://dzk.gov.ua/",
+    "https://nsdi.gov.ua/docs/api/v2/gis.html"
+  ],
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8923",
+  "cityCode": 8923,
+  "wupCityCode": 8923,
+  "name": "Dewas",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1541,
+  "queueRank": 1541,
+  "point": [22.9585792125082, 76.0429922836721],
+  "centerLatLon": [22.9585792125082, 76.0429922836721],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 370472,
+  "population2025k": 370.472,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Dewas district revenue-administration pages identify the local revenue administration and Urban/Rural Dewas tehsil areas. The Government of India DILRMP district report separately records a Dewas tehsil cadastral-map and parcel inventory. These establish registry custody and digitization status, not an open citywide polygon feed.",
+  "registryEvidenceUrls": [
+    "https://dewas.nic.in/en/revenue-administration/",
+    "https://dewas.nic.in/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%B6%E0%A4%BE%E0%A4%B8%E0%A4%A8/",
+    "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/443",
+    "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official MP WebGIS 2.0 route timed out on bounded anonymous GET. Search and first-party pages exposed the official land-record/map service and DILRMP status, but no current public service configuration or safe anonymous parcel-ID-plus-complete-polygon response was verified. No login, credentials, CAPTCHA bypass, or unsafe fields were used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Dewas district revenue administration and the MP land-record system are evidenced; DILRMP reports 224/224 digitized and georeferenced cadastral-map villages for Dewas tehsil, with 173247 total land parcels and 155034 georeferenced parcels in the cited report.",
+    "verifiedOpenScope": "Official custodian/service pages and national status reporting were reviewed; no anonymous complete-polygon feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dewas Madhya Pradesh official GIS cadastral parcel map land records",
+        "scope": "Identify a first-party local registry custodian and a safe public parcel-geometry route.",
+        "result": "Search found the official Dewas revenue-administration page, Government of India DILRMP Dewas tehsil map/ULPIN status, the official MP land-record parcel-map service listing, and the official MP state GIS portal. The results establish local revenue custody and digitization/service references, but did not produce a verified safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://dewas.nic.in/en/revenue-administration/",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/443",
+          "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1",
+          "https://stategisportal.nic.in/stategisportal/Home/Map/23"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Hindi",
+        "query": "देवास मध्य प्रदेश आधिकारिक भू-अभिलेख भू-नक्शा खसरा पार्सल मानचित्र",
+        "scope": "Independent local-language discovery of Dewas land-record custody and public cadastral map/API.",
+        "result": "Hindi search found the official Hindi Dewas revenue-administration page, which identifies revenue subdivisions, tehsils, and Urban/Rural Dewas villages, plus official references to the MP land-record system. No verified anonymous parcel polygon or native parcel identity was found.",
+        "actualResultUrls": [
+          "https://dewas.nic.in/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%B6%E0%A4%BE%E0%A4%B8%E0%A4%A8/",
+          "https://webgis2.mpbhulekh.gov.in",
+          "https://mpbhulekh.gov.in/mpbhulekh.do"
+        ],
+        "executionMethod": "Separate Hindi web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was preserved. The official viewer's current JavaScript/configuration, parcel layer URL, schema, CRS, native identity, anonymous query shape, city boundary relationship, and citywide completeness remain unverified. No point-hit, map-extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently qualify the official MP parcel-map route; do not enable runtime from this packet alone."
+}

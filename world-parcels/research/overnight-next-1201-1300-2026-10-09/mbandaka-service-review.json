@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2478-mbandaka.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official DRC cadastral channels and qualify bounded anonymous parcel evidence for Mbandaka.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [0.0412837424003591, 18.2629942789072]
+  },
+  "assessment": "The official Ministry of Land Affairs directory lists Mbandaka I and Mbandaka II as cadastral/land jurisdictions in Équateur, and the official service catalogue documents formal register consultation. No safe public parcel polygon or anonymous cadastral API was verified.",
+  "registryAssessment": "Local cadastral custody is evidenced by the Ministry jurisdiction directory naming Mbandaka I and Mbandaka II. The official consultation route is a formal request to the Conservateur des Titres Immobiliers or Chef de Division du Cadastre; it is not an open parcel API.",
+  "coverageAssessment": {
+    "claimedScope": "Official ministry jurisdiction directory, official service procedure, BIC public-client inspection, and bounded static route/schema inspection.",
+    "verifiedOpenScope": "Local jurisdiction and formal procedure only; no open parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "operator": "Ministère des Affaires foncières", "scope": "Official jurisdiction directory; lists Mbandaka I and Mbandaka II under Équateur."},
+    {"url": "https://servicepublic.gouv.cd/service/4671", "operator": "Services publics RDC / AFFAIRES FONCIERES", "scope": "Official register-consultation procedure and local office roles; no open geometry endpoint."},
+    {"url": "https://bic.cd/", "operator": "Bureau d'Informations Cadastrales", "scope": "Public cadastral-information landing page; current client bundle inspected, but no qualifying anonymous parcel route verified."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Mbandaka official cadastral parcel map land registry Democratic Republic of the Congo", "result": "Found official ministry jurisdiction directory and government register-consultation procedure; no open parcel API.", "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://bic.cd/"]},
+    {"language": "French", "query": "Mbandaka cadastre parcellaire carte officielle République démocratique du Congo", "result": "Le répertoire officiel confirme Mbandaka I et II; la procédure officielle est formelle et aucune géométrie parcellaire publique anonyme n'a été vérifiée.", "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://bic.cd/"]}
+  ],
+  "attempts": [
+    "Fetched the official Ministry jurisdiction directory anonymously over TLS; HTTP 200; Mbandaka I and Mbandaka II are listed under Équateur.",
+    "Fetched the official government service catalogue anonymously over TLS; HTTP 200; it describes formal cadastral-register consultation through the local title/cadastre offices and a paid request, not an open geometry endpoint.",
+    "Fetched BIC's public landing page anonymously over TLS; HTTP 200. Inspected the current client bundle and found Supabase-backed application configuration and cadastral search/service configuration references, but no verified safe parcel route, native identity field, CRS, or parcel geometry response.",
+    "No exact-point parcel request was fabricated or treated as an absence test. No owner/address/contact/titleholder/tax/account/personal fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["official source URLs", "jurisdiction names", "procedure description", "HTTP status", "public bundle route/schema observations", "geometry type and CRS metadata only when relevant"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified parcel endpoint; no zero-hit inference made.", "requestEvidence": []},
+  "nextStep": "Root/serial review may independently investigate whether a future authenticated/formal or newly published local service can expose safe parcel geometry. Keep runtime held until an anonymous adapter and bounded geometry response are independently qualified.",
+  "remainingUncertainty": "The formal service may provide parcel information after a request, but online availability, local office workflow, parcel coverage, freshness, CRS, and machine-readable schema were not verified.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null
+}

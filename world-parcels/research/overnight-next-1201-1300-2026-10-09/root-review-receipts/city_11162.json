@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11162",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11162-yanji.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/yanji-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:31:00.095808Z",
+  "reason": "The first-party Jilin page confirms a Yanji registration center. The municipal homepage timed out and the public map route exposed no verified parcel schema. No exact-point full-polygon response, native ID, or live adapter qualification is evidenced; coverage remains unknown.",
+  "firstPartySourceReviewed": "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201805/t20180508_5196494.html"
+}

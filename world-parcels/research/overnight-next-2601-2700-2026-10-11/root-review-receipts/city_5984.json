@@ -1,0 +1,20 @@
+{
+  "taskId": "city:5984",
+  "decision": "held",
+  "checkedAt": "2026-10-11T17:36:40Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5984-surak.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/surak-service-review.json"
+  ],
+  "identity": "Code 5984, rank 2673, Surak, Iran (Islamic Republic of), point [36.5976046113622, 53.227239190092], 220791 persons agree across ranked roster, pending queue, and packet.",
+  "searchReview": "Paired packet records executed English and Persian queries with result URLs; paired service review records outcomes.",
+  "sampleReview": "Zero full polygons retained; safe native parcel ID, geometry and metric GEOS checks therefore cannot be qualified.",
+  "firstPartyCheck": "No Surak-specific public parcel service or native-ID geometry response. National context remains custody-unknown; the official national portal returned HTTP 200, while shamim.ssaa.ir timed out. No adapter qualification or headed Details-panel check.",
+  "firstPartyUrls": [
+    "https://zamin.gov.ir/",
+    "https://shamim.ssaa.ir/"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held; unavailable services do not prove citywide absence."
+}

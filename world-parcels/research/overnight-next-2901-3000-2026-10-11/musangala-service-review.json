@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-6923-musangala.json",
+  "cityCode": 6923,
+  "queueRank": 2996,
+  "name": "Musangala",
+  "country": "Democratic Republic of the Congo",
+  "attempt": 1,
+  "reviewStatus": "complete_research_hold",
+  "registryFound": true,
+  "registrySummary": "The official Ministry of Land Affairs directory and public-service procedure evidence national/local cadastral custody and formal registry access through cadastral divisions, but do not expose a Musangala-local public parcel map or API.",
+  "sourceCandidate": {"publisher": "Ministère des Affaires Foncières de la République démocratique du Congo", "urls": ["https://www.affairesfoncieres.gouv.cd/", "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671"], "kind": "National cadastral administration and formal registry consultation procedure", "coverage": "Custody/procedure evidenced; Musangala open parcel-vector coverage unverified"},
+  "queryAndRequestReview": "English and French first-party discovery was performed. The official Ministry, directory, service-procedure, and BIC routes were fetched or inspected. BIC map access was authentication-gated, and the bounded Supabase REST probe returned an invalid-key/service-role-only response. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification exception was used.",
+  "geometryReview": {"verified": false, "sampleFile": null, "featureCount": 0, "nativeIdField": null, "crs": null, "reason": "No public feature service or unchanged parcel polygon with a qualified native identity was obtained."},
+  "safeFieldAllowlist": ["stable native parcel identity if source-proven", "full parcel geometry", "geometry CRS", "public source/service URL", "source layer/service metadata", "retrieval date"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "scopeLimits": ["Exact WUP point [-10.3874908583713, 28.6117974652902] was preserved in latitude/longitude order and not shifted.", "No exact-point zero-hit or map-extent miss was treated as citywide absence.", "Registry custody does not establish open geometry access, schema, CRS, native identity semantics, or citywide coverage."],
+  "uncertainty": "The responsible Musangala-local cadastral office and any underlying parcel records remain unverified; further public viewer/API evidence would be needed before retaining geometry or qualifying an adapter."
+}

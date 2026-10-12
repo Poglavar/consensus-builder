@@ -1,0 +1,67 @@
+{
+  "cityCode": 11319,
+  "queueRank": 2919,
+  "name": "Alauli",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [25.6475349364719, 86.3606248190244],
+  "population2025": 204361,
+  "population2025k": 204.361,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Alauli Bihar official cadastral map Bhu Naksha Bihar parcel map",
+        "result": "First-party discovery identified Bihar Government BhuNaksha and Bihar Revenue and Land Reforms land-record services. The public viewer is an official cadastral-map route; discovery alone did not establish a safe citywide parcel geometry feed.",
+        "actualResultUrls": ["https://bhunaksha.bihar.gov.in/index.jsp", "https://biharbhumi.bihar.gov.in/", "https://dlrs.bihar.gov.in/services.html"]
+      },
+      {
+        "language": "Hindi",
+        "query": "अलौली खगड़िया बिहार भू नक्शा आधिकारिक",
+        "result": "Hindi-language discovery identified the official Bihar BhuNaksha and BiharBhumi land-record portals. No safe parcel feature response was established from search results.",
+        "actualResultUrls": ["https://bhunaksha.bihar.gov.in/10/index.jsp", "https://biharbhumi.bihar.gov.in/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "observation": "Official Bihar BhuNaksha viewer. Its current HTML exposes State, District, Sub Div, Circle, Mauza, Survey Type, Map Instance and Sheet No selectors; inspected JavaScript uses same-host REST and WMS routes."},
+    {"url": "https://biharbhumi.bihar.gov.in/", "observation": "Official Bihar Department of Revenue and Land Reforms gateway linking Bhu-Naksha and online land-record services."},
+    {"url": "https://dlrs.bihar.gov.in/services.html", "observation": "Official Directorate of Land Records and Survey page listing Online Map and related survey services."}
+  ],
+  "requests": [
+    {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "method": "GET", "httpStatus": 200, "outcome": "Fetched public viewer HTML."},
+    {"url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js", "method": "GET", "httpStatus": 200, "outcome": "Current configuration used relative same-host routes; no credentials or private tokens observed."},
+    {"url": "https://bhunaksha.bihar.gov.in/index.js", "method": "GET", "httpStatus": 200, "outcome": "Inspected current JavaScript route and parameter names, including REST level selection, MapInfo extent, ScalarDatahandler and WMS."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "method": "POST", "requestBody": "state=10&level=0&codes=&hasmap=true", "httpStatus": 200, "outcome": "Returned Bihar hierarchy; Khagaria native district code 21 was observed."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "method": "POST", "requestBody": "state=10&level=1&codes=21,&hasmap=true", "httpStatus": 200, "outcome": "Returned subdivision 01 and Alauli circle code 04."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "method": "POST", "requestBody": "state=10&level=4&codes=21,01,04,0100,&hasmap=true", "httpStatus": 200, "outcome": "Returned Alauli mauza 0100, survey type CS, map instance 06 and sheets 01-05. The native selection path is 21/01/04/0100/CS/06/{sheet}."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "method": "POST", "requestBody": "state=10&gisLevels=21,01,04,0100,CS,06,01,&srs=0", "httpStatus": 200, "outcome": "Returned EPSG:32645 sheet extent and gisCode CS21010401001980601. Tested sheet extents were bounded around 439-442 km E; the exact WUP point transforms to about 435822 E, outside these tested extents, so no point-hit inference was made."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "method": "POST", "requestBody": "state=10&giscode=CS21010401001980601&x=440000&y=2837600", "httpStatus": 200, "outcome": "Returned a bounded anonymous map probe with native plot identifier mOuJBivaQLyCTF2v7o8xqg and plot number 344, but no geometry; the identifier was not retained as a sample because a safe parcel polygon response was not obtained."},
+    {"url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities", "method": "GET", "httpStatus": 500, "outcome": "Anonymous capabilities request returned server error; no retry escalation, login, CAPTCHA/Cloudflare bypass, private token or TLS exception was used."},
+    {"url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=5&state=10&levels=21,01,04,0100,CS,06,01,&plotno=1", "method": "GET", "httpStatus": 401, "outcome": "Anonymous plot lookup route returned unauthorized for the tested request; this is an access limitation, not evidence of parcel absence."}
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Bihar BhuNaksha provides a local cadastral-map hierarchy that resolves Khagaria district, Alauli circle and Alauli mauza, with public map extents and a bounded plot probe. This establishes an official local/state registry route, but not citywide open parcel geometry coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {"name": "BhuNaksha Bihar", "url": "https://bhunaksha.bihar.gov.in/index.jsp", "format": "public viewer with REST selection/extent routes and WMS map route", "nativeIdentity": "plot lookup exposed an opaque native id but no geometry response", "coverage": "Alauli mauza cadastral survey selection and five sheet extents observed; citywide coverage not verified", "crs": "EPSG:32645 observed on sheet extent response"},
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_land_registry_cadastral_viewer_open_parcel_geometry_unverified",
+  "coverageAssessment": {"claimedScope": "Bihar BhuNaksha viewer for Khagaria/Alauli cadastral maps", "verifiedOpenScope": "Alauli native hierarchy and bounded sheet extents; no safe parcel geometry", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": "Viewer selection path: state 10 / district 21 / subdivision 01 / circle 04 / mauza 0100 / survey CS / map instance 06 / sheet 01-05; no composite parcel identity was retained.",
+  "crs": "EPSG:32645 observed for bounded sheet extents; no parcel geometry retrieved",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "scopeLimits": ["Exact WUP point [25.6475349364719, 86.3606248190244] was preserved in latitude/longitude order and was not shifted.", "The exact point fell outside the tested Alauli mauza sheet extents; this is not evidence of citywide absence.", "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.", "No GeoJSON sample is included because no full safe parcel polygon was retrieved.", "Packet completion is not source integration or admission; runtime remains held pending serial review."],
+  "remainingUncertainty": "The public viewer's parcel geometry transport, safe schema, citywide map coverage and stable native parcel identity remain unresolved. Future work should use public routes only and retain at most three polygons with exactly one canonical native identity per feature if geometry is independently verified."
+}

@@ -1,0 +1,20 @@
+{
+  "taskId": "city:9118",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-9118-gaobeidian.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/gaobeidian-service-review.json",
+    "tmp/valhalla-parcel-research/9118/app-config.js",
+    "tmp/valhalla-parcel-research/9118/query-%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%8C%BA.json",
+    "tmp/valhalla-parcel-research/9118/query-%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%AD%90%E5%8C%BA.json"
+  ],
+  "checkedAt": "2026-10-12T06:53:39Z",
+  "findings": {
+    "identity": "Verified rank 3246, city code, China, exact point, and 186159 persons against ranked and pending rosters and SHA-256-verified WUP 2025 source archive.",
+    "searches": "English and Chinese query texts, outcomes, and URLs are recorded in packet.",
+    "geometry": "Saved official viewer configuration identifies cadastral-zone/subzone maps; both cached exact-point responses are empty arrays. No parcel polygon or native ID is retained. Empty point responses do not establish citywide absence.",
+    "admission": "Held: no verified native ID plus full parcel polygon; fresh reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+  }
+}

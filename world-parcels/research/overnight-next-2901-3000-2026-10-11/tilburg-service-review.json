@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-2166-tilburg.json",
+  "cityCode": 2166,
+  "queueRank": 2939,
+  "city": "Tilburg",
+  "country": "Netherlands",
+  "countryCode": "NL",
+  "attempt": 1,
+  "reviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Dutch first-party discovery identified the official Kadaster BRK Kadastrale Kaart published via PDOK. The current OGC API collection and schema were inspected, and a bounded anonymous GeoJSON request returned three complete Tilburg parcel geometries with safe native identities.",
+  "routesAttempted": [
+    {"route": "Kadaster official cadastral-map product page", "request": "GET https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart", "outcome": "HTTP/web retrieval successful; official page states the BRK cadastral map contains boundaries, parcels and parcel numbers and is available via PDOK."},
+    {"route": "PDOK official web-services documentation", "request": "GET https://www.pdok.nl/ogc-webservices/-/article/kadastrale-kaart", "outcome": "HTTP/web retrieval successful; current v5 WFS/WMS links and national cadastral-map scope were documented."},
+    {"route": "PDOK OGC API landing", "request": "GET https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=json", "outcome": "HTTP 200 JSON; official service contract and collection links returned."},
+    {"route": "PDOK parcel collection metadata", "request": "GET https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=json", "outcome": "HTTP 200 JSON; native collection, supported CRS, national extent and storage CRS returned."},
+    {"route": "PDOK parcel schema", "request": "GET https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/schema?f=json", "outcome": "HTTP 200 JSON; schema returned native identity/locality/status/geometry fields. No unsafe fields were requested."},
+    {"route": "Bounded Tilburg parcel query", "request": "GET https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&limit=3&bbox=5.0585,51.5638,5.0592,51.5646", "outcome": "HTTP 200 GeoJSON; three valid Tilburg features returned with complete MultiPolygon geometries and native composite identities. Full unchanged response is in ignored tmp evidence; retained sample is sanitized."}
+  ],
+  "safeFieldAllowlist": ["canonical native parcel ID only", "full parcel polygon or multipolygon geometry only", "public source/service URL", "native schema field names and mapping in metadata only", "source CRS, query extent, response metadata, retrieval date"],
+  "nativeFieldMapping": {"canonicalIdentity": "identificatie_namespace + ':' + identificatie_lokaal_id", "returnedLocalityField": "kadastrale_gemeente_waarde", "returnedValidityField": "status_historie_code", "retainedProperties": "only id"},
+  "compositeKeyProvenance": "Namespace and local ID were both present in each native response feature; concatenation preserves the qualified Kadaster identity and does not use the response array index or any synthetic row number.",
+  "geometrySamples": ["tilburg-parcels-sample.geojson"],
+  "scopeLimits": [
+    "Exact WUP point [51.5641928767689, 5.05885424279539] was preserved in latitude/longitude order and was not shifted.",
+    "The bounded query is a local sample, not a citywide completeness claim; the response count is limited to three.",
+    "Kadaster describes the cadastral map as indicative; no exact legal boundary or measurement claim is made.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "No credentials, login, CAPTCHA/Cloudflare bypass, private token, or TLS verification exception was used.",
+    "Packet completion is research completion only; runtime readiness remains held pending independent serial review and no source integration/admission was performed."
+  ],
+  "qualification": {"verifiedSample": true, "parcelGeometryVerified": true, "runtimeReadiness": "held", "reason": "A bounded first-party OGC API response supplied three complete Tilburg MultiPolygon features and qualified native namespace/local IDs; independent serial review is still required before any adapter decision."},
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial review of the current PDOK/Kadaster OGC API contract; do not admit automatically."
+}

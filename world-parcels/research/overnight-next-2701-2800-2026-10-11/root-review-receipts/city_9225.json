@@ -1,0 +1,13 @@
+{
+  "taskId": "city:9225",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:54:47Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-9225-khamgaon.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/khamgaon-service-review.json"
+  ],
+  "review": "English and Marathi executed searches with official Maharashtra/Buldhana URLs are recorded in the packet and paired review. State/district service pages and a BhuNaksha viewer link do not prove a Khamgaon-local cadastral response; registryFound remains null. The viewer timed out, leaving no safe native ID, schema/CRS, polygon, or durable sample. No fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Hold; timeout is not citywide absence."
+}

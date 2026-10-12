@@ -1,0 +1,128 @@
+{
+  "cityCode": 1648,
+  "queueRank": 2935,
+  "name": "San Fernando del Valle de Catamarca",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "point": [-28.4648163034575, -65.7743953824605],
+  "population2025": 203169,
+  "population2025k": 203.169,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "San Fernando del Valle de Catamarca official cadastral map parcel cadastre",
+        "result": "Found the official Municipalidad de San Fernando del Valle de Catamarca Geoportal, its municipal cartographic viewer link, geoservices page, and the provincial Catamarca cadastre agency reference.",
+        "actualResultUrls": [
+          "https://www.catamarcaciudad.gob.ar/geoportal/",
+          "https://www.catamarcaciudad.gob.ar/geoservicios/",
+          "https://www.catamarcaciudad.gob.ar/consulta-planos-catastrales/",
+          "https://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Catamarca",
+          "https://dgcatastro.arcat.gob.ar/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Catamarca mapa catastral parcelas sitio oficial Dirección Provincial de Catastro visor parcelas",
+        "result": "Found the official municipal Geoportal and its public geoservices catalog. The municipal cadastral-plan download page states that access requires login; no credentials were used. The municipal GIS endpoint was identified from the official geoservices page but did not respond during bounded anonymous requests.",
+        "actualResultUrls": [
+          "https://www.catamarcaciudad.gob.ar/geoportal/",
+          "https://www.catamarcaciudad.gob.ar/geoservicios/",
+          "https://catastro.apps.cc.gob.ar/catastro/public/",
+          "https://dgcatastro.arcat.gob.ar/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "sourceReview": {
+    "localCustodian": {
+      "name": "Municipalidad de la Ciudad de San Fernando del Valle de Catamarca",
+      "evidenceUrl": "https://www.catamarcaciudad.gob.ar/geoportal/",
+      "scope": "Official municipal Geoportal identifies the IDE SFVC cartographic viewer, cadastral-plan service, and geoservices catalog. This is local municipal GIS/cadastre evidence, but the anonymous parcel geometry endpoint was not available during this attempt."
+    },
+    "provincialCustodian": {
+      "name": "Administración General de Catastro / Dirección General de Catastro de Catamarca (ARCAT)",
+      "evidenceUrl": "https://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Catamarca",
+      "scope": "First-party/government reference identifies the Catamarca provincial cadastral office and official site; no anonymous parcel geometry response was obtained from it."
+    },
+    "attempts": [
+      {
+        "request": "GET official municipal Geoportal landing page",
+        "url": "https://www.catamarcaciudad.gob.ar/geoportal/",
+        "outcome": "Success. Page returned and linked the IDE SFVC cartographic viewer, cadastral-plan downloads, and municipal geoservices."
+      },
+      {
+        "request": "GET official municipal geoservices catalog",
+        "url": "https://www.catamarcaciudad.gob.ar/geoservicios/",
+        "outcome": "Success. Page exposed a GeoServer WFS/WMS host at http://190.228.16.100, including the parcel WMS layer catamarca_parcelas:parcelario and a WFS link. The page's advertised CRS is EPSG:22183 for the parcel map examples."
+      },
+      {
+        "request": "GET municipal cartographic viewer URL from official Geoportal",
+        "url": "https://catastro.catamarcaciudad.gob.ar/gismunicipal/",
+        "outcome": "Redirected to https://catastro.apps.cc.gob.ar/gismunicipal/ and returned HTTP 404. Not treated as citywide absence."
+      },
+      {
+        "request": "GET municipal cadastral system",
+        "url": "https://catastro.apps.cc.gob.ar/catastro/public/",
+        "outcome": "HTTP 200 login page. The HTML contains a login form; no login, credentials, or private fields were attempted."
+      },
+      {
+        "request": "GET municipal cadastral-plan download page",
+        "url": "https://www.catamarcaciudad.gob.ar/consulta-planos-catastrales/",
+        "outcome": "HTTP 200 page states that access to cadastral plans requires login and embeds a document-management site. Excluded from anonymous retrieval."
+      },
+      {
+        "request": "GET municipal GeoServer WFS GetCapabilities",
+        "url": "http://190.228.16.100/geoserver/catamarca_parcelas/wfs?service=WFS&request=GetCapabilities",
+        "outcome": "Timeout after 30 seconds with no response. No TLS bypass was used."
+      },
+      {
+        "request": "GET municipal GeoServer WMS GetCapabilities",
+        "url": "http://190.228.16.100/geoserver/catamarca_parcelas/wms?service=WMS&request=GetCapabilities",
+        "outcome": "Timeout after 12 seconds with no response."
+      },
+      {
+        "request": "GET municipal GeoServer WFS over HTTPS and alternate port probes",
+        "url": "https://190.228.16.100/geoserver/catamarca_parcelas/wfs?service=WFS&request=GetCapabilities; http://190.228.16.100:8080/geoserver/catamarca_parcelas/wfs?service=WFS&request=GetCapabilities",
+        "outcome": "Timed out or returned no usable response within bounded limits. No schema, CRS confirmation from the service, IDs, or geometry were obtained."
+      },
+      {
+        "request": "GET official provincial Catamarca cadastre homepage",
+        "url": "https://dgcatastro.arcat.gob.ar/",
+        "outcome": "HTTP 200 official provincial site returned. No anonymous parcel geometry endpoint was identified in the landing-page response."
+      }
+    ],
+    "boundedProbe": {
+      "count": 0,
+      "exactPoint": [-28.4648163034575, -65.7743953824605],
+      "exactPointInterpretation": "Point retained unchanged. No exact-point parcel request was completed because the advertised municipal GeoServer endpoint timed out; this is not evidence of absence.",
+      "sampleFile": null
+    },
+    "safeFieldAllowlist": [
+      "stable native parcel identity if later returned by the public service",
+      "parcel geometry",
+      "source CRS",
+      "bounded response metadata"
+    ],
+    "excludedFields": [
+      "owner/titleholder",
+      "address/contact",
+      "tax/account or valuation fields",
+      "personal data",
+      "raw source-specific attribute sets"
+    ],
+    "identityMapping": "No parcel response was retained, so no native identity was claimed and no synthetic row number was used. If geometry becomes available, retained GeoJSON must contain only properties.id with the stable native identity; source field mapping belongs in this review."
+  },
+  "runtimeReadiness": "held",
+  "limitations": [
+    "The municipal geoservices page is first-party evidence of a local cadastral GIS service, but the advertised host was unavailable to bounded anonymous requests.",
+    "The municipal cadastral system and cadastral-plan download route present a login wall; no credentials or private access were used.",
+    "No parcel schema, native IDs, CRS response, or geometry was obtained; no sample GeoJSON is retained.",
+    "A timeout, 404, login wall, or exact-point miss is not interpreted as citywide absence.",
+    "Runtime/admission remains held pending independent serial reviewer qualification; this packet is not source integration/admission.",
+    "No owner, address, contact, titleholder, tax/account, CAPTCHA/Cloudflare, or unsafe fields were requested."
+  ]
+}

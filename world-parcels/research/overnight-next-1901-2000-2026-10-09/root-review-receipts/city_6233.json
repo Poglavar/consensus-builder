@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6233",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6233-quy-nh-n.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/quy-nh-n-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T19:08:30Z",
+  "reason": "Local registry custody is evidenced, but public parcel geometry and native identity remain unverified; direct official routes were unavailable or restricted.",
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification."
+}

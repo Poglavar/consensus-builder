@@ -1,0 +1,82 @@
+{
+  "cityCode": 1336,
+  "queueRank": 1399,
+  "name": "Point Cook",
+  "country": "Australia",
+  "countryCode": "AU",
+  "iso3": "AUS",
+  "point": [-37.8751576905159, 144.700997109625],
+  "population2025": 404501,
+  "population2025k": 404.501,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Victoria's official Land Use Victoria / Department of Transport and Planning sources evidence Vicmap Property as the statewide authoritative cadastral map base and LASSI as a public land-and-survey viewer. A Point Cook-specific anonymous parcel ID plus geometry response was not verified; registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Point Cook Victoria official cadastral parcel map GIS land registry parcel API",
+        "result": "Found official Victorian Vicmap Property documentation, the official Property and Parcel Search page, LASSI, Data.Vic parcel metadata, and the official Vicmap ArcGIS REST service. These establish statewide cadastral coverage and public service routes, but the bounded parcel query against the public MapServer was unsupported and returned no safe parcel response.",
+        "actualResultUrls": [
+          "https://www.land.vic.gov.au/maps-and-spatial/spatial-data/vicmap-catalogue/vicmap-property",
+          "https://www.land.vic.gov.au/property-and-parcel-search",
+          "https://lassi.land.vic.gov.au/",
+          "https://discover.data.vic.gov.au/en_AU/dataset/vicmap-property-parcel-table",
+          "https://vicmap.land.vic.gov.au/agsgis/rest/services/vicmap/Vicmap_Parcel/MapServer"
+        ]
+      },
+      {
+        "language": "English (local/national usage)",
+        "query": "Point Cook Victoria cadastral parcels map official land registry Vicmap Property",
+        "result": "The official Victorian sources describe Vicmap Property as the statewide cadastral map base, with parcel/property polygons and identifiers, and LASSI as a public viewer for Crown and freehold parcels. No separate Point Cook local-council cadastral custodian or successful anonymous parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://www.land.vic.gov.au/maps-and-spatial/spatial-data/vicmap-catalogue/vicmap-property",
+          "https://www.land.vic.gov.au/surveying/services/about-lassi",
+          "https://www.land.vic.gov.au/surveying/digital-cadastre/10-year-strategy",
+          "https://vicmap.land.vic.gov.au/agsgis/rest/services/vicmap/Vicmap_Parcel/MapServer/0"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.land.vic.gov.au/maps-and-spatial/spatial-data/vicmap-catalogue/vicmap-property",
+      "role": "Victorian Government Vicmap Property catalogue",
+      "observation": "Identifies Vicmap Property as Victoria's cadastral map base, with parcel/property polygon views, Standard Parcel Identifiers, UFIs, and statewide coverage maintained from authoritative government sources."
+    },
+    {
+      "url": "https://vicmap.land.vic.gov.au/agsgis/rest/services/vicmap/Vicmap_Parcel/MapServer/0",
+      "role": "Official public Vicmap Parcel MapServer layer",
+      "observation": "Metadata identifies a polygon layer in source spatial reference EPSG:7844 (GDA2020), with native fields parcel_ufi, parcel_pfi and parcel_spi among other parcel attributes. The service advertises map capabilities rather than a supported feature query capability."
+    },
+    {
+      "url": "https://www.land.vic.gov.au/surveying/services/about-lassi",
+      "role": "Official LASSI public land and survey viewer",
+      "observation": "States that LASSI provides public access to Crown and freehold parcels, property reports and related land/survey information; no login was attempted."
+    },
+    {
+      "url": "https://discover.data.vic.gov.au/en_AU/dataset/vicmap-property-parcel-table",
+      "role": "Official Data.Vic Vicmap Property parcel metadata",
+      "observation": "Describes the statewide parcel table, parcel identifiers, registered/proposed status, Crown/freehold distinction, LGA code and UFIs; no raw attribute set was retained."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "The exact WUP point was preserved and queried in the official Vicmap Parcel MapServer using a point geometry in EPSG:4326 with an intersect spatial relation. The service returned HTTP 400 with 'Requested operation is not supported by this service' and no ID or geometry. No exact-point hit or citywide absence is inferred."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official statewide Victorian Vicmap Property documentation, Data.Vic metadata, LASSI viewer documentation, and the public Vicmap Parcel REST MapServer.",
+    "verifiedOpenScope": "Statewide cadastral product existence, public viewer/service routes, parcel schema and source CRS were verified; Point Cook parcel response, exact containment, native ID value and citywide downloadable geometry remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

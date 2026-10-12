@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11298",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11298-gaoyou.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/gaoyou-service-review.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T11:48:56Z",
+  "reason": "Official registration procedure and login-gated handling establish local custody, but original HTML and the paired packets provide no native-ID parcel geometry. Fresh reads, pagination, 13-cell metric geometry checks, source binding, and headed Details verification are unevidenced.",
+  "runtimeAdmission": false
+}

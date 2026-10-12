@@ -1,0 +1,116 @@
+{
+  "cityCode": 3229,
+  "queueRank": 3167,
+  "name": "Ago-Iwoye",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [6.94549138001476, 3.9237345233283],
+  "population2025": 189841,
+  "population2025k": 189.841,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ago-Iwoye cadastral map parcel land registry official Ogun Nigeria",
+        "result": "First-party discovery identified Ogun State's official Ogun State Land Administration and Revenue Management System (OLARMS), its official OLARMS-GIS/GeoSense Pro map landing page, and the federal Office of the Surveyor-General of the Federation. OLARMS describes land registration, land search, property registration, and digital land administration; OLARMS-GIS advertises dynamic Ogun parcel layers and digitized cadastral maps. No anonymous parcel feature response or downloadable safe parcel layer was exposed.",
+        "actualResultUrls": [
+          "https://olarmsold.ogunstate.gov.ng/",
+          "https://geosensepro.tinovo.ng/welcome/index",
+          "https://geosensepro.tinovo.ng/welcome/web_map_landing",
+          "https://osgof.gov.ng/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Ago-Iwoye ilẹ cadastral map parcel registry Ogun Nigeria osise",
+        "result": "Yoruba-oriented discovery did not return a separate first-party Yoruba parcel viewer or downloadable parcel dataset. The relevant first-party result remained Ogun State's English-language OLARMS/OLARMS-GIS land-administration service; no safe native parcel identity or geometry was obtained.",
+        "actualResultUrls": [
+          "https://olarmsold.ogunstate.gov.ng/",
+          "https://geosensepro.tinovo.ng/welcome/index"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Ogun State Land Administration and Revenue Management System (OLARMS), with the Ogun State Bureau of Lands and Survey / land-administration authorities",
+    "scope": "Ogun State land administration, property registration, land search, land allocation and related land records; OLARMS-GIS advertises Ogun State parcel and cadastral mapping. The public material does not independently prove parcel coverage specifically at the Ago-Iwoye WUP point.",
+    "evidenceUrls": [
+      "https://olarmsold.ogunstate.gov.ng/",
+      "https://geosensepro.tinovo.ng/welcome/index",
+      "https://geosensepro.tinovo.ng/welcome/web_map_landing",
+      "https://osgof.gov.ng/cadastral-legal-surveys/"
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "route": "GET https://olarmsold.ogunstate.gov.ng/",
+      "outcome": "HTTP 200 official OLARMS landing page. It describes Ogun State land registration, property registration, land search, allocation, and related services, but exposes no parcel schema, CRS, native parcel ID, or public geometry response."
+    },
+    {
+      "route": "GET https://geosensepro.tinovo.ng/welcome/index",
+      "outcome": "HTTP 200 official OLARMS-GIS/GeoSense Pro informational page. It advertises dynamic layered Ogun maps including land parcels and digitized cadastral maps, and links to the GIS map and login; no public feature service URL or schema was exposed in the page."
+    },
+    {
+      "route": "GET https://geosensepro.tinovo.ng/welcome/web_map_landing",
+      "outcome": "HTTP 200 public map landing page. The current JavaScript/configuration initializes Leaflet with an OpenStreetMap basemap, Ogun bounds [6.201,2.602]-[7.990,4.702], and no parcel overlays; it then warns that full experience requires login and redirects to /gis/web_map. No parcel layer, CRS, ID field, or geometry endpoint was present."
+    },
+    {
+      "route": "GET https://geosensepro.tinovo.ng/gis/web_map",
+      "outcome": "HTTP 200 response body 'Please log in first.' Authentication wall; no login, credentials, token, CAPTCHA bypass, or private route was attempted."
+    },
+    {
+      "route": "GET https://olarmsold.ogunstate.gov.ng/.env?=1.3",
+      "outcome": "HTTP 200 public frontend configuration. It exposes the public API base https://olarmsapi.ogunstate.gov.ng/api/v1/ and token-based authorization function, but no parcel endpoint or anonymous parcel data. No token was created or used."
+    },
+    {
+      "route": "GET https://olarmsapi.ogunstate.gov.ng/api/v1/",
+      "outcome": "HTTP 404 Not Found at the API root; this is not evidence of absent Ogun parcels or absent service coverage."
+    },
+    {
+      "route": "GET https://olarmsapi.ogunstate.gov.ng/api/v1/auth/customer",
+      "outcome": "HTTP 405 Method Not Allowed for an unauthenticated GET; no authenticated request or unsafe record lookup was attempted."
+    },
+    {
+      "route": "GET https://osgof.gov.ng/ and GET https://osgof.gov.ng/cadastral-legal-surveys/",
+      "outcome": "HTTP 200 federal informational pages describing national cadastral/legal survey responsibilities and map/coordinate/cadastral survey requests. General federal agency prose, not city/local public parcel-service evidence for Ago-Iwoye."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "source/requested CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "The exact WUP point [6.94549138001476, 3.9237345233283] was preserved in latitude/longitude order and was not shifted.",
+    "The public GIS login wall and absent anonymous feature response are not evidence of citywide parcel absence.",
+    "OLARMS/OLARMS-GIS establishes an Ogun State land-administration custodian and advertised parcel/cadastral capabilities, not verified open parcel coverage at Ago-Iwoye.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "No sample GeoJSON is retained because no safe native parcel identity and unchanged full polygon were observed.",
+    "Packet completion records research attempts only; it is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The current public OLARMS parcel schema, native identity semantics, geometry endpoint, CRS, and anonymous coverage remain unverified behind the GIS authentication wall.",
+    "The public OLARMS frontend API base was observed, but no documented anonymous parcel route was exposed and the API root was 404.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "A first-party Ogun State land-administration custodian and OLARMS-GIS cadastral-map claims were verified, but no anonymous safe parcel ID-plus-geometry response was available during this attempt."
+  }
+}

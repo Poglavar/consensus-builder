@@ -1,0 +1,39 @@
+{
+  "taskId": "city:2672",
+  "decision": "held",
+  "checkedAt": "2026-10-11T16:34:37.179460Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-2672-khouribga.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/khouribga-service-review.json"
+  ],
+  "identityCheck": {
+    "queueRank": 2631,
+    "cityCode": 2672,
+    "name": "Khouribga",
+    "country": "Morocco",
+    "pointLatLon": [
+      32.8845887529241,
+      -6.91797039175435
+    ],
+    "populationPersons": 224402,
+    "originalWup2025RowMatched": true
+  },
+  "searchCheck": "English and local-language searches are recorded as executed in the paired packet/review; the packet lists actual result URLs for both.",
+  "custodyDecision": "true: official local or state cadastral custodian evidenced; public geometry availability remains unresolved.",
+  "firstPartySourcesRechecked": [
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage"
+  ],
+  "geometryCheck": "No retained full polygon or native parcel ID; zero sample files for this city in the cohort. No citywide absence inferred.",
+  "adapterQualification": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "integrationDecision": "held_not_enabled",
+  "reason": "ANCFCC lists Khouribga conservation and cadastre offices. The plan route currently exposes a personal-information and title-based request form, not an anonymous parcel feature response. Earlier maintenance HTML is an access observation, not absence."
+}

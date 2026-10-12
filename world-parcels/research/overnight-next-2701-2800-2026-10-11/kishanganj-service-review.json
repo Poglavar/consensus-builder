@@ -1,0 +1,23 @@
+{
+  "cityRecord": "city-11547-kishanganj.json",
+  "cityCode": 11547,
+  "queueRank": 2763,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-11",
+  "registryFound": true,
+  "candidateServices": [
+    {"name": "Bhu-Naksha Bihar", "custodian": "Directorate of Land Records & Survey, Government of Bihar / NIC", "url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "role": "Official Bihar cadastral viewer with a Kishanganj selector path; local coverage evidence, not a qualified runtime adapter.", "officialEvidence": "https://bhunaksha.bihar.gov.in/10/index.jsp", "nativeFieldMapping": "Client references gisCode, xmin, ymin, xmax, ymax, id, plotNo, center_x, center_y and plotInfoLinks; no parcel response was retained.", "safeFieldAllowlist": ["stable native plot or parcel identity", "parcel polygon geometry", "source CRS", "survey/map context", "non-personal source metadata"], "excludedFields": ["owner names", "addresses", "contact details", "titleholder information", "tax/account data", "personal identifiers", "unsafe record-of-rights fields"]},
+    {"name": "Kishanganj district Land Records page", "custodian": "District Administration Kishanganj / Government of Bihar", "url": "https://kishanganj.nic.in/service/revenue-department/", "role": "Local custodian page directing users to Bihar land records; procedural evidence only."},
+    {"name": "DILRMP Map Digitization, Geo-Referenced and ULPIN Status", "custodian": "Department of Land Resources, Government of India", "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/210", "role": "National Kishanganj district status page; general evidence only, not a parcel endpoint."}
+  ],
+  "attempts": [
+    {"route": "Official English discovery", "request": "Kishanganj Bihar cadastral map land records official parcel map", "outcome": "Found official local, Bihar Bhu-Naksha, BiharBhumi, and DILRMP pages; no geometry returned by search."},
+    {"route": "Official Hindi discovery", "request": "किशनगंज बिहार भू नक्शा आधिकारिक", "outcome": "Found Hindi Kishanganj land-records and official Bhu-Naksha pages; no safe geometry returned."},
+    {"route": "Viewer HTML and JavaScript/config inspection", "request": "GET /10/index.jsp; POST state=10 to /10/indexmain.jsp; GET /10/config.js and /10/index.js", "outcome": "Current client uses OpenLayers and public routes /rest/Levels/count, /rest/Levels/ListsAfterLevel, /rest/MapInfo/getVVVVExtentGeoref, /rest/MapInfo/getPlotAtXY, ScalarDatahandler, and WMS; it sends an srs parameter and expects server GIS extents."},
+    {"route": "Anonymous schema and location selector probe", "request": "POST state=10 to /rest/Levels/count and /rest/Levels/ListsAfterLevel", "outcome": "Returned level count 7 and JSON hierarchy. District 08 is KISHANGANJ; deeper responses returned subdivision Kishanganj 01 and circle Kishanganj 01. No parcel ID or geometry included."},
+    {"route": "Anonymous Kishanganj extent probe", "request": "POST state=10, gisLevels=08,01,01,0027,, srs=0 to /rest/MapInfo/getVVVVExtentGeoref; bounded additional returned-village probes", "outcome": "HTTP 204 with empty body; no gisCode, CRS, extent, ID, or geometry. Unusable response, not evidence of absence."}
+  ],
+  "schemaAndCrs": {"schema": "Seven-level location hierarchy; client parcel field names observed but no parcel response schema obtained.", "crs": "Not obtained; client sends srs=0 but no extent response returned.", "nativeIdentity": "Not obtained; client references id and plotNo but no stable/native identity established.", "geometry": "No parcel geometry retained; no GeoJSON sample created."},
+  "scopeLimits": ["Service and selector establish a Kishanganj coverage path, not citywide parcel availability.", "HTTP 204/empty extent and no exact-point response do not establish absence.", "WUP point [26.1017166605851,87.9478702107069] was preserved and not shifted.", "No raw source attributes or unsafe owner/address/titleholder/tax/account/personal fields were retained or requested."],
+  "qualification": {"adapterCandidate": false, "runtimeReadiness": "held", "reason": "Serial reviewer must independently qualify a reproducible public parcel ID plus full geometry response before admission."}
+}

@@ -1,0 +1,60 @@
+{
+  "cityCode": 4868,
+  "queueRank": 3108,
+  "country": "Germany",
+  "countryCode": "DE",
+  "point": [52.2670413807688, 10.5205000350202],
+  "population2025": 193277,
+  "population2025k": 193.277,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registry": {
+    "name": "Katasteramt Braunschweig, Landesamt für Geoinformation und Landesvermessung Niedersachsen (LGLN)",
+    "scope": "Responsible for the independent city of Braunschweig; official page reports 80,762 parcels as of 2026-07.",
+    "url": "https://www.lgln.niedersachsen.de/startseite/wir_uber_uns_amp_organisation/rd_braunschweig_wolfsburg/katasteramt_braunschweig/informationen-zum-katasteramt-braunschweig-51190.html"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Brunswick Germany official cadastral map parcels Geoportal Liegenschaftskarte Braunschweig",
+        "result": "Found first-party City of Braunschweig FRISBI Geoportal and LGLN official ALKIS/Liegenschaftskarte pages.",
+        "actualResultUrls": [
+          "https://www.braunschweig.de/leben/stadtplanung_bauen/geoinformationen/Geoportal.php",
+          "https://lgln-geodaten.niedersachsen.de/startseite/verwaltungen_und_fachkundige/alkis_atkis_afis/alkis/amtliches-liegenschaftskataster-informationssystem-alkis-232331.html"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Braunschweig amtliche Liegenschaftskarte Flurstücke Geoportal Niedersachsen",
+        "result": "Found the City of Braunschweig Geoportal FRISBI, LGLN Katasteramt Braunschweig custodian page, and LGLN OpenGeoData ALKIS download/service route.",
+        "actualResultUrls": [
+          "https://geoportal.braunschweig.de/WebOfficeNet/",
+          "https://www.lgln.niedersachsen.de/startseite/wir_uber_uns_amp_organisation/rd_braunschweig_wolfsburg/katasteramt_braunschweig/informationen-zum-katasteramt-braunschweig-51190.html",
+          "https://ni-lgln-opengeodata.hub.arcgis.com/pages/opengeodata"
+        ]
+      }
+    ]
+  },
+  "service": {
+    "name": "LGLN OpenGeoData ALKIS vector polygons",
+    "serviceUrl": "https://services-eu1.arcgis.com/4v3xxN52w88W065F/arcgis/rest/services/lgln_opengeodata_alkis_vektor/FeatureServer",
+    "layerUrl": "https://services-eu1.arcgis.com/4v3xxN52w88W065F/arcgis/rest/services/lgln_opengeodata_alkis_vektor/FeatureServer/0",
+    "downloadUrl": "https://alkis-vektor-daten.s3.eu-de.cloud-object-storage.appdomain.cloud/lkr_03101_Stadt_Braunschweig_kon.gpkg.zip",
+    "sourceCustodian": "LGLN; city-specific official dataset for Stadt Braunschweig",
+    "nativeLayer": "flurstuecke",
+    "nativeIdentityField": "objid",
+    "nativeFieldMapping": {"objid": "stable ALKIS object identifier", "fsk": "Flurstückskennzeichen", "gem__bez": "municipality label", "gmk__bez": "cadastral district label", "fln": "cadastral map section", "fsn__zae": "parcel numerator", "fsn__nen": "parcel denominator", "afl": "official area in square metres"},
+    "crs": "EPSG:25832 (ETRS89 / UTM zone 32N)",
+    "geometryType": "MultiPolygon",
+    "safeFieldAllowlist": ["objid", "fsk", "gem__bez", "gmk__bez", "fln", "fsn__zae", "fsn__nen", "afl", "geometry"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax", "account", "Grundbuch"],
+    "sampleFile": "brunswick-parcel-sample.geojson",
+    "sampleCount": 3,
+    "sampleIdentityProvenance": "GeoJSON properties.id is copied from native flurstuecke.objid; no synthetic row number used.",
+    "exactPointCheck": {"method": "bounded local GeoPackage spatial intersection at transformed point 603757.86,5791828.94 EPSG:25832", "hit": true, "nativeIdentity": "DENIAL0100005tSC", "nativeParcelLabel": "Innenstadt, Flur 15, 189/1", "sourceGeometryRetained": false}
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": ["The public FRISBI WebOffice client returned a JavaScript initialization failure in the non-browser fetch; this did not determine cadastral absence because the independent LGLN service was available.", "The retained sample is a bounded evidence sample, not a citywide export or runtime integration admission."]
+}

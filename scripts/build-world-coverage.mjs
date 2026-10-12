@@ -43,13 +43,20 @@
 // A region's tier follows its coverage (source/none/unknown). No region is `live`: a configured
 // city covers its own radius, and `live` means parcels open anywhere in the area (Croatia).
 //
+// Per-city parcel checks (world-parcels/research/qualification-outcomes/*.json, written by
+// scripts/export-qualification-outcomes.py) temper a reviewed `full` country or region once a
+// check failed in one of its cities:
+//   mostly   the cities that work there (live app cities plus qualified ones) outnumber the failures
+//   partial  otherwise
+// Unchecked cities (throttled, pending, awaiting a re-run) never count either way.
+//
 // Output is deterministic (sorted, rounded, no wall-clock timestamp) so a rebuild with unchanged
 // inputs is a byte-identical no-op. Outlines are Douglas-Peucker simplified and rounded to 0.01°,
 // which is still sub-pixel on a 4096×2048 equirectangular texture (0.088°/px).
 //
 // Usage: node scripts/build-world-coverage.mjs --run [--tolerance 0.06] [--region-tolerance 0.1] [--out path]
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -60,6 +67,7 @@ const DEFAULTS = {
     countries: path.join(REPO, 'world-parcels/countries.geojson'),
     regions: path.join(REPO, 'world-parcels/regions.geojson'),
     regionReviews: path.join(REPO, 'world-parcels/region-coverage-reviews.json'),
+    qualificationOutcomes: path.join(REPO, 'world-parcels/research/qualification-outcomes'),
     catalog: path.join(REPO, 'backend/parcels/source-catalog.json'),
     demographics: path.join(REPO, 'world-parcels/report/city-demographics.json'),
     cityConfig: path.join(REPO, 'frontend/js/city-config.js'),
@@ -138,6 +146,38 @@ export function regionCoverageLevel({ buckets = [], hasProvider = false, hasVeri
     const tier = strongest(...buckets.map(regionBucketTier), hasProvider ? 'source' : 'unknown', hasVerifiedCity ? 'source' : 'unknown');
     return tier === 'source' ? 'partial' : tier;
 }
+
+// One outcome per city across every export file: the latest finished check wins.
+export function latestOutcomes(files) {
+    const byCity = new Map();
+    for (const file of files) for (const city of file.cities) {
+        const previous = byCity.get(city.cityCode);
+        if (!previous || (city.finishedAt || '') >= (previous.finishedAt || '')) byCity.set(city.cityCode, city);
+    }
+    return [...byCity.values()];
+}
+
+// Checked cities of one place: live app cities and qualified ones work, held ones failed. A live
+// city counts as working even if a check of another source failed there.
+export function cityChecks(liveCities, outcomes, liveWupCodes = new Set()) {
+    const works = liveCities.map(city => city.name);
+    const failed = [];
+    for (const city of outcomes) {
+        if (liveWupCodes.has(city.cityCode)) continue;
+        if (city.outcome === 'qualified') works.push(city.cityName);
+        else if (city.outcome === 'held') failed.push(city.cityName);
+    }
+    return { works, failed: [...new Set(failed)].sort() };
+}
+
+// A reviewed `full` place keeps full until a check fails in one of its cities.
+export function temperFull(coverage, { works = [], failed = [] }) {
+    if (coverage !== 'full' || !failed.length) return coverage;
+    return works.length > failed.length ? 'mostly' : 'partial';
+}
+
+const checksNote = ({ works, failed }) =>
+    `Parcel checks failed in ${listNames(failed)}; ${works.length} of ${works.length + failed.length} checked cities work.`;
 
 // Registry subnational codes that are not the `<cc>-<code>` ISO 3166-2 code of their outline.
 export const REGION_CODE_ALIASES = {
@@ -318,7 +358,8 @@ function regionNote(region, coverage) {
 
 // One record per outline in world-parcels/regions.geojson: { id, cc, name, tier, coverage, note,
 // coverageSources?, center, rings }. See the header for how coverage is derived.
-export function buildRegions({ outlines, registry, catalog = [], reviews = [], tolerance = DEFAULTS.regionTolerance }) {
+export function buildRegions({ outlines, registry, catalog = [], reviews = [], tolerance = DEFAULTS.regionTolerance,
+    liveCities = [], outcomes = [], liveWupCodes = new Set() }) {
     const regions = outlines.features.map(feature => {
         const p = feature.properties;
         if (!/^[A-Z]{2}-[A-Z0-9]{1,3}$/.test(p.id || '') || p.id.slice(0, 2) !== p.cc) throw new Error(`region outline with a malformed id: ${p.id}`);
@@ -371,6 +412,11 @@ export function buildRegions({ outlines, registry, catalog = [], reviews = [], t
             && lat >= r.bbox[1] && lat <= r.bbox[3] && pointInRings(lat, lon, r.fine));
         if (region) region.cities.push(city);
     }
+    const regionAt = (cc, lat, lon) => regions.find(r => r.cc === cc && lon >= r.bbox[0] && lon <= r.bbox[2]
+        && lat >= r.bbox[1] && lat <= r.bbox[3] && pointInRings(lat, lon, r.fine));
+    for (const region of regions) { region.live = []; region.outcomes = []; }
+    for (const city of liveCities) regionAt(city.cc, city.lat, city.lon)?.live.push(city);
+    for (const city of outcomes) regionAt(city.countryCode, city.point[0], city.point[1])?.outcomes.push(city);
 
     const byId = new Map(regions.map(region => [region.id, region]));
     const reviewById = new Map();
@@ -391,15 +437,18 @@ export function buildRegions({ outlines, registry, catalog = [], reviews = [], t
         // A review may cite a verified source of the region's country or an executable provider
         // whose jurisdiction names the region; its scope evidence carries the regional claim.
         const verifiedSourceIds = [...(verifiedByCountry.get(region.cc) || []), ...region.providers.map(source => source.id)];
-        const coverage = regionCoverageLevel({
+        const derived = regionCoverageLevel({
             buckets: region.buckets.map(row => row.bucket), hasProvider: region.providers.length > 0,
             hasVerifiedCity: region.cities.length > 0, review, verifiedSourceIds
         });
-        const reviewed = review && review.coverage === coverage && review.evidence?.length;
+        const checks = cityChecks(region.live, region.outcomes, liveWupCodes);
+        const coverage = temperFull(derived, checks);
+        const reviewed = review && review.coverage === derived && review.evidence?.length;
+        const note = reviewed ? review.note : regionNote(region, coverage);
         return {
             id: region.id, cc: region.cc, name: region.name,
-            tier: coverage === 'full' || coverage === 'partial' ? 'source' : coverage, coverage,
-            note: reviewed ? review.note : regionNote(region, coverage),
+            tier: ['full', 'mostly', 'partial'].includes(coverage) ? 'source' : coverage, coverage,
+            note: coverage === derived ? note : `${note} ${checksNote(checks)}`,
             ...(reviewed ? { coverageSources: review.evidence.map(({ title, url }) => ({ title, url })) } : {}),
             center: region.center, rings: region.rings
         };
@@ -439,7 +488,7 @@ function demographicSourceMetadata(demographics) {
 }
 
 export function buildCoverage({ registry, countries, cityConfigSource, countryReviews = [], demographics = null, tolerance = DEFAULTS.tolerance,
-    regions = null, regionReviews = [], catalog = [], regionTolerance = DEFAULTS.regionTolerance }) {
+    regions = null, regionReviews = [], catalog = [], regionTolerance = DEFAULTS.regionTolerance, outcomes = [] }) {
     const sourcesById = new Map(registry.sources.map(s => [s.sourceId, s]));
     const probes = new Map(registry.countryProbes.map(p => [p.countryCode, p]));
     const coverage = new Map(registry.countryCoverage.map(c => [c.countryCode, c]));
@@ -527,7 +576,9 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
         }
     }
 
-    const liveCities = parseCityConfigs(cityConfigSource).map(city => {
+    const cityConfigs = parseCityConfigs(cityConfigSource);
+    const liveWupCodes = new Set(cityConfigs.map(city => city.wupCityCode).filter(Number.isSafeInteger));
+    const liveCities = cityConfigs.map(city => {
         const country = [...byCode.values()].find(e => e.rings.length && pointInRings(city.lat, city.lon, e.rings));
         const source = sourcesById.get(city.sourceId);
         // One publisher can serve city records in different jurisdictions. Use an explicit,
@@ -543,6 +594,12 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
             ...(city.radiusKm ? { radiusKm: city.radiusKm } : {}) };
     }).sort((a, b) => a.id.localeCompare(b.id));
 
+    for (const entry of byCode.values()) {
+        const checks = cityChecks(liveCities.filter(city => city.cc === entry.cc), outcomes.filter(city => city.countryCode === entry.cc), liveWupCodes);
+        const coverage = temperFull(entry.coverage, checks);
+        if (coverage !== entry.coverage) { entry.coverage = coverage; entry.note = `${entry.note} ${checksNote(checks)}`.trim(); }
+    }
+
     const countryList = [...byCode.values()]
         .filter(e => e.center || e.rings.length)
         .sort((a, b) => a.cc.localeCompare(b.cc))
@@ -555,12 +612,13 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
         registryUpdatedAt: registry.updatedAt,
         ...(populationSource ? { populationSource } : {}),
         tiers: ['live', 'source', 'none', 'unknown'],
-        coverageLevels: ['full', 'partial', 'none', 'unknown'],
+        coverageLevels: ['full', 'mostly', 'partial', 'none', 'unknown'],
         liveCities,
         cities,
         territories: territories.sort((a, b) => a.id.localeCompare(b.id)),
         countries: countryList,
-        regions: regions ? buildRegions({ outlines: regions, registry, catalog, reviews: regionReviews, tolerance: regionTolerance }) : []
+        regions: regions ? buildRegions({ outlines: regions, registry, catalog, reviews: regionReviews, tolerance: regionTolerance,
+            liveCities, outcomes, liveWupCodes }) : []
     };
 }
 
@@ -570,7 +628,7 @@ function usage() {
 Builds frontend/data/world-coverage.json from world-parcels/registry.json,
 world-parcels/country-coverage-reviews.json, world-parcels/countries.geojson,
 world-parcels/regions.geojson, world-parcels/region-coverage-reviews.json,
-backend/parcels/source-catalog.json, world-parcels/report/city-demographics.json
+world-parcels/research/qualification-outcomes/*.json, backend/parcels/source-catalog.json, world-parcels/report/city-demographics.json
 and frontend/js/city-config.js.
 
 Options:
@@ -582,6 +640,12 @@ Options:
   --demographics <path> demographics input (default world-parcels/report/city-demographics.json)
   --out <path>        output file (default frontend/data/world-coverage.json)
   --help              show this help`);
+}
+
+export function readOutcomes(dir) {
+    const files = readdirSync(dir).filter(name => name.endsWith('.json')).sort()
+        .map(name => JSON.parse(readFileSync(path.join(dir, name), 'utf8')));
+    return latestOutcomes(files);
 }
 
 function main(argv) {
@@ -603,6 +667,7 @@ function main(argv) {
         catalog: JSON.parse(readFileSync(DEFAULTS.catalog, 'utf8')).sources,
         cityConfigSource: readFileSync(DEFAULTS.cityConfig, 'utf8'),
         demographics: JSON.parse(readFileSync(demographicsPath, 'utf8')),
+        outcomes: readOutcomes(DEFAULTS.qualificationOutcomes),
         tolerance, regionTolerance
     });
     const json = JSON.stringify(result);
@@ -616,6 +681,7 @@ function main(argv) {
     const regionPoints = result.regions.reduce((n, r) => n + r.rings.reduce((k, ring) => k + ring.length / 2, 0), 0);
     console.log(`[${ts()}] regions by coverage: ${JSON.stringify(count(result.regions, 'coverage'))}; outline points: ${regionPoints}`);
     console.log(`[${ts()}] full regions: ${result.regions.filter(r => r.coverage === 'full').map(r => r.id).join(', ') || 'none'}`);
+    console.log(`[${ts()}] mostly regions: ${result.regions.filter(r => r.coverage === 'mostly').map(r => r.id).join(', ') || 'none'}`);
     console.log(`[${ts()}] registry cities by tier: ${JSON.stringify(count(result.cities, 'tier'))}`);
     console.log(`[${ts()}] wrote ${path.relative(REPO, out)} (${(json.length / 1024).toFixed(1)} KB)`);
 }

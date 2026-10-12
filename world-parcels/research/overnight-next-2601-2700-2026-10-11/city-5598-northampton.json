@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 5598,
+  "wupCityCode": 5598,
+  "queueRank": 2650,
+  "cityId": "wup2025:5598",
+  "name": "Northampton",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso2": "GB",
+  "iso3": "GBR",
+  "locId": 826,
+  "capital": false,
+  "point": [52.2468769329282, -0.884093403196014],
+  "centerLatLon": [52.2468769329282, -0.884093403196014],
+  "population2025": 222991,
+  "population2025k": 222.991,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "HM Land Registry, official INSPIRE Index Polygons WMS / Use land and property data service",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Northampton England official cadastral parcel map GIS API land parcels",
+        "result": "Found HM Land Registry's first-party INSPIRE Index Polygons dataset and official WMS. The service documents CP.CadastralParcel coverage for England and Wales; the National Polygon Service is a separate licensed product requiring an account/licence.",
+        "actualResultUrls": [
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire",
+          "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Northampton England official cadastral parcel map GIS API land parcels (English is the UK's local administrative language)",
+        "result": "No distinct translated UK cadastral terminology is used for this jurisdiction; the same first-party HM Land Registry INSPIRE and National Polygon Service sources were found and checked.",
+        "actualResultUrls": [
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+          "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "operator": "HM Land Registry",
+      "scope": "England and Wales; national cadastral/registered-property index polygons",
+      "observation": "Official guidance describes open INSPIRE polygons as indicative shapes/positions of freehold registered property, with a unique Land Registry-INSPIRE ID, updated monthly and published as GML."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "operator": "HM Land Registry",
+      "scope": "Separate local-authority files for England and Wales",
+      "observation": "Official dataset page states that files are divided by local authority and that polygon extent is indicative, not a definitive title boundary."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities",
+      "operator": "HM Land Registry",
+      "scope": "England and Wales WMS",
+      "observation": "Anonymous WMS capabilities returned CP.CadastralParcel with CRS EPSG:27700 and CRS:84 and the national geographic extent including Northampton."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official WMS capabilities returned; CP.CadastralParcel layer present, national extent includes Northampton, and CRS:84/EPSG:27700 are advertised."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "status": "HTTP 200 service exception",
+      "summary": "Response explicitly said Service WFS is disabled; no feature geometry or native ID was retained."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=inspire%3ACP.CadastralParcel&query_layers=inspire%3ACP.CadastralParcel&crs=CRS%3A84&bbox=-0.8850934%2C52.2458769%2C-0.8830934%2C52.2478769&width=256&height=256&i=128&j=128&info_format=application%2Fjson&feature_count=3",
+      "method": "GET",
+      "status": "HTTP 200 service exception",
+      "summary": "Official WMS replied LayerNotQueryable; no bounded ID/geometry response was available. The request envelope surrounded the exact preserved WUP point and was not used to infer absence."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/nps",
+      "method": "GET",
+      "status": "HTTP 200 via official page",
+      "summary": "National Polygon Service documentation confirms full freehold/leasehold polygon data exists but is chargeable/licensed and requires account access; no account or credentials were used."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry national service covering England and Wales; Northampton lies within the advertised extent.",
+    "verifiedOpenScope": "Official metadata and WMS capabilities verified anonymously; no parcel feature response verified for the Northampton point or local envelope.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "First-party national cadastral/registered-property custodian and public INSPIRE service evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No feature geometry obtained anonymously.",
+    "crs": "Official WMS advertises CRS:84 and EPSG:27700; no geometry was retained or transformed.",
+    "identityReadiness": "INSPIRE ID is documented by HM Land Registry as the unique polygon identity, but no feature-level ID was returned in the bounded anonymous requests.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No owner, address, contact, titleholder, personal, tax, account, or document fields were requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify the adapter, national-vs-city coverage semantics, indicative-boundary limitations, access/licensing, and safe field behavior before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [52.2468769329282,-0.884093403196014] was preserved in latitude/longitude order and was not shifted.",
+    "WMS national extent and an exact-point/non-queryable response do not establish citywide parcel availability or absence.",
+    "The open INSPIRE product covers indicative freehold registered-property polygons; the full National Polygon Service is a separate licensed product.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used.",
+    "Packet completion is research evidence only and is not source integration/admission."
+  ],
+  "identityPolicy": "No GeoJSON sample was retained because the public WMS did not provide a queryable feature response and WFS was disabled. If later obtained through an authorized public download, retain only the stable native INSPIRE ID as properties.id and record native field mapping here."
+}

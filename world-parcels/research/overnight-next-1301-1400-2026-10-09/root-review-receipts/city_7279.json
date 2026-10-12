@@ -1,0 +1,22 @@
+{
+  "taskId": "city:7279",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7279-uvira.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/uvira-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:57:04.533943Z",
+  "reason": "National DRC cadastral administration is evidenced, but no Uvira-specific local custodian or anonymous safe native-ID/full-polygon response is evidenced. Registry custody remains null; no citywide absence is inferred. No adapter qualification gates or headed Details check are evidenced.",
+  "firstPartyPagesChecked": [
+    "https://www.affairesfoncieres.gouv.cd/"
+  ],
+  "admissionGates": "No verified full polygon/native ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unproved.",
+  "firstPartyCacheChecked": {
+    "paths": [
+      "tmp/valhalla-parcel-research/7279/ministry.html",
+      "tmp/valhalla-parcel-research/7279/immordc.html"
+    ]
+  }
+}

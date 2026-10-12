@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10285",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10285-kadapa.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/kadapa-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:03:21.635103Z",
+  "reason": "Official state cadastral map custody is evidenced, but the live APSAC service is cached Map-only; Bhunaksha timed out. No native-ID polygon read or adapter qualification."
+}

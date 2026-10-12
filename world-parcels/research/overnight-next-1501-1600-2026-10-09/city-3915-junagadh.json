@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3915",
+  "cityCode": 3915,
+  "wupCityCode": 3915,
+  "name": "Junagadh",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1528,
+  "queueRank": 1528,
+  "point": [21.5226453311445, 70.4530792310688],
+  "centerLatLon": [21.5226453311445, 70.4530792310688],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 373265,
+  "population2025k": 373.265,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Junagadh district pages identify the District Inspector Land Records (DILR), whose functions include field measurement and updating land records, and the City Survey Office, which issues property-card copies and maintains city-survey records. This establishes local custodians/procedures, not public parcel geometry or citywide digital coverage.",
+  "registryEvidenceUrls": [
+    "https://junagadh.nic.in/dilr/",
+    "https://junagadh.nic.in/city-survey/",
+    "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/24"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "Official Gujarat pages expose AnyRoR rural land-record viewing and e-Milkat property-card links, but no anonymous safe parcel-ID-plus-complete-polygon response was obtained. Direct anonymous GET to AnyRoR timed out after 20 seconds. No login, credentials, CAPTCHA bypass, or unsafe fields were used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Junagadh DILR and City Survey Office are evidenced local custodians; Gujarat Revenue Department links the state’s AnyRoR and e-Milkat services; national CLR reporting indicates Junagadh records are computerized but does not prove open parcel geometry.",
+    "verifiedOpenScope": "Official custodian pages, service links, and public CLR summary were reviewed; no anonymous complete-polygon feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Junagadh Gujarat official cadastral map parcel land records map government",
+        "scope": "Identify a first-party local registry custodian and a safe public parcel-geometry route.",
+        "result": "Search located official Junagadh DILR and City Survey pages, Gujarat Revenue Department online-service links to AnyRoR and e-Milkat, and the national CLR district report. The sources establish custody and record services, but search did not produce a verified safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://junagadh.nic.in/dilr/",
+          "https://junagadh.nic.in/city-survey/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/24"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Gujarati",
+        "query": "જૂનાગઢ ગુજરાત સત્તાવાર જમીન રેકોર્ડ નકશો પાર્સલ સરકારી",
+        "scope": "Independent local-language discovery of Junagadh land-record custody and public cadastral map/API.",
+        "result": "Gujarati search located the official Gujarati Junagadh district portal and Gujarat Revenue/land-record service references, including land-record links. No verified anonymous parcel polygon or native parcel identity was found.",
+        "actualResultUrls": [
+          "https://junagadh.nic.in/gu/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://anyror.gujarat.gov.in/",
+          "https://e-milkat.gujarat.gov.in/GeneralReport.aspx"
+        ],
+        "executionMethod": "Separate Gujarati web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was preserved. No point-hit, map-extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence. Native parcel identity, geometry schema, CRS, parcel coverage, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify an official Gujarat parcel-map route; do not enable runtime from this packet alone."
+}

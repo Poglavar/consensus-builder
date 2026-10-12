@@ -1,0 +1,23 @@
+{
+  "taskId": "city:3015",
+  "decision": "held",
+  "checkedAt": "2026-10-12T03:48:47Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-3015-mocuba.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/mocuba-service-review.json",
+    "tmp/valhalla-parcel-research/mocuba/hosted-mocuba-service.json",
+    "tmp/valhalla-parcel-research/mocuba/mocuba-boundary-one.geojson"
+  ],
+  "review": {
+    "identity": "Rank 3134, WUP code 3015, Mozambique, point [-16.8444463824618,36.9814819548574], and 191635 persons match the SHA-256-verified original WUP 2025 CSV and immutable queue.",
+    "research": "English and Portuguese executed queries and official result URLs are recorded. The official 2020 PDUL assessment describes Mocuba municipal ArcGIS land records. The original MOZGIS service cache has three layers: concentration points, health facilities, and an INE 2017 locality boundary. Its saved polygon is a locality boundary, not a parcel. No public Mocuba parcel endpoint or native-ID polygon sample was qualified; access limits do not establish citywide absence.",
+    "firstPartyUrlsChecked": [
+      "https://www.pdul.gov.mz/content/download/183/992/file/PDUL_AAD%202020_Mocuba.pdf",
+      "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer?f=pjson"
+    ],
+    "samplePolygonCount": 0,
+    "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced; no runtime admission."
+  }
+}

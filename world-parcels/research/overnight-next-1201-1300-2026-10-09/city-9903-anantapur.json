@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:9903",
+  "cityCode": 9903,
+  "wupCityCode": 9903,
+  "queueRank": 1261,
+  "rank": 1261,
+  "name": "Anantapur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [14.6733011278587, 77.5918898198689],
+  "centerLatLon": [14.6733011278587, 77.5918898198689],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 442201,
+  "population2025k": 442.201,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["anantapur"],
+  "status": "complete",
+  "resultCategory": "official_state_cadastral_service_verified_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Government of Andhra Pradesh Bhunaksha service identifies itself as the state's cadastral mapping service under Survey, Settlements and Land Records. The official Anantapuramu district portal links citizens to MeeBhoomi land records, and the official Anantapur municipal portal exposes a city-map route. These establish official service/custodian evidence, not citywide parcel geometry completeness.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official Bhunaksha AP route timed out during a bounded anonymous request before its current JavaScript/configuration or parcel API could be inspected. No safe native parcel ID, response schema, CRS, or polygon geometry was verified; timeout is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Andhra Pradesh Bhunaksha",
+    "url": "https://bhunaksha.ap.gov.in/",
+    "operator": "Department of Survey, Settlements and Land Records, Government of Andhra Pradesh; NIC-developed service",
+    "serviceType": "Official state cadastral mapping and land-map service",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Andhra Pradesh state cadastral service, with Anantapur district official land-record links and Anantapur Mandal DILRMP status context.",
+    "verifiedOpenScope": "Official state cadastral service identity and official Anantapur district/municipal links; no live anonymous parcel response or geometry obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anantapur Andhra Pradesh official cadastral parcel map GIS land records survey map",
+        "result": "Found the official Andhra Pradesh Bhunaksha cadastral-map service, official Anantapur municipal GIS map, official Anantapuramu district portal, and Government of India DILRMP Anantapur Mandal status page. Discovery did not expose a safe parcel ID or polygon response.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://anantapur.cdma.ap.gov.in/ulbprofile/anantapur/gis-map",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/553",
+          "https://ananthapuramu.ap.gov.in/"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "అనంతపురం ఆంధ్రప్రదేశ్ అధికారిక కాడాస్ట్రల్ పార్సెల్ మ్యాప్ భూ రికార్డులు సర్వే మ్యాప్",
+        "result": "Found the official Telugu Anantapuramu district portal, which links to MeeBhoomi land records, and the official Andhra Pradesh Bhunaksha service. No safe parcel identity, schema, CRS, or polygon response was verified.",
+        "actualResultUrls": [
+          "https://ananthapuramu.ap.gov.in/te/",
+          "https://bhunaksha.ap.gov.in/",
+          "https://meebhoomi.ap.gov.in/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "operator": "Department of Survey, Settlements and Land Records, Government of Andhra Pradesh",
+        "scope": "Official Andhra Pradesh cadastral mapping service; landing page describes cadastral mapping and geo-referenced spatial data."
+      },
+      {
+        "url": "https://ananthapuramu.ap.gov.in/te/",
+        "operator": "Anantapuramu District Administration, Government of Andhra Pradesh",
+        "scope": "Official district portal; identifies district administration and links to MeeBhoomi as a citizen land-record service."
+      },
+      {
+        "url": "https://anantapur.cdma.ap.gov.in/ulbprofile/anantapur/gis-map",
+        "operator": "Commissioner and Director of Municipal Administration, Government of Andhra Pradesh",
+        "scope": "Official Anantapur municipal GIS map page; map shell loaded but no parcel layer or parcel response was exposed in bounded inspection."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/553",
+        "operator": "Department of Land Resources, Government of India",
+        "scope": "Anantapur district/Anantapur Mandal map-digitization and ULPIN status context; national status evidence, not a local parcel geometry endpoint."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "method": "GET; anonymous public discovery result",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "The first-party page redirected to https://bhunaksha.ap.gov.in/bhunakshalpm/28/index.jsp and described the official AP cadastral service, but the bounded direct request from this environment timed out before HTML/configuration could be retained."
+      },
+      {
+        "url": "https://bhunaksha.ap.gov.in/bhunakshalpm/28/index.jsp",
+        "method": "GET; anonymous public direct route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Connection timed out after 10 seconds; no JavaScript/configuration, API route, schema, CRS, native ID, or geometry response retained."
+      },
+      {
+        "url": "https://ananthapuramu.ap.gov.in/te/",
+        "method": "GET; anonymous public first-party page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded; official district portal links to MeeBhoomi land records and identifies district administration."
+      },
+      {
+        "url": "https://anantapur.cdma.ap.gov.in/ulbprofile/anantapur/gis-map",
+        "method": "GET; anonymous public first-party page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded official Anantapur municipal GIS map shell; rendered text showed base-layer controls and no parcel response."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/553",
+        "method": "GET; anonymous public first-party discovery result",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Indexed official DILRMP status page for Andhra Pradesh / Anantapur; result described Anantapur Mandal digitization status and parcel counts, treated as status context only."
+      },
+      {
+        "url": "https://meebhoomi.ap.gov.in/",
+        "method": "GET; URL found on official Telugu district portal; no login or unsafe field request",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Recorded as the official district-linked land-record service URL; no parcel query was submitted."
+      }
+    ],
+    "schemaCrs": {
+      "nativeCrs": null,
+      "geometryResponseSchema": "Not verified",
+      "viewerLayers": []
+    }
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "The current Bhunaksha JavaScript/configuration, API routes, native parcel identity field, CRS, anonymous geometry capability, municipal versus rural layer selection, and citywide coverage for Anantapur remain unknown. No exact-point parcel query was run; the exact WUP point was preserved and not used as evidence of absence.",
+  "registryEvidenceUrls": ["https://bhunaksha.ap.gov.in/", "https://ananthapuramu.ap.gov.in/te/", "https://anantapur.cdma.ap.gov.in/ulbprofile/anantapur/gis-map", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/553"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently inspect the current Bhunaksha AP viewer/configuration and any public parcel-geometry route; keep runtime held until safe native IDs and real polygon geometry are independently qualified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

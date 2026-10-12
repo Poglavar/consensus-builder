@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-5901-abu-qurqas.json",
+  "cityCode": 5901,
+  "queueRank": 3061,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": null,
+  "nationalAgencyLeads": [
+    "https://www.esa.gov.eg/main.aspx",
+    "https://www.esa.gov.eg/services.aspx",
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  ],
+  "queryOutcomes": "Separate English and Arabic discovery queries were performed. ESA and Abu Qurqas-specific official planning/public-service references were found, but no Abu Qurqas-local public cadastral viewer/API or safe parcel ID-plus-geometry response was exposed.",
+  "requestOutcomes": "ESA pages returned HTTP 200 and were inspected for current map links/configuration; they exposed static maps and a request/purchase workflow rather than an anonymous parcel API. The public survey-statement service was not retried after certificate validation failed. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [27.9302841905639, 30.8264500677775] was preserved and was not moved to force a parcel hit.",
+    "No exact-point hit or miss was inferred from absent public geometry, static map pages, or TLS certificate failure.",
+    "National ESA map authority material and Abu Qurqas planning references do not establish a local open parcel registry or citywide vector coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No Abu Qurqas-local public anonymous parcel ID-plus-geometry response, schema, CRS, native identity, or citywide open coverage was qualified."
+  },
+  "uncertainty": "A non-indexed Egyptian government cadastral workflow or restricted digital-map service may exist, but its safe anonymous endpoint and Abu Qurqas coverage were not established."
+}

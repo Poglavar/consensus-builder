@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:11162",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11162-yanji.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/yanji-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:49:07.387457Z",
+  "reason": "Official Jilin material supports Yanji registration-center custody. The municipal site timeout and unreadable public map page give no parcel-absence result. No anonymous full polygon or native ID response, runtime qualification, source binding or headed Details evidence exists; availability remains unresolved."
+}

@@ -1,0 +1,79 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 7310,
+  "queueRank": 3264,
+  "name": "Umerkot",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "capital": false,
+  "point": [25.3622583546127, 69.7390471301371],
+  "population2025": 184443,
+  "population2025k": 184.443,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Umerkot Pakistan cadastral map parcel land records official",
+        "result": "First-party discovery identified the Board of Revenue Sindh land-record portal, its Deh Maps route, and official Sindh government references. The current portal is a public land-record/map service, but discovery did not expose a public vector parcel service or safe anonymous parcel schema.",
+        "actualResultUrls": ["https://sindhzameen.gos.pk/Default.aspx", "https://bor.sindh.gov.pk/", "https://sindh.gov.pk/"]
+      },
+      {
+        "language": "Urdu (local)",
+        "query": "عمرکوٹ سندھ اراضی ریکارڈ نقشہ سرکاری",
+        "result": "First-party discovery in Urdu identified the same official Sindh Zameen land-record/map portal and Umerkot references. The result supports local/provincial land-record custodianship, not open parcel geometry access.",
+        "actualResultUrls": ["https://sindhzameen.gos.pk/Default.aspx", "https://sindhzameen.gos.pk/FAQs.aspx", "https://sindhzameen.gos.pk/maps.aspx"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Board of Revenue, Government of Sindh; Sindh Zameen / LARMIS public land-record portal; Umerkot taluka revenue office context",
+    "scopeNote": "The official portal explicitly provides Deh Maps and land-record services, and its current map UI contains a Umer Kot district route and Umerkot taluka route. This evidences a relevant provincial/local registry service, not open citywide parcel geometry coverage.",
+    "evidenceUrls": ["https://sindhzameen.gos.pk/Default.aspx", "https://sindhzameen.gos.pk/maps.aspx", "https://sindhzameen.gos.pk/map/Sindh_Map.aspx", "https://sindhzameen.gos.pk/FAQs.aspx"]
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Board of Revenue Sindh / Sindh Zameen Deh Maps",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": {"route": "https://sindhzameen.gos.pk/map/Taluka.aspx/bindTaluka", "requestedScope": "zilla_name=umer kot, taluka_name=Umerkot", "safeFieldsRequested": ["public deh/map listing only"], "responseSummary": "HTTP JSON response returned Available Dehs:0 for this route/parameter combination; no parcel ID or geometry was returned."},
+    "note": "No parcel polygon, native identifier, schema, or CRS was obtained. The exact WUP point was preserved and was not used as an absence test. No source-specific attribute set is retained."
+  },
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://sindhzameen.gos.pk/Default.aspx", "outcome": "HTTP 200; current official portal reachable and describes Board of Revenue Sindh public land-record services including Deh Maps."},
+    {"method": "GET", "url": "https://sindhzameen.gos.pk/maps.aspx", "outcome": "HTTP 200; official Maps page links to Deh Maps at /map/Sindh_Map.aspx."},
+    {"method": "GET", "url": "https://sindhzameen.gos.pk/map/Sindh_Map.aspx", "outcome": "HTTP 200; current JavaScript/configuration inspected. Umer Kot district area routes to Taluka.aspx?district=umer kot; no GIS vector service, schema, or CRS was exposed in the page."},
+    {"method": "GET", "url": "https://sindhzameen.gos.pk/map/Taluka.aspx?district=umer%20kot", "outcome": "HTTP 200; Umerkot taluka map UI and JavaScript inspected. It calls Taluka.aspx/bindTaluka with zilla_name and taluka_name parameters."},
+    {"method": "POST", "url": "https://sindhzameen.gos.pk/map/Taluka.aspx/bindTaluka", "outcome": "Anonymous JSON POST with zilla_name=umer kot and taluka_name=Umerkot returned a modal stating Available Dehs:0 and no parcel/deh identity or geometry. This route result is inconclusive for citywide absence; parameter/data coverage may be incomplete."},
+    {"method": "GET", "url": "https://sindhzameen.gos.pk/pdf/listofdeh.pdf", "outcome": "Request timed out after 30 seconds in this environment; no inference about Umerkot deh coverage was made."},
+    {"method": "GET", "url": "https://sindhzameen.gos.pk/FAQs.aspx", "outcome": "Official FAQ reachable in discovery; states records are available for all districts and most Dehs, and describes Village Form II, VII-A, and VII-B limitations. No geometry endpoint was provided."}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "scopeLimits": [
+    "Exact WUP point [25.3622583546127, 69.7390471301371] was preserved in latitude/longitude order and not shifted.",
+    "The zero deh response, timeout, map extent, or unavailable geometry route is not evidence of citywide parcel absence.",
+    "A relevant provincial/local registry service is evidenced, but no anonymous parcel ID, schema, CRS, or full polygon was verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The official portal may expose additional deh or parcel material through a workflow not reachable from the tested anonymous parameters.",
+    "The current map UI does not establish citywide vector parcel coverage or update cadence.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "Registry/map service evidence exists, but no safe anonymous parcel ID-plus-geometry response was qualified."},
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

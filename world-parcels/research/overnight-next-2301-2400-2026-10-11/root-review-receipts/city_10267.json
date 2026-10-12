@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10267",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-10267-naugarh.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/naugarh-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:15:34Z",
+  "identityCheck": "WUP 2025 CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, queue and packet agree: Naugarh, code 10267, rank 2354, IN/IND, point [27.2808914385351,83.081782697945], population 248273 persons.",
+  "searchCheck": "Paired packet and service review record executed English and Hindi queries, result URLs, and official UP BhuLekh, Revenue Board and NIC routes.",
+  "custodyAndFirstPartyCheck": "Saved first-party BhuLekh page and JavaScript identify UP public API bases. Saved bounded probes to the API/map bases and guessed districts route returned HTTP 500 JSON errors with no parcel features; NIC Bhu-Naksha page says its parcel-map management system is for authorized officials. State land-record custodianship supports registryFound=true, while local vector availability remains unresolved; HTTP 500 is not citywide absence.",
+  "sampleAndAdmissionCheck": "No Naugarh sample file or full polygon is present. Native ID plus full polygon, exact-ID reads, forced paging, thirteen bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission."
+}

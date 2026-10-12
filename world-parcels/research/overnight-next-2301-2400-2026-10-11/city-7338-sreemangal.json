@@ -1,0 +1,122 @@
+{
+  "cityCode": 7338,
+  "queueRank": 2362,
+  "name": "Sreemangal",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [24.317484346979, 91.7320887385134],
+  "population2025": 247298,
+  "population2025k": 247.298,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sreemangal Bangladesh cadastral parcel map official land records mouza map",
+        "result": "First-party Bangladesh DLRS/Ministry of Land sources found. The official DLRS Integrated Online Map Purchase System describes searchable CS, SA, RS, BRS and BDS Mouza maps; the official Smart Land Map portal's indexed coverage text explicitly lists শ্রীমংগল/Sreemangal. No safe anonymous parcel feature response was obtained.",
+        "actualResultUrls": ["https://map.settlement.gov.bd/", "https://map.land.gov.bd/", "https://settlement.gov.bd/", "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map"]
+      },
+      {
+        "language": "Bengali (native/local)",
+        "query": "শ্রীমঙ্গল বাংলাদেশ খতিয়ান মৌজা মানচিত্র সরকারি ভূমি রেকর্ড",
+        "result": "সরকারি ভূমি নকশা পোর্টালে শ্রীমংগল নামটি মৌজা ও প্লটভিত্তিক মানচিত্র সেবার আওতাভুক্ত তালিকায় দেখা গেছে। DLRS-এর সরকারি তথ্য মৌজা মানচিত্র/খতিয়ান সেবা ও রেকর্ড কাস্টডিয়ান ব্যাখ্যা করে; নিরাপদ বেনামী পার্সেল আইডি-সহ জ্যামিতি পাওয়া যায়নি।",
+        "actualResultUrls": ["https://map.land.gov.bd/", "https://settlement.gov.bd/", "https://dlrs.portal.gov.bd/", "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "First-party English and Bengali discovery plus current official viewer JavaScript/configuration inspection and bounded anonymous requests",
+  "sourceReview": "Bangladesh's Department of Land Records and Surveys (DLRS) and Ministry of Land publicly operate Mouza/plot map and land-record services. The official portal text explicitly includes Sreemangal (শ্রীমংগল) among map coverage entries. This is registry/map-service custody evidence, not proof of a qualified open parcel adapter or citywide parcel coverage.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH/GET",
+      "url": "https://map.settlement.gov.bd/",
+      "httpStatus": 200,
+      "outcome": "Official DLRS Integrated Online Map Purchase System loaded. It describes searchable official Mouza maps for CS, SA, RS, BRS and BDS surveys, but exposes a purchase/search UI rather than a bounded parcel feature API in the retrieved page."
+    },
+    {
+      "method": "SEARCH/GET",
+      "url": "https://map.land.gov.bd/",
+      "httpStatus": 200,
+      "outcome": "Official Smart Land Map portal loaded. Retrieved page text includes শ্রীমংগল/Sreemangal in the listed Upazila coverage and describes Mouza and plot based digital land zoning."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.land.gov.bd/assets/js/main.js",
+      "httpStatus": 200,
+      "outcome": "Current viewer JavaScript inspected. It exposes anonymous POST routes /getAdminByCode and /getGeomByCode, uses EPSG:4326 for displayed coordinates and EPSG:3857 for map rendering, and identifies the configured GIS base as https://gis.land.gov.bd/geoserver/. It also references a general global_search WFS route, not a verified Sreemangal parcel response."
+    },
+    {
+      "method": "POST",
+      "url": "https://map.land.gov.bd/getAdminByCode",
+      "httpStatus": 200,
+      "outcome": "Anonymous administrative lookup for level=forDiv returned division codes including Sylhet (60). A follow-up level=forDist request for division 60 returned only Habiganj and Sylhet in the current response; Moulvibazar was not returned, so the Sreemangal administrative chain could not be completed. No parcel geometry was requested from an unresolved chain."
+    },
+    {
+      "method": "POST",
+      "url": "https://map.land.gov.bd/getAdminByCode",
+      "httpStatus": 419,
+      "outcome": "An initial anonymous POST using a token from a separate page session returned Laravel Page Expired. A fresh page session and token then succeeded for the division lookup. No credentials, login, CAPTCHA bypass, or private token was used; token values were not retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://gis.land.gov.bd/geoserver/ows?service=WFS&request=GetCapabilities",
+      "httpStatus": 503,
+      "outcome": "Configured first-party GIS WFS endpoint returned Service Unavailable (no server available). No feature schema, CRS, native identity, or geometry was obtained. HTTP was not used as a TLS workaround; both HTTPS and the source-referenced HTTP route were bounded and unavailable."
+    },
+    {
+      "method": "GET",
+      "url": "https://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&request=GetCapabilities",
+      "httpStatus": 503,
+      "outcome": "Configured wsDMMS WFS capabilities route returned Service Unavailable. No parcel request was attempted after capabilities failure."
+    },
+    {
+      "method": "GET",
+      "url": "https://oldweb.lged.gov.bd/uploadeddocument/Map/SYLHET/moulvibazar/sreemangal/sreemangal.pdf",
+      "httpStatus": 200,
+      "outcome": "Official LGED Sreemangal Upazila map PDF was discoverable. It is an upazila/general infrastructure map, not a cadastral parcel layer, and was not retained as parcel evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map",
+      "httpStatus": 200,
+      "outcome": "Official DLRS page loaded and states that Mouza maps are held by settlement offices/district record rooms and that scanned copies can be obtained from DLRS. This corroborates custodianship and procedure, not an open parcel API."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "map.land.gov.bd/assets/js/main.js",
+    "geometryCrs": "No parcel response. Viewer code reads returned WKT as EPSG:4326 and renders map features in EPSG:3857; this is not parcel-layer CRS verification.",
+    "nativeIdentity": "Not observed; no parcel feature response was obtained.",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [24.317484346979, 91.7320887385134] was preserved; no coordinate shift or exact-point parcel query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No usable Sreemangal parcel feature response was exposed in the bounded inspection. The 0 geometry count means no response was obtained, not citywide absence."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "administrative codes", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Official Bangladesh cadastral/Mouza map custody and Sreemangal coverage are evidenced, but no anonymous parcel geometry, schema/CRS, or source-proven native parcel identity was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [24.317484346979, 91.7320887385134] was preserved and not shifted.",
+    "No zero exact-point hit, map extent miss, timeout, login wall, empty/unusable UI, or 503 response was treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide completeness, update cadence, local service CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Official national cadastral/map-service custody and Sreemangal coverage are well evidenced. Current local administrative lookup completeness, live GIS availability, parcel schema, CRS, stable native identity semantics, and citywide coverage remain unverified. Runtime/admission remains held."
+}

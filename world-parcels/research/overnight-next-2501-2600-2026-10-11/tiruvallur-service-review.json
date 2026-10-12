@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-10717-tiruvallur.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10717,
+  "queueRank": 2530,
+  "city": "Tiruvallur",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [13.1240523617681, 79.9158697925941],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official local Tiruvallur Survey and Land Records custody and Tamil Nadu public land-record procedures were evidenced. Bounded anonymous service access did not yield a safe parcel ID plus full polygon, so no sample GeoJSON was retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Tamil discovery queries are recorded in city-10717-tiruvallur.json with actual result URLs.",
+  "attemptedRoutes": [
+    {"route": "Tiruvallur District Survey and Land Records", "method": "SEARCH/OPEN", "url": "https://tiruvallur.nic.in/departments/survey-and-land-records/", "outcome": "Official district page readable. It states rural land records and Tiruvallur urban land records are computerized and that FMB sketches are digitized; this is local custodian and coverage context, not a parcel vector response."},
+    {"route": "Tiruvallur District land e-Services", "method": "SEARCH/OPEN", "url": "https://tiruvallur.nic.in/service/e-services-anytime-anywhere-land/", "outcome": "Official district page readable. It lists Patta/FMB/Chitta/TSLR, A-Register, Patta verification, and Poramboke verification and links to the state service."},
+    {"route": "Tamil Nadu e-Services landing", "method": "GET anonymous, TLS verified", "url": "https://eservices.tn.gov.in/", "outcome": "Anonymous curl request timed out after 20 seconds; no login, credentials, CAPTCHA bypass, unsafe field request, or TLS exception was attempted. No schema or parcel response was obtained."},
+    {"route": "TNGIS application directory", "method": "SEARCH/OPEN", "url": "https://www.tngis.tn.gov.in/apps.html", "outcome": "Official Tamil Nadu GIS directory readable and linked from discovery. The page rendered a login/user-registration/CAPTCHA shell in the accessible representation; no anonymous parcel vector route or current JavaScript/configuration sufficient for a safe request was exposed."},
+    {"route": "TNGIS GIS viewer", "method": "GET via public web access", "url": "https://www.tngis.tn.gov.in/apps/gi_viewer/", "outcome": "Viewer URL was inaccessible to the bounded web fetch. No retry bypass or authentication attempt was made."},
+    {"route": "Tamil Nadu local-language district site", "method": "SEARCH/OPEN", "url": "https://tiruvallur.nic.in/ta/", "outcome": "Official Tamil district site found; used for native-language discovery and local place/custodian confirmation, not geometry."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Not obtained. The state e-Services host timed out and the TNGIS viewer was inaccessible or rendered an authentication shell.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope": "No verified public parcel endpoint was available for a bounded request.", "featureCount": 0, "nativeIdentity": null, "result": "Unavailable; not evidence of citywide absence."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata", "retrieval date", "administrative codes needed to reproduce a safe request"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run against a verified parcel vector endpoint; exact WUP point was preserved and no hit/miss inference was made.", "requestEvidence": ["Official district custodian and service procedure pages were readable; state e-Services timed out; TNGIS viewer access was unavailable/authentication-gated in bounded inspection."]},
+  "coverageAssessment": {"claimedScope": "Tiruvallur district and Tamil Nadu computerized land-record/FMB services.", "verifiedOpenScope": "Official custodian/procedure evidence only; no citywide parcel vector coverage verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": ["Exact WUP point [13.1240523617681, 79.9158697925941] was preserved; no coordinate shift was used.", "District statements about computerized records and digitized FMB sketches do not establish anonymous vector access or citywide parcel completeness.", "Timeout, inaccessible viewer, or login/CAPTCHA shell is not evidence of citywide absence.", "No full parcel polygon was retrieved or retained.", "Packet completion records research status only; they do not qualify or admit a runtime adapter. Serial review remains required."],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The local custodian and public land-record procedures are verified, but current viewer configuration, parcel endpoint, native ID semantics, geometry CRS, exact point membership, citywide coverage, and update/finality status remain unresolved."
+}

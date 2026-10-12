@@ -1,0 +1,23 @@
+{
+  "taskId": "city:7733",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-7733-kamalia.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/kamalia-service-review.json",
+    "tmp/valhalla-parcel-research/7733/layer34.json",
+    "tmp/valhalla-parcel-research/7733/point.geojson",
+    "tmp/valhalla-parcel-research/7733/extent.geojson"
+  ],
+  "checkedAt": "2026-10-12T02:17:29Z",
+  "reason": "Queue identity matches rank 3071, Pakistan, immutable point and 195472 persons. English and Urdu searches are recorded. Original public layer metadata names Toba Tek Singh; the exact-point cache has zero features and the bounded cache has three closed polygons with OBJECTID only. Locality containment and source CRS remain unqualified. The packet also cites a .gov.in cadastral page, which cannot establish Pakistani source custody. No independent live adapter qualification or headed Details check exists; bounded availability is not citywide coverage.",
+  "qualificationGaps": [
+    "fresh native-ID adapter reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed details-panel verification"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11463",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:02:42.898957Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-11463-naugachia.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/naugachia-service-review.json"
+  ],
+  "identityCheck": "Packet matches immutable ranked roster and pending queue for code, rank, country, original point and 2025 population persons; retained UN WUP archive SHA-256 matches handoff and source row matches.",
+  "discoveryCheck": "English and local-language search queries and outcomes are recorded in the paired packet; no sample polygon was retained (0 of maximum 3).",
+  "admissionCheck": "No original city-specific native-ID polygon response or independent live adapter proof of fresh exact ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details panel.",
+  "reason": "Bihar Bhu-Naksha is a state cadastral viewer, but the anonymous route probes returned HTML errors and no Naugachia-specific native ID or polygon. Viewer failure does not establish citywide absence; registry custody stays unresolved (null).",
+  "registryFound": null,
+  "runtimeDisposition": "held; no admission or runtime/catalog/report changes"
+}

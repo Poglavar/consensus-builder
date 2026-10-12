@@ -1,0 +1,20 @@
+{
+  "taskId": "city:10005",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-10005-balrampur.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/balrampur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:05:11Z",
+  "identityCheck": "Original WUP 2025 CSV row, ranked roster, pending queue and city packet agree on code 10005, rank 2347, India/IN/IND, point [27.424560059918,82.1756840536558] and population 248830 persons.",
+  "searchCheck": "Paired files record executed English and Hindi queries with result URLs. The official Balrampur district land-record page was independently opened and directs readers to UP Bhulekh.",
+  "custodyCheck": "Official district land-record and UP BhuNaksha hierarchy evidence supports registryFound=true; the reported zero urban extent and empty point hit do not establish citywide absence.",
+  "sampleCheck": "No sample GeoJSON or full parcel polygon was retained, so the three-polygon cap and safe-attribute limit are satisfied.",
+  "admissionCheck": "No safe native parcel ID plus full polygon response exists in the paired evidence. Fresh exact-ID reads, forced paging, thirteen bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not independently evidenced. City remains held and unadmitted.",
+  "firstPartyUrlsChecked": [
+    "https://balrampur.nic.in/service/land-record/"
+  ]
+}

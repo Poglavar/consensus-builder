@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 4139,
+  "queueRank": 2687,
+  "name": "Miyazaki",
+  "country": "Japan",
+  "countryCode": "JP",
+  "point": [31.9096549335353, 131.418470670546],
+  "centerLatLon": [31.9096549335353, 131.418470670546],
+  "population2025": 219947,
+  "population2025k": 219.947,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Japan official cadastral parcel map API Miyazaki City parcel polygons registry map",
+        "result": "Found the official Ministry of Justice map-data publication route and a Miyazaki-specific catalog record; the public catalog exposes metadata and login-gated ZIP resources, not an anonymous bounded feature API.",
+        "actualResultUrls": [
+          "https://www.moj.go.jp/MINJI/minji05_00494.html",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1889",
+          "https://www.city.miyazaki.miyazaki.jp/life/road/system/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "宮崎市 地籍図 地番図 GIS 公開 宮崎市 登記所備付地図",
+        "result": "Found the Miyazaki municipal map viewer, the municipal cadastral-survey explanation, and the Ministry of Justice Miyazaki registry-map catalog record. The municipal viewer is not a parcel polygon service; the catalog ZIP downloads require login.",
+        "actualResultUrls": [
+          "https://www.city.miyazaki.miyazaki.jp/life/road/system/",
+          "https://webgis.alandis.jp/miyazaki45/portal/",
+          "https://www.city.miyazaki.miyazaki.jp/life/house/dwelling/778.html",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1889"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://webgis.alandis.jp/miyazaki45/portal/",
+      "observation": "Current Miyazaki City GIS portal; current portal HTML and simple.js expose road, building-law road, hazard, water, sewer, and planning entrypoints. No cadastral parcel layer or parcel API was exposed in the inspected files."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1889",
+      "observation": "Ministry of Justice-maintained Miyazaki City (Miyazaki Legal Affairs Bureau) registry-office map dataset. Metadata lists 45201-3500-2025.zip and 45201-3500-2026.zip in Map XML format; catalog metadata says download requires login."
+    },
+    {
+      "url": "https://www.city.miyazaki.miyazaki.jp/life/house/dwelling/778.html",
+      "observation": "Miyazaki City explains that cadastral-survey maps and books are sent to the Legal Affairs Bureau as registry-office maps; this is explanatory/procedural evidence, not an open parcel endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://webgis.alandis.jp/miyazaki45/portal/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official current portal landing page retrieved with Chrome User-Agent, Accept, Accept-Language: ja,en;q=0.8, cookie jar, and TLS verification."
+    },
+    {
+      "url": "https://webgis.alandis.jp/miyazaki45/portal/js/simple.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Official viewer JavaScript inspected. It routes to map entrypoints and contains no FeatureServer, MapServer, WFS, WMS, or parcel API URL."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2026-1-1889",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Official G空間情報センター CKAN metadata response. It identifies Ministry of Justice as maintainer, format as Map XML, and resources 45201-3500-2025.zip / 45201-3500-2026.zip; catalog extras state download requires login. No parcel features returned."
+    },
+    {
+      "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5/query?where=CityCode%3D%2745201%27&outFields=OBJECTID%2CBoundaryId%2CCityCode&resultRecordCount=3&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Attempted prior hosted touki layer used for other Japanese regions, with Miyazaki municipality code 45201 and ID+geometry fields only. Request did not complete within the bounded timeout; this is temporary/unavailable evidence only and is not treated as citywide absence."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/9778e762-b145-4d58-8813-b4ce8a80e321/resource/3a115301-53da-4f6b-8c10-8428d0f9d89d/download/45201-3500-2025.zip",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Not downloaded because the catalog identifies the resource as login-gated; no credentials or login attempt was used."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Miyazaki City registry-office map data published by the Ministry of Justice through the G空間情報センター catalog; metadata footprint covers Miyazaki City.",
+    "verifiedOpenScope": "No open parcel polygon response verified. The municipal viewer and catalog metadata were verified only as discovery leads.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The Ministry of Justice dataset is a strong city-specific source lead, but its downloadable Map XML resources were login-gated during this attempt and no anonymous feature endpoint was disclosed. The city viewer may expose additional services after a consent subpage or through browser interactions not present in the inspected landing-page JavaScript. A timeout against an unrelated hosted layer is not evidence of absence. No owner, address, titleholder, tax, or other unsafe fields were requested or retained.",
+  "nextStep": "Serial reviewer should independently test whether the Ministry of Justice Map XML resource can be accessed under an authorized public-data workflow, or inspect the municipal consent subpages and browser network calls for a current public parcel service. Keep runtimeReadiness held until an independent bounded ID+geometry sample qualifies."
+}

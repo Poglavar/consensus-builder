@@ -1,0 +1,117 @@
+{
+  "cityCode": 6733,
+  "queueRank": 3048,
+  "name": "معزآباد جابری",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [29.4807594351725, 53.3677015696929],
+  "population2025": 196363,
+  "population2025k": 196.363,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Iran official cadastral parcel map GIS Moezabad-e Jaberi Fars Iran cadastral API",
+        "result": "First-party discovery identified the official national Land Management Single Window at zamin.gov.ir. Its public portal identifies the Iranian Information Technology Organization as operator and links a public land-monitoring application, but no city-specific parcel layer was exposed by indexed discovery.",
+        "actualResultUrls": ["https://zamin.gov.ir/", "https://zamin.gov.ir/ito/index.html", "https://nezamat.ir/post-44174/"]
+      },
+      {
+        "language": "Persian (local/native)",
+        "query": "معزآباد جابری کاداستر نقشه قطعات ملکی فارس سامانه رسمی پنجره واحد زمین",
+        "result": "Persian discovery identified the official سامانه پنجره واحد زمین at zamin.gov.ir and official policy material describing it as the land-services gateway involving the cadastral/registration authority. Search results did not expose a public city parcel dataset or safe parcel ID-plus-geometry response.",
+        "actualResultUrls": ["https://zamin.gov.ir/", "https://zamin.gov.ir/ito/index.html", "https://nezamat.ir/post-44174/"]
+      }
+    ],
+    "sourceCitations": ["https://zamin.gov.ir/", "https://zamin.gov.ir/ito/index.html", "https://nezamat.ir/post-44174/"]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Iranian Information Technology Organization / Land Management Single Window (سامانه پنجره واحد زمین)",
+    "scope": "National land-service gateway. Official policy material identifies the single window as the land/building service gateway and requires relevant agencies, including the Registration Organization, to provide electronic services; the portal's public API identifies its operator as the Iranian Information Technology Organization.",
+    "evidence": "https://zamin.gov.ir/"
+  },
+  "localCustodianContext": {
+    "name": "No local Fars/Moezabad-e Jaberi cadastral custodian was independently evidenced in the accessible first-party material.",
+    "scope": "National portal context only; local registry office, city coverage, and local parcel service remain unqualified.",
+    "evidence": null
+  },
+  "service": {
+    "name": "Land Management Single Window public portal and land-monitoring application",
+    "viewerUrl": "https://zamin.gov.ir/ito/index.html",
+    "baseUrl": "https://zamin.gov.ir/ito/",
+    "viewerConfiguration": "The current public JavaScript bundle https://zamin.gov.ir/ito/static/js/main.81c594fa.js exposes relative endpoints including /api/forms/getMapForm, /api/forms/getPref, /api/maps/getPolygons, and /api/maps/getGnafPC. The required map name, collection, layer, geometry field, and access state were not available from bounded anonymous configuration requests.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://zamin.gov.ir/",
+      "status": 200,
+      "outcome": "Public portal loaded. Its API metadata returned official operator contact information and no parcel geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://zamin.gov.ir/api/homePage/get",
+      "status": 200,
+      "outcome": "Anonymous public portal metadata returned; it describes the single-window land service but contains no parcel schema, native ID, CRS, or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://zamin.gov.ir/ito/index.html",
+      "status": 200,
+      "outcome": "Current public land-monitoring viewer loaded and referenced its JavaScript bundle."
+    },
+    {
+      "method": "GET",
+      "url": "https://zamin.gov.ir/ito/static/js/main.81c594fa.js",
+      "status": 200,
+      "outcome": "Current bundle inspection identified map/configuration routes, including getMapForm, getPref, getPolygons, and getGnafPC; no source-specific parcel layer or schema was hard-coded in the inspected route strings."
+    },
+    {
+      "method": "POST",
+      "url": "https://zamin.gov.ir/ito/api/forms/getPref",
+      "status": "timeout",
+      "outcome": "Bounded anonymous requests for services/mapTabs/servicesHelp configuration exceeded 20 seconds without a response. No login, CAPTCHA/Cloudflare bypass, credential, or private token was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://iraneland.ir/",
+      "status": 301,
+      "outcome": "Official legacy domain redirected toward zamin.gov.ir; direct TLS-followed request also experienced connection reset. No parcel response obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://shamim.ssaa.ir/",
+      "status": "timeout/未応答",
+      "outcome": "Bounded anonymous request did not return a usable response. No access control was bypassed and no parcel request was made."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/6733/ (unchanged HTML/JavaScript and request outputs; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [29.4807594351725, 53.3677015696929] was preserved in latitude/longitude order and was not shifted.",
+    "The portal's exposed getPolygons route could not be called safely because no usable anonymous collection/layer/geometry configuration was returned.",
+    "Timeouts, redirect/reset, and unavailable configuration are not evidence of citywide parcel absence or an exact-point miss.",
+    "No parcel schema, native identity field, geometry CRS, city coverage, or ID-plus-geometry response was qualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The public monitoring app may expose additional layers after configuration/session initialization that was not available within the bounded anonymous requests.",
+    "The national portal's involvement does not independently establish a local Fars registry endpoint or coverage for Moezabad-e Jaberi.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

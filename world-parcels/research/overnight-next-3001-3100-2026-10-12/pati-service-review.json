@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-7314-pati.json",
+  "cityCode": 7314,
+  "queueRank": 3047,
+  "city": "Pati",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Indonesian first-party discovery identified ATR/BPN ATLAS and the claimed LokaGeo Kabupaten Pati portal. ATLAS was reachable anonymously but exposed an empty catalog and login control; LokaGeo's WebGIS is an OpenStreetMap-backed demo with explicitly simulated polygons. No safe anonymous parcel ID-plus-geometry response was qualified and no sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, viewer/configuration inspection, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-7314-pati.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "ATR/BPN ATLAS",
+      "scope": "National land-spatial/cadastral information custodian; no Pati-specific anonymous parcel coverage was qualified.",
+      "evidence": "https://atlas.atrbpn.go.id/"
+    },
+    {
+      "name": "LokaGeo Kabupaten Pati",
+      "scope": "Claimed local geospatial portal; inspected WebGIS is demo content, not an evidenced cadastral service.",
+      "evidence": "https://lokageopati.com/webgis.html"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "Empty anonymous catalog, login wall, and simulated local demo are access/qualification outcomes, not evidence of parcel absence.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "A current authenticated ATLAS workflow may expose further services, but no credentials or login were used.",
+    "The local portal's claimed relationship to Pati government and ATR/BPN was not independently qualified from the demo page.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

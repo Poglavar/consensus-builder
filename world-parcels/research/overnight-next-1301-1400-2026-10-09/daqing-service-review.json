@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9184-daqing.json",
+  "cohort": "overnight-next-1301-1400",
+  "purpose": "Review official Daqing cadastral/registration custodian and public government-service channels for safe anonymous parcel geometry and stable parcel identity.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Daqing's official municipal service portal and official provincial-government reporting evidence a local real-estate-registration service and registration centers. The linked government map timed out and no safe anonymous parcel vector response, native identity, CRS, or geometry was qualified.",
+  "registryAssessment": "Local registry presence is evidenced by the official Daqing portal's real-estate-registration service and the official Heilongjiang report identifying Daqing registration-center subcenters. This establishes local registration custody/service, not open parcel-vector access.",
+  "officialPrimarySources": [
+    {"url": "https://dq.zwfw.hlj.gov.cn/daqing/", "operator": "Daqing municipal government service portal", "scope": "Official local portal exposing Internet-plus real-estate registration and government-map links."},
+    {"url": "https://www.hlj.gov.cn/hlj/c107858/202509/c00_31872082.shtml", "operator": "Heilongjiang provincial government", "scope": "Official report identifying Daqing real-estate registration centers at Longfeng and Sartu subcenters."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Daqing China official cadastral parcel map land registration GIS public service", "result": "Official Daqing municipal service portal found; no safe anonymous polygon verified.", "actualResultUrls": ["https://dq.zwfw.hlj.gov.cn/daqing/", "https://dq.zwfw.hlj.gov.cn/"]},
+    {"language": "Chinese", "query": "大庆 不动产登记 地图 地籍 图 公共 服务 官方", "result": "官方大庆政务服务网、互联网+不动产登记入口、政务地图入口及黑龙江省政府登记中心报道；未验证安全匿名地籍要素响应。", "actualResultUrls": ["https://dq.zwfw.hlj.gov.cn/daqing/", "https://www.hlj.gov.cn/hlj/c107858/202509/c00_31872082.shtml"]}
+  ],
+  "attempts": [
+    "Retrieved the official Daqing municipal government-service portal anonymously with TLS verification.",
+    "Inspected the portal HTML and recorded its real-estate-registration guide link and government-map link.",
+    "Attempted the linked government-map route anonymously; it timed out after 20 seconds.",
+    "Reviewed the official Heilongjiang government report identifying Daqing registration-center subcenters.",
+    "Did not open the registration workflow because no public parcel-vector endpoint was exposed and no login or credentials are permitted.",
+    "No cadastral viewer configuration, parcel endpoint, feature schema, CRS, native ID, exact-point response, or geometry was returned by the bounded anonymous inspection.",
+    "Did not shift the exact WUP point and did not infer citywide absence from the map timeout or workflow boundary."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No exact-point parcel feature query completed; the official map route timed out before a public service response was available.", "requestEvidence": [{"url": "https://dq.zwfw.hlj.gov.cn/daqing/", "method": "GET", "httpStatus": 200, "result": "Official portal retrieved; no parcel geometry."}, {"url": "http://111.41.199.246:88/emap/system/zwmap", "method": "GET", "httpStatus": null, "result": "Anonymous request timed out after 20 seconds; no geometry."}]},
+  "coverageAssessment": {"claimedScope": "Official Daqing portal and official provincial report reviewed; linked map route bounded by anonymous timeout.", "verifiedOpenScope": "Local registration service presence verified; parcel geometry, native identity, CRS, and schema unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "nextStep": "Serial reviewer may re-check only a public anonymous network flow and qualify safe ID plus geometry if actually returned; preserve held runtime state.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned; a timeout and service-workflow boundary are not evidence of cadastral absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

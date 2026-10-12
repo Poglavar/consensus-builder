@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11231,
+  "queueRank": 1883,
+  "cityId": "queue:1883",
+  "name": "Benipur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.1058961516192, 86.1752002254649],
+  "centerLatLon": [26.1058961516192, 86.1752002254649],
+  "population2025": 304786,
+  "population2025k": 304.786,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Benipur Bihar cadastral parcel map official land records GIS",
+        "result": "First-party discovery found Bihar BhuNaksha, the Government of Bihar Directorate of Land Records & Survey cadastral map viewer, and the Bihar Revenue and Land Reforms service index. The official viewer exposes district, subdivision, circle, mouza, survey type, map instance, and sheet selectors.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://land.bihar.gov.in/landbihar/Default.aspx"
+        ]
+      },
+      {
+        "language": "native/local (Hindi; Maithili context)",
+        "query": "बेनीपुर बिहार भू नक्शा भूलेख सरकारी",
+        "result": "First-party discovery found the same Bihar Government BhuNaksha viewer and Darbhanga district government material identifying Benipur circle/mouza records. The BhuNaksha hierarchy returned Darbhanga (13), subdivision Benipur (02), circle Benipur (12), and the native mouza labels बेनीपुर(151) and बेनीपुर(151/2).",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://darbhanga.nic.in/hi/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Hindi first-party discovery, followed by bounded TLS-verified GET/POST requests and current JavaScript/configuration inspection; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "service": "BhuNaksha Bihar",
+    "custodian": "Directorate of Land Records & Survey, Government of Bihar; NIC implementation identified on the official viewer",
+    "viewer": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "selectedHierarchy": "state Bihar (10) / district Darbhanga (13) / subdivision Benipur (02) / circle Benipur (12) / mouza बेनीपुर(151) (1004) / Revisional Survey (RS) / RS Map (07) / sheet 01",
+    "gisCode": "RS13021210041510701",
+    "crs": "Service extent response reported EPSG:32645; no geometry was retained.",
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official public cadastral map viewer; current index.js references REST endpoints for hierarchy, map extent, plot-at-coordinate lookup, WMS rendering, and plot details. The page identifies the Directorate of Land Records & Survey, Government of Bihar."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "observation": "Official Directorate service index lists Online Map, Online Revenue Records, Online Jamabandi, and related land-record services. This is agency/service evidence, while the BhuNaksha viewer is the local map route used for Benipur."
+    },
+    {
+      "url": "https://darbhanga.nic.in/hi/",
+      "observation": "Official Darbhanga district site was found in native-language discovery; search evidence includes Benipur circle/mouza planning material. It was not used as a parcel geometry source."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Public viewer HTML returned successfully."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Current configuration showed relative SERVICE_PATH and COMMON_SERVER_PATH; no credentials or private token."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Current JavaScript exposed REST/Levels, REST/MapInfo, ScalarDatahandler, and WMS routes; schema and request parameter names were inspected."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": {"state": "10"},
+      "responseSummary": "7 hierarchy levels"
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": {"state": "10", "level": 1, "codes": "13", "hasmap": true},
+      "responseSummary": "Returned Darbhanga hierarchy; Benipur subdivision/circle path was identified."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": {"state": "10", "level": 2, "codes": "13,02", "hasmap": true},
+      "responseSummary": "Returned circle Benipur code 12 and its mouza list."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": {"state": "10", "level": 3, "codes": "13,02,12", "hasmap": true},
+      "responseSummary": "Returned mouza बेनीपुर(151) code 1004, बेनीपुर(151/2) code 1005, RS/CS survey choices, RS Map code 07, and sheets 01/02."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": {"state": "10", "gisLevels": "13,02,12,1004,RS,07,01,", "srs": "0"},
+      "responseSummary": "Returned GIS code RS13021210041510701, EPSG:32645, and a non-null map extent for the Benipur mouza RS sheet. This is map extent evidence, not a parcel feature response."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "httpStatus": 204,
+      "requestSummary": "Three bounded coordinate probes against gisCode RS13021210041510701: (200000,1400000), (191.4,206.6), and (300000,1000000).",
+      "assessment": "No plot object was returned. These arbitrary service-coordinate probes were not treated as exact WUP-point hits/misses and do not establish citywide absence."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 500,
+      "assessment": "Capabilities request returned an empty 500 response; no further WMS request was used to infer parcel geometry."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bihar Government BhuNaksha cadastral map service, with a verified Benipur circle/mouza map path in Darbhanga district.",
+    "verifiedOpenScope": "Public viewer hierarchy and non-null map extent for one Benipur mouza RS sheet; no safe anonymous parcel ID-plus-geometry response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "remainingUncertainty": "Native parcel identity fields, parcel geometry endpoint/schema, map extent semantics, complete Benipur urban coverage, update currency, and exact WUP-point parcel membership remain unresolved. The exact WUP point was preserved and never shifted. Packet completion records research evidence only; it is not source integration or runtime admission."
+}

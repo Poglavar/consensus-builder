@@ -1,0 +1,19 @@
+{
+  "cityRecord": "city-4561-tembilahan.json",
+  "cityCode": 4561,
+  "queueRank": 2710,
+  "city": "Tembilahan",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewStatus": "held",
+  "reviewOutcome": "Official national ATR/BPN viewer was investigated, but no qualifying Tembilahan public parcel-polygon service or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Indonesian discovery queries were executed and recorded. BHUMI ATR/BPN landing page, iframe wrapper, current console page, and static JavaScript bundles were fetched anonymously over TLS. The viewer loaded, but a public parcel endpoint, schema/CRS, bounded anonymous ID+geometry response, and stable safe native parcel identity could not be established. Google discovery responses returned interstitial/challenge pages; no challenge bypass was attempted.",
+  "cityOrLocalCustodian": "ATR/BPN is evidenced as the national official viewer operator. A Tembilahan or Kabupaten Indragiri Hilir local registry/cadastre custodian was not evidenced in this attempt; registryFound remains null.",
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "No qualifying parcel layer metadata or CRS was exposed by the inspected anonymous HTML/static-bundle route. No parcel query was issued because no endpoint was verified.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "The viewer may expose services through runtime-only routes or an unobserved map interaction. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI would not establish citywide absence; this packet makes no such claim. Coordinates were preserved exactly in latitude/longitude order.",
+  "integrationDisposition": "Research packet only; not source integration or admission. Only the two named city artifacts were written; no registry/catalog/runtime files were changed."
+}

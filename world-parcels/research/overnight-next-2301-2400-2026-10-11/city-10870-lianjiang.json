@@ -1,0 +1,119 @@
+{
+  "cityCode": 10870,
+  "queueRank": 2382,
+  "name": "Lianjiang",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [21.6050249864147, 110.279026251302],
+  "population2025": 244825,
+  "population2025k": 244.825,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lianjiang Guangdong China official cadastral parcel map land registration public map service",
+        "result": "First-party discovery found the official Lianjiang municipal government portal and current Natural Resources Bureau land-use/permit notices. No public cadastral parcel viewer, anonymous parcel feature API, or safe ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.lianjiang.gov.cn/",
+          "https://www.lianjiang.gov.cn/zwgk/jcgk/jchgk/content/post_2196093.html",
+          "https://www.lianjiang.gov.cn/zwgk/jcgk/jchgk/content/post_2192749.html"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "廉江市 官方 不动产登记 地籍图 地图 查询 自然资源局",
+        "result": "First-party Chinese discovery identified 廉江市自然资源局 through official municipal notices, including current administrative permit/publication pages. The official Guangdong service documentation says the province-wide 不动产登记/地籍图 visualization is accessed through identity-authenticated 政务服务网; no anonymous parcel schema, CRS, native ID, or geometry was exposed.",
+        "actualResultUrls": [
+          "https://www.lianjiang.gov.cn/zwgk/jcgk/jchgk/content/post_2196093.html",
+          "https://www.lianjiang.gov.cn/zwgk/jcgk/jchgk/content/post_2192749.html",
+          "https://www.zhanjiang.gov.cn/zwgk/zwzt/szzf/mtbd/content/post_1778267.html",
+          "https://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Chinese discovery plus bounded official-site, current JavaScript/configuration, and anonymous HTTPS inspection",
+  "sourceReview": "The official Lianjiang municipal portal publishes current notices sourced to 廉江市自然资源局, establishing the local planning/natural-resources custodian. Guangdong’s official public map viewer was inspected through its current HTML and JavaScript; it exposes public base-map tile configuration but no cadastral parcel feature route. The province’s official explanation identifies the 不动产登记/地籍图 visualization service and states that access proceeds through identity authentication. This is local registry/procedure evidence, not qualified parcel-source integration.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.lianjiang.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Lianjiang municipal government portal found through first-party discovery; bounded inspection located Natural Resources Bureau notices but no public cadastral viewer link."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.lianjiang.gov.cn/zwgk/jcgk/jchgk/content/post_2196093.html",
+      "httpStatus": 200,
+      "outcome": "Current official 廉江市自然资源局 administrative permit notice. It evidences the local custodian and planning/land-use procedure, but contains no public parcel feature response; unsafe person/address fields were not retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.lianjiang.gov.cn/zwgk/jcgk/jchgk/content/post_2192749.html",
+      "httpStatus": 200,
+      "outcome": "Current official Natural Resources Bureau notice with red-line/planning-condition entries. It did not expose a parcel API, native parcel identity, schema, CRS, or safe polygon."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/wxQuery/index.html",
+      "httpStatus": 200,
+      "outcome": "Official Guangdong public map page retrieved. Current HTML loads js/index.js and Tianditu base-map resources; no parcel feature endpoint or cadastral layer route was present in the bounded source inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/wxQuery/js/index.js",
+      "httpStatus": 200,
+      "outcome": "Current viewer JavaScript inspected. It defines public vector/imagery tile layers and map controls only; no anonymous cadastral query, parcel schema, native ID, or CRS response was found."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature",
+      "httpStatus": null,
+      "outcome": "Bounded anonymous HTTPS request returned an empty server reply before an HTTP response. No login, credentials, CAPTCHA, or TLS bypass was attempted; this is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.lianjiang.gov.cn/",
+      "httpStatus": null,
+      "outcome": "Direct curl with default TLS verification failed with certificate subject-name mismatch for www.lianjiang.gov.cn. No certificate exception was used because none was authorized. First-party pages were independently observed through web discovery."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "The inspected Guangdong viewer configuration exposes base-map tile URLs only; no cadastral parcel service configuration was observed.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response obtained.",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [21.6050249864147, 110.279026251302] preserved; no coordinate shift or parcel-hit inference.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public feature-query route was exposed and the documented province service requires identity-authenticated access; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native public parcel ID if later source-proven", "full parcel polygon geometry if later exposed", "geometry type", "source service URL", "source CRS / requested output CRS", "retrieval date", "administrative codes"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local registry custody is evidenced, but no public anonymous parcel geometry service, schema/CRS, native parcel identity, or safe polygon sample was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [21.6050249864147, 110.279026251302] was preserved and not shifted.",
+    "No zero-hit, map-extent miss, timeout, login wall, unusable UI, or TLS transport failure was treated as citywide cadastral absence.",
+    "Official Natural Resources Bureau notices establish local custody/procedure, not public parcel geometry access.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, service CRS, viewer parcel configuration, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "Lianjiang local Natural Resources Bureau custody is evidenced by official municipal pages. Current public anonymous parcel geometry availability, schema, CRS, coverage, and stable identity semantics remain unverified. This research packet is not source integration/admission."
+}

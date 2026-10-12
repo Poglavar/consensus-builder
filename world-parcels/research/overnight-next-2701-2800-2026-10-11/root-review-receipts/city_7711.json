@@ -1,0 +1,13 @@
+{
+  "taskId": "city:7711",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:19:58Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-7711-schaumburg.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/schaumburg-service-review.json"
+  ],
+  "review": "WUP 2025 code 7711, rank 2707, United States of America, point [42.0168596403923,-88.1149719103111], and 218625 persons match the verified UN source archive, roster, queue, packet, and paired review. English and Spanish searches are recorded; the paired review identifies English as the local first-party service language. Cook County parcel layer 44 metadata and PIN14/Pin10 fields are reported, but the bounded geometry query timed out and no original ID-plus-polygon response or sample exists. The timeout does not establish absence. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are unevidenced; no admission or acceptance metrics."
+}

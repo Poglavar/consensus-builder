@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-4911-atbara.json",
+  "cityCode": 4911,
+  "queueRank": 2523,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "service": "No verified public Atbara cadastral parcel service",
+  "officialEvidence": [
+    {"url": "https://www.nic.gov.sd/public/projectDetails/3", "observation": "Official NIC project page describes the Sudan Spatial Portal as a national interactive map browser offering OGC WMS/WFS services; it does not expose an Atbara parcel layer or endpoint in the accessible page content."},
+    {"url": "https://www.geoportal.gov.sd/", "observation": "The official portal URL was identified by the NIC page, but it was not accessible during the bounded direct request, so viewer JavaScript/configuration and service capabilities could not be inspected."},
+    {"url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "observation": "Official Judiciary page identifies the land-registration administration, its central and state offices, and land-record/search procedures. This establishes the national custodian, not an open Atbara geometry service."},
+    {"url": "https://aqari.nctr.sd/ar", "observation": "Official Aqari page describes a Judiciary-affiliated national electronic land/real-estate registration platform and services such as land-record review and search certificates; it does not expose public parcel geometry or an anonymous map API."},
+    {"url": "https://aqari.nctr.sd/ar/about", "observation": "Official Aqari about page describes a unified national real-estate record and governance goals; no public Atbara parcel endpoint or safe fields were exposed."},
+    {"url": "https://aqaraksd.com/ar/news/atbara-nile-river", "observation": "Atbara-specific Arabic real-estate prose refers users to the Atbara land-registration office and official search certificates, but it is not a first-party parcel service and exposes no safe geometry or native parcel identity."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.geoportal.gov.sd/", "method": "GET", "status": "DNS resolution timeout after 20 seconds via direct curl; web fetch reported URL inaccessible", "observation": "No HTML, JavaScript, configuration, capabilities, schema, CRS, or geometry response was obtained. This is not evidence of absence."},
+    {"url": "https://aqari.nctr.sd/ar", "method": "GET", "status": "DNS resolution failure via direct curl; public page content observed through web search/open", "observation": "Landing page was inspectable through public indexed content, but no anonymous parcel API or geometry route was exposed."},
+    {"url": "https://www.nic.gov.sd/public/projectDetails/3", "method": "GET", "status": "Public page content retrieved through web open", "observation": "WMS/WFS capability is documented generically; no Atbara-specific service URL, layer, field schema, or CRS was provided."},
+    {"url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "method": "GET", "status": "Public search result content observed; direct web open returned unknown status 521", "observation": "Custodian/procedure prose was recorded, with no geometry or public service response."},
+    {"url": "https://aqaraksd.com/ar/news/atbara-nile-river", "method": "GET", "status": "Public indexed page observed", "observation": "Atbara local-office/procedure reference only; not treated as first-party source integration."}
+  ],
+  "sourceFieldMapping": null,
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "CRS", "source scope/provenance"],
+  "sample": {"file": null, "featureCount": 0, "nativeIds": [], "propertiesPolicy": "No sample retained because no native parcel identity and geometry were verified."},
+  "coverageAssessment": {"claimedScope": "Sudan national/general land-registration and spatial-portal documentation plus an Atbara procedural reference.", "verifiedOpenScope": null, "countrywideVerified": false},
+  "uncertainty": [
+    "No city-local registry map/API, anonymous parcel response, schema/CRS, safe native parcel identity, or parcel geometry was verified.",
+    "The exact WUP point [17.7074389710684, 33.9962827339637] was preserved and not shifted; no exact-point or extent inference was made.",
+    "The NIC Spatial Portal page documents generic OGC WMS/WFS availability but does not identify an Atbara cadastral layer in the inspected evidence.",
+    "Judiciary land-registration documentation is custodian evidence at national level; it is not proof of an open Atbara service.",
+    "Aqari is an official national service platform, but accessible public pages describe workflows and records rather than a safe anonymous parcel map/API.",
+    "Packet completion is research only; runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No safe anonymous Atbara parcel geometry endpoint was found after bounded first-party English and Arabic discovery and public GET checks; portal DNS/availability prevented configuration inspection."
+}

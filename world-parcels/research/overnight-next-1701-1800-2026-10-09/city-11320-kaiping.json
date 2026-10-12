@@ -1,0 +1,93 @@
+{
+  "cityCode": 11320,
+  "queueRank": 1768,
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "city": "Kaiping",
+  "aliases": ["kaiping", "开平", "开平市"],
+  "point": [22.369928984164, 112.689959553947],
+  "population2025": 324576,
+  "population2025k": 324.576,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaiping China cadastral parcel map official Kaiping Natural Resources Bureau real estate registration map",
+        "result": "Official Kaiping Natural Resources Bureau pages were found. The local site exposes a cadastral-map lookup entry and a guide describing certificate/unit-number based map viewing, but no anonymous parcel feature service was exposed.",
+        "actualResultUrls": [
+          "https://www.kaiping.gov.cn/kpszrzyj/bdcdj/jzdc/",
+          "https://www.kaiping.gov.cn/kpszrzyj/bdcdj/bszn/content/post_3160193.html"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "开平市 自然资源局 不动产登记 地籍图 查询 公开地图 服务",
+        "result": "开平市自然资源局 official results identify the local cadastral/real-estate registration service. The guide says parcel maps are viewed after QR/certificate or real-estate-unit verification; no anonymous ID-plus-geometry response was available.",
+        "actualResultUrls": [
+          "https://www.kaiping.gov.cn/kpszrzyj/bdcdj/jzdc/",
+          "https://www.kaiping.gov.cn/kpszrzyj/bdcdj/bszn/content/post_3160193.html",
+          "https://guangdong.tianditu.gov.cn/ggdt/index.html"
+        ]
+      }
+    ],
+    "sourceNotes": [
+      "The Kaiping Natural Resources Bureau is the local administrative custodian; its official site links to 不动产登记以图查房（地籍图）查询.",
+      "The Kaiping guide states that post-2024-07-19 records use QR scanning plus the final character of the right-holder name, while earlier records use the Jiangmen Natural Resources WeChat flow with unit/certificate number and verification.",
+      "The Guangdong Public Map Service site was inspected as a provincial first-party viewer. Its current configuration exposed an administrative-boundary VectorTileServer and general basemap/terrain assets, not a cadastral parcel feature layer."
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "route": "Kaiping Natural Resources Bureau due-diligence index",
+      "method": "GET",
+      "url": "https://www.kaiping.gov.cn/kpszrzyj/bdcdj/jzdc/",
+      "outcome": "HTTP 200. The page links to the official Guangdong government cadastral-map lookup and to the Jiangmen housing/property information platform; no parcel API, schema, CRS, or anonymous geometry response was embedded."
+    },
+    {
+      "route": "Kaiping real-estate certificate QR/map guide",
+      "method": "GET",
+      "url": "https://www.kaiping.gov.cn/kpszrzyj/bdcdj/bszn/content/post_3160193.html",
+      "outcome": "HTTP 200. Official guide documents parcel/house diagrams, but requires certificate QR/unit or certificate number and right-holder verification; download links are short-lived after verification. No safe anonymous parcel query was attempted."
+    },
+    {
+      "route": "Linked Guangdong cadastral-map lookup",
+      "method": "GET",
+      "url": "https://www.gdzwfw.gov.cn/hlwbdcdj/gdzwfwwbdczt/index.html",
+      "outcome": "Linked first-party route recorded from the Kaiping page. Direct automated fetch returned an empty reply/ no usable response within the bounded request. No login, CAPTCHA bypass, credentials, private token, or TLS bypass was used."
+    },
+    {
+      "route": "Guangdong Public Map Service viewer",
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/index.html",
+      "outcome": "HTTP 200. Current JavaScript/configuration was followed. The public service configuration exposed https://guangdong.tianditu.gov.cn/ggdt/mapService/server/rest/services/Hosted/%E5%B9%BF%E4%B8%9C%E7%9C%81%E5%9C%B0%E7%BA%A7%E5%B8%82%E8%A1%8C%E6%94%BF%E5%8C%BA%E5%88%92%E9%9D%A215/VectorTileServer plus general basemap/terrain assets; no cadastral parcel layer or query endpoint was identified."
+    },
+    {
+      "route": "Configured Guangdong administrative VectorTileServer metadata",
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/mapService/server/rest/services/Hosted/%E5%B9%BF%E4%B8%9C%E7%9C%81%E5%9C%B0%E7%BA%A7%E5%B8%82%E8%A1%8C%E6%94%BF%E5%8C%BA%E5%88%92%E9%9D%A215/VectorTileServer?f=pjson",
+      "outcome": "Route was derived from the official viewer configuration and retained in scratch request evidence; it is an administrative-boundary vector-tile service, not a parcel service. No parcel request or geometry was retained."
+    }
+  ],
+  "nativeSource": {
+    "custodian": "Kaiping Municipal Natural Resources Bureau / Kaiping Real Estate Registration Center",
+    "localRegistryEvidence": "Official Kaiping pages identify the bureau and local registration center workflow for cadastral/parcel diagrams.",
+    "openParcelEndpoint": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified"
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS", "source layer and public service metadata"],
+  "excludedFields": ["owner/titleholder names", "addresses/contact data", "tax/account/registration details", "credentials/private tokens/personal data"],
+  "geometry": {"verified": false, "sampleFile": null, "featureCount": 0, "reason": "No safe anonymous native parcel ID plus full polygon response was obtained."},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "Local cadastral custody is evidenced, but anonymous access, current viewer/API internals, parcel schema, native identity semantics, CRS, and citywide open geometry coverage remain unverified. The exact WUP point was preserved and no exact-point hit/miss inference was made. Packet completion does not admit source integration or runtime readiness; independent serial review remains required.",
+  "qualificationDecision": "hold"
+}

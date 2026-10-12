@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2842",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-2842-semey.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/semey-service-review.json",
+    "tmp/valhalla-parcel-research/2842/kato.json",
+    "tmp/valhalla-parcel-research/2842/settings.json"
+  ],
+  "checkedAt": "2026-10-10T18:42:29.563204Z",
+  "reason": "Queue identity matches rank 1924, Kazakhstan, point and 298847 persons. English and Kazakh search records are present. First-party KATO and settings caches each contain 31 entries but no Semey entry, so historical geoportal custody documentation does not supply a current Semey parcel feature read. No native-ID polygons or runtime qualification gates are evidenced; retain registryFound true as documented custody, not current open geometry."
+}

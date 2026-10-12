@@ -1,0 +1,80 @@
+{
+  "cityCode": 11790,
+  "queueRank": 1328,
+  "name": "Longyan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [25.0997041427901, 117.024047113305],
+  "population2025": 422165,
+  "population2025k": 422.165,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Longyan Municipal Natural Resources Bureau first-party material identifies a Natural Resources Survey and Registration division (also the real-estate registration bureau), responsible for natural-resource and real-estate unified registration, cadastral surveying, and a municipal registration information platform. This establishes local registry custody, not an open parcel-vector feed.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Longyan China official cadastral map parcel GIS land registration natural resources",
+        "result": "First-party Longyan Natural Resources Bureau results identified the municipal Natural Resources Survey and Registration division, cadastral-survey responsibilities, unified registration platform, and a public multi-survey information platform. No anonymous public cadastral parcel ID+geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://zrzyj.longyan.gov.cn/jggk/jgsz/",
+          "https://zrzyj.longyan.gov.cn/",
+          "https://zrzyj.longyan.gov.cn/zwgk/zcwj/202410/t20241009_2159207.htm"
+        ]
+      },
+      {
+        "language": "native/local",
+        "script": "Simplified Chinese",
+        "query": "龙岩市 不动产登记 地籍图 地图 自然资源局",
+        "result": "龙岩市自然资源局官方页面确认自然资源调查与登记科（不动产登记局）负责统一确权登记、权籍调查、不动产测绘、登记信息管理平台和地籍测绘监督；官方多测合一平台可匿名访问其前端配置，但未返回安全宗地身份和完整宗地几何。",
+        "actualResultUrls": [
+          "https://zrzyj.longyan.gov.cn/jggk/jgsz/",
+          "https://zrzyj.longyan.gov.cn/zwgk/zcwj/202410/t20241009_2159207.htm",
+          "https://www.lytdt.com:9002/longyan-portal/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://zrzyj.longyan.gov.cn/jggk/jgsz/",
+      "role": "Longyan Municipal Natural Resources Bureau organization page",
+      "observation": "The Natural Resources Survey and Registration division is responsible for unified natural-resource and real-estate registration, cadastral survey, registration-information management, and supervision of cadastral surveying; the bureau also manages a natural-resources one-map system."
+    },
+    {
+      "url": "https://zrzyj.longyan.gov.cn/zwgk/zcwj/202410/t20241009_2159207.htm",
+      "role": "Longyan Municipal Natural Resources Bureau multi-survey reform notice",
+      "observation": "Describes the existing Longyan multi-survey information platform, integration with approval and real-estate registration systems, cadastral-data sharing, and submission of survey results to the bureau. This is service/custody evidence, not an open parcel download."
+    },
+    {
+      "url": "https://www.lytdt.com:9002/longyan-portal/",
+      "role": "Public Longyan multi-survey platform frontend",
+      "observation": "Anonymous frontend is reachable and its public configuration identifies baseUrl https://www.lytdt.com:9002/longyan-dchy-web, basemap WKID 3857, and area-data WKID 4548. The exposed public map routes are land-project publicity routes; no anonymous cadastral parcel layer response was obtained."
+    },
+    {
+      "url": "https://www.longyan.gov.cn/hd/zxft/wqhg/zrzyj_251023/",
+      "role": "Longyan government real-estate registration press material",
+      "observation": "First-party government material describes the municipal real-estate registration center and online registration services, but does not publish a safe open parcel-vector service."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was returned by anonymous public requests. The public multi-survey frontend exposed CRS/configuration and land-project publicity routes, not a verified cadastral parcel layer. The WUP point [25.0997041427901, 117.024047113305] was preserved exactly and was not shifted; no exact-point hit or miss is asserted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Longyan municipal natural-resource and real-estate registration/cadastral-survey custody under the Municipal Natural Resources Bureau, with a multi-survey platform.",
+    "verifiedOpenScope": "Local registry custody, platform existence, public frontend configuration, and CRS metadata only; parcel layer schema, native parcel identity, anonymous geometry, exact-point containment, and citywide open coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

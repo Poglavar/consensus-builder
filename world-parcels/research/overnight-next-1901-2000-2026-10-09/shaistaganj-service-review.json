@@ -1,0 +1,24 @@
+{
+  "cityRecord": "city-7061-shaistaganj.json",
+  "cityCode": 7061,
+  "queueRank": 1909,
+  "country": "Bangladesh",
+  "point": [24.2250223929895, 91.3673178164947],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "summary": "First-party English and Bengali discovery identified the official DLRS Settlement map viewer and Shaistaganj Upazila Land Office. Public API traversal reached division, district, and boundary routes, but Habiganj survey enumeration returned an empty array. No parcel polygon or native parcel ID was retained.",
+  "registryFound": true,
+  "geometryRetained": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "requests": "See city record requestsAndEndpointChecks; all requests were anonymous public GET/POST with TLS verification enabled.",
+  "scopeLimits": [
+    "Habiganj boundary response is administrative, not cadastral.",
+    "A zero or empty survey response is not evidence of citywide absence.",
+    "No exact-point parcel hit, map extent hit, or citywide parcel coverage was asserted.",
+    "No credentials, CAPTCHA bypass, private token, owner, address, titleholder, personal, tax, or account fields were requested."
+  ],
+  "safeFieldAllowlist": ["geometry", "stable native parcel/dag identity"],
+  "uncertainty": "The official viewer may require a currently available survey code before it lists Habiganj upazilas/mouzas; availability and coverage remain unverified.",
+  "qualification": "Not qualified for runtime integration or admission."
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 51,
+  "queueRank": 2947,
+  "name": "Bechar",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "point": [31.6033745728277, -2.22180554352403],
+  "population2025": 202059,
+  "population2025k": 202.059,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bechar Algeria cadastral parcel map official public GIS",
+        "result": "Search found the official Algerian geospatial viewer InfoGéolAlgérie (ASGA) and official national/ministerial land agencies. No public Béchar parcel feature service or anonymous parcel API was exposed in search results.",
+        "actualResultUrls": [
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+          "https://www.anfu.dz/",
+          "https://www.joradp.dz/FTP/Jo-Francais/2002/F2002042.pdf"
+        ]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Bechar Algérie cadastre parcellaire carte officielle service public",
+        "result": "Search found the official ASGA InfoGéolAlgérie map, the Ministry of Interior Béchar wilaya monograph, ANFU, and an official gazette identifying a Direction du cadastre de wilaya de Béchar. These results evidence national or administrative cadastral responsibility, not an accessible public parcel geometry endpoint for Bechar.",
+        "actualResultUrls": [
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+          "https://monographie.interieur.gov.dz/detail_wilaya.php?dossier_id=5&wil=8",
+          "https://www.anfu.dz/",
+          "https://www.joradp.dz/FTP/Jo-Francais/2002/F2002042.pdf"
+        ]
+      }
+    ],
+    "sources": [
+      "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "https://monographie.interieur.gov.dz/detail_wilaya.php?dossier_id=5&wil=8",
+      "https://www.anfu.dz/",
+      "https://www.joradp.dz/FTP/Jo-Francais/2002/F2002042.pdf"
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "The official gazette identifies a Direction du cadastre de wilaya de Béchar within the national cadastral administration, but no directly accessible local registry/map/procedure endpoint was verified during this attempt. National agency prose and a non-parcel administrative map are not treated as a local public parcel registry.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "ASGA InfoGéolAlgérie presents an official 1:200,000 cartographic viewer with wilaya and commune layers.",
+    "verifiedOpenScope": "No parcel layer, parcel schema, CRS response, or bounded ID-plus-geometry response was obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "sourceCandidate": {
+    "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+    "publisher": "Agence du Service Géographique et de Télédétection (ASGA)",
+    "safeSampleFile": null
+  },
+  "sourceFieldMapping": null,
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "The official InfoGéolAlgérie viewer was requested with TLS verification enabled. The request timed out before HTML, current JavaScript/configuration, service URL, schema, CRS, or parcel response could be inspected.",
+      "evidence": "tmp/valhalla-parcel-research/bechar-asga.headers and tmp/valhalla-parcel-research/bechar-asga.html",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://monographie.interieur.gov.dz/detail_wilaya.php?dossier_id=5&wil=8",
+      "method": "GET",
+      "status": "official search result; direct fetch unavailable in web reader",
+      "summary": "The Ministry of Interior search result identifies an interactive Béchar wilaya monograph and administrative cartography, but no parcel service or safe parcel geometry endpoint was shown.",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://www.joradp.dz/FTP/Jo-Francais/2002/F2002042.pdf",
+      "method": "GET",
+      "status": "official search result",
+      "summary": "The official gazette states that a Direction du cadastre de wilaya de Béchar exists in the national cadastral administration. It is institutional evidence only; no public endpoint was extracted and no unsafe cadastral attributes were requested.",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://www.anfu.dz/",
+      "method": "GET",
+      "status": "HTTP 200 via indexed official page",
+      "summary": "ANFU describes urban land-management and GIS missions, but the public page exposes no Béchar parcel feature service or anonymous parcel geometry route.",
+      "tlsVerification": "enabled"
+    }
+  ],
+  "safeFieldAllowlist": [
+    "canonical native parcel identity",
+    "full parcel polygon geometry",
+    "source CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner/titleholder",
+    "address/contact",
+    "personal data",
+    "tax/account",
+    "certificate/title information"
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The official ASGA viewer could not be reached within the bounded request, so its current JavaScript/configuration and any possible parcel layer remain unverified. No exact-point hit, map extent miss, timeout, or unavailable UI is evidence of citywide parcel absence. No parcel polygon was retained.",
+  "nextStep": "A later attempt may inspect the official viewer from a reachable network path or identify a directly published, anonymous first-party parcel service. Independent serial review is required before any runtime admission.",
+  "doNotInfer": [
+    "The ASGA timeout is not evidence of parcel absence.",
+    "The official cadastral-direction reference is not proof of a public API or citywide geometry coverage.",
+    "The administrative 1:200,000 map is not a parcel layer.",
+    "Packet completion is not source integration/admission."
+  ]
+}

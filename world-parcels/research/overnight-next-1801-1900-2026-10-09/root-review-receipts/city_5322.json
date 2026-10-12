@@ -1,0 +1,21 @@
+{
+  "taskId": "city:5322",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-5322-surendranagar.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/surendranagar-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T155512-317456ef/stdout.jsonl",
+    "tmp/valhalla-parcel-research/5322/snmc.maps.html",
+    "tmp/valhalla-parcel-research/5322/snmc.maps.request.txt",
+    "tmp/valhalla-parcel-research/5322/anyror.request.txt",
+    "tmp/valhalla-parcel-research/5322/stategis.request.txt"
+  ],
+  "checkedAt": "2026-10-10T16:00:36Z",
+  "reviewNotes": "Official Surendranagar district land-record page establishes regional custody. Original municipal response lists contour, inundation and boundary maps, not parcel polygons. AnyRoR and state GIS attempts yielded no usable parcel response. English and Gujarati searches are visible in the worker search action. No native parcel ID or geometry; timeout is not absence.",
+  "admissionGate": "Held: no independently qualified live adapter with fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification. No registry, catalog, city config, or generated coverage/report admission update."
+}

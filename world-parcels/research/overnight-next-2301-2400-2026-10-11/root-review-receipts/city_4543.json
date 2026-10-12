@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4543",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-4543-demba.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/demba-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:15:34Z",
+  "identityCheck": "WUP 2025 CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, queue and packet agree: Demba, code 4543, rank 2355, CD/COD, point [-5.48961713513931,22.2702634146899], population 248191 persons.",
+  "searchCheck": "Paired packet and service review record executed English and French searches, first-party result URLs, and bounded BIC requests.",
+  "custodyAndFirstPartyCheck": "Ministry directory independently opened: Kasaï-Central lists Kananga, Dibaya and Luiza, with no Demba-specific circumscription. National record-request procedure establishes general custodianship only, so registryFound=null stays unresolved. Saved original BIC anonymous parcel/title RPC and safe-field parcel projection bodies are [] each; an earlier geometry-column probe reports missing column. Generic viewer geography names and empty results do not prove Demba coverage or citywide absence.",
+  "sampleAndAdmissionCheck": "No Demba sample file or full polygon is present. Native ID plus full polygon, exact-ID reads, forced paging, thirteen bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission."
+}

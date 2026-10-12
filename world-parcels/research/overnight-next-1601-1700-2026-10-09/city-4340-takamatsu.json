@@ -1,0 +1,126 @@
+{
+  "cityCode": 4340,
+  "queueRank": 1678,
+  "name": "Takamatsu",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "locId": 392,
+  "point": [34.3093332431905, 134.051161611742],
+  "population2025": 340478,
+  "population2025k": 340.478,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Takamatsu city official cadastral map parcel GIS land registry Japan",
+        "result": "First-party discovery found Takamatsu City’s Smart Map publication and a city notice stating that the online 地番現況図 is equivalent in content to the cadastral map previously available at the city tax office and local counters. The city Smart Map describes vector tiles and an API. No city-issued downloadable parcel polygon archive was found in the indexed results.",
+        "actualResultUrls": [
+          "https://www.city.takamatsu.kagawa.jp/kurashi/kurashi/tax/kotei/oshirase/shisan202609070001.html",
+          "https://www.city.takamatsu.kagawa.jp/kurashi/shinotorikumi/machidukuri/toshi/d_syakai_digiden_map.html",
+          "https://maps.takamatsu-fact.com/"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "高松市 地籍図 地番現況図 GIS 公式",
+        "result": "公式日本語検索で、高松市資産税課の地番現況図告知、高松市スマートマップ、土地改良課地籍調査室を確認した。市は地番現況図を土地の位置・地番確認用の参考資料とし、境界・道路幅員・権利関係を保証しないと明記している。",
+        "actualResultUrls": [
+          "https://www.city.takamatsu.kagawa.jp/kurashi/kurashi/tax/kotei/oshirase/shisan202609070001.html",
+          "https://www.city.takamatsu.kagawa.jp/kurashi/shinotorikumi/machidukuri/chiseki/toshi.html",
+          "https://maps.takamatsu-fact.com/api/catalog.json"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.city.takamatsu.kagawa.jp/kurashi/kurashi/tax/kotei/oshirase/shisan202609070001.html",
+      "observation": "Official Takamatsu City notice dated 2026-10-01 says the city’s 地番現況図 is available online in Smart Map, equivalent in content to the cadastral map formerly viewable at the tax office, general centers and branch offices, and warns it is reference material rather than proof of boundaries or rights."
+    },
+    {
+      "url": "https://www.city.takamatsu.kagawa.jp/kurashi/shinotorikumi/machidukuri/toshi/d_syakai_digiden_map.html",
+      "observation": "Official city Smart Map page says the service began 2023-03-31, uses vector tiles, and provides an API for combining map information."
+    },
+    {
+      "url": "https://maps.takamatsu-fact.com/api/catalog.json",
+      "observation": "The current public Smart Map catalog lists DataItem 地番現況図, source_type vector, and its public TileJSON URL; metadata names the displayed fields 町名 and 地番."
+    },
+    {
+      "url": "https://takamatsu-city.kagawa.smartcity.geolonia.com/data/chiban-genkyo-zu/latest/tiles/tiles.json",
+      "observation": "Officially linked/public service TileJSON describes 高松市の地番現況図 as an integrated cadastral/parcel-number map plus unresolved-parcel-number areas, bounds [133.919735,34.111165,134.176283,34.433815], zoom 9–18, vector layer g-simplestyle-v1, and only a title string field."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.city.takamatsu.kagawa.jp/kurashi/kurashi/tax/kotei/oshirase/shisan202609070001.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official notice loaded and exposed the Smart Map URL."
+    },
+    {
+      "url": "https://maps.takamatsu-fact.com/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript application shell loaded; CSP and script configuration exposed the public catalog path."
+    },
+    {
+      "url": "https://maps.takamatsu-fact.com/api/catalog.json",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current catalog inspected; 地番現況図 points to the public vector TileJSON endpoint and layer g-simplestyle-v1."
+    },
+    {
+      "url": "https://takamatsu-city.kagawa.smartcity.geolonia.com/data/chiban-genkyo-zu/latest/tiles/tiles.json",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "TileJSON inspected for schema, bounds, zoom and CRS-related metadata; no explicit CRS field was supplied, and vector-tile web-mercator tile addressing is implied by the public tile service."
+    },
+    {
+      "url": "https://takamatsu-city.kagawa.smartcity.geolonia.com/data/chiban-genkyo-zu/latest/tiles/18/228685/104446.pbf",
+      "method": "GET; anonymous; TLS verification enabled; z/x/y selected from exact preserved WUP point [34.3093332431905, 134.051161611742] without shifting it",
+      "httpStatus": 200,
+      "outcome": "Bounded tile response downloaded. OGR inspection returned parcel-label Point features with title values such as 717-4, 717-1 and 716-1, plus Polygon features with empty properties. No safe stable native identity was attached to the polygon features, so no geometry was retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Takamatsu City’s official tax and Smart Map publications establish a local city cadastral/tax-map custodian and a public map service. This is local registry/map evidence, but the service warning makes it a reference map and not proof of legal parcel boundaries or rights.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": "takamatsu-smart-map-chiban-genkyo-zu-vector-tiles",
+  "nativeFieldMapping": {
+    "catalogLayer": "g-simplestyle-v1",
+    "displayField": "title",
+    "observedLabelValues": ["717-4", "717-1", "716-1"],
+    "polygonIdentity": null,
+    "note": "The current TileJSON exposes only title:String. In the bounded tile, labeled points and unlabeled polygons were separate feature types; no stable native polygon ID field was demonstrated."
+  },
+  "compositeKeyProvenance": null,
+  "crs": "TileJSON does not declare CRS. Public vector tile addressing is Web Mercator z/x/y; returned raw tile coordinates were not treated as GeoJSON parcel coordinates.",
+  "geometryQuality": "Polygon geometry was observed in the bounded public tile response, but its source feature properties were empty and no native identity could be safely associated; no retained sample.",
+  "coverageAssessment": {
+    "claimedScope": "Takamatsu city 地番現況図 public Smart Map layer; TileJSON bounds cover the published Takamatsu service extent.",
+    "verifiedOpenScope": "Public TileJSON and one bounded z18 tile only; no citywide parcel completeness audit was performed.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if confirmed", "full parcel polygon geometry", "geometry CRS/coordinate metadata", "source layer and public service metadata"],
+  "excludedFields": ["owner or titleholder names", "addresses and contact data", "tax/account/registration details", "personal information", "credentials and private tokens"],
+  "scopeLimits": [
+    "Exact WUP point [34.3093332431905, 134.051161611742] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "A single z18 tile was inspected. It is not evidence of citywide absence or completeness.",
+    "The city explicitly warns that the 地番現況図 is reference material and does not guarantee boundaries, road widths or property rights.",
+    "The public schema exposed labels and unlabeled polygon features but no proven stable polygon identity, so no sample GeoJSON was written.",
+    "No owner, address, titleholder, contact, personal, tax/account or unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending independent serial review."
+  ],
+  "uncertainty": "The current public viewer and tile endpoint are evidenced, but native polygon identity semantics, exact CRS declaration, citywide completeness, and legal cadastral status remain unresolved.",
+  "runtimeReadiness": "held_public_reference_map_native_polygon_identity_unresolved",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "retainedSample": null
+}

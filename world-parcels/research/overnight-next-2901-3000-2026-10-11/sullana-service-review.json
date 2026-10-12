@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-347-sullana.json",
+  "cityCode": 347,
+  "queueRank": 2960,
+  "name": "Sullana",
+  "country": "Peru",
+  "countryCode": "PE",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Spanish first-party discovery found the Municipalidad Provincial de Sullana cadastral-plan approval and local zoning/catastro procedure, plus SUNARP's national Base Gráfica Registral viewer and WMS policy. The municipal source was not machine-readable in inspected public pages. SUNARP access requires DNI/date and CAPTCHA; the direct viewer request timed out. No safe anonymous ID-plus-geometry response was verified and no sample was retained.",
+  "attemptedRoutes": [
+    {"url": "https://www.gob.pe/es/munisullana", "method": "GET", "outcome": "HTTP 200 official municipal page; no parcel API in inspected HTML"},
+    {"url": "https://www.gob.pe/institucion/munisullana/normas-legales/2451071-1051-2019-mps", "method": "GET", "outcome": "Official resolution route evidences approval of the district cadastral plan"},
+    {"url": "https://www.gob.pe/31733-solicitar-certificadode-zonificacion-y-vias", "method": "GET", "outcome": "Official municipal procedure identifies the local urban-development/cadastre/sanitation subgerency; no open parcel service"},
+    {"url": "https://www.gob.pe/institucion/sunarp/normas-legales/6098648-153-2024-sunarp-sn", "method": "GET", "outcome": "Official SUNARP resolution describes municipal WMS/Web Map access subject to agreement; no anonymous Sullana endpoint"},
+    {"url": "https://visor-bgr.sunarp.gob.pe/", "method": "GET", "outcome": "Browser-like request timed out at approximately 40 seconds; viewer documentation/search results indicate DNI/date/CAPTCHA gating"},
+    {"url": "https://serviciosenlinea.sunarp.gob.pe/portal/", "method": "GET", "outcome": "Official online-services portal identified; Base Gráfica Registral listed, but no anonymous parcel API exposed"}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [-4.90245229069859, -80.6872738207331] was preserved and not shifted; no exact-point hit or miss was generated.",
+    "The municipal cadastral-plan approval proves a local cadastral artifact/procedure, not a downloadable polygon dataset or citywide completeness.",
+    "The SUNARP viewer's stated national scope does not prove that every Sullana parcel is present, current, or anonymously downloadable.",
+    "No raw owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested, logged, or retained.",
+    "No retained GeoJSON sample was created because no safe bounded native ID-plus-geometry response was obtained."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": null,
+    "alsoObserved": [],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "No parcel response was obtained; no native identity or composite-key interpretation is claimed."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "registryFound": true,
+  "runtimeReadiness": "held_pending_serial_review",
+  "uncertainty": "A local first-party cadastral custodian and approved cadastral-plan procedure are evidenced, while public machine-readable parcel access remains unverified. The national SUNARP viewer is identity/CAPTCHA gated and its direct route timed out here. No claim of citywide absence or completeness is made."
+}

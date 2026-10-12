@@ -1,0 +1,44 @@
+{
+  "taskId": "city:4049",
+  "decision": "held",
+  "checkedAt": "2026-10-12T04:08:07Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-4049-myaung-mya.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/myaung-mya-service-review.json"
+  ],
+  "queueIdentity": {
+    "rank": 3144,
+    "cityCode": 4049,
+    "name": "Myaung Mya",
+    "country": "Myanmar",
+    "pointLatLon": [
+      16.6022012206854,
+      94.9272856702308
+    ],
+    "population2025Persons": 190818
+  },
+  "executedSearchLanguages": [
+    "English",
+    "Burmese (local)"
+  ],
+  "retainedFullPolygonCount": 0,
+  "registryFound": true,
+  "firstPartyChecks": [
+    "https://slrd.gov.mm/my/node/154",
+    "https://www.moi.gov.mm/iprd/news/248946"
+  ],
+  "reason": "SLRD and a Myaung Mya land-records office/procedure are evidenced. The Survey Department timed out; no anonymous parcel feature response, native ID, or full polygon was evidenced.",
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "admission": "not_admitted",
+  "absenceClaim": null
+}

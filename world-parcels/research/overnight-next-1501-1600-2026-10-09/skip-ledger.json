@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1526,
+      "cityCode": 78,
+      "name": "Valletta",
+      "country": "Malta",
+      "iso2": "MT",
+      "pop2025k": 373.474,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/europe/MT.json",
+          "cityId": "capital:MT:valletta",
+          "cityName": "Valletta",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/europe/MT.json",
+              "note": "Explicit Valletta/Grand Harbour city-region bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 1.28
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "decisionFile": "root-identity-decision-overlay.json",
+        "reviewedAt": "2026-10-10T08:15:38.981767Z"
+      }
+    },
+    {
+      "rank": 1583,
+      "cityCode": 6097,
+      "name": "Dilla",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "pop2025k": 360.925,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-dilla.json",
+          "cityId": "wup2025:6097",
+          "cityName": "Dilla",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-dilla.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

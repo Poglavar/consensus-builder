@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-5720-guas-lindas-de-goi-s.json",
+  "cityCode": 5720,
+  "queueRank": 3126,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "summary": "Official municipal evidence establishes a Cadastro Imobiliário and geoprocessing responsibility, and the city links a current Prodata SIG portal. The public SIG entrypoint is login-gated; no safe anonymous parcel ID-plus-geometry response was qualified. No sample GeoJSON is retained.",
+  "custodian": "Prefeitura Municipal de Águas Lindas de Goiás is the local municipal fiscal-cadastre custodian; Prodata SIG is the linked service portal. IBGE is only a general national mapping source here, not a local cadastral custodian.",
+  "requests": "All discovery queries and executed requests, including outcomes and URLs, are recorded in the city record. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe-field request, or TLS exception was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The WUP point [-15.7442164512803, -48.2764269014505] and population 192415 persons are preserved.",
+    "Municipal law/procurement establish cadastral administration but do not prove public parcel-vector access.",
+    "The Prodata SIG login wall was recorded and not bypassed.",
+    "No exact-point hit/miss, map extent miss, timeout, or login wall was treated as citywide absence.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": [
+    "A supported authenticated or interactive SIG client may expose additional parcel services, but that was outside the allowed anonymous research scope.",
+    "No current native parcel identity, geometry schema, CRS, bounded parcel response, or citywide coverage was qualified.",
+    "No sample GeoJSON was written."
+  ]
+}

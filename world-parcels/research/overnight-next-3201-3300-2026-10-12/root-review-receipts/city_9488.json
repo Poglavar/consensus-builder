@@ -1,0 +1,18 @@
+{
+  "taskId": "city:9488",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-9488-huixian.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/huixian-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T07:49:00Z",
+  "findings": {
+    "identity": "UN WUP 2025 gzip SHA-256 matches roster source metadata; source row, rank 3276 roster, pending queue, and packet agree on China, point [35.4618493636296,113.794871256029], and 184045 persons.",
+    "searches": "Packet and paired review record executed English and Chinese queries with result URLs. Official Xinxiang/Henan procurement search result identifies the local real-estate registration and trading center; direct procurement/portal access returned 403/418 or was unavailable.",
+    "geometry": "No original native-ID parcel response or retained polygon. Access barriers are not citywide absence evidence.",
+    "admission": "Held: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are missing. No runtime or coverage state changed."
+  }
+}

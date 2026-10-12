@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8402",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-8402-palu.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/palu-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:39:07Z",
+  "rationale": "Palu: immutable queue identity and English/Indonesian searches match; official land office and BHUMI/ATLAS evidence establishes custody and a candidate route, but no safe native ID and full polygon response or adapter qualification was obtained.",
+  "admission": "held; no runtime, source catalog, city config, or generated coverage change"
+}

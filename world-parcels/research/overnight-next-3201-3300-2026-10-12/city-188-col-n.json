@@ -1,0 +1,94 @@
+{
+  "cityCode": 188,
+  "queueRank": 3229,
+  "name": "Colón",
+  "country": "Panama",
+  "countryCode": "PA",
+  "iso2": "PA",
+  "iso3": "PAN",
+  "locId": 591,
+  "capital": false,
+  "point": [9.35225163372513, -79.8597360411826],
+  "population2025": 187007,
+  "population2025k": 187.007,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Colón Panama official cadastral parcel map GIS cadastre service",
+        "result": "First-party discovery found ANATI cadastral procedures and the official IGN Tommy Guardia ArcGIS service directory/indexed map services. The discovered public IGN service is political/populated-place mapping, not a parcel layer. No locally scoped Colón cadastral viewer or anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.panamadigital.gob.pa/InformacionTramite/informacion-de-puntos-catastrales",
+          "https://www.panamadigital.gob.pa/InformacionTramite/verificacion-de-medidas-y-linderos",
+          "https://www.panamadigital.gob.pa/InformacionTramite/aprobacion-de-planos",
+          "https://sigigntg.anati.gob.pa/arcgisserver/rest/services/Mapa_Web_de_Poblados_2025_MIL1/MapServer"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Catastro Colón Panamá mapa parcelas servicio oficial",
+        "result": "La búsqueda oficial identificó a la Autoridad Nacional de Administración de Tierras (ANATI) como institución de trámites catastrales y al Instituto Geográfico Nacional Tommy Guardia como proveedor de servicios cartográficos. Los servicios públicos encontrados son de división política/poblados; no se verificó una capa pública anónima de parcelas para Colón.",
+        "actualResultUrls": [
+          "https://www.panamadigital.gob.pa/InformacionTramite/informacion-de-puntos-catastrales",
+          "https://www.panamadigital.gob.pa/InformacionTramite/certificacion-de-ubicacion",
+          "https://ignpanama.anati.gob.pa/index.php/2-uncategorised/268-galeria",
+          "https://sigigntg.anati.gob.pa/arcgisserver/rest/services/Mapa_Web_de_Poblados_2025_MIL1/MapServer"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "ANATI is evidenced as the national cadastral authority for procedures; a Colón municipal or provincial cadastral custodian/service was not independently evidenced.",
+    "scope": "National cadastral procedure documentation and official IGN cartographic services; no verified local parcel service.",
+    "evidenceUrls": [
+      "https://www.panamadigital.gob.pa/InformacionTramite/informacion-de-puntos-catastrales",
+      "https://www.panamadigital.gob.pa/InformacionTramite/aprobacion-de-planos",
+      "https://www.panamadigital.gob.pa/InformacionTramite/certificacion-de-ubicacion"
+    ],
+    "scopeNote": "National-agency procedure prose is not treated as evidence of a public Colón parcel API or complete local registry coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "note": "No safe native parcel ID plus full parcel geometry was obtained. No sample GeoJSON retained."
+  },
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdentity": null,
+    "geometryCrs": null,
+    "boundedAnonymousResponse": {
+      "result": "No parcel response; the official ArcGIS host returned an anti-automation challenge for direct REST requests. Indexed service metadata identifies EPSG:3857 for the discovered poblados layer, which is not a cadastral parcel layer."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identifiers", "tax/account details", "certificate/title"],
+  "geometryDecision": {
+    "verified": false,
+    "exactWupPointTest": "The exact WUP point was preserved and not shifted. No exact-point parcel test was completed because no verified public parcel endpoint was reachable; this is not evidence of absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Colón city cadastral parcel source",
+    "verifiedOpenScope": "ANATI national cadastral procedures and IGN political/populated-place map metadata only",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no public parcel adapter or safe geometry response was independently verified",
+  "scopeLimits": [
+    "Exact WUP point preserved; no coordinate shift.",
+    "A zero exact-point hit, map extent miss, and anti-automation challenge are not evidence of citywide cadastral absence.",
+    "The discovered IGN service is political/populated-place mapping and cannot be substituted for parcels.",
+    "National ANATI procedure pages do not establish a local public parcel API or complete Colón coverage.",
+    "This packet is research only, not source integration or runtime admission."
+  ],
+  "uncertainty": "A first-party Colón parcel source may exist behind an interactive portal or restricted workflow not exposed to bounded anonymous REST requests. Recheck the current ANATI/IGN and any municipal viewer in a later attempt; do not infer absence from this attempt."
+}

@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 7450,
+  "queueRank": 3082,
+  "name": "Nizhnevartovsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "locId": 643,
+  "capital": false,
+  "point": [60.9389173002296, 76.567955531142],
+  "population2025": 195090,
+  "population2025k": 195.09,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nizhnevartovsk cadastral parcel map official land registry GIS parcels",
+        "result": "First-party discovery identified the official City 3D geoportal and its published EGRN land-plot layers. The viewer description says the layers show land-plot boundaries from the Unified State Register of Real Estate. No anonymous polygon response was verified.",
+        "actualResultUrls": [
+          "https://geoportal.n-vartovsk.ru/",
+          "https://geoportal.n-vartovsk.ru/location/1",
+          "https://data.n-vartovsk.ru/api-docs/v1/8603032896-landplotsreestr/"
+        ]
+      },
+      {
+        "language": "Russian (local)",
+        "query": "Нижневартовск публичная кадастровая карта кадастровые кварталы официальный Росреестр",
+        "result": "First-party discovery identified the official municipal 3D geoportal, EGRN land-plot layers, and the municipal land-plot open-data API documentation. Viewer configuration exposed a historical GeoServer/WFS layer for parcel search, but bounded anonymous requests returned HTTP 404.",
+        "actualResultUrls": [
+          "https://geoportal.n-vartovsk.ru/",
+          "https://geoportal.n-vartovsk.ru/location/1",
+          "https://data.n-vartovsk.ru/api-docs/v1/8603032896-landplotsreestr/",
+          "https://www.n-vartovsk.ru/uslugi/pa/reglaments/mu_dmszr/290497.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Administration of Nizhnevartovsk / municipal digital territorial-development geoportal; Rosreestr EGRN is the stated source of the displayed land plots",
+    "locality": "Nizhnevartovsk, Khanty-Mansi Autonomous Okrug-Yugra, Russian Federation",
+    "evidenceUrls": [
+      "https://geoportal.n-vartovsk.ru/",
+      "https://geoportal.n-vartovsk.ru/location/1",
+      "https://www.n-vartovsk.ru/uslugi/pa/reglaments/mu_dmszr/290497.html"
+    ],
+    "scopeNote": "The municipal portal is evidence of a local public map/custodian and of displayed EGRN-derived land-plot layers; it is not evidence that an open reusable citywide parcel API is available. Rosreestr is recorded as the upstream national register, not as a successfully queried endpoint in this attempt."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Nizhnevartovsk 3D geoportal; viewer-configured EGRN land-plot layers",
+    "nativeIdField": "not verified; the exposed WFS schema was not successfully queried",
+    "crs": "not verified for a successful parcel response; viewer layer extents are geographic",
+    "boundedResponse": null,
+    "fieldMapping": {
+      "documentedViewerFields": ["_1_КН", "_15_Тип_об", "_9_Использ", "_8_Категор", "_10_Площад", "_13_Стоимо", "_2_ЕЗ", "_3_Адрес"],
+      "safeRequestedFields": ["geometry", "parcel identifier only"],
+      "unsafeFieldsNotRequested": ["owner", "address/contact", "titleholder", "personal", "tax/account", "rights and encumbrances"]
+    },
+    "note": "The portal HTML configuration exposed GeoServer layer User_2:loc2634607873808485038 with WFS URL https://geoportal.n-vartovsk.ru/User_2/ows and a polygon style, plus EGRN KML layers. No full KML was downloaded because the configured files are large (approximately 106 MB and 352 MB)."
+  },
+  "requests": [
+    {
+      "url": "https://geoportal.n-vartovsk.ru/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official municipal 3D geoportal landing page; describes EGRN land-plot boundaries."
+    },
+    {
+      "url": "https://geoportal.n-vartovsk.ru/location/1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official viewer page; inline ROOT_LOCATION configuration exposed EGRN layers 1075 and 1107 and historical WFS search layer 587."
+    },
+    {
+      "url": "https://geoportal.n-vartovsk.ru/User_2/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "Configured WFS route returned the portal's 404 page; no capabilities or schema response."
+    },
+    {
+      "url": "https://geoportal.n-vartovsk.ru/User_2/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=User_2:loc2634607873808485038&outputFormat=application%2Fjson&maxFeatures=3&bbox=76.5665,60.9384,76.5694,60.9394,EPSG:4326&propertyName=_1_%D0%9A%D0%9D,the_geom",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "Bounded anonymous ID-plus-geometry request, capped at three features and using a small box around the exact WUP point; returned 404, not evidence of citywide absence."
+    },
+    {
+      "url": "https://data.n-vartovsk.ru/api/v1/8603032896-landplotsreestr/structure",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "application/json",
+      "assessment": "Official municipal open-data API documentation route; response states that API_KEY is required. No key was used or sought."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal Nizhnevartovsk 3D portal displays EGRN-derived land-plot layers covering mapped portal extents.",
+    "verifiedOpenScope": "No open parcel geometry response verified in this attempt.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "remainingUncertainty": [
+    "The portal exposes large EGRN KML layer files and a historical WFS configuration, but no bounded anonymous response was available from the tested route.",
+    "The exact WUP point was preserved and not shifted; a 404 or map/API access failure is not evidence of parcel absence.",
+    "Native stable parcel identity and CRS remain unverified because no feature response was returned.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or other sensitive fields were requested or retained.",
+    "Packet completion is not source integration/admission; serial runtime qualification remains required."
+  ],
+  "nextStep": "A serial reviewer should independently recheck the current municipal viewer's network routes and qualify any bounded ID-plus-geometry response before adapter work."
+}

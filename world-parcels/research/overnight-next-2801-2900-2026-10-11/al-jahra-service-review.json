@@ -1,0 +1,72 @@
+{
+  "cityRecord": "city-138-al-jahra.json",
+  "cityCode": 138,
+  "queueRank": 2844,
+  "city": "Al Jahra",
+  "country": "Kuwait",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Kuwait Ministry of Justice, Real Estate Registration Department",
+    "localEvidence": "Official Ministry of Justice procedures name the real-estate registration office in Al Jahra at the Jahra New Courts Complex.",
+    "urls": [
+      "https://www.moj.gov.kw/EN/pages/DeptProcedure.aspx?ItemID=701",
+      "https://www.moj.gov.kw/AR/pages/DeptProcedure.aspx?ItemID=158",
+      "https://www.moj.gov.kw/AR/pages/DeptProcedure.aspx?ItemID=296"
+    ]
+  },
+  "routesAttempted": [
+    {
+      "route": "PACI English service landing page",
+      "request": "GET https://services.paci.gov.kw/?lang=en",
+      "outcome": "Reachable; page advertises geospatial information services but does not expose parcel schema or an anonymous feature request in rendered content."
+    },
+    {
+      "route": "PACI Arabic service landing page",
+      "request": "GET https://services.paci.gov.kw/?lang=ar",
+      "outcome": "Reachable; links to exgisapps.paci.gov.kw for geospatial applications."
+    },
+    {
+      "route": "PACI geospatial application host",
+      "request": "GET https://exgisapps.paci.gov.kw/",
+      "outcome": "Timed out after 30 seconds; no login, retry with credentials, CAPTCHA bypass, or TLS exception used."
+    },
+    {
+      "route": "PACI real-estate certificate procedure",
+      "request": "GET https://services.paci.gov.kw/applications-guide/detail/real-estate-certificate/44",
+      "outcome": "Reachable; documents an identity/authorization-based certificate workflow, not public parcel geometry. No unsafe fields requested."
+    },
+    {
+      "route": "CSB GIS portal",
+      "request": "GET https://gis.csb.gov.kw/ar/",
+      "outcome": "Reachable as a 2011 census GIS terms landing page; no terms acceptance, login, map API inspection, or parcel request performed."
+    },
+    {
+      "route": "Kuwait Ministry of Finance GIS description",
+      "request": "GET https://www.mof.gov.kw/GIS/GIS.aspx",
+      "outcome": "Reachable; describes an enterprise GIS for state property and expropriation, with no public Al Jahra parcel feature service."
+    },
+    {
+      "route": "Ministry of Justice English and Arabic procedures",
+      "request": "GET official ItemID=701, 158, and 296 procedure pages",
+      "outcome": "Search/open evidence confirms the Al Jahra real-estate registration branch and certificate/registration procedures. No public geometry endpoint exposed."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "canonical native parcel ID only, if obtained",
+    "polygon or multipolygon geometry only, if obtained",
+    "source URL, service URL, schema field names, CRS, query extent, and response metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "No parcel polygons or source IDs were obtained, so no GeoJSON sample was written.",
+    "No exact-point hit/miss inference was made from the WUP coordinate.",
+    "A reachable registry procedure is not evidence of open citywide geometry coverage.",
+    "No source integration or runtime adapter admission was performed."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "The registry custodian is evidenced, but public map/API availability, parcel schema, CRS, native identifier, and citywide coverage remain unverified."
+}

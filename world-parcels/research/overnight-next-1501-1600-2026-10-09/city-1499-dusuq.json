@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 1499,
+  "cityCode": 1499,
+  "queueRank": 1567,
+  "cityId": "wup2025:1499",
+  "name": "Dusuq",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [31.1298016174317, 30.6455342626633],
+  "population2025": 366123,
+  "population2025k": 366.123,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dusuq Egypt official cadastral parcel map land registry GIS Kafr El Sheikh",
+        "result": "First-party Kafr El-Sheikh sources identify a governorate interactive map, a geospatial portal, and spatial property services. The spatial-services page describes georeferenced property-position/building-status requests but requires login to submit; no anonymous parcel feature response or public parcel API was exposed. The Egyptian Survey Authority lists digital maps, coordinate certificates, boundary separation, and land-allocation services, but not an anonymous Dusuq parcel endpoint.",
+        "actualResultUrls": [
+          "https://kfs.gov.eg/interactive-map",
+          "https://geo.kfs.gov.eg/",
+          "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+          "https://www.esa.gov.eg/services.aspx"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "دسوق مصر خريطة عقارية سجل عقاري مسح أراضي جهاز مدينة دسوق",
+        "result": "البحث العربي أظهر بوابة محافظة كفر الشيخ والخدمات المكانية والبوابة الجيومكانية التابعة لها، إضافة إلى خدمات الهيئة المصرية العامة للمساحة. الخدمات المكانية تصف تحديد موقف العقار جغرافيا وخدمات المخططات، لكنها تشترط تسجيل الدخول لتقديم الطلب. لم يتم الحصول على استجابة عامة مجهولة تحتوي على هندسة قطعة أو CRS أو معرف أصلي ثابت.",
+        "actualResultUrls": [
+          "https://kfs.gov.eg/interactive-map",
+          "https://geo.kfs.gov.eg/",
+          "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+          "https://www.esa.gov.eg/services.aspx"
+        ]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "governorate": "Kafr El-Sheikh",
+    "city": "Dusuq (Desouk/Dessouk; Arabic: دسوق)",
+    "revenueVillage": null,
+    "identityEvidence": "The official Kafr El-Sheikh governorate portal publishes Dusuq/Desouk as a local place in its interactive-map content and provides governorate spatial services. The exact cadastral section for the WUP point was not resolved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kafr El-Sheikh governorate interactive/geospatial and spatial-property services; Egyptian Survey Authority national surveying and mapping services.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_spatial_registry_lead_no_verified_open_parcel_geometry",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://geo.kfs.gov.eg/",
+      "operator": "Kafr El-Sheikh Governorate geospatial portal",
+      "observation": "Official portal describes a geospatial system for location-based service certificates and field verification. Anonymous host inspection timed out; no feature response was received."
+    },
+    {
+      "url": "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+      "operator": "Kafr El-Sheikh Governorate spatial services",
+      "observation": "Official page describes digitally documenting property location, urban-boundary/building-condition checks, and direct linkage to the spatial-variables center. It explicitly requires login to submit a request."
+    },
+    {
+      "url": "https://kfs.gov.eg/interactive-map",
+      "operator": "Kafr El-Sheikh Governorate interactive map",
+      "observation": "Official interactive-map page was discovered and its indexed content includes Dusuq-area points of interest; anonymous fetch timed out during this attempt."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "operator": "Egyptian Survey Authority",
+      "observation": "Official national agency lists digital maps, coordinate certificates, boundary separation, topographic-map creation, and land-allocation services. This is national-agency service evidence, not city-specific open parcel geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://geo.kfs.gov.eg/",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "Anonymous request did not return HTML or JavaScript/configuration; no endpoint discovery was possible."
+    },
+    {
+      "url": "https://kfs.gov.eg/interactive-map",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "Anonymous direct request did not return; indexed first-party search content confirms the official interactive-map page exists."
+    },
+    {
+      "url": "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+      "method": "GET via official page inspection",
+      "status": "HTTP 200 in indexed inspection",
+      "summary": "Page content was readable and states that spatial service submission requires login. No public parcel geometry, CRS, or stable native ID was exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET via official page inspection",
+      "status": "HTTP 200 in indexed inspection",
+      "summary": "Official Survey Authority service list was readable; it provided service descriptions only and no Dusuq parcel feature endpoint."
+    },
+    {
+      "url": "https://sis.gov.eg/en/media-center/news/irrigation-minister-reviews-digital-transformation-measures-at-egyptian-survey-authority/",
+      "method": "GET via first-party search discovery",
+      "status": "discovery result; direct open returned 502",
+      "summary": "Search result describes a digital geospatial database for the real-estate registry and a first-phase data center at the Kafr El-Sheikh Survey Directorate, but no public endpoint or parcel payload was provided."
+    }
+  ],
+  "schemaCrs": null,
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mortgage/lien details"],
+  "sourceFields": null,
+  "nativeIdReadiness": "not_ready_no_verified_parcel_response",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "A local official geospatial/spatial-property service lead is evidenced, but anonymous inspection produced no parcel geometry, CRS, or stable native parcel ID. The available request flow requires login, which was not attempted.",
+  "remainingUncertainty": "The Kafr El-Sheikh geospatial system or Survey Directorate may expose parcel data through an authenticated or currently unavailable service. The evidence does not establish exact-point coverage, Dusuq cadastral-section coverage, or citywide parcel coverage. Timeouts and lack of an exact-point response are not evidence of citywide absence.",
+  "nextStep": "Recheck the official Kafr El-Sheikh geospatial/interactive-map hosts when available and inspect only anonymous public configuration and bounded geometry responses; qualify stable native IDs and CRS before adapter review.",
+  "registryEvidenceUrls": ["https://geo.kfs.gov.eg/", "https://kfs.gov.eg/interactive-map", "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c", "https://www.esa.gov.eg/services.aspx"],
+  "identityPolicy": "Do not infer a parcel identity from a synthetic row number; retain only a stable native identifier with geometry if a safe public response becomes available."
+}

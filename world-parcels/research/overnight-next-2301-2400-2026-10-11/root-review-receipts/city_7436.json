@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7436",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-7436-qus.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/qus-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:19:23Z",
+  "reason": "Official Egyptian Survey Authority pages evidence survey/map custody, while the inspected Qena and national catalogs did not establish a public Qus parcel polygon service. No safe native-ID polygon response, adapter qualification, or headed Details-panel proof exists; no citywide absence is inferred.",
+  "firstPartyCustodyUrl": "https://www.esa.gov.eg/services.aspx",
+  "identityCheck": "Official WUP 2025 bulk SHA-256 matches provenance; code 7436, rank 2358, Egypt, point [25.9006233210632, 32.750250170756], 247941 persons match immutable ranked and pending rosters and packet.",
+  "searchCheck": "English and Arabic query text, results, and URLs inspected.",
+  "sampleCheck": "No full polygon sample or source-specific attributes were retained; the three-polygon cap and safe-attribute limit are satisfied.",
+  "admissionCheck": "No independent evidence of fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. Held without runtime, catalog, or report admission."
+}

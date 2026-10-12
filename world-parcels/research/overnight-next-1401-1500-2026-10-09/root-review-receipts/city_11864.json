@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11864",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-11864-dongyang.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/dongyang-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/dongyang/dy.html",
+    "tmp/valhalla-parcel-research/dongyang/zj.html",
+    "tmp/valhalla-parcel-research/dongyang/site.json",
+    "tmp/valhalla-parcel-research/dongyang/division.json"
+  ],
+  "checkedAt": "2026-10-09T18:06:05Z",
+  "reviewNotes": "First-party Dongyang registration notice was independently viewed at its cited URL. Cached municipality GET is 403; Zhejiang public GIS page has no parcel layer, site configuration data is null, and division lookup says unauthorized. No safe native ID plus geometry or any runtime qualification proof."
+}

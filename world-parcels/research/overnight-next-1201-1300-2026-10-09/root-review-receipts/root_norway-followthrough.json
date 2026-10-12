@@ -1,0 +1,13 @@
+{
+  "taskId": "root:norway-followthrough",
+  "decision": "held",
+  "reason": "Public Oslo Teig polygons and bounded reads remain positive. The saved 13-cell run has 15 native IDs but only 14 exact readbacks: known ID 6248894437 is present by bbox yet RESOURCEID returns HTTP 500. Nested equality GET/POST did not establish a working alternative (504/empty); no complete forced-paging and headed Details qualification. Failed reads remain unresolved, not absent.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/country-integration-audit-2026-10-09/Norway-runtime-protocol-followthrough.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/Norway-teig-wfs-identity-protocol.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/Norway-no-teig-live-retry.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/NO-samples.json"
+  ],
+  "checkedAt": "2026-10-09T11:44:40.359858Z"
+}

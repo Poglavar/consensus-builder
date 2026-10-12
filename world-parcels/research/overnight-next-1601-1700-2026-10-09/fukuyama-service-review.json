@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-3586-fukuyama.json",
+  "cityCode": 3586,
+  "queueRank": 1605,
+  "city": "Fukuyama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Fukuyama City publishes a real 2026 citywide parcel-number polygon Shapefile. A bounded inspection verified 789640 polygons and stable-looking native LINKKEY identities, but the download has no declared CRS and the city limits the map to fixed-asset assessment reference use. Runtime admission remains held pending independent CRS/adapter qualification.",
+  "queryOutcomes": "Separate English and Japanese first-party discovery queries are recorded in city-3586-fukuyama.json. Both led to the city open-data catalog and official explanatory/procedure pages.",
+  "requestOutcomes": "Catalog GET succeeded; direct ZIP download succeeded; the resource landing route returned HTML; local OGR inspection verified polygon geometry, fields, count, extent, and a 10-feature bounded spatial response. No credentials, private tokens, CAPTCHA bypass, unsafe fields, or owner/address lookups were used.",
+  "scopeLimits": [
+    "The dataset is described by Fukuyama as an assembled 地番図 for fixed-asset valuation, not a surveyed/legal boundary or rights source.",
+    "No exact-point hit/miss was used as an absence claim and the WUP point was not shifted.",
+    "Citywide completeness and exact municipal boundary coverage were not independently reconstructed.",
+    "The download has no .prj and OGR reports unknown SRS; no GeoJSON sample was retained because a WGS84 conversion would be speculative.",
+    "National Legal Affairs Bureau evidence identifies a local registry office but does not establish an open registry API."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "If later retained, use LINKKEY as the sole GeoJSON id because it is a source-provided composite identity (AZACD/TXTCD provenance is documented in metadata, not feature properties). Do not use OBJEXOID as a synthetic substitute without further stability evidence.",
+  "nativeFieldMapping": {
+    "LINKKEY": "source composite identity observed in the polygon layer, e.g. AZACD/TXTCD",
+    "AZACD": "source area/aza code; not retained in sample properties",
+    "TXTCD": "source parcel-number text; not retained in sample properties",
+    "OBJEXOID": "source integer object field; not selected as canonical identity"
+  },
+  "crs": "unverified; no .prj or SRS metadata in the public ZIP",
+  "geometryQuality": "Polygon geometry verified in the native Shapefile; legal/survey accuracy expressly disclaimed by the city; WGS84 usability unverified",
+  "runtimeReadiness": "held_crs_unverified_and_reference_map_only",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A genuine local public parcel geometry source exists, but coordinate reference, legal semantics, exact coverage, and safe runtime transformation remain unresolved. This packet must not be treated as source integration/admission.",
+  "retainedSample": null
+}

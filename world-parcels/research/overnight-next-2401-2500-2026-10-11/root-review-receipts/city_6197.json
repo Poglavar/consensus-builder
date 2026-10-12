@@ -1,0 +1,20 @@
+{
+  "taskId": "city:6197",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-6197-l-t.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/l-t-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:16:05Z",
+  "reason": "Đà Lạt: English and Vietnamese searches are recorded. Official land-data and registration context and public viewer configuration do not yield a safe anonymous native-ID polygon response. No sample, verified CRS, or adapter qualification evidence; login and certificate barriers are not citywide absence.",
+  "admissionGates": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

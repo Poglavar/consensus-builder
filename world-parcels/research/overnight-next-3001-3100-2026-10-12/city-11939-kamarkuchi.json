@@ -1,0 +1,54 @@
+{
+  "cityCode": 11939,
+  "queueRank": 3093,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.3640435568298, 91.4950050537119],
+  "population2025": 194038,
+  "population2025k": 194.038,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kamarkuchi Assam cadastral parcel map official land records",
+        "result": "Found official Government of Assam ILRMS, Directorate of Land Records, Bhunaksha and Jamabandi routes; live Bhunaksha endpoint was followed to the public map API.",
+        "actualResultUrls": ["https://ilrms.assam.gov.in/", "https://dlrs.assam.gov.in/", "https://bhunaksha.assam.gov.in/", "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC"]
+      },
+      {
+        "language": "native/local Assamese",
+        "query": "Kamarkuchi Assam ভূ নক্সা মাটিৰ ৰেকৰ্ড চৰকাৰী",
+        "result": "Found official Assamese Government of Assam land-record and cadastral-mapping routes; Assamese selector labels and Kamarkuchi village record were available in Bhunaksha.",
+        "actualResultUrls": ["https://bhunaksha.assam.gov.in/", "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping", "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "name": "Government of Assam Revenue and Disaster Management Department / Bhunaksha",
+    "scope": "Local/state cadastral map and land-record service; Kamarkuchi is exposed as a selectable village under Kamrup Mahanagar district and Sonapur circle.",
+    "serviceUrl": "https://bhunaksha.assam.gov.in/",
+    "village": {"name": "KAMARKUCHI", "villageCode": "240105030310010", "district": "KAMRUP METRO", "districtCode": "24", "circle": "SONAPUR", "circleCode": "240105"}
+  },
+  "service": {
+    "adapterCandidate": "Assam Bhunaksha public backend",
+    "baseUrl": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd",
+    "routesAttempted": [
+      {"method": "GET", "path": "/proxy/districts", "httpStatus": 200, "result": "Returned district codes including Kamrup Mahanagar code 24."},
+      {"method": "POST", "path": "/proxy/circles", "body": {"dist_code": "24"}, "httpStatus": 200, "result": "Returned Sonapur code 240105."},
+      {"method": "POST", "path": "/proxy/villages", "body": {"circle_code": "240105"}, "httpStatus": 200, "result": "Returned Kamarkuchi as NO 2 KAMARKUCHI, village code 240105030310010."},
+      {"method": "POST", "path": "/proxy/getAllDagsFromDharitree", "body": {"location": "240105030310010", "dist_code": "24"}, "httpStatus": 200, "result": "Returned DAG list; only non-sensitive parcel-number/area classification fields were inspected."},
+      {"method": "POST", "path": "/proxy/parcel_info", "body": {"village_code": "240105030310010", "layer_code": "ASSAM_PARCEL", "dag_no": "1", "crs": "32646"}, "httpStatus": 200, "result": "Returned one bounded MULTIPOLYGON with stable id 54159ab2-b095-499e-9444-0e7655161696 and uniqueId CDRU76AG40NLH0; geometry was retained only in ignored scratch evidence."}
+    ],
+    "schemaAndCrs": {"response": "JSON data array", "nativeIdFields": ["id", "uniqueId", "locationCode"], "geometryField": "geom WKT MULTIPOLYGON", "sourceCrs": "EPSG:32646", "fieldMapping": "id/uniqueId are canonical identity candidates; locationCode is village linkage; geom is parcel geometry", "compositeKeyProvenance": "No composite key needed; stable native uniqueId returned by source"}
+  },
+  "safeFieldAllowlist": ["canonical native parcel identifier", "geometry", "source CRS", "village/circle/district service codes", "public service metadata", "retrieval timestamp"],
+  "geometrySamples": [],
+  "scopeLimits": ["The exact WUP point was preserved in latitude/longitude order and was not shifted or used to claim a parcel hit.", "The returned DAG and parcel requests were bounded to one village and one DAG; they do not establish citywide coverage or point intersection.", "No raw source-specific attribute set, owner, possessor, guardian, mobile, address, titleholder, tax/account, or other unsafe field was retained.", "The public Jamabandi UI includes CAPTCHA and selector workflow; no CAPTCHA was attempted or bypassed.", "Packet completion is not source integration or admission."],
+  "uncertainty": ["WUP city point/population plausibility does not establish the local administrative extent of Kamarkuchi.", "Bhunaksha public geometry response was observed for one DAG only; no citywide completeness proof.", "No independent serial runtime adapter qualification."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "scratchEvidence": "tmp/valhalla-parcel-research/11939/"
+}

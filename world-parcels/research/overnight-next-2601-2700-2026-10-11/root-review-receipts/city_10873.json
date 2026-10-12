@@ -1,0 +1,36 @@
+{
+  "taskId": "city:10873",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-10873-banjari.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/banjari-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T17:39:54Z",
+  "identity": {
+    "cityCode": 10873,
+    "queueRank": 2678,
+    "country": "India",
+    "point": [
+      24.7556127917752,
+      84.0430526370003
+    ],
+    "populationPersons": 220696
+  },
+  "bilingualSearchLanguages": [
+    "English",
+    "Hindi"
+  ],
+  "retainedFullPolygonCount": 0,
+  "reviewReason": "First-party Rohtas directory and Bihar Bhu-Naksha map-instance extent support local cadastre navigation, but map extent is not parcel geometry; no native parcel ID or full polygon was returned. Plot HTTP 204 and WMS failure are not citywide absence.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging and complete manifests",
+    "13 aligned bounded cells",
+    "independent metric GEOS validity, duplicates and overlap checks",
+    "full-parcel proposal source binding",
+    "headed Details-panel verification"
+  ],
+  "runtimeAdmission": false
+}

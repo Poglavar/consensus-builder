@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6313",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6313-malemba-nkulu.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/malemba-nkulu-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:27:15Z",
+  "reason": "Malemba-Nkulu identity matches queue and ranked WUP roster at rank 1471, Democratic Republic of the Congo, point [-8.04093595753573,26.7903547160209], 386790 persons. English and French searches are recorded. Original ministry HTML at tmp/valhalla-parcel-research/6313/circonscriptions.html lists Haut-Lomami offices Kamina and Kanyama, with no city parcel response. No full polygons or safe native IDs; fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent. Local custody remains unresolved (null); unavailable routes and zero third-party search hits are not absence. No admission."
+}

@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-2831-songea.json",
+  "cityCode": 2831,
+  "queueRank": 2641,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "conclusion": "The official Tanzanian e-Ardhi application exposes an anonymous GeoServer WFS catalogue and spatial_units schema, but both bounded Songea parcel requests timed out. No geometry or city-specific coverage was verified. This packet does not claim Songea absence and does not qualify a runtime adapter.",
+  "attemptedRoutes": [
+    {"route": "English web discovery", "outcome": "Found official Ministry land-rent/e-Ardhi portals, the current e-Ardhi shell, anonymous GeoServer capability service, and Songea Municipal Council site; no city-specific parcel feed was indexed."},
+    {"route": "Swahili web discovery", "outcome": "Found official national land-formalization procedure and Songea municipal government material; no public Songea parcel geometry service was identified."},
+    {"route": "Official e-Ardhi shell and JavaScript configuration", "outcome": "HTTP 200; exposed GeoServer base https://eardhi.lands.go.tz/map/geoserver/taspro and related national service URLs."},
+    {"route": "Official GeoServer WFS GetCapabilities", "outcome": "HTTP 200 XML; spatial_units and related parcel/spatial-unit layers advertised anonymously."},
+    {"route": "Official WFS DescribeFeatureType spatial_units", "outcome": "HTTP 200 JSON; native id, uid, and MultiPolygon geom declared. Source attribute list was inspected but unsafe fields were not requested."},
+    {"route": "Official WFS Songea-area bbox", "outcome": "Timed out after 30 seconds with no bytes; no absence inference."},
+    {"route": "Official WFS WUP-point neighborhood", "outcome": "Timed out after 20 seconds with no bytes; exact WUP point preserved and not shifted."}
+  ],
+  "scopeLimits": [
+    "The public GeoServer catalogue does not by itself prove Songea coverage.",
+    "The bounded WFS timeouts are not evidence of citywide absence.",
+    "No local Songea cadastral custodian or local registry endpoint was independently evidenced; general Ministry and municipal procedure material is not treated as local registry proof.",
+    "No sample GeoJSON is retained because no safe parcel response was obtained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "safeFieldPolicy": {
+    "allowed": ["id", "geometry"],
+    "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "document details"],
+    "retainedNativeFields": false,
+    "sourceSchemaObserved": ["id", "uid", "geom"],
+    "reason": "No Songea feature was returned; schema-only inspection was used to identify potential safe native identity and geometry fields."
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": null,
+    "generalAgencyEvidence": ["Tanzania Ministry of Lands e-Ardhi", "e-Ardhi GeoServer WFS", "Songea Municipal Council", "MKURABITA formalization procedure"],
+    "verifiedForSongea": false,
+    "reason": "A real official endpoint responded to capabilities and schema requests, but city coverage and a successful Songea parcel response were not evidenced."
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "Songea may be covered by e-Ardhi but the tested layer was too slow or unavailable for the bounded requests.",
+    "The service may require a different layer, map configuration, council filter, or request encoding for Songea.",
+    "A separate municipal, regional, paper-only, restricted, or not-indexed cadastral source may exist.",
+    "The WUP settlement point is a city point, not a cadastral coverage boundary."
+  ],
+  "completionSummary": {"parcelSourceVerified": false, "geometrySampleRetained": 0, "unsafeFieldsRequested": false, "tlsExceptions": 0}
+}

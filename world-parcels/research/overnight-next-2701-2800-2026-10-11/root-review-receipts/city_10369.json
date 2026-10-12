@@ -1,0 +1,13 @@
+{
+  "taskId": "city:10369",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:42:41Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-10369-sahjanwa.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/sahjanwa-service-review.json"
+  ],
+  "review": "WUP 2025 archive SHA-256 matched provenance. Rank 2722, code 10369, India, point [26.7468697678411,83.232704000047], and 217480 persons match the archive, immutable roster, queue, and packet. English and Hindi searches are recorded with source URLs. Official UP BhuNaksha and Board of Revenue evidence supports state-level cadastral custody, but the attempted map-extent route failed with an upstream 403 wrapper. No parcel polygon, safe native parcel ID, verified CRS, or qualified adapter is available. Access failure is unresolved coverage, not absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are missing; held without admission."
+}

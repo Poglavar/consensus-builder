@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2963",
+  "cityCode": 2963,
+  "wupCityCode": 2963,
+  "name": "Jizzakh",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso2": "UZ",
+  "iso3": "UZB",
+  "rank": 1505,
+  "queueRank": 1505,
+  "point": [40.1333334794464, 67.8411491393017],
+  "centerLatLon": [40.1333334794464, 67.8411491393017],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 376607,
+  "population2025k": 376.607,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official State Cadastre Chamber site lists the Jizzakh regional administration in Jizzakh city and identifies its cadastral mandate. This establishes a local/regional cadastral custodian, not anonymous citywide parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://uzdkp.uz/",
+    "https://gov.uz/oz/jizzax/news/view/130096",
+    "https://open.ngis.uz/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official National Geo-information Portal is an Esri-backed public viewer, but direct anonymous retrieval of its HTML/API route timed out twice in this environment. The public search result exposes the viewer and coordinate/cadastral-number search controls; no safe anonymous ID-plus-complete-polygon response, layer schema, or CRS response was verified. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The State Cadastre Chamber's Jizzakh regional administration is the evidenced cadastral custodian; the National Geo-information Portal is the national public map channel.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jizzakh Uzbekistan official cadastral map parcel land registry cadastral viewer",
+        "scope": "Identify a first-party local/regional cadastral custodian and a safe public parcel-geometry route.",
+        "result": "Search located the official State Cadastre Chamber site, the official Jizzakh government cadastral article, and the official National Geo-information Portal. The portal is publicly discoverable, but no anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://uzdkp.uz/",
+          "https://gov.uz/oz/jizzax/news/view/130096",
+          "https://open.ngis.uz/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Jizzax O'zbekiston rasmiy kadastr xaritasi yer uchastkasi davlat kadastr agentligi",
+        "scope": "Independent Uzbek-language discovery of local cadastral custody and public parcel geometry.",
+        "result": "Uzbek-language search located the official Jizzakh government notice describing cadastral inventory of land plots and the official State Cadastre Chamber listing for the Jizzakh regional office. It also located the National Geo-information Portal, but no safe anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://gov.uz/oz/jizzax/news/view/130096",
+          "https://gov.uz/oz/kadastr/news/view/118730",
+          "https://uzdkp.uz/",
+          "https://open.ngis.uz/"
+        ],
+        "executionMethod": "Separate Uzbek-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted and no point-hit, map-extent miss, timeout, or unavailable UI was treated as evidence of citywide absence. Portal layer names, native parcel identity, schema, CRS, anonymous query shape, parcel coverage, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify the National Geo-information Portal route or another first-party Uzbekistan cadastral adapter; do not enable runtime from this packet alone."
+}

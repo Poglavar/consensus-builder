@@ -1,0 +1,112 @@
+{
+  "cityCode": 4943,
+  "queueRank": 1612,
+  "name": "Luhansk",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso3": "UKR",
+  "locId": 804,
+  "point": [48.5629040114344, 39.3207299867864],
+  "population2025": 354296,
+  "population2025k": 354.296,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Luhansk Ukraine official cadastral map parcel StateGeoCadastre public cadastral map",
+        "result": "First-party discovery identified the official Ukrainian StateGeoCadastre public cadastral-map route, the official State Land Cadastre enterprise, and official guidance describing public parcel map contents. The map endpoint itself was not reachable during the bounded request attempt.",
+        "actualResultUrls": [
+          "https://land.gov.ua/faq/",
+          "https://dzk.gov.ua/",
+          "https://map.land.gov.ua/kadastrova-karta"
+        ]
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Луганськ офіційна публічна кадастрова карта кадастр земельні ділянки",
+        "result": "First-party Ukrainian-language discovery identified the official Luhansk regional GeoCadastre office, its electronic-services page, and the official public cadastral-map link. The regional page states that cadastral information and extracts are provided through the public map/e-services, but no anonymous Luhansk parcel response was obtained.",
+        "actualResultUrls": [
+          "https://luhanska.land.gov.ua/info/elektronni-posluhy-derzhheokadastru/",
+          "https://e.land.gov.ua/services",
+          "https://map.land.gov.ua/kadastrova-karta"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://luhanska.land.gov.ua/info/elektronni-posluhy-derzhheokadastru/",
+      "observation": "Official Luhansk regional GeoCadastre office page. It identifies the regional office and links the public cadastral map as the route for certain land-cadastre services; it does not expose a city-bounded parcel API in the inspected page."
+    },
+    {
+      "url": "https://land.gov.ua/faq/",
+      "observation": "Official StateGeoCadastre guidance says the public cadastral map presents the graphical location of registered land parcels and cadastral information. This is national agency guidance, not evidence of an open Luhansk response."
+    },
+    {
+      "url": "https://dzk.gov.ua/",
+      "observation": "Official State Enterprise Center of State Land Cadastre site. Its public-map links resolve to the Ukrainian public cadastral map route."
+    },
+    {
+      "url": "https://e.land.gov.ua/services",
+      "observation": "Official e-services page. It documents that many cadastral-information services require account authorization and notes restrictions for territories affected by active hostilities or temporary occupation; no credentials or restricted service was used."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://map.land.gov.ua/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "connect timeout after 8 seconds",
+      "outcome": "No response body; no viewer HTML, JavaScript, configuration, API base, schema, CRS, or parcel request was obtained."
+    },
+    {
+      "url": "https://map.land.gov.ua/kadastrova-karta",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "connect timeout after 8 seconds",
+      "outcome": "No response body; the official viewer could not be inspected and no parcel query was sent. HTTP was also attempted for this route and timed out after 6 seconds; TLS was not disabled."
+    },
+    {
+      "url": "https://dzk.gov.ua/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official site fetched successfully. Its HTML exposed repeated links to http://map.land.gov.ua/kadastrova-karta and a public-map wiki, but no parcel feature response."
+    },
+    {
+      "url": "https://luhanska.land.gov.ua/info/elektronni-posluhy-derzhheokadastru/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official Luhansk regional page fetched successfully. It exposed the public-map link and service description; no parcel geometry or safe native parcel identity was returned."
+    },
+    {
+      "url": "https://e.land.gov.ua/services",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official e-services page fetched successfully. It describes authorization-gated cadastral services and war/occupation access restrictions; no login or restricted request was attempted."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Luhansk regional GeoCadastre office and its cadastral-services procedure are evidenced, and the office links the official public cadastral map. This establishes a local/regional custodian, but not an open city-bounded parcel adapter or current anonymous parcel response.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "State Service of Ukraine for Geodesy, Cartography and Cadastre (StateGeoCadastre), via the Luhansk regional office and official public cadastral map",
+    "viewerUrls": ["https://map.land.gov.ua/kadastrova-karta"],
+    "crs": null
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_regional_custodian_public_map_unreachable",
+  "coverageAssessment": {
+    "claimedScope": "Ukrainian State Land Cadastre/public cadastral map, with the Luhansk regional GeoCadastre office as local custodian evidence.",
+    "verifiedOpenScope": "No city-bounded Luhansk parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The public map's current viewer configuration, API route, schema, CRS, and anonymous availability remain unverified from this environment. Luhansk's status under the documented war/occupation access restrictions may affect service availability. The timeout and lack of an exact-point request are not evidence of citywide cadastral absence."
+}

@@ -1,0 +1,65 @@
+{
+  "cityRecord": "city-10034-zhangqiu.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10034,
+  "queueRank": 1803,
+  "city": "Zhangqiu",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Jinan/Zhangqiu sources evidence a local natural-resources and real-estate registration custodian, but no anonymous public parcel ID plus polygon response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified-Chinese discovery queries are recorded in city-10034-zhangqiu.json with actual result URLs. The native-language search directly identified the Jinan Zhangqiu District Natural Resources Bureau procedure page and Zhangqiu registration hall listing.",
+  "requestOutcomes": "Bounded TLS-verified GETs used browser-like headers and a cookie jar. Jinan service and natural-resources hosts returned HTTP 403 WAF responses; the Zhangqiu government host returned a TLS internal alert; the national webmap catalog returned HTTP 200 but no parcel endpoint in inspected HTML; Tianditu returned HTTP 418 CloudWAF interception. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS disablement was used.",
+  "attemptedRoutes": [
+    "Jinan Zhangqiu online service procedure page",
+    "Jinan Natural Resources and Planning service-hall listing",
+    "Jinan Natural Resources homepage",
+    "Zhangqiu district government homepage",
+    "National geographic-information resource catalog",
+    "National Tianditu portal"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [36.6865877983191, 117.512788572118] was preserved and never shifted; no exact-point hit/miss inference was made.",
+    "No Zhangqiu city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Registry custody/procedure evidence is not proof of an open vector parcel API.",
+    "A timeout, TLS failure, WAF/login wall, map extent miss, or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Zhangqiu district natural-resources and property-registration services within Jinan.",
+    "verifiedOpenScope": "Institutional custody and inquiry procedures only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API route, access controls, layer schema, CRS, stable native parcel identity, update currency, legal status and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

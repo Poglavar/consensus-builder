@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:6730",
+  "wupCityCode": 6730,
+  "cityCode": 6730,
+  "queueRank": 1217,
+  "rank": 1217,
+  "name": "Batman",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "point": [
+    37.8895886235356,
+    41.1305601682502
+  ],
+  "centerLatLon": [
+    37.8895886235356,
+    41.1305601682502
+  ],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 456902,
+  "population2025k": 456.902,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_registry_and_public_coordinate_parcel_geometry_verified",
+  "registryFound": true,
+  "registryBasis": "The official TKGM Parsel Sorgu service returned a parcel feature at the unchanged WUP point. The custodian is the national Tapu ve Kadastro Genel Müdürlüğü; the response identifies Batman/Merkez/Bahçelievler and safe cadastral fields, but this packet does not infer completeness of all city parcels.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "A real public geometry response is evidenced, but runtime remains held pending independent serial adapter qualification.",
+  "source": {
+    "operator": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)",
+    "viewerUrl": "https://parselsorguv2.tkgm.gov.tr/",
+    "apiBase": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api",
+    "coordinateEndpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{lat}/{lon}/",
+    "crs": "WGS84 / EPSG:4326 (GeoJSON coordinate order [longitude, latitude]); endpoint response did not include an explicit CRS member."
+  },
+  "sampleFile": "batman-parcel-samples.geojson",
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "One anonymous coordinate lookup against the official TKGM public viewer API at the unchanged WUP point, plus official viewer documentation and current public-client endpoint discovery.",
+    "verifiedOpenScope": "The exact point returned one safe parcel feature with polygon geometry and cadastral ID components.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "technicalBlocker": "The public coordinate endpoint returned a GeoJSON-like Feature without an explicit CRS member or a single opaque native parcel ID. A stable safe composite key was constructed only from non-personal cadastral fields: ilId/ilceId/mahalleId/adaNo/parselNo.",
+  "remainingUncertainty": "The exact-point result demonstrates local public coverage at one location only; it does not establish citywide completeness, parcel freshness, or behavior outside the tested route. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:tkgm.gov.tr Batman cadastral parcel map official",
+        "result": "First-party discovery located TKGM's official Parsel Sorgulama documentation and public viewer. The documentation describes province/district/neighborhood and parcel searches, map location, area, coordinates, and GeoJSON/KML export; it identifies TKGM as operator.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Batman resmi parsel sorgu kadastro haritası Tapu Kadastro",
+        "result": "Turkish-language discovery located the official TKGM Parsel Sorgu service and its Turkish documentation. The service is the first-party national cadastral viewer; the local Batman result was obtained from its public coordinate route.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "assessment": "Official TKGM page confirms Parsel Sorgulama, its public search scope, map/parcel functions, and GeoJSON/KML export."
+      },
+      {
+        "url": "https://parselsorguv2.tkgm.gov.tr/",
+        "method": "GET; anonymous discovery",
+        "httpStatus": "search result available; direct sandbox fetch failed with 502/DNS resolution failure",
+        "assessment": "Current official viewer was identified, but direct HTML retrieval from this environment was unavailable. No login or bypass was attempted."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.8895886235356/41.1305601682502/",
+        "method": "GET; anonymous; Origin and Referer set to official viewer; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Returned one Feature with Polygon geometry and safe cadastral properties: Batman, Merkez, Bahçelievler, ada 2851, parsel 4, area 265.04. No unsafe ownership or personal fields were requested."
+      }
+    ],
+    "inspectedConfiguration": {
+      "viewer": "https://parselsorguv2.tkgm.gov.tr/",
+      "apiBase": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api",
+      "coordinateRoute": "/parsel/{lat}/{lon}/",
+      "responseSchemaObserved": "GeoJSON-like Feature: geometry.type=Polygon; properties include il/ilce/mahalle IDs and names, adaNo, parselNo, pafta, alan, nitelik",
+      "parcelEndpointObserved": true,
+      "schemaObserved": true,
+      "explicitCrsObserved": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "https://parselsorguv2.tkgm.gov.tr/",
+    "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.8895886235356/41.1305601682502/"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 3,
+  "attempt2Evidence": {
+    "documentationGet": {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200
+    },
+    "viewerGet": {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "outcome": "DNS resolution failed in this environment; no login, CAPTCHA/Cloudflare bypass, or TLS exception attempted."
+    },
+    "exactCoordinateGet": {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.8895886235356/41.1305601682502/",
+      "method": "GET; anonymous; TLS verification enabled; official viewer Origin/Referer",
+      "httpStatus": 200,
+      "response": "GeoJSON-like Feature with Polygon geometry; safe fields included ilId=94, ilceId=969, mahalleId=206035, Batman/Merkez/Bahçelievler, adaNo=2851, parselNo=4, pafta=M46-A-13-B-1-D, alan=265.04.",
+      "crs": "No explicit CRS member; coordinates observed in GeoJSON order [longitude, latitude]."
+    }
+  },
+  "attempt3Evidence": {
+    "englishDiscovery": "Web search repeated; official TKGM documentation and current viewer URLs were returned.",
+    "nativeDiscovery": "Turkish-language web search repeated; official TKGM documentation and current viewer URLs were returned.",
+    "documentationGet": {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "method": "GET; anonymous; TLS 1.2 verification enabled",
+      "httpStatus": 200,
+      "bytes": 807254
+    },
+    "viewerGet": {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "method": "GET; anonymous; TLS 1.2 verification enabled",
+      "outcome": "DNS resolution failed in this environment; no login, CAPTCHA/Cloudflare bypass, or TLS exception attempted."
+    },
+    "exactCoordinateGet": {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.8895886235356/41.1305601682502/",
+      "method": "GET; anonymous; TLS 1.2 verification enabled",
+      "httpStatus": 200,
+      "responseBytes": 601,
+      "responseSchema": "GeoJSON-like Feature with Polygon geometry; safe fields ilId=94, ilceId=969, mahalleId=206035, Batman/Merkez/Bahçelievler, adaNo=2851, parselNo=4, pafta=M46-A-13-B-1-D, alan=265.04, nitelik=Bahçeli Kargir Ev; no unsafe fields retained.",
+      "crs": "No explicit CRS member; coordinate order observed as GeoJSON [longitude, latitude]."
+    }
+  },
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Public parcel geometry is verified at the unchanged point, but adapter qualification is reserved for the serial reviewer."
+  },
+  "sampleRetention": {
+    "retainedFeatureProperties": [
+      "id"
+    ],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false,
+    "fullGeometrySha256": "d3627a290164f13dfa943376c5fca37b3fd913631c475797babe6e88332a0358"
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "cityCode": 8425,
+  "queueRank": 2804,
+  "name": "Longchang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [29.3418838361459, 105.284427793382],
+  "population2025": 211655,
+  "population2025k": 211.655,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Longchang China official cadastral parcel map GIS natural resources",
+        "result": "Discovery located the official Sichuan Tianditu public geographic-information platform and an official Longchang planning document, but no official anonymous Longchang cadastral parcel-vector service or local registry procedure was exposed in search results.",
+        "actualResultUrls": [
+          "https://sichuan.tianditu.gov.cn/",
+          "https://njslcs.sczwfw.gov.cn/attach/0/2564034fc5ce4e59800c44520d0d8509.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "隆昌市 不动产登记 地籍图 官方 地图 自然资源和规划局",
+        "result": "Search located the official Longchang city government portal and the official Sichuan Tianditu platform, plus a third-party departmental description that was not treated as registry evidence. No anonymous Longchang parcel-vector endpoint, safe schema, or native parcel identity was exposed.",
+        "actualResultUrls": [
+          "https://www.longchang.gov.cn/",
+          "https://sichuan.tianditu.gov.cn/",
+          "https://njslcs.sczwfw.gov.cn/attach/0/2564034fc5ce4e59800c44520d0d8509.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "No local Longchang natural-resources or cadastral custodian was established from an official registry/map/procedure page during this bounded attempt; the official city government portal is https://www.longchang.gov.cn/.",
+    "regionalPublicMap": "Sichuan Geographic Information Public Service Platform (天地图·四川) at https://sichuan.tianditu.gov.cn/.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": []
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://sichuan.tianditu.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Sichuan public geographic-information platform found; search result describes updated vector, imagery, natural-resources thematic services and public APIs, but does not establish cadastral parcel-vector coverage for Longchang."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.longchang.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Longchang city government portal loaded. The retrieved landing HTML exposed government and service links but no parcel map, cadastral schema, or anonymous parcel geometry endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://sichuan.tianditu.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Current public viewer HTML was retrieved and its JavaScript/configuration references were inspected. It declares Tianditu WMTS basemap URLs and public service/resource pages."
+    },
+    {
+      "method": "GET",
+      "url": "https://sichuan.tianditu.gov.cn/js/DataStructConfig.js",
+      "httpStatus": 200,
+      "outcome": "Current viewer configuration was retrieved. It lists general map, web-service, data-API, natural-resources thematic and local-service-resource navigation; no Longchang cadastral parcel layer, parcel feature schema, or ID-plus-geometry query route was present."
+    },
+    {
+      "method": "GET",
+      "url": "https://sichuan.tianditu.gov.cn/html/services.html",
+      "httpStatus": 200,
+      "outcome": "Official local service-resources page loaded anonymously; no parcel-specific public service was qualified from the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://sichuan.tianditu.gov.cn/zhfw/index.html",
+      "httpStatus": 200,
+      "outcome": "Official natural-resources thematic page loaded anonymously; it was not a parcel-vector response and no safe parcel identity-plus-geometry response was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://njslcs.sczwfw.gov.cn/attach/0/2564034fc5ce4e59800c44520d0d8509.pdf",
+      "httpStatus": null,
+      "outcome": "Official Longchang territorial-spatial-planning PDF URL was attempted; DNS resolution timed out after 20 seconds. No content or parcel evidence was inferred."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.longchang.gov.cn/lcs/bmxxgk/bmxxgk.shtml",
+      "httpStatus": 404,
+      "outcome": "A guessed departmental-information path returned 404; no absence inference was made and no bypass was attempted."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Sichuan Tianditu current HTML and DataStructConfig.js were reachable and inspected; only general basemap/public-service configuration was exposed.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [29.3418838361459, 105.284427793382] was preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public Longchang parcel-vector route or safe ID-plus-geometry response was identified."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Longchang city government portal and Sichuan provincial public geographic-information services.",
+    "verifiedOpenScope": "Official city portal and provincial public map/configuration were evidenced; no anonymous Longchang parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, map extent miss, DNS timeout, 404 route, or absence of a parcel route in public viewer configuration was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, local service CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "The official Sichuan public map platform and official Longchang city portal are reachable, but anonymous cadastral geometry, native parcel identity, schema, CRS, local registry custody, and citywide coverage remain unverified. Runtime readiness remains held."
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12070-huangyan-district.json",
+  "cityCode": 12070,
+  "purpose": "Document first-party discovery, local registry custody, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Huangyan government portal provided direct local registry/cadastre custody evidence and a current departmental budget describing registration, cadastral, surveying, and geospatial-data responsibilities. Discovery did not locate a public parcel viewer/API. An ordinary HTTPS GET to the official notice host from the request client timed out after 20 seconds; the same official pages were independently available through the web research fetch and were reviewed. No login, CAPTCHA bypass, certificate bypass, or property/owner query was attempted.",
+  "registryAssessment": "registryFound remains null because local registry custody is evidenced, but no public local parcel map/API or anonymous parcel feature response was verified.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Huangyan District China official cadastral parcel map land registry GIS natural resources bureau",
+      "outcome": "No public parcel vector endpoint found; official Huangyan government sources confirmed local registration/cadastral and geospatial-data responsibilities.",
+      "actualResultUrls": ["https://www.zjhy.gov.cn/art/2024/8/26/art_1622221_59111271.html", "https://www.zjhy.gov.cn/module/download/downfile.jsp?classid=0&filename=7eaa5d9c6fa1414fa66bb198a732890d.pdf"]
+    },
+    {
+      "language": "Chinese",
+      "query": "黄岩区 地籍图 不动产登记 自然资源和规划局 官方",
+      "outcome": "黄岩分局官方材料确认确权登记、地籍测绘和地理信息职责；未找到匿名公开宗地矢量接口或安全ID+几何响应。",
+      "actualResultUrls": ["https://www.zjhy.gov.cn/art/2024/8/26/art_1622221_59111271.html", "https://www.zjhy.gov.cn/module/download/downfile.jsp?classid=0&filename=7eaa5d9c6fa1414fa66bb198a732890d.pdf"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://www.zjhy.gov.cn/art/2024/8/26/art_1622221_59111271.html","method":"GET","result":"Web research fetch returned the official notice; it names the Huangyan sub-bureau as responsible for rural homestead and housing rights confirmation/registration. Direct curl request timed out after 20 seconds."},
+    {"url":"https://www.zjhy.gov.cn/module/download/downfile.jsp?classid=0&filename=7eaa5d9c6fa1414fa66bb198a732890d.pdf","method":"GET","result":"Web research fetch returned the official 35-page PDF; it documents unified registration, cadastral surveying, and geospatial-information duties. No parcel API or geometry was present."},
+    {"url":"https://www.zjhy.gov.cn/module/download/downfile.jsp?classid=0&filename=7eaa5d9c6fa1414fa66bb198a732890d.pdf","method":"GET","result":"The official PDF route was inspected through the web research fetch; it contains departmental duties and budget information, not a public parcel endpoint."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "exactWupPointTest": "Not completed because no anonymous public parcel feature endpoint was located. The exact WUP point [28.6509454083006, 121.254074108205] was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Huangyan local natural-resources and real-estate registration, cadastral surveying, and geospatial-information administration.",
+    "verifiedOpenScope": "Local institutional custody and duties are evidenced; public parcel-vector access and citywide coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current official viewer/API, if any, its schema/CRS/native identity, exact-point parcel containment, and citywide open coverage remain unknown.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

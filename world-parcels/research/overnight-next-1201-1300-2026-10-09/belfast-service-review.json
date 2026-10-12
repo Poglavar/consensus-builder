@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "attempt": 1,
+  "cityRecord": "city-220-belfast.json",
+  "cityCode": 220,
+  "queueRank": 1262,
+  "city": "Belfast",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "wupPoint": [54.602197727664, -5.93500686517269],
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "serviceScope": {
+    "localRegistryOrCustodian": {
+      "name": "Land & Property Services, Department of Finance, Northern Ireland",
+      "url": "https://www.finance-ni.gov.uk/articles/land-registry-map",
+      "evidence": "Official Northern Ireland sources identify LPS as the Land Registry custodian and describe the registry map and digital registered-holding detail."
+    },
+    "generalAgencyEvidence": [
+      {
+        "name": "Ordnance Survey of Northern Ireland / Spatial NI",
+        "url": "https://www.spatialni.gov.uk/?page_id=2",
+        "evidence": "Official OSNI/Spatial NI public viewer and mapping platform were identified; this is general mapping-platform evidence, not proof of a public parcel layer."
+      }
+    ]
+  },
+  "queriesAndRequests": "See city-220-belfast.json freshResearch. English and Irish-language discovery were performed separately. Official LPS registry documentation, nidirect access guidance, Spatial NI viewer entry page, and the current public ArcGIS Hub HTML/configuration were inspected anonymously.",
+  "requestOutcomes": [
+    "LPS Land Registry map page: HTTP 200; registry map and digital registered-holding documentation returned, no public parcel API.",
+    "nidirect Land Registry search guidance: HTTP 200; explicitly states online searching is not currently available; no authenticated or record-specific lookup attempted.",
+    "Spatial NI page: HTTP 200; linked the public OSNI Spatial NI viewer.",
+    "OSNI Spatial NI ArcGIS Hub: HTTP 200; current public HTML/configuration inspected; no verified anonymous parcel service, schema, CRS, or safe ID+geometry response identified.",
+    "No exact-point parcel query was attempted after no anonymous parcel endpoint was identified; no map-extent miss, timeout, login wall, or UI failure is treated as citywide absence."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "parcel geometry", "source CRS", "source field names in metadata only"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "personal data", "private credentials", "folio contents"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "uncertainty": [
+    "Land Registry custody is evidenced, but official public guidance says online searching is not currently available.",
+    "Spatial NI is a public mapping platform, but this bounded configuration review did not verify an open parcel-vector endpoint.",
+    "No exact-point hit, map extent miss, or citywide absence conclusion was made.",
+    "Runtime readiness remains held until a serial reviewer independently qualifies a real adapter and safe parcel response."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "reviewNote": "Packet records executed discovery and request outcomes only. It is not source integration or adapter admission."
+}

@@ -1,0 +1,28 @@
+{
+  "taskId": "city:8868",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-8868-vrindavan.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/vrindavan-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:22:59.792311Z",
+  "reason": "Held: rank 2541 WUP identity, population in persons, and English/Hindi search records match the immutable roster. Institutional map/record custody is supported at the stated scope, but no safe anonymous native-ID full polygon or independently qualified adapter exists. Viewer failure, 403, empty response, or TLS failure is unresolved access, not citywide absence.",
+  "sourceCheck": {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=145&tehsilCode=00764",
+    "observation": "The first-party dashboard lists Mathura village 124293 (जैत) with linked and georeferenced maps; no parcel feature was read."
+  },
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

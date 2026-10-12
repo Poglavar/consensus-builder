@@ -1,0 +1,57 @@
+{
+  "descriptor": {
+    "adapter": "arcgis",
+    "boundsQueryMode": "object-ids",
+    "catalogueUrl": "https://webmap.ocpafl.org/search",
+    "countryCode": "US",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+    "id": "orlando-ocpa-arcgis",
+    "idField": "PARCEL",
+    "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+    "idType": "string",
+    "idsQueryMode": "object-ids",
+    "maxBboxKm2": 25,
+    "maxFeatures": 3000,
+    "metricSrid": 26917,
+    "name": "Orlando Orange County assessment parcel polygons",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "PARCEL",
+      "OBJECTID"
+    ],
+    "pageSize": 25,
+    "scope": "Orange County assessment parcel polygons; bounded technical review around the unchanged Alafaya city locator. Citywide completeness, legal title, survey accuracy and currentness are unverified.",
+    "stateCode": "FL",
+    "boundsSrid": 2236,
+    "boundsProjection": "+proj=tmerc +lat_0=24.3333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+    "queryFormat": "esri-json",
+    "maxConcurrentQueries": 1,
+    "operator": "Orange County Property Appraiser",
+    "cityIds": [
+      "7468"
+    ]
+  },
+  "city": {
+    "code": "7468",
+    "name": "Alafaya",
+    "point": [
+      -81.1884381841486,
+      28.5645463354798
+    ]
+  },
+  "sampleIds": [
+    "US-ORANGE-COUNTY-PARCEL-312223000000052",
+    "US-ORANGE-COUNTY-PARCEL-312223000000046"
+  ],
+  "absentId": "US-ORANGE-COUNTY-PARCEL-999999999999999",
+  "metricEpsg": "EPSG:32617",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen packet and review identify the OCPA Orange County assessment parcel provider at https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4, with PARCEL string IDs and polygon samples.",
+      "First-party parcel metadata (https://ocpaimages.ocpafl.org/api/Content/GetContentDynamicFile?contentFileID=405230), page 1, identifies tax parcel polygons and property-assessment cadastral purpose; safe excerpts and county extent retained in evidence/source-purpose.json.",
+      "The unchanged Alafaya locator falls inside the official county metadata and live layer extents. The frozen two-ID public probe supplies local polygons; the qualifier tests fresh exact IDs and local area membership."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

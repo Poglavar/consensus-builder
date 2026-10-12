@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4197",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-4197-kassel.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/kassel-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/kassel-sample.geojson",
+    "tmp/valhalla-parcel-research/4197/flurstueck-bbox.gml",
+    "tmp/valhalla-parcel-research/4197/flurstueck-bbox.geojson",
+    "tmp/valhalla-parcel-research/4197/flurstueck-schema.xml",
+    "tmp/valhalla-parcel-research/4197/gds-capabilities.xml"
+  ],
+  "checkedAt": "2026-10-11T12:45:46Z",
+  "reason": "WUP rank 2473, Germany, exact point and 236992 persons match the immutable roster and queue. English and German executed searches are recorded. Original Hessen ALKIS GML returned three AX_Flurstueck features with native flurstueckskennzeichen; retained sample matches its transformed geometry and keeps only safe IDs. All three sample polygons are metric-valid with zero pairwise overlap. Bounded sample does not prove coverage or runtime qualification. Fresh exact-ID reads, forced paging, thirteen cells, independent full adapter checks, source binding and headed Details verification remain unevidenced; held."
+}

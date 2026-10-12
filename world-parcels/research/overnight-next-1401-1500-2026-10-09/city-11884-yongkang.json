@@ -1,0 +1,80 @@
+{
+  "cityCode": 11884,
+  "queueRank": 1476,
+  "name": "Yongkang",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [28.9055955250553, 120.043388619137],
+  "population2025": 385247,
+  "population2025k": 385.247,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yongkang Zhejiang China official cadastral parcel map GIS land registry public service",
+        "result": "Discovery identified Zhejiang's official geographic-information public-service platform and official Yongkang Natural Resources and Planning Bureau materials. The local custodian is evidenced, but no anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+          "https://www.yk.gov.cn/art/2021/9/10/art_1229197153_2280.html",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3586/site/attach/0/6cb76bfb76bc40fbaff7474e8ecf8d31.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "永康市 不动产登记 地籍图 查询 地图 官方",
+        "result": "Discovery identified the official Yongkang Natural Resources and Planning Bureau and an official Yongkang Real Estate Registration Center annual report. The materials describe cadastral/real-estate registration duties and public information services, but no anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.yk.gov.cn/art/2021/9/10/art_1229197153_2280.html",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3586/site/attach/0/6cb76bfb76bc40fbaff7474e8ecf8d31.pdf",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.yk.gov.cn/art/2021/9/10/art_1229197153_2280.html",
+    "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3586/site/attach/0/6cb76bfb76bc40fbaff7474e8ecf8d31.pdf"
+  ],
+  "registryBasis": "Official Yongkang Natural Resources and Planning Bureau guidance identifies the municipal bureau as the information custodian; the official Yongkang Real Estate Registration Center report states that the center handles land/real-estate registration, cadastral investigation support, archives, and lawful public information query services.",
+  "source": {
+    "sourceId": "CN-11884-YONGKANG-ZJ-GIS-REVIEW",
+    "name": "Zhejiang official geographic-information public-service platform and Yongkang local registry custodian",
+    "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+    "operator": "永康市自然资源和规划局 / 永康市不动产登记中心; Zhejiang official geographic-information public-service platform",
+    "serviceType": "Official local registry custodian and provincial public GIS discovery route; anonymous parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The local bureau and registration center administer Yongkang municipal natural-resource, cadastral, and real-estate registration information; the provincial platform advertises public geographic-information map services.",
+    "verifiedOpenScope": "Official pages and reports were discoverable, but the direct bounded fetch of the provincial platform timed out before current JavaScript/configuration, service endpoints, schema, CRS, or parcel responses could be inspected.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "A TLS-verified anonymous GET to https://ditu.zjzwfw.gov.cn/platform-main/index.html timed out after 20 seconds in the request environment. No login, credentials, private token, CAPTCHA bypass, TLS weakening, or unsafe fields were used. A timed-out map request is not evidence of parcel absence.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The current provincial GIS application's JavaScript/configuration, endpoint structure, access policy, schema/CRS, stable native parcel identity, and exact-point coverage remain unknown. The official local custodian is evidenced, but no citywide open parcel feature service was established.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify an anonymous first-party parcel endpoint only after independently verifying schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [28.9055955250553, 120.043388619137],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

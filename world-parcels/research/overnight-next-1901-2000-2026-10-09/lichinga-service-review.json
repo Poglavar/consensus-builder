@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-2418-lichinga.json",
+  "cityCode": 2418,
+  "queueRank": 1975,
+  "city": "Lichinga",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Município de Lichinga / official MOZGIS municipal map service",
+  "serviceUrl": "https://www.mozgis.gov.mz/serverfederated/rest/services/Municipio_de_Lichinga/MapServer",
+  "scope": "Official Lichinga municipal map extent and local municipal planning/cadastre custody were evidenced; the public map contains non-parcel layers only.",
+  "schemaAndCrs": "Lichinga MapServer is EPSG:4326 for published layers. Group configuration lists health units, markets, terminals, neighborhoods, and population-risk. No parcel feature schema or parcel CRS was exposed.",
+  "nativeIdentity": "None established for Lichinga parcels. The unrelated inspected parcel service exposed OBJECTID and IdParcela, but its extent does not match Lichinga and it was not reused.",
+  "fieldMapping": {},
+  "requestOutcome": "Separate English and Portuguese first-party discovery queries found the official municipal web map, municipal cadastral-service page, and Portuguese cadastral diagnostic report. The current municipal MapServer and bounded neighborhood query were reachable anonymously and returned non-parcel data. A separate public parcel layer was inspected, but its extent is inconsistent with Lichinga; no Lichinga parcel request or sample was retained. No login, credentials, CAPTCHA bypass, private token, owner/address/titleholder query, or unsafe field request was used.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe Lichinga native-ID-plus-parcel-geometry response was obtained.",
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and rights/title fields were not requested or retained. Non-parcel population/service attributes were also not retained.",
+  "officialCustodyEvidence": "The Municipality of Lichinga first-party services page explicitly includes urban planning and cadastral services. The official diagnostic report describes the municipal cadastral atlas and plot registers. MOZGIS is recorded as the official public geospatial service operator for the municipal map, separately from local cadastral custody.",
+  "limits": [
+    "A municipal cadastral function and non-parcel public map do not prove an open parcel API.",
+    "No exact-point parcel response was available; this is not evidence of parcel absence.",
+    "The separately found parcel layer was not treated as Lichinga because its EPSG:32736 extent is inconsistent with the Lichinga municipal extent.",
+    "No raw source attribute set or parcel polygon was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm whether a separate current anonymous municipal/ADE parcel endpoint exists, and if so its native identity stability, CRS, city coverage, and safe field exposure before adapter admission."
+}

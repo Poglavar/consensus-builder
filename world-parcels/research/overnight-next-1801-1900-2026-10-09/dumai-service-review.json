@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-3875-dumai.json",
+  "cityCode": 3875,
+  "queueRank": 1807,
+  "city": "Dumai",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "A first-party local ATR/BPN land office and official BHUMI parcel viewer were verified. The current viewer identifies the registered-parcel layer and an authenticated parcel retrieval path, but no anonymous safe ID-plus-geometry response was verified; no GeoJSON sample is retained and runtime readiness remains held.",
+  "queryOutcomes": "Separate English and Indonesian discovery queries are recorded in city-3875-dumai.json. Results identified the local Kantor Pertanahan Kota Dumai, BHUMI/ATLAS, the Dumai land/spatial-planning department and SIDATIN.",
+  "requestOutcomes": "The local ATR/BPN office page and BHUMI map page were reachable. BHUMI client JavaScript exposed the `umum:Persil` Geoserver layer at `/bhumigs/umum` and an `/expapi/getPersil` retrieval path, but the bounded anonymous WMS/WFS capability requests returned the BHUMI 404 page. The retrieval path was not called because the current client requires authentication and this research does not log in or use credentials. Direct municipal planning and data portal requests returned Cloudflare challenges, which were not bypassed.",
+  "scopeLimits": [
+    "Exact WUP point [1.67010993042853, 101.445321964373] was preserved in latitude/longitude order; no coordinate shift and no exact-point hit/miss inference was made.",
+    "No anonymous parcel geometry, stable native parcel identifier, source schema or CRS was retrieved or retained.",
+    "Local cadastral custody is evidenced, but it is not proof of anonymous open vector parcel access or citywide coverage.",
+    "A 404 route, authentication wall, Cloudflare challenge, map extent miss or timeout is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable anonymous public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "BHUMI map page 200 and client config inspected",
+      "Anonymous WMS GetCapabilities 404",
+      "Anonymous WFS GetCapabilities 404",
+      "Authenticated getPersil route not attempted"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "ATR/BPN registered-land parcel layer and Dumai local land-office custody.",
+    "verifiedOpenScope": "Institutional custody and viewer-layer metadata only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current authenticated viewer/API contract, native identifier field, schema, CRS, parcel availability near the WUP point and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness of any Indonesian cadastral dataset.",
+  "retainedSample": null
+}

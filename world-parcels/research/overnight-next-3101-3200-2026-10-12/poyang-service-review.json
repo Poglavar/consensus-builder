@@ -1,0 +1,25 @@
+{
+  "cityRecord": "city-11330-poyang.json",
+  "cityCode": 11330,
+  "queueRank": 3155,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": "No Poyang-specific local registry custodian or public cadastral service was verified. National and general provincial registration sources were context only.",
+  "publicMapLead": null,
+  "queryOutcomes": "Separate English and Simplified Chinese discovery queries were executed and recorded in the city record. They did not identify a Poyang first-party parcel viewer, public map/API route, native ID-plus-geometry response, schema, or CRS.",
+  "requestOutcomes": "The candidate Poyang government homepage returned HTTP 405 to HEAD, the candidate Jiangxi natural-resources hostname failed DNS resolution, and the national registration-center site returned HTTP 418 anti-automation. No GET/POST parcel request, login, credential, CAPTCHA/Cloudflare bypass, private token, or TLS verification bypass was used.",
+  "schemaAndCrs": null,
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [28.9927722565779, 116.684336800528] was preserved and not moved.",
+    "No exact-point hit, map-extent miss, timeout, DNS failure, HTTP block, or unusable UI was treated as evidence of citywide absence.",
+    "National/provincial registration prose does not prove that Poyang publishes parcel boundaries or an anonymous parcel API.",
+    "No GeoJSON sample is included because no safe native parcel identity and full polygon were observed.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No first-party anonymous Poyang parcel ID-plus-geometry response was available during this attempt; independent serial review is required before any adapter/runtime qualification."},
+  "uncertainty": "The current Poyang viewer/API, local custodian, native field schema, CRS, query semantics, and citywide coverage remain unknown."
+}

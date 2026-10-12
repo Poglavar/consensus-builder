@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-7186-indaiatuba.json",
+  "cityCode": 7186,
+  "queueRank": 3090,
+  "city": "Indaiatuba",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Portuguese first-party discovery identified the municipal cadastral custodian and official cadastral/map routes. Public pages and configuration were inspected; the cadastral consultation requires hCaptcha and the citizen property portal requires gov.br authentication. No safe anonymous parcel geometry or native identity was obtained, so no sample GeoJSON was written.",
+  "queryAndRequestOutcomes": "All discovery queries, actual URLs, direct GET outcomes, hCaptcha/authentication limits, scope limits, and safe field allowlist are recorded in city-7186-indaiatuba.json. No login, CAPTCHA/Cloudflare bypass, credential, private-token, TLS bypass, POST submission, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Prefeitura Municipal de Indaiatuba / Secretaria Municipal de Planejamento Urbano e Engenharia",
+      "scope": "Municipal cadastral, mapping, geoprocessing and subdivision-plan custodian",
+      "evidence": "https://www.indaiatuba.sp.gov.br/engenharia/cadastro-de-imoveis-e-edificacoes/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identity only if publicly exposed",
+    "full parcel polygon geometry only if safely returned",
+    "public source/service metadata",
+    "geometry CRS",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "WUP point and population are preserved exactly; no coordinate shift was made.",
+    "No parcel geometry was returned; this does not establish citywide absence.",
+    "Official map PDFs and subdivision plans are not treated as a current citywide parcel vector API.",
+    "No unsafe land-record or personal fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "A further route may exist behind municipal hCaptcha/authentication or an unpublished service endpoint.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

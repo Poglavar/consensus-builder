@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-3473-zhangye.json",
+  "cityCode": 3473,
+  "queueRank": 2800,
+  "attempt": 1,
+  "reviewStatus": "complete-with-held-runtime",
+  "registryFound": true,
+  "registryScope": "Official Zhangye Municipal Natural Resources Bureau pages evidence a local real-estate-registration custodian and a public mapping portal; no anonymous current cadastral parcel API was demonstrated.",
+  "discovery": {
+    "english": {
+      "query": "Zhangye China official cadastral parcel map land registry GIS service",
+      "outcome": "Official local registry section and official Tianditu Zhangye portal documentation found; no public current parcel endpoint.",
+      "urls": ["https://www.zhangye.gov.cn/gtj/dzdt/bdcdj/index_6.html", "https://www.zhangye.gov.cn/gtj/dzdt/gzdt/202311/t20231116_1141235.html", "https://gansu.tianditu.gov.cn/zhangye/"]
+    },
+    "native": {
+      "query": "张掖 不动产登记 地籍图 电子地图 官方",
+      "outcome": "Official 不动产登记 and Tianditu Zhangye pages found; no anonymous parcel geometry endpoint.",
+      "urls": ["https://www.zhangye.gov.cn/gtj/dzdt/bdcdj/index_6.html", "https://www.zhangye.gov.cn/gtj/dzdt/gzdt/202311/t20231116_1141235.html", "https://gansu.tianditu.gov.cn/zhangye/"]
+    }
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Official Zhangye Natural Resources Bureau 不动产登记 section",
+      "result": "Reachable public HTML with current registration notices; establishes local registry context but no parcel geometry API.",
+      "scope": "Local registry/custodian context"
+    },
+    {
+      "route": "Official Tianditu Zhangye portal and map/index.html",
+      "result": "Reachable public HTML; current viewer references JavaScript/configuration for basemap services.",
+      "scope": "Official public mapping portal, not proven cadastral admission"
+    },
+    {
+      "route": "Official Tianditu Zhangye map JavaScript/configuration",
+      "result": "Inspected current config and viewer scripts. Exposed WMTS/XYZ basemap URLs, Tianditu search/geocoder routes, and platform metadata routes; no cadastral parcel layer, native parcel schema, or safe parcel geometry route was found.",
+      "scope": "Basemap/platform configuration only"
+    },
+    {
+      "route": "https://gansu.tianditu.gov.cn/zhangye/platformmaintenance/tdtserviceinfo/selectbyfilter",
+      "result": "Anonymous POST with an empty JSON filter returned 12 service records, all named vector/image/terrain basemap services; serviceSource details were null in the response. Empty GET returned HTTP 400 because a request body was required.",
+      "scope": "Official platform service metadata, no parcel feature service"
+    },
+    {
+      "route": "Official fmserverhtml and subject/map.html viewer routes",
+      "result": "Anonymous GETs returned public HTML successfully; no parcel feature response was obtained.",
+      "scope": "Viewer/UI inspection only"
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "nativeIdentity": "Not established; no parcel feature response.",
+    "availableSourceFields": [],
+    "retainedProperties": "No GeoJSON retained. If a future safe parcel response is qualified, retain exactly {id: <stable-native-identity>} plus unchanged native geometry.",
+    "compositeKeyProvenance": "Not used."
+  },
+  "scopeLimits": [
+    "Official local registry pages establish custodian/procedure context, not an open parcel download.",
+    "Current public viewer/configuration exposed basemap and general mapping services only.",
+    "No exact-point hit or miss was attempted; a missing public endpoint is not evidence of citywide absence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder/tax/account fields, or TLS exception was used for source qualification. Initial reconnaissance HTML retrieval used curl -k but was not used as qualification evidence."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "Do not integrate or admit a parcel source without independent serial review, a current local-service qualification, and a safe native identity plus geometry response."
+}

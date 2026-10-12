@@ -1,0 +1,113 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 356,
+  "queueRank": 1474,
+  "cityId": "wup:CL:356",
+  "name": "Antofagasta",
+  "country": "Chile",
+  "countryCode": "CL",
+  "point": [-23.6235572731874, -70.3904203851601],
+  "centerLatLon": [-23.6235572731874, -70.3904203851601],
+  "population2025": 385812,
+  "population2025k": 385.812,
+  "populationUnit": "persons",
+  "aliases": ["antofagasta"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Antofagasta Chile official cadastral parcel map GIS property parcels",
+        "result": "Found the official SII territorial-tax cartography description, the official Chile Geoportal Predios metadata naming Antofagasta among covered communes, and official MINVU/IDE map services. The Geoportal metadata links a downloadable SHP dataset.",
+        "actualResultUrls": [
+          "https://geoportal.cl/geoportal/catalog/35406/Predios",
+          "https://www.sii.cl/destacados/impuesto_territorial/index.html",
+          "https://ideserver.sma.gob.cl/arcgis/rest/services/IDE/MINVU/MapServer"
+        ]
+      },
+      {
+        "language": "Spanish/local",
+        "query": "Antofagasta catastro predial mapa parcelas oficial municipal",
+        "result": "Found the official Geoportal/MINVU Predios dataset covering Antofagasta and the municipal 2025 avalúos PDF. The municipal PDF is tabular tax-roll evidence, not a parcel geometry service; no municipal parcel API was verified.",
+        "actualResultUrls": [
+          "https://geoportal.cl/geoportal/catalog/35406/Predios",
+          "https://www.municipalidaddeantofagasta.cl/images/phocadownload/ROLREAVALUO2025.pdf",
+          "https://www4.sii.cl/mapasui/internet/#/contenido/index.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://geoportal.cl/geoportal/catalog/35406/Predios",
+      "custodian": "Ministerio de Vivienda y Urbanismo, Centro de Estudios de Ciudad y Territorio",
+      "observation": "Official metadata for the Predios dataset explicitly includes Antofagasta. It describes 2019-01-02 parcel-division data and provides an SHP download link; the dataset is national-agency custody, not municipal custody."
+    },
+    {
+      "url": "https://www.sii.cl/destacados/impuesto_territorial/index.html",
+      "custodian": "Servicio de Impuestos Internos",
+      "observation": "Official SII page states that its Cartografía Digital shows the spatial location of a property and cadastral/tax attributes. It was treated as authoritative service documentation only; no owner or address query was made."
+    },
+    {
+      "url": "https://www.municipalidaddeantofagasta.cl/images/phocadownload/ROLREAVALUO2025.pdf",
+      "custodian": "Municipalidad de Antofagasta",
+      "observation": "Official municipal 2025 non-agricultural property assessment roll for comuna 02201 Antofagasta. It contains tabular roll/address/tax information and was not retained or queried for personal data."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.cl/geoportal/catalog/download/b77b1e63-742d-335b-8649-04b5bced563e",
+      "method": "GET",
+      "checkedAt": "2026-10-09",
+      "outcome": "Downloaded the official archive to ignored scratch storage. The Antofagasta component contains 123771 Polygon features, EPSG:32719 (WGS 84 / UTM zone 19S), and DBF fields COMUNA, CUT_COM, CUT_REG, CUT_PROV. No stable native parcel identifier field was exposed; no polygon was retained."
+    },
+    {
+      "url": "https://services6.arcgis.com/9yX8xdylSYIPqL3X/ArcGIS/rest/services/Base_de_Datos_Antofagasta_WFL1/FeatureServer/2?f=pjson",
+      "method": "GET",
+      "checkedAt": "2026-10-09",
+      "outcome": "Anonymous HTTP 200 metadata response for Propiedad_Fiscal, a polygon layer described as fiscal-property coverage for Región de Antofagasta. Schema was inspected without requesting unsafe fields."
+    },
+    {
+      "url": "https://services6.arcgis.com/9yX8xdylSYIPqL3X/ArcGIS/rest/services/Base_de_Datos_Antofagasta_WFL1/FeatureServer/2/query",
+      "method": "GET",
+      "checkedAt": "2026-10-09",
+      "outcome": "Bounded exact-WUP-point query with geometry and OBJECTID only returned one large fiscal-property polygon (OBJECTID 4). It was not retained because this is fiscal-property coverage rather than verified general cadastral parcel coverage."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "A first-party national cadastral/parcel dataset explicitly covers the Antofagasta commune and was downloaded and inspected. The evidenced custodian is MINVU/Geoportal, not the municipality.",
+    "urls": ["https://geoportal.cl/geoportal/catalog/35406/Predios"]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "source": {
+    "name": "Geoportal Chile / MINVU Predios",
+    "url": "https://geoportal.cl/geoportal/catalog/35406/Predios",
+    "downloadUrl": "https://geoportal.cl/geoportal/catalog/download/b77b1e63-742d-335b-8649-04b5bced563e",
+    "format": "SHP",
+    "sourceYear": 2017,
+    "crs": "EPSG:32719",
+    "nativeFieldsInspected": ["COMUNA", "CUT_COM", "CUT_REG", "CUT_PROV"],
+    "identityDecision": "No stable native parcel identity field was exposed in the Antofagasta shapefile schema; driver FID was not used as a retained identity."
+  },
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_city_parcel_geometry_available_but_no_safe_native_identity_for_retained_sample",
+  "coverageAssessment": {
+    "claimedScope": "Official MINVU metadata lists Antofagasta among the communes covered by the Predios parcel-division dataset.",
+    "verifiedOpenScope": "The downloaded Antofagasta shapefile contains 123771 polygon features and an EPSG:32719 CRS; citywide completeness and currentness beyond the 2017 source are not established.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_pending_serial_review_of_source_identity_and_adapter_qualification",
+  "status": "complete",
+  "pointBasis": "Exact immutable WUP point; no coordinate shift was used.",
+  "priorEvidenceAssessment": "No prior Antofagasta packet was used as evidence.",
+  "researchGroup": "americas",
+  "registryBasis": "Official MINVU/Geoportal parcel dataset covers Antofagasta; local municipal custody was not established.",
+  "registryEvidenceUrls": ["https://geoportal.cl/geoportal/catalog/35406/Predios"],
+  "sourceIds": []
+}

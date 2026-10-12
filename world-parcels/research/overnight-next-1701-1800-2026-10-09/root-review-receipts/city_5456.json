@@ -1,0 +1,12 @@
+{
+  "taskId": "city:5456",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-5456-nawabshah.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/nawabshah-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:11:50Z",
+  "reason": "The queue identity and English/Urdu-Sindhi searches match. First-party Sindh Zameen material supports Board of Revenue/deh-map custody, but the attempted official routes yielded TLS mismatch, timeout, 502, DNS failure or 403. No native-ID polygon response, source schema, CRS, independent adapter qualification, or headed Details check exists. These access failures do not establish parcel absence."
+}

@@ -1,0 +1,54 @@
+{
+  "cityCode": 5873,
+  "queueRank": 2394,
+  "name": "Panabo",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "point": [7.32044439924539, 125.678394076922],
+  "population2025": 244050,
+  "population2025k": 244.05,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Panabo Philippines official cadastral parcel map GIS lot parcel City Assessor",
+        "result": "First-party discovery found the official Panabo City local-offices directory naming the City Assessor's Office, the official city site’s real-property/title references, and Geoportal Philippines’ public parcel-data catalog and Lot Plotter. No Panabo-specific anonymous parcel feature service or downloadable parcel geometry was qualified.",
+        "actualResultUrls": ["https://panabocity.gov.ph/local-offices-directory/", "https://panabocity.gov.ph/handog-titulo-program/", "https://geoportal.gov.ph/", "https://geoportal.gov.ph/gpapps/lotplotter"]
+      },
+      {
+        "language": "Cebuano/Filipino (native/local)",
+        "query": "Panabo mapa sa yuta cadastral mapa ng lote City Assessor Panabo City",
+        "result": "Ang opisyal nga Panabo City site naghisgot sa City Assessor/Registry of Deeds ug Handog Titulo; ang opisyal nga Geoportal naglista og Parcel data ug Lot Plotter. Wala makumpirma nga anonymous Panabo-specific parcel API o polygon download.",
+        "actualResultUrls": ["https://panabocity.gov.ph/local-offices-directory/", "https://panabocity.gov.ph/handog-titulo-program/", "https://geoportal.gov.ph/", "https://geoportal.gov.ph/gpapps/lotplotter"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and native/local discovery plus bounded official-service metadata and anonymous safe-field request attempt",
+  "sourceReview": "Panabo’s official city directory evidences a local City Assessor’s Office, and the city’s official Handog Titulo page evidences coordination with the Registry of Deeds. These establish local custodial/procedural context but not a public parcel API. Geoportal Philippines is a national portal/catalog, not proof of Panabo local service ownership. The PHIVOLCS assessed-parcels service is a general national agency layer and is not treated as Panabo cadastral custody.",
+  "attemptsRecorded": [
+    {"method":"SEARCH","url":"https://www.google.com/search?q=Panabo+Philippines+official+cadastral+parcel+map+GIS+lot+parcel+City+Assessor","httpStatus":200,"outcome":"English discovery returned official Panabo City, Geoportal Philippines, and general parcel references; no qualified Panabo-specific public parcel endpoint was identified."},
+    {"method":"SEARCH","url":"https://www.google.com/search?q=Panabo+mapa+sa+yuta+cadastral+mapa+ng+lote+City+Assessor+Panabo+City","httpStatus":200,"outcome":"Cebuano/Filipino discovery returned official Panabo City assessor/title references and Geoportal; no anonymous Panabo-specific polygon service was identified."},
+    {"method":"GET","url":"https://panabocity.gov.ph/local-offices-directory/","httpStatus":200,"outcome":"Official city directory loaded and lists the City Assessor’s Office. No viewer, service URL, schema, or parcel geometry exposed."},
+    {"method":"GET","url":"https://panabocity.gov.ph/handog-titulo-program/","httpStatus":200,"outcome":"Official city page loaded in Cebuano and documents a local Registry of Deeds/City Government title-distribution program. This is procedural/title evidence, not a public parcel geometry source; no unsafe fields requested."},
+    {"method":"GET","url":"https://geoportal.gov.ph/","httpStatus":200,"outcome":"Official national Geoportal loaded and lists a generic Parcel data layer, but bounded inspection did not expose a Panabo-specific service URL or safe parcel schema."},
+    {"method":"GET","url":"https://geoportal.gov.ph/gpapps/lotplotter","httpStatus":200,"outcome":"Official Lot Plotter loaded. It plots user-supplied bearings/distances and does not provide a Panabo parcel download or anonymous parcel feature query."},
+    {"method":"GET","url":"https://gisweb.phivolcs.dost.gov.ph/arcgis/rest/services/PHIVOLCS/HAS_PARCELS/FeatureServer/2?f=pjson","httpStatus":"200 HTML","outcome":"Expected ArcGIS JSON layer metadata was not returned; the endpoint returned an HTML web-application error page. No schema/CRS or source-proven native identity was accepted from this response."},
+    {"method":"GET","url":"https://gisweb.phivolcs.dost.gov.ph/arcgis/rest/services/PHIVOLCS/HAS_PARCELS/FeatureServer/2/query?where=1%3D1&geometry=125.678394076922%2C7.32044439924539&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=pjson","httpStatus":"200 HTML","outcome":"Expected bounded ID-plus-geometry JSON was not returned; HTML error page received. Exact WUP point was preserved and no coordinate shift or unsafe field request was made."}
+  ],
+  "schemaAndCrs": {"viewerConfig":"No Panabo-specific viewer JavaScript/configuration or usable parcel service configuration was exposed.","geometryCrs":"Not observed in an anonymous parcel response.","nativeIdentity":"No native parcel identity qualified.","sourceFieldMapping":{},"boundedAnonymousResponse":{"requestScope":"Exact WUP point [7.32044439924539,125.678394076922] preserved.","featureCount":0,"geometryFeatureCount":0,"result":"No usable JSON response; HTML endpoint error. This is not evidence of citywide absence."}},
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full unchanged parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true,"runtimeReadiness":"held","reason":"Local City Assessor and Registry of Deeds context is evidenced, but no usable anonymous public parcel geometry, schema/CRS, or source-proven native parcel identity was obtained."},
+  "scopeLimits": ["Exact WUP point [7.32044439924539,125.678394076922] preserved; no coordinate shift.","A map extent miss, HTML endpoint error, or absent usable response is not citywide cadastral absence evidence.","National Geoportal catalog and PHIVOLCS assessed-parcel route do not establish a Panabo local cadastral adapter.","No parcel polygon retained; maximum allowed would have been three full polygons.","No citywide coverage, update cadence, service CRS, or stable parcel identity semantics verified.","No raw source-specific attributes or unsafe owner/title/address/contact/tax fields requested or retained.","Packet completion records research status only and is not source integration/admission."],
+  "uncertainty":"Panabo local cadastral custody is procedurally evidenced through the City Assessor and Registry of Deeds references, but public machine-readable parcel coverage, geometry, CRS, and native identity semantics remain unresolved. Runtime readiness remains held pending independent serial qualification."
+}

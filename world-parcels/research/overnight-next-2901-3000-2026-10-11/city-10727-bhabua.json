@@ -1,0 +1,94 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10727,
+  "queueRank": 2982,
+  "name": "Bhabua",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [25.0409448907289, 83.6081094996721],
+  "population2025": 200740,
+  "population2025k": 200.74,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhabua Bihar official cadastral map parcel GIS land records",
+        "result": "First-party discovery identified Bihar BhuNaksha, the Directorate of Land Records and Survey, the Revenue and Land Reforms Department, and the official Kaimur district land-records page. BhuNaksha exposes a public cadastral viewer and hierarchical Kaimur/Bhabua selections, but the selected Bhabua municipal map extent request returned HTTP 204 and no parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://state.bihar.gov.in/lrc/CitizenHome.html",
+          "https://kaimur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/"
+        ]
+      },
+      {
+        "language": "Hindi (local/native)",
+        "query": "भभुआ बिहार आधिकारिक कैडस्ट्रल नक्शा भू अभिलेख कैमूर भभुआ",
+        "result": "Hindi first-party discovery confirmed the Kaimur district land-records route, BhuNaksha revenue-map service, and local Bhभुआ administrative context. No safe anonymous ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://kaimur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default",
+          "https://bhunaksha.bihar.gov.in/index.jsp"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Directorate of Land Records and Survey / Revenue and Land Reforms Department, Government of Bihar; the official Kaimur district page identifies the local land-records office in Bhabua.",
+    "locality": "Bhabua, Kaimur district, Bihar, India.",
+    "evidenceUrls": [
+      "https://kaimur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "https://bhunaksha.bihar.gov.in/index.jsp"
+    ],
+    "scopeNote": "BhuNaksha is a first-party Bihar cadastral-map service and its hierarchy exposed Kaimur (Bhabua), Bhabua subdivision, Bhabua circle, and a Bhabua municipal ward mauza. This establishes a local/state cadastral custodian, not open parcel-vector qualification or runtime admission."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": {"featureCount": null, "geometryFeatureCount": 0, "result": "No usable parcel geometry response; selected map extent and plot-at-coordinate requests returned HTTP 204."},
+    "note": "The exact WUP point was preserved and was not shifted. No exact-point miss was treated as citywide absence."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/index.jsp", "httpStatus": 200, "outcome": "Official BhuNaksha viewer HTML retrieved; JavaScript/configuration exposed REST hierarchy, map extent, plot lookup, and WMS routes."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js", "httpStatus": 200, "outcome": "Official viewer configuration retrieved; service path is same-origin and no credential/private token was needed."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "httpStatus": 200, "outcome": "Returned 7 levels for Bihar state code 10."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "httpStatus": 200, "outcome": "Returned Kaimur (Bhabua) district code 31, Bhabua subdivision code 01, Bhabua circle code 03, and Bhabua municipal ward mauza code 0425 (Hindi label for wards 1-10)."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "httpStatus": 204, "outcome": "Requested selected hierarchy state=10, levels=31,01,03,0425 and srs=0; no extent or GIS code returned."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "httpStatus": 204, "outcome": "Bounded plot-at-coordinate route was attempted for the selected Bhabua hierarchy without requesting unsafe fields; no parcel identity or geometry returned."},
+    {"method": "GET", "url": "https://dlrs.bihar.gov.in/services.html", "httpStatus": 200, "outcome": "Official DLRS service page retrieved; it lists Online Map, revenue records, jamabandi, and special-survey map services."},
+    {"method": "GET", "url": "https://kaimur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/", "httpStatus": 200, "outcome": "Official Kaimur Hindi page retrieved; it identifies the land-records service and Bhabua office locality."},
+    {"method": "GET", "url": "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default", "httpStatus": 200, "outcome": "Official BiharBhumi portal retrieved; it identifies Bhu-Naksha as the revenue-map portal and distinguishes public information from login services."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Same-origin REST/WMS routes were observed in the official BhuNaksha JavaScript; no successful map response exposed a layer schema.",
+    "geometryCrs": null,
+    "nativeIdentity": "Not observed.",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": "Hierarchy provenance observed as Bihar state 10 / Kaimur district 31 / Bhabua subdivision 01 / Bhabua circle 03 / municipal ward mauza 0425. This is source location hierarchy, not a parcel identity.",
+    "boundedAnonymousResponse": {"requestScope": "Public hierarchy and map endpoints only; no login, CAPTCHA bypass, credentials, private token, owner, address, titleholder, tax, or account fields requested.", "featureCount": null, "geometryFeatureCount": 0}
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if publicly exposed and source-proven", "full parcel geometry", "geometry CRS", "source layer/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "qualification": {"serialReviewerRequired": true, "reason": "A local/state cadastral custodian and public viewer hierarchy are evidenced, but no source-native parcel identity, geometry, schema, or CRS was qualified."},
+  "scopeLimits": ["HTTP 204, map extent miss, unusable UI, timeout, login wall, or zero exact-point hit is not evidence of citywide parcel absence.", "The selected Bhabua municipal hierarchy was investigated, but the public endpoint did not return map extent or parcel geometry.", "No raw source-specific attribute sets or synthetic identities were retained.", "Packet completion is research completion only and is not source integration or admission."],
+  "uncertainty": "BhuNaksha may contain parcel maps for other Bhabua mauzas or map instances; current bounded anonymous requests did not establish coverage, native parcel identity semantics, CRS, or usable geometry for this city packet."
+}

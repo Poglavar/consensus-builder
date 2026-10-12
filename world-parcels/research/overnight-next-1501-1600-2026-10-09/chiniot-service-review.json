@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-7669-chiniot.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Punjab PULSE exposes a Chiniot cadastral-map layer and the official PULSE survey viewer includes Chiniot. The current PULSE ArcGIS service rejected anonymous REST metadata/query requests with HTTP 499 Token Required, and the hierarchy API rejected anonymous access with HTTP 401 Bearer authentication required. No complete safe parcel polygon was obtained.",
+  "registryAssessment": "Punjab PULSE/PLRA are the relevant provincial land-record and cadastral/map custodians evidenced by the official viewers and PLRA site. Chiniot district government pages evidence local land-record service context. This is custodian/map evidence, not open citywide parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official PULSE LIS viewer shell lists Cadastral Maps and explicitly includes Chiniot; its source configuration names the cadastral MapServer."},
+    {"url": "https://d2d.pulse.gop.pk/map-qc.html", "observation": "Official PULSE map-QC viewer shell lists Chiniot and exposes parcel survey controls, download controls, and a public viewer route."},
+    {"url": "https://punjab-zameen.gov.pk/", "observation": "Official Punjab Land Records Authority site describes Punjab digital land records and GIS-linked records/services."},
+    {"url": "https://chiniot.punjab.gov.pk/services", "observation": "Official Chiniot district services page lists issuance of Fard through e-Khidmat, providing local land-record service context."},
+    {"url": "https://chiniot.punjab.gov.pk/district_profile", "observation": "Official Chiniot district profile supplies district land statistics; it is contextual and not parcel geometry."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://lis.pulse.gop.pk/",
+    "observedTechnology": "Public HTML/JavaScript PULSE viewer using ArcGIS REST/MapServer and a separate ASP.NET parcel hierarchy API.",
+    "observedControls": ["Cadastral Maps", "Chiniot layer", "parcel map viewer", "PULSE survey parcel list", "download controls"],
+    "serviceUrls": [
+      "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer",
+      "https://gismaps.pulse.gop.pk/arcgis/rest/services/Door_To_Door_Survey/DoorToDoor_V_25_07_2025/MapServer"
+    ],
+    "schemaAndCrs": "ArcGIS service URLs were exposed in current public JavaScript, but metadata requests were rejected before schema/CRS could be read. PULSE parcel UI code references geomWKT, parcelId, parcelNo, subParcelNo, and mauzaId; these were not accepted as verified native schema because no response was obtained.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": "No source-field mapping retained; UI field names are observational only and no parcel response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://lis.pulse.gop.pk/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 public viewer shell retrieved; current JavaScript/configuration inspected."},
+    {"url": "https://d2d.pulse.gop.pk/map-qc.html", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 public viewer shell retrieved; Chiniot selector, parcel UI, API routes, and current ArcGIS service URL inspected."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 transport response containing ArcGIS error code 499 Token Required; no metadata/schema/CRS returned."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0?f=pjson", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 transport response containing ArcGIS error code 499 Token Required; no layer schema returned."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query?f=pjson&where=1%3D1&outFields=*&returnGeometry=false&resultRecordCount=3", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 transport response containing ArcGIS error code 499 Token Required; no attributes or geometry returned."},
+    {"url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDivisionsList", "method": "GET", "normalTlsVerification": true, "result": "HTTP 401 Unauthorized with WWW-Authenticate: Bearer; no hierarchy response."},
+    {"url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDistrictsList/1", "method": "GET", "normalTlsVerification": true, "result": "HTTP 401 Unauthorized with WWW-Authenticate: Bearer; no district response."},
+    {"url": "https://punjab-zameen.gov.pk/", "method": "GET", "normalTlsVerification": true, "result": "Official PLRA public site retrieved; general land-record service context only, no parcel geometry request submitted."},
+    {"url": "https://chiniot.punjab.gov.pk/services", "method": "GET", "normalTlsVerification": true, "result": "Official Chiniot services page retrieved; Fard/e-Khidmat service context only."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "Bounded metadata, layer, and small attribute-only ArcGIS query attempted; all were token-gated before any feature response."},
+  "coverageAssessment": {"claimedScope": "Punjab PULSE/PLRA cadastral and parcel-survey channels, including Chiniot.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact PULSE authentication policy, parcel query syntax, native identity field, service schema/CRS, and Chiniot city coverage remain unverified. HTTP 401/499, login walls, or exact-point misses are not evidence of no cadastral records.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

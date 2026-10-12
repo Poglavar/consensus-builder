@@ -1,0 +1,49 @@
+{
+  "taskId": "city:9424",
+  "wupSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "wupIdentity": {
+    "rank": 3045,
+    "code": 9424,
+    "name": "Xujiagou",
+    "country": "China",
+    "iso3": "CHN",
+    "point": [
+      36.1254534823907,
+      114.136610110726
+    ],
+    "populationPersons": 196663
+  },
+  "searchLanguages": [
+    "English",
+    "Chinese (中文)"
+  ],
+  "originalSourceObservation": {
+    "sourceCachePaths": [
+      "tmp/valhalla-parcel-research/9424/anyang.html",
+      "tmp/valhalla-parcel-research/9424/map.htm",
+      "tmp/valhalla-parcel-research/9424/services.htm",
+      "tmp/valhalla-parcel-research/9424/js_map.js"
+    ],
+    "cachedPageInspection": {
+      "anyang.html": {
+        "bytes": 22162,
+        "parcelTerms": 0
+      },
+      "map.htm": {
+        "bytes": 11133,
+        "parcelTerms": 0
+      },
+      "services.htm": {
+        "bytes": 16613,
+        "parcelTerms": 0
+      },
+      "js_map.js": {
+        "bytes": 27921,
+        "parcelTerms": 0
+      }
+    },
+    "retainedPolygonCount": 0,
+    "parcelServiceQualified": false,
+    "absenceInferred": false
+  }
+}

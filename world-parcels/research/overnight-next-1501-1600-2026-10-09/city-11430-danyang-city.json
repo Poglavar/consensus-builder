@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11430",
+  "cityCode": 11430,
+  "queueRank": 1588,
+  "name": "Danyang City",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1588,
+  "point": [32.007290457106, 119.578195637332],
+  "centerLatLon": [32.007290457106, 119.578195637332],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 358677,
+  "population2025k": 358.677,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Danyang Natural Resources and Planning Bureau page exposes a local real-estate registration query entry (不动产登记查询) and a query form carrying administrative code 321181. This evidences a local registration procedure, not an open parcel-geometry service.",
+  "registryEvidenceUrls": [
+    "https://zrzy.jiangsu.gov.cn/zjdy/",
+    "https://zrzy.jiangsu.gov.cn/gtapp/xxgk/wwsjcx_bdcdjcx.action?xzqhdm=321181",
+    "https://zjdy.jszwfw.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official local page and registration-query iframe were retrievable over normal TLS, but the bounded inspection exposed only a registration query form and public notices. No current anonymous parcel-map viewer, feature endpoint, native parcel ID, schema, CRS, or complete polygon response was identified. No login, credentials, CAPTCHA bypass, certificate exception, or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local-registration-procedure_verified_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Local official registration-query procedure and local natural-resources agency page only.",
+    "verifiedOpenScope": "Local registration procedure verified; public parcel geometry service and schema were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Danyang City China official cadastral map parcel Natural Resources Bureau public map API",
+        "scope": "Identify a local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search identified the official Danyang Natural Resources and Planning Bureau page and the Danyang government service portal. First-party inspection confirmed a local real-estate registration query entry, but did not expose a public parcel feature service or geometry API.",
+        "actualResultUrls": [
+          "https://zrzy.jiangsu.gov.cn/zjdy/",
+          "https://zjdy.jszwfw.gov.cn/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection and bounded public GET requests."
+      },
+      {
+        "language": "native/local",
+        "query": "丹阳市 不动产登记 地籍图 查询 官方",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language discovery identified the official Danyang Natural Resources and Planning Bureau and its local 不动产登记查询 entry. The retrieved form accepts a case/acceptance number and carries xzqhdm=321181; no parcel layer, native ID schema, CRS, or safe anonymous polygon response was found.",
+        "actualResultUrls": [
+          "https://zrzy.jiangsu.gov.cn/zjdy/",
+          "https://zrzy.jiangsu.gov.cn/gtapp/xxgk/wwsjcx_bdcdjcx.action?xzqhdm=321181"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection and bounded public GET requests."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The absence of an identified public parcel endpoint is a bounded discovery result only, not evidence of citywide absence. Current viewer configuration, parcel-layer existence, schema, CRS, stable native identity, safe field availability, polygon availability, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current Danyang/Jiangsu cadastral or public natural-resources map service. Do not enable runtime from this packet alone."
+}

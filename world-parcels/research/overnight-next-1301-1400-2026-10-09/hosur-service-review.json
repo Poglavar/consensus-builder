@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10071-hosur.json",
+  "cityCode": 10071,
+  "purpose": "Document first-party discovery, current public map/API routes, bounded anonymous access review, safe-field limits, and uncertainty.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official Krishnagiri/Hosur revenue custodian and Tamil Nadu land-record service provenance were found. eAdangal is an attribute lookup form, and TNGIS is a map shell with administrative content and user-supplied WFS upload controls; no anonymous parcel feature response, current configuration, schema, CRS, native ID, or geometry was obtained. No sample GeoJSON is retained.",
+  "registryAssessment": "registryFound is true for evidenced local/state service provenance: Krishnagiri District publishes Hosur taluk revenue administration and names the Tahsildar/Sub-Collector, while Tamil Nadu Revenue Administration publishes eAdangal. Geometry integration and runtime admission remain unverified.",
+  "queries": [
+    {"language":"English","query":"Hosur Tamil Nadu official cadastral parcel map land records survey map site:tn.gov.in OR site:krishnagiri.nic.in OR site:eservices.tn.gov.in","outcome":"Official Krishnagiri revenue, eAdangal, TNGIS and Hosur municipal routes found; no public anonymous parcel-vector endpoint found.","actualResultUrls":["https://krishnagiri.nic.in/about-district/administrative-setup/revenue-administration/","https://krishnagiri.nic.in/department/revenue/","https://eadangal.tn.gov.in/eadangal/EadngalExtract.aspx","https://tngis.tn.gov.in/apps/cumta/","https://www.tnurbantree.tn.gov.in/hosur/ward-map-2/"]},
+    {"language":"Tamil","query":"ஹோசூர் தமிழ்நாடு அதிகாரப்பூர்வ நில வரைபடம் பட்டா சர்வே எண் நில பதிவுகள்","outcome":"Official Tamil pages and eAdangal form found; no public anonymous parcel geometry API identified.","actualResultUrls":["https://krishnagiri.nic.in/ta/public-utility/%E0%AE%93%E0%AE%9A%E0%AF%82%E0%AE%B0%E0%AF%8D-%E0%AE%A8%E0%AE%95%E0%AE%B0%E0%AE%BE%E0%AE%9F%E0%AF%8D%E0%AE%9A%E0%AE%BF/","https://eadangal.tn.gov.in/eadangal/EadngalExtract.aspx","https://www.tnurbantree.tn.gov.in/hosur/ta/%E0%AE%AE%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%B3%E0%AF%8D-%E0%AE%9A%E0%AE%BE%E0%AE%9A%E0%AE%A9%E0%AE%AE%E0%AF%8D/"]}
+  ],
+  "attempts": [
+    {"url":"https://krishnagiri.nic.in/about-district/administrative-setup/revenue-administration/","method":"GET/search open","result":"Official page opened; Hosur taluk code 09 and revenue-village list observed."},
+    {"url":"https://krishnagiri.nic.in/department/revenue/","method":"GET/search open","result":"Official directory opened; Tahsildar Hosur and Revenue Divisional Officer Hosur observed."},
+    {"url":"https://eadangal.tn.gov.in/eadangal/EadngalExtract.aspx","method":"GET/search open","result":"Official form observed with district/taluk/village/survey/subdivision inputs; no submission was made and no personal or unsafe fields were requested."},
+    {"url":"https://tngis.tn.gov.in/apps/cumta/","method":"GET","result":"Web discovery rendered the official map shell with administrative layers and WFS upload UI, but direct TLS GET from the bounded shell timed out after 25 seconds; no JavaScript/configuration or parcel feature endpoint was obtained and TLS verification was not bypassed."},
+    {"url":"https://www.tnurbantree.tn.gov.in/hosur/ward-map-2/","method":"GET/search open","result":"Official municipal ward-map page found; map is administrative/ward context, not parcel-vector evidence."},
+    {"url":"https://www.tnurbantree.tn.gov.in/hosur/wp-content/uploads/sites/146/2022/10/NEW-TOWN-MAP-2022-Model.pdf","method":"GET/search open","result":"Official Hosur city map found; municipal boundary/wards/roads/lakes only, no parcel polygons or native parcel IDs."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "No exact-point parcel request was possible because no anonymous public parcel-vector endpoint or current TNGIS parcel configuration was obtained. The exact WUP point [12.7430006442616,77.8176054992941] was not shifted."},
+  "remainingUncertainty": "TNGIS may expose additional department-controlled layers to authorized users or through configuration not reachable in this attempt; eAdangal may return land-record attributes only after selected administrative inputs. The evidence does not establish public vector availability, CRS, stable parcel identity, or citywide coverage. No owner, address, titleholder, tax, contact, or personal fields were requested.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "requestCache": "tmp/valhalla-parcel-research/10071/"
+}

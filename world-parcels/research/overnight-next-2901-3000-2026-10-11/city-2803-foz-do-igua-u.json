@@ -1,0 +1,71 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2803,
+  "queueRank": 2913,
+  "name": "Foz do Iguaçu",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "capital": false,
+  "point": [-25.5252682566021, -54.5567614895514],
+  "population2025": 204845,
+  "population2025k": 204.845,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Foz do Iguaçu official cadastral map parcel viewer GIS municipality Brazil",
+        "result": "Search identified the first-party Foz do Iguaçu GeoPortal hosted at fozhabita.ctmgeo.com.br; its indexed description says it provides municipal parcel/lot cadastral information and map identification.",
+        "actualResultUrls": ["https://fozhabita.ctmgeo.com.br/", "https://fozhabita.ctmgeo.com.br/geo-view/faces/sistema/selecaoEmpresa.xhtml"]
+      },
+      {
+        "language": "Portuguese (local)",
+        "query": "Foz do Iguaçu cadastro imobiliário mapa lotes prefeitura geoprocessamento",
+        "result": "Search identified the first-party municipal GeoPortal and official municipal documents describing Cadastro Imobiliário and lote/parcel procedures. The GeoPortal municipality selector lists Município de Foz do Iguaçu, IBGE 4108304, PR.",
+        "actualResultUrls": ["https://fozhabita.ctmgeo.com.br/", "https://fozhabita.ctmgeo.com.br/geo-view/faces/sistema/selecaoEmpresa.xhtml", "https://sistemas.pmfi.pr.gov.br/RP/SMTI/SiteArquivo/DownloadArquivo?idArquivo=43", "https://sistemas.pmfi.pr.gov.br/RP/SIDPublico/Organograma/Interno"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Município de Foz do Iguaçu municipal cadastral/GeoPortal service, hosted by CTMGEO",
+    "locality": "Foz do Iguaçu, Paraná, Brazil",
+    "evidenceUrls": ["https://fozhabita.ctmgeo.com.br/", "https://fozhabita.ctmgeo.com.br/geo-view/faces/sistema/selecaoEmpresa.xhtml", "https://sistemas.pmfi.pr.gov.br/RP/SMTI/SiteArquivo/DownloadArquivo?idArquivo=43"],
+    "scopeNote": "The municipal GeoPortal is a local public cadastral map/procedure route. CTMGEO appears to host the application; no underlying parcel service endpoint was successfully reached in this attempt."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://fozhabita.ctmgeo.com.br/geo-view/",
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "No parcel ID+geometry response was obtained. The public route exposed the municipality selector, but navigation from index.ctm to municipios.ctm and back to index.ctm looped anonymously; this is an unusable UI/app-route outcome, not evidence of citywide parcel absence."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://fozhabita.ctmgeo.com.br/", "outcome": "HTTP 200 HTML redirect page to /geo-view/index.ctm."},
+    {"method": "GET", "url": "https://fozhabita.ctmgeo.com.br/geo-view/index.ctm", "outcome": "HTTP 302 to /geo-view/municipios.ctm; anonymous session cookie issued."},
+    {"method": "GET", "url": "https://fozhabita.ctmgeo.com.br/geo-view/municipios.ctm", "outcome": "HTTP 302 back to /geo-view/index.ctm; repeated anonymous redirect loop, so no map/config/schema response was available."},
+    {"method": "GET", "url": "https://fozhabita.ctmgeo.com.br/geo-view/faces/sistema/selecaoEmpresa.xhtml", "outcome": "HTTP 200 JSF municipality selector; observed Foz do Iguaçu entry with IBGE 4108304 and PR, plus public home.xhtml command-link route. No login or CAPTCHA was used."},
+    {"method": "GET", "url": "https://sistemas.pmfi.pr.gov.br/RP/SMTI/SiteArquivo/DownloadArquivo?idArquivo=43", "outcome": "Official municipal service document retrieved; describes cadastral numbering of approved subdivision lots and municipal planning/urbanism procedure."},
+    {"method": "GET", "url": "https://sistemas.pmfi.pr.gov.br/RP/SIDPublico/Organograma/Interno", "outcome": "Official municipal organizational page retrieved via search; identifies the municipal Cadastro Imobiliário division. Direct request route was not needed for the evidence packet."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The local municipal GeoPortal and municipal cadastral procedure are evidenced, but the underlying public map/API service could not be reached beyond the selector in this attempt.",
+    "No exact-point or bounded parcel query was completed; this is not evidence of parcel absence or map extent miss.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "cityCode": 6994,
+  "queueRank": 2579,
+  "name": "Campeche",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [19.8400276088226, -90.5149434349059],
+  "population2025": 227965,
+  "population2025k": 227.965,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Campeche Mexico official cadastral parcel map cadastral viewer INFOCAM municipality",
+        "result": "First-party discovery identified INFOCAM, the Instituto de Información Estadística, Geográfica y Catastral del Estado de Campeche, with its official IDE and cadastral-information pages; the official H. Ayuntamiento de Campeche services page identifies a predial consultation route and local cadastral service context. INFOCAM's current public IDE route was reachable, but the parcel viewer and cadastral management route require login; no anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://ide.infocam.gob.mx/",
+          "https://www.infocam.gob.mx/infocam/estadisticas.php",
+          "https://www.municipiocampeche.gob.mx/tramites-y-servicios/",
+          "https://sgc.infocam.gob.mx/sgc/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Campeche México visor catastral parcelas catastro oficial INFOCAM Ayuntamiento Campeche",
+        "result": "La búsqueda en fuentes de primera parte identificó al INFOCAM como instituto estatal de información estadística, geográfica y catastral, su IDE oficial y la página oficial de servicios del H. Ayuntamiento de Campeche con consulta de predial. La IDE actual fue accesible, pero el visor catastral y el Sistema de Gestión Catastral muestran acceso con usuario; no se obtuvo una respuesta anónima de parcela con identificador y geometría.",
+        "actualResultUrls": [
+          "https://ide.infocam.gob.mx/",
+          "https://www.infocam.gob.mx/infocam/estadisticas.php",
+          "https://www.municipiocampeche.gob.mx/tramites-y-servicios/",
+          "https://sgc.infocam.gob.mx/sgc/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "H. Ayuntamiento de Campeche, whose official services page identifies the local predial consultation and links to the Campeche predial service; the municipal cadastral function is also evidenced by the official Dirección de Catastro form and municipal planning material.",
+    "stateCadastralCustodian": "Instituto de Información Estadística, Geográfica y Catastral del Estado de Campeche (INFOCAM).",
+    "stateParcelService": "INFOCAM IDE at https://ide.infocam.gob.mx/ and its linked IDE visor route; the current public viewer source shows a login gate before opening visor/.",
+    "cadastralManagementService": "INFOCAM Sistema de Gestión Catastral at https://sgc.infocam.gob.mx/sgc/, reachable anonymously only to its login page.",
+    "registryBasis": "Official state and municipal sources identify real cadastral custodians and services. This supports registryFound=true for source discovery only, not geometry coverage or adapter qualification.",
+    "registryFoundReason": "INFOCAM's official IDE describes state cadastral/geospatial responsibilities and exposes cadastral-information links; the official municipality service page exposes a Campeche predial route and local government contact context."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://ide.infocam.gob.mx/visor/",
+    "responseType": null,
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "inspectionNote": "The official IDE landing page was retrieved and its JavaScript/configuration inspected. The current visor route is opened only after the page's login flow; the SGC route likewise returned a login page. No safe anonymous parcel ID-plus-geometry response, schema, CRS, or public feature endpoint was obtained. The municipal predial link is a payment/consultation route, not a qualified parcel-geometry service."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a qualified anonymous parcel endpoint; the exact WUP point was preserved and not shifted.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official INFOCAM state cadastral/IDE services and H. Ayuntamiento de Campeche local predial/cadastral service evidence.",
+    "verifiedOpenScope": "Official service identity and local/state custodian evidence only; no parcel geometry, map extent, or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [19.8400276088226, -90.5149434349059] was preserved in latitude/longitude order and was not shifted.",
+    "The login wall and unavailable anonymous feature response are not evidence of a zero parcel hit or citywide absence.",
+    "No native parcel identity, field schema, CRS, or geometry was obtained; no sample GeoJSON is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "Campeche has credible first-party state and municipal cadastral custodians, but both the INFOCAM public visor/management routes currently require authentication before parcel access. Anonymous parcel service scope, schema, CRS, native identity, exact-point behavior, and citywide coverage remain unresolved."
+}

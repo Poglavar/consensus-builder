@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 11608,
+  "cityCode": 11608,
+  "cityId": "wup2025:11608",
+  "name": "Changxing",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [31.005757314872, 119.914657780272],
+  "point": [31.005757314872, 119.914657780272],
+  "queueRank": 1902,
+  "population2025": 301206,
+  "population2025k": 301.206,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Changxing China official cadastral parcel map land registration natural resources bureau",
+        "result": "First-party Changxing government material identifies the Changxing Natural Resources and Planning Bureau and Changxing Real Estate Registration Center in local registration/procedure context. No anonymous public parcel-vector service was established.",
+        "actualResultUrls": [
+          "https://www.zjcx.gov.cn/",
+          "https://yssm.huzhou.gov.cn/zjlyssm/bdcqzs/20250515/i4016830.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "长兴县 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "First-party Huzhou government publication records a Changxing Real Estate Registration Center notice and the Changxing Natural Resources and Planning Bureau as source. It provides procedure/registry evidence, not a public parcel geometry response.",
+        "actualResultUrls": [
+          "https://yssm.huzhou.gov.cn/zjlyssm/bdcqzs/20250515/i4016830.html",
+          "https://www.zjcx.gov.cn/col/col1229262298/index.html"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The official Changxing government host and its public-information page were requested over HTTPS. Both returned HTTP 403 in this anonymous environment, so no current JavaScript viewer/configuration or public cadastral API could be followed. No login, CAPTCHA bypass, credential, private token, or unsafe owner/address/titleholder field was used."
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Huzhou government material names the Changxing Real Estate Registration Center as the announcing unit for a Changxing property-registration notice; official Changxing government search results identify the Changxing Natural Resources and Planning Bureau among county agencies. This establishes a local registry/procedure custodian, not public parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Local Changxing registry/procedure evidence and attempted official county public-information access.",
+    "verifiedOpenScope": "Local registry/procedure custodian evidenced; no anonymous safe parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was not shifted, and the HTTP 403/map-access failure is not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The official county host denied anonymous HTTP access (403), while the first-party registry notice exposes no parcel-vector payload. A current public viewer/API, CRS, schema, safe native ID, and bounded geometry response therefore remain unverified.",
+  "remainingUncertainty": "A separately published, authenticated, or locally networked cadastral service may exist but was not accessed. Exact-point parcel coverage, CRS/schema, and citywide completeness remain unknown.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Changxing parcel adapter only after confirming a current public route, CRS/schema, safe ID fields, and bounded geometry response."
+}

@@ -1,0 +1,53 @@
+{
+  "cityRecord": "city-5602-buta.json",
+  "cityCode": 5602,
+  "queueRank": 3052,
+  "city": "Buta",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and French first-party discovery evidenced the official Buta land/cadastral circumscription in Bas-Uélé. The BIC public portal was inspected and its bounded anonymous safe-field query around the exact WUP point returned an empty array; no parcel polygon was retained. This is not evidence of citywide absence.",
+  "queryAndRequestOutcomes": "All executed queries, URLs, direct requests, response statuses, viewer configuration observations, schema/CRS limits, safe allowlist, and uncertainty are recorded in city-5602-buta.json. No login, bypass, credentials, private token, TLS exception, or unsafe field request occurred.",
+  "custodians": [
+    {
+      "name": "Ministère des Affaires Foncières / circonscription foncière de Buta",
+      "scope": "Local land/cadastral registry custodian evidenced by the official ministry directory; official registry consultation is procedural and handled by competent local officials.",
+      "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+    },
+    {
+      "name": "Bureau d'Informations Cadastrales (BIC)",
+      "scope": "Public cadastral information portal whose landing page states service availability for Nord-Kivu and Sud-Kivu; Bas-Uélé/Buta coverage was not qualified.",
+      "evidence": "https://bic.cd/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": "cadastral_parcels (viewer configuration only)",
+    "nativeIdFields": ["parcel_number"],
+    "geometryCrs": null,
+    "fieldMapping": {
+      "parcel_number": "safe public parcel identifier",
+      "latitude": "parcel reference latitude",
+      "longitude": "parcel reference longitude",
+      "gps_coordinates": "viewer-referenced public coordinate/geometry field"
+    },
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "An empty bounded query and BIC coverage limitation are access/qualification results, not proof of parcel absence.",
+    "No anonymous Buta ID-plus-geometry response, parcel CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "Official local records may require the ministry's formal research procedure.",
+    "The public BIC service may expose future coverage or authenticated workflows, but none was used or assumed.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

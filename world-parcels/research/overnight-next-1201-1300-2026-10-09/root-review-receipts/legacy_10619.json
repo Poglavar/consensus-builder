@@ -1,0 +1,15 @@
+{
+  "taskId": "legacy:10619",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-10619-ghazipur.json",
+    "world-parcels/research/overnight-next-2026-10-09/ghazipur-service-review.json",
+    "tmp/india-uhp-qualification-2026-10-09/paused-city-partial-evidence.json"
+  ],
+  "checkedAt": "2026-10-09T10:44:31Z",
+  "reason": "Immutable WUP identity matches rank 1171, India, point [25.5865210971484,83.5734521945564], and 473824 persons. The paired packet records English and Hindi searches, but its Ghazipur city selector returned zero extent; paused partial evidence reports only a nearby candidate whose identify returned bbox/id/kide, not geometry. No full native-ID polygon, forced paging, 13 bounded cells, independent metric GEOS checks, source binding, or headed Details check is evidenced. Source response claims have no retained original response artifact here. Custody is limited to the official district/state land-map route; zero extent is not citywide absence. Runtime remains disabled and the task is held."
+}

@@ -1,0 +1,74 @@
+{
+  "cityCode": 10308,
+  "queueRank": 1702,
+  "name": "Shouguang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.8701016821605, 118.756640871301],
+  "population2025": 336017,
+  "population2025k": 336.017,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shouguang China official cadastral parcel map GIS natural resources property registration",
+        "result": "No direct first-party parcel viewer or anonymous feature endpoint was returned. Search context identified Shouguang's official government domain and reporting on a city spatial-data platform, but no usable public parcel geometry route.",
+        "actualResultUrls": ["https://www.shouguang.gov.cn", "https://www.o.cn/index.php?a=index&aid=173&c=View&m=home"]
+      },
+      {
+        "language": "native/local",
+        "query": "寿光市 自然资源和规划局 不动产登记 地籍图 地理信息平台",
+        "result": "Results identified the Shouguang Natural Resources and Planning Bureau as the local custodian and described property-registration/cadastral and spatial-data functions, but did not expose an anonymous parcel ID plus geometry response.",
+        "actualResultUrls": ["https://www.95ye.com/quanguo/article/55469.html", "https://www.sgnet.cn/news/202512/09/740724.shtml", "https://www.shouguang.gov.cn"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Local custodial responsibility is evidenced by public descriptions of the Shouguang Natural Resources and Planning Bureau and its affiliated property-registration/geographic-information functions, but no city-bounded public cadastral map/API response was verified.",
+  "officialSources": [
+    {
+      "url": "https://www.shouguang.gov.cn",
+      "observation": "Official Shouguang government domain identified as the local government portal; bounded direct HTTPS HEAD/GET attempts timed out from this environment. No source payload was captured."
+    },
+    {
+      "url": "https://www.o.cn/index.php?a=index&aid=173&c=View&m=home",
+      "observation": "Public case description states that Shouguang's Natural Resources and Planning Bureau integrated a city spatial-data platform with property-registration workflows and completed rural house/land rights modelling; it does not provide an anonymous parcel feature endpoint or safe parcel-ID response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.shouguang.gov.cn",
+      "method": "GET/HEAD",
+      "outcome": "timeout after bounded 15-second attempts; no response body, schema, CRS, viewer configuration or API route captured"
+    },
+    {
+      "url": "https://sgfc.shouguang.gov.cn",
+      "method": "GET/HEAD",
+      "outcome": "candidate property-service host found in discovery context; bounded direct request timed out; not treated as a verified cadastral service"
+    },
+    {
+      "url": "https://www.o.cn/index.php?a=index&aid=173&c=View&m=home",
+      "method": "GET via public web search/open",
+      "outcome": "public case article read; institutional/platform description only, no anonymous parcel geometry response"
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Shouguang municipal natural-resources, property-registration and spatial-data platform functions as described by public sources.",
+    "verifiedOpenScope": "None; no anonymous parcel geometry service verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point retained in latitude/longitude order. No exact-point hit/miss inference was made. A timeout, inaccessible viewer or absent public endpoint is not evidence of citywide cadastral absence. Packet completion is not source integration or runtime admission."
+}

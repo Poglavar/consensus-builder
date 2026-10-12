@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "cityCode": 11216,
+  "queueRank": 1324,
+  "cityRecord": "city-11216-shaoguan.json",
+  "city": "Shaoguan",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [24.8090217997116, 113.573161240625],
+  "status": "held",
+  "registryFound": true,
+  "registryBasis": "The official Renhua County Natural Resources Bureau guide is a Shaoguan-area first-party publication describing Shaoguan's map-based real-estate search service, including cadastral/house-map browsing and address search. It establishes a local registration-service channel, not open machine-readable parcel geometry.",
+  "assessment": "The official Shaoguan service is documented but protected by Guangdong unified identity authentication. Anonymous requests did not produce a parcel ID, schema, CRS, or polygon. No GeoJSON sample is retained and runtime readiness remains held.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointHitTest": false
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shaoguan China official cadastral map parcel GIS land registration natural resources",
+      "outcome": "Official Shaoguan municipal portal and Shaoguan-area natural-resources service guide found; no anonymous safe parcel response.",
+      "actualResultUrls": ["https://www.sg.gov.cn/", "https://www.sgrh.gov.cn/sgrhzrzyj/gkmlpt/content/2/2635/post_2635356.html"]
+    },
+    {
+      "language": "native/local",
+      "script": "Simplified Chinese",
+      "query": "韶关市 地籍图 不动产登记 地图 查询 自然资源局 官方",
+      "outcome": "官方指南确认“以图查房”地图点选和地址检索服务，但需要统一身份认证；未取得匿名安全宗地编号和几何。",
+      "actualResultUrls": ["https://www.sgrh.gov.cn/sgrhzrzyj/gkmlpt/content/2/2635/post_2635356.html", "https://www.gdzwfw.gov.cn/hlwbdcdj/gdzwfwwbdczt/index.html", "https://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature"]
+    }
+  ],
+  "requestOutcomes": [
+    {"url": "https://www.sgrh.gov.cn/sgrhzrzyj/gkmlpt/content/2/2635/post_2635356.html", "method": "GET", "outcome": "HTTP 200; official guide reviewed. Protected login workflow, no parcel schema or geometry."},
+    {"url": "https://www.sg.gov.cn/", "method": "GET", "outcome": "HTTP 403 from anonymous curl; no bypass attempted."},
+    {"url": "https://www.gdzwfw.gov.cn/hlwbdcdj/gdzwfwwbdczt/index.html", "method": "GET", "outcome": "Timed out after 20 seconds; no response."},
+    {"url": "http://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature", "method": "GET", "outcome": "No response/timeout; no protected request attempted."}
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "crs": null, "exactWupPointTest": "Not completed; exact WUP point preserved and not shifted."},
+  "safeFieldAllowlist": ["safe native parcel identifier only if publicly returned", "geometry", "source CRS", "public layer/schema metadata", "HTTP status/content type"],
+  "coverageAssessment": {"claimedScope": "Official Shaoguan-area natural-resources guide and Guangdong government service entry.", "verifiedOpenScope": "Registration-service custody and protected map-search workflow only; no anonymous parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "qualification": {"verifiedParcelGeometry": false, "verifiedNativeIdentity": false, "runtimeReadiness": "held"},
+  "uncertainty": "The guide's service may expose map features after identity verification, but this research did not log in and did not request owner, address, titleholder, tax, contact, or other unsafe data. Protected workflow and network failures do not prove citywide absence.",
+  "conclusion": "No adapter qualification or GeoJSON sample is justified on attempt 1 of 3."
+}

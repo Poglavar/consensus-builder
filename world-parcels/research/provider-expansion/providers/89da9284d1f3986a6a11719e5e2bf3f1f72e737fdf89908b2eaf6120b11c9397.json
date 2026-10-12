@@ -1,0 +1,54 @@
+{
+  "descriptor": {
+    "id": "au-nsw-six-cadastre-lot",
+    "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+    "idField": "cadid",
+    "objectIdField": "objectid",
+    "idPrefix": "AU-NSW-",
+    "idType": "integer",
+    "outFields": [
+      "cadid",
+      "objectid"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32756,
+    "adapter": "arcgis",
+    "name": "NSW Spatial Services cadastral lots",
+    "countryCode": "AU",
+    "cityIds": [
+      "sydney",
+      "2060"
+    ],
+    "scope": "New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title.",
+    "evidenceFile": "research/sydney-live.json",
+    "licenceUrl": "https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions",
+    "catalogueUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+    "licenceNote": "NSW Spatial Services publishes attribution conditions and restrictions on automated retrieval; users are responsible for checking the publisher conditions for their intended use.",
+    "attribution": "NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions."
+  },
+  "city": {
+    "code": "2060",
+    "name": "Cambridge Park",
+    "point": [
+      150.704178051856,
+      -33.761537051073
+    ]
+  },
+  "sampleIds": [
+    "AU-NSW-104752415",
+    "AU-NSW-104752404",
+    "AU-NSW-104752407"
+  ],
+  "absentId": "AU-NSW-999999999",
+  "metricEpsg": "EPSG:32756",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "NSW Spatial Services cadastral lots",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; NSW Spatial Services cadastral lots; New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title.; Metadata-only complete viewport and exact-key source verification."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

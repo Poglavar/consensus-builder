@@ -1,0 +1,61 @@
+{
+  "cityCode": 4484,
+  "queueRank": 1374,
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [23.9047181101836, 89.1257862359532],
+  "population2025": 410514,
+  "population2025k": 410.514,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kushtia Bangladesh official cadastral parcel map land records GIS service",
+        "result": "Official Bangladesh Ministry of Land/DLRS Smart Bhumi Naksha, Settlement map search, DLRS Digital BRS, Kushtia district, and Kushtia digital-land project references found. No anonymous Kushtia parcel-vector response was established.",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.settlement.gov.bd/track-order",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/",
+          "https://kushtia.gov.bd/en",
+          "https://edlms.gov.bd/pages/office-contents/6922d89c933eb65569df922a"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "কুষ্টিয়া বাংলাদেশ সরকারি ভূমি রেকর্ড মৌজা মানচিত্র ক্যাডাস্ট্রাল",
+        "result": "সরকারি ভূমি নকশা, DLRS এবং কুষ্টিয়া জেলা/কুষ্টিয়া প্রকল্প অফিসের রেফারেন্স পাওয়া গেছে; কুষ্টিয়ার জন্য বেনামী পার্সেল জ্যামিতি বা স্থিতিশীল আইডি প্রতিক্রিয়া পাওয়া যায়নি।",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://kushtia.gov.bd/pages/static-pages/6980fbe5a31054345f1d199b",
+          "https://srdiro.kushtia.gov.bd/pages/static-pages/69813c9b35ce18e1c06fe899",
+          "https://edlms.gov.bd/pages/office-contents/6922d89c933eb65569df922a"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryAssessment": "Bangladesh DLRS/Ministry of Land is evidenced as the national land-record and survey custodian; Kushtia-specific project-office evidence exists. A current city-specific public cadastral registry or anonymous parcel API was not established, so registryFound remains null.",
+  "geometryEvidence": {
+    "sourceUrl": null,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "nativeFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "sampleCount": 0,
+    "crs": null,
+    "queryExtent": null
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "exactWupPointTest": "Not run against a parcel layer because no Kushtia parcel layer/anonymous query route was available; the exact WUP point was not shifted and was not treated as an absence test.",
+    "retentionNote": "No GeoJSON retained: no safe native parcel identity plus full polygon response was obtained."
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1
+}

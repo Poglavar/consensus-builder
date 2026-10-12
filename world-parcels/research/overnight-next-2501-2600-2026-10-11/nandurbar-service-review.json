@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-8466-nandurbar.json",
+  "cityCode": 8466,
+  "queueRank": 2533,
+  "name": "Nandurbar",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [21.3714264810562, 74.2462384011816],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html", "httpStatus": "timeout", "outcome": "Official Maharashtra Mahabhu-Nakasha viewer did not connect within the bounded 8-second shell connect timeout; no HTML, JavaScript/configuration, schema, CRS, or parcel response was obtained."},
+    {"method": "GET", "url": "https://nandurbar.gov.in/en/national-land-records-modernization-program-nlrmp/", "httpStatus": 200, "outcome": "Official Nandurbar district page loaded and identifies the Land Records Department, Collector Office, Nandurbar, and linked Maharashtra land-record services. It is custodian/service-context evidence, not a parcel feature response."},
+    {"method": "GET", "url": "https://nandurbar.gov.in/en/talukawise-maps/", "httpStatus": "web-search result available", "outcome": "Official district page lists talukawise maps including Nandurbar; no parcel-level geometry or safe native parcel identity was obtained."},
+    {"method": "GET", "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=10", "httpStatus": "timeout", "outcome": "Official Marathi Maharashtra Bhumi Abhilekh Nandurbar district page was identified, but the bounded shell request timed out; no service schema or geometry response was obtained."},
+    {"method": "GET", "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard", "httpStatus": 404, "outcome": "The requested legacy dashboard route returned 404. No alternate authenticated or private route was pursued."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null, "rawAttributesRetained": false, "inspection": "No safe anonymous parcel feature response was obtained. The official Mahabhu-Nakasha viewer timed out and the department district page timed out; no ID, schema, CRS, map extent, or geometry was qualified."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official Maharashtra/Nandurbar source discovery is recorded, but no Nandurbar parcel feature response, native identity, schema, CRS, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of absence.", "No citywide extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The official Maharashtra cadastral service and Nandurbar district custodian context are evidenced, but the live parcel viewer was unreachable for bounded anonymous inspection. Nandurbar-specific parcel access and service schema remain unresolved."
+}

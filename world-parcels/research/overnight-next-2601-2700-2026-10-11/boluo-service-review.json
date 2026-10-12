@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-11528-boluo.json",
+  "cityCode": 11528,
+  "queueRank": 2666,
+  "name": "Boluo",
+  "country": "China",
+  "countryCode": "CN",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "summary": "Official Boluo County Real Estate Registration Center material confirms a local registry custodian. Official Huizhou Natural Resources material documents a real-estate map/cadastral-map inquiry service, but it requires identity verification and did not expose an anonymous parcel ID-plus-geometry response. No sample was retained.",
+  "queryOutcomes": [
+    {"language":"English","query":"Boluo County China cadastral parcel map official natural resources land registration map","outcome":"Official Huizhou map-service announcement and Boluo registration-center notice found; no anonymous cadastral parcel feature service verified."},
+    {"language":"Chinese","query":"博罗县 不动产登记 地籍图 官方 地图","outcome":"官方资料确认博罗县不动产登记中心及惠州市“以图查房”流程；需身份认证，未找到可匿名访问的宗地几何接口。"}
+  ],
+  "requestOutcomes": [
+    {"request":"GET official Boluo registration-center notice","outcome":"HTTP 200; local registry custodian and a registration procedure are evidenced; no parcel API or geometry."},
+    {"request":"GET official Huizhou Natural Resources map-service announcement","outcome":"HTTP 200 via direct request after one search/open timeout; HTML confirms identity/facial-recognition gate and map inquiry workflow; no public API bootstrap."},
+    {"request":"GET Guangdong Government Services regional portal for Boluo","outcome":"HTTP 200; real-estate registration-record inquiry listed, but no anonymous parcel feature response."},
+    {"request":"Bounded anonymous map/API inspection","outcome":"Held at documented identity-verification wall; no login or credentialed/private route attempted."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not qualified",
+    "reason": "No parcel feature response was obtained; native field schema, CRS, pagination, stable native identity and geometry encoding could not be verified."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS only when explicitly returned", "source layer/year", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "Exact WUP point [23.1738716422502,114.279932891963] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, map-extent result, or citywide absence claim is made.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "The local registry custodian is evidenced, but no public parcel integration endpoint is qualified.",
+    "No retained GeoJSON sample was created because no safe native parcel ID plus full polygon was obtained.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "Boluo may have cadastral data in identity-gated, internal, or otherwise restricted registration systems, or in a public route not discoverable from the checked official material. The identity wall and absence of a public feature response are route limitations, not evidence that Boluo lacks cadastral coverage.",
+  "serialReviewRecommendation": "Hold. Recheck any specifically identified official anonymous endpoint; independently qualify coverage, identity stability, CRS/axis semantics and runtime admissibility."
+}

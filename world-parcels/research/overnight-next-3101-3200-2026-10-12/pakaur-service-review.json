@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-11635-pakaur.json",
+  "cityCode": 11635,
+  "queueRank": 3119,
+  "name": "Pakaur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [24.6412093934569, 87.8544542652207],
+  "population2025": 192641,
+  "population2025k": 192.641,
+  "populationUnit": "persons",
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "discovery": {
+    "english": "Official District Pakur land-records page found; linked Jharbhoomi/Bhu-Naksha hosts timed out for anonymous bounded access.",
+    "hindi": "Official Hindi District Pakur land-records page found; it points to the Jharkhand land-records portal but exposes no parcel service details."
+  },
+  "requests": [
+    {"route": "District Pakur official land records", "url": "https://pakur.nic.in/service/land-records/", "outcome": "HTTP 200; service-direction page only; no parcel schema or geometry."},
+    {"route": "District Pakur official Hindi land records", "url": "https://pakur.nic.in/hi/service/%e0%a4%ad%e0%a5%82%e0%a4%ae%e0%a4%bf-%e0%a4%b0%e0%a4%bf%e0%a4%95%e0%a5%89%e0%a4%b0%e0%a5%8d%e0%a4%a1%e0%a5%8d%e0%a4%b8/", "outcome": "HTTP 200; legacy Jharbhoomi link; no parcel schema or geometry."},
+    {"route": "Jharbhoomi official portal", "url": "https://jharbhoomi.jharkhand.gov.in/", "outcome": "Anonymous GET timed out; no login or bypass attempted."},
+    {"route": "Jharbhoomi Bhu-Naksha path", "url": "https://jharbhoomi.jharkhand.gov.in/bhunaksha", "outcome": "Anonymous bounded GET timed out; no JavaScript/configuration or public API could be inspected."},
+    {"route": "JharBhuNaksha host", "url": "https://jharbhunaksha.jharkhand.gov.in/", "outcome": "Anonymous TLS connection timed out; no map or parcel response."}
+  ],
+  "schemaAndCrs": {"layer": null, "geometry": null, "crs": null, "nativeIdentity": null, "compositeKeyContext": null},
+  "safeFieldAllowlist": ["id", "objectid", "parcel_id", "geometry"],
+  "scopeLimits": [
+    "No parcel sample was retained because no safe ID-plus-geometry response was obtained.",
+    "No owner, address, contact, titleholder, tax, account, personal, or other unsafe fields were requested or retained.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used.",
+    "A timeout, map miss, or zero exact-point hit would not establish citywide absence.",
+    "Packet completion is not source integration or adapter admission."
+  ],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "Current official portals may require client-side navigation or be intermittently unavailable from this environment.",
+    "The district page evidences a government land-records service route, but not a usable city-local public parcel endpoint."
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-5357-iligan.json",
+  "cityCode": 5357,
+  "queueRank": 1676,
+  "name": "Iligan",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "Official Iligan City pages evidence the City Assessor Office as the local assessment/cadastral custodian. The official Geoportal Philippines configuration exposes LMB parcel data as denr_parcel_data through a GeoServer WMS, but the layer is not marked for download and the bounded anonymous exact-point vicinity GetFeatureInfo request timed out. No parcel geometry, schema, CRS, or stable native identity was verified.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official Iligan City Assessor, city map, Geoportal, LMB parcel-layer, and current frontend configuration sources found.",
+    "localLanguageDiscovery": "Completed using Cebuano/Filipino cadastral/parcel terminology; no separate public local-language parcel viewer found, while official English administrative sources evidence the City Assessor custodian.",
+    "exactPoint": [8.22741968503304, 124.236632688198],
+    "bboxLonLat": [124.2358, 8.2266, 124.2375, 8.2282],
+    "returned": 0,
+    "ids": [],
+    "geometry": null,
+    "mapExtentOrPointMiss": null
+  },
+  "requestOutcomes": "Official Geoportal HTML, current layer JSON, and current frontend JavaScript returned successfully and identified the LMB parcel layer and WMS route. Official Iligan contact page returned 200 and lists the City Assessor Office. Anonymous WMS GetFeatureInfo for the exact WUP-point vicinity timed out after 20 seconds; no retry, login, credential, private token, CAPTCHA/Cloudflare interaction, TLS exception, or bypass was used. The city map route presented a JavaScript/browser gate. No restricted parcel download was attempted.",
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Local City Assessor custody is evidenced, but no open local parcel API or public parcel feature response was verified.",
+    "Geoportal LMB parcel data is cataloged and wired to WMS, but the current configuration does not mark it as downloadable; layer schema, CRS, and identity were not obtained.",
+    "No owner, titleholder, address, contact, tax/account, legal/title, or personal fields were requested or retained.",
+    "The exact-point vicinity timeout and city-map browser gate do not establish parcel absence, map extent, or citywide coverage.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about exact-point parcel presence, citywide parcel coverage, map extent, geometry availability, native IDs, or legal/title completeness."
+}

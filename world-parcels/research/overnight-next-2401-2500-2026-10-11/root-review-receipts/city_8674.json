@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8674",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-8674-merauke.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/merauke-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T11:19:48Z",
+  "reason": "Immutable WUP code/rank/country/point/243395 persons match the queue. English and Indonesian searches and public BHUMI/ATLAS shell observations are recorded. No safe anonymous native-ID full polygon response or independent adapter qualification exists; public catalog/UI limitations do not prove citywide absence."
+}

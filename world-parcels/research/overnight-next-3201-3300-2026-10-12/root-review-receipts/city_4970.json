@@ -1,0 +1,23 @@
+{
+  "taskId": "city:4970",
+  "decision": "held",
+  "checkedAt": "2026-10-12T08:18:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-4970-igbokoda.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/igbokoda-service-review.json"
+  ],
+  "reviewFindings": {
+    "queueIdentity": "Code 4970, rank 3290, Nigeria, point [6.36538234214484, 4.7921517816565], and 183285 persons match the immutable roster and pending queue.",
+    "searches": "English and Yoruba queries and their source URLs are recorded in both paired files.",
+    "custody": "registryFound true is supported by the Ondo State Ministry of Land and Housing survey-plan procedure, which says the Office of the Surveyor General retains a survey-plan record copy.",
+    "firstPartyUrlsChecked": [
+      "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf",
+      "https://www.ondolandportal.org/"
+    ],
+    "geometry": "Zero sample polygons; no safe native parcel ID plus full polygon response for Igbokoda. The portal/map and API access outcomes do not prove citywide absence.",
+    "admission": "Held: no fresh native-ID reads, forced paging, thirteen bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification is evidenced. No runtime, catalog, or report admission was made."
+  }
+}

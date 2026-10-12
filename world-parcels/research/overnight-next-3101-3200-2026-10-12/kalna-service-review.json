@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-11819-kalna.json",
+  "cityCode": 11819,
+  "queueRank": 3180,
+  "name": "Kalna",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [23.2333517033311, 88.3465549154022],
+  "population2025": 189074,
+  "population2025k": 189.074,
+  "populationUnit": "persons",
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "discovery": {
+    "english": "Official Purba Bardhaman land-revenue page found, including Kalna subdivision custodian; official Banglarbhumi plot/mouza-map service identified, but direct anonymous access timed out.",
+    "bengali": "Bengali first-party search confirmed the official Banglarbhumi land-record service family; no inspectable Kalna parcel endpoint or geometry was obtained."
+  },
+  "requests": [
+    {"route": "Purba Bardhaman official Land and Land Reforms Office", "url": "https://purbabardhaman.nic.in/land-and-land-reforms-office/", "outcome": "Official district page readable; lists Sub-Divisional Land and Land Reforms Officer, Kalna; no parcel schema or geometry."},
+    {"route": "Purba Bardhaman official Subdivision page", "url": "https://purbabardhaman.nic.in/sub-divison-office/", "outcome": "Official district page readable; confirms Kalna subdivision office; no parcel schema or geometry."},
+    {"route": "West Bengal Banglarbhumi official portal", "url": "https://banglarbhumi.gov.in/", "outcome": "Anonymous GET timed out after 30 seconds with TLS verification enabled; no login or bypass attempted."},
+    {"route": "Banglarbhumi Know Your Property service", "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "outcome": "Official route identified by first-party search, but no usable bounded anonymous response or current JS/configuration was obtained."}
+  ],
+  "schemaAndCrs": {"layer": null, "geometry": null, "crs": null, "nativeIdentity": null, "compositeKeyContext": null},
+  "safeFieldAllowlist": ["id", "objectid", "parcel_id", "geometry"],
+  "scopeLimits": [
+    "No parcel sample was retained because no safe native ID-plus-geometry response was obtained.",
+    "No owner, address, contact, titleholder, tax, account, personal, or other unsafe fields were requested or retained.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used.",
+    "A timeout, map miss, or zero exact-point hit would not establish citywide absence.",
+    "Packet completion is not source integration or adapter admission."
+  ],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "The state portal may expose parcel data only after interactive selection or may be intermittently unavailable from this environment.",
+    "The district page is local custodian evidence, while Banglarbhumi is state-level service evidence; neither yielded a bounded public parcel response here."
+  ]
+}

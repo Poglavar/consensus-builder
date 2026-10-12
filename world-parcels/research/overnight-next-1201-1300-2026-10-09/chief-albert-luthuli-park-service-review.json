@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4544-chief-albert-luthuli-park.json",
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "purpose": "Independent service review for official City of Ekurhuleni public parcel-map evidence; runtime qualification is intentionally held for serial review.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false, "wupPointPreserved": [-26.1276446337782, 28.442109859765]},
+  "assessment": "The first-party City of Ekurhuleni GIS ArcGIS service returned safe Polygon geometry from the unchanged WUP point and a bounded envelope. The envelope response was transfer-limited; this does not establish citywide coverage.",
+  "registryAssessment": "A local municipal GIS/cadastre custodian is evidenced by the City of Ekurhuleni GIS Division and public property-data service. This does not establish South Africa's legal-title registry as integrated.",
+  "coverageAssessment": {"claimedScope": "City of Ekurhuleni GIS, municipal Ekurhuleni Property Data Map service, Stands layer metadata, exact-point and bounded anonymous queries.", "verifiedOpenScope": "One exact-point Polygon and three bounded-envelope Polygon features were observed; the bounded response exceeded the requested transfer count.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "officialPrimarySources": [
+    {"url": "https://gis.ekurhuleni.gov.za/", "operator": "City of Ekurhuleni GIS", "scope": "Municipal public GIS landing page and property-data map catalogue."},
+    {"url": "https://www.ekurhuleni.gov.za/geographic-information-systems-gis-division/", "operator": "City of Ekurhuleni", "scope": "GIS Division and municipal-cadastre custodian context."},
+    {"url": "https://gis.ekurhuleni.gov.za/arcgis/rest/services/Ekurhuleni/Ekurhuleni_Propety_Data_Map/MapServer/1", "operator": "City of Ekurhuleni GIS", "scope": "Stands polygon layer metadata and public query service."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Chief Albert Luthuli Park South Africa official cadastral parcel map GIS Ekurhuleni", "result": "Found official municipal GIS and a public Stands polygon service."},
+    {"language": "native/local", "query": "Chief Albert Luthuli Park Suid-Afrika amptelike kadastrale kaart GIS Ekurhuleni", "result": "Afrikaans discovery found the same English-language official municipal GIS endpoints."}
+  ],
+  "attempts": [
+    "Fetched the first-party municipal GIS landing page anonymously over TLS; HTTP 200.",
+    "Fetched the first-party GIS Division page through discovery; it documents property-data and municipal-cadastre responsibilities, but no parcel payload was retained from the page.",
+    "Fetched municipal ArcGIS service metadata; HTTP 200; Stands layer is polygonal, GeoJSON-capable, and reports WKID 102100/latestWkid 3857.",
+    "Fetched Stands layer metadata; HTTP 200; GIS_KEY and OBJECTID were observed as native fields; only GIS_KEY was selected as sample identity.",
+    "Queried the unchanged WUP point with safe IDs and geometry; HTTP 200; one Polygon feature returned; no absence inference.",
+    "Queried a bounded envelope with safe IDs and geometry; HTTP 200; three Polygon features returned with exceededTransferLimit=true; three retained with only canonical GIS_KEY IDs.",
+    "No owner, address, contact, titleholder, tax/account, personal, credential, or private-token fields were requested or retained. Runtime remains held."
+  ],
+  "geometryEvidence": {"verified": true, "sampleCount": 3, "sampleFile": "chief-albert-luthuli-park-parcel-samples.geojson", "nativeId": "Municipal GIS_KEY", "exactWupPointTest": "Unchanged WUP point returned one Polygon feature; bounded envelope returned three Polygon features.", "requestEvidence": [{"url": "https://gis.ekurhuleni.gov.za/arcgis/rest/services/Ekurhuleni/Ekurhuleni_Propety_Data_Map/MapServer/1/query", "method": "GET; anonymous; TLS verified", "httpStatus": 200, "assessment": "Exact-point query returned one Polygon; bounded envelope returned three Polygons with exceededTransferLimit=true."}]},
+  "safeFieldAllowlist": ["geometry", "OBJECTID", "GIS_KEY", "PROPDESC", "TOWNSHIP", "SUBURB", "COMMUNITY_NAME", "PROPNO", "PTNO", "CCA", "REM", "WARD_NO", "LANDUSE", "PLACE_NAME", "TOWNSHIP_CODE", "ERF_STATUS", "FLAG", "LATITUDE", "LONGITUDE", "SG_CODE"],
+  "nextStep": "Serial reviewer should independently confirm current viewer/configuration, CRS and coordinate order, GIS_KEY stability, transfer limits, municipal-versus-national scope, and bounded coverage before adapter admission.",
+  "remainingUncertainty": "Bounded responses do not prove citywide completeness; the service's legal authority, freshness, stable-key semantics, and runtime adapter readiness are unverified.",
+  "researchAttempt": 1,
+  "runtimeAssessment": {"status": "held_quality_review", "reason": "Official public polygon geometry is verified, but adapter/runtime qualification is reserved for the serial reviewer."},
+  "sampleRetention": {"retainedFeatureProperties": ["id"], "fullGeometryChanged": false, "featureReferencesChanged": false}
+}

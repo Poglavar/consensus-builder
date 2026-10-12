@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-2579-pampore.json",
+  "cityCode": 2579,
+  "queueRank": 2890,
+  "name": "Pampore",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [34.034616781783, 74.9279166229225],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": "See city record attemptsRecorded; Jammu and Kashmir Revenue/JK-Revenue is the local/UT land-record custodian route, while DILRMP provides Pampore digitization-progress evidence. The public SPA loaded, but anonymous API routes returned 401.",
+  "schemaAndCrs": "No public parcel schema, CRS, native identity, or geometry response was obtained.",
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official local/UT custodian and Pampore digitization status are evidenced, but no safe anonymous parcel ID plus unchanged polygon was returned."},
+  "scopeLimits": ["Exact WUP point was preserved.", "401, bounded fetch failure, or no exact-point feature is not evidence of citywide absence.", "No geometry was retained.", "Packet completion is not source integration/admission."],
+  "uncertainty": "Anonymous parcel-feature access and citywide coverage remain unverified despite official custodian and digitization-progress evidence."
+}

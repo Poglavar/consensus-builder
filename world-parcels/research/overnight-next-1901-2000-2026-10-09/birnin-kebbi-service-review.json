@@ -1,0 +1,65 @@
+{
+  "cityRecord": "city-3604-birnin-kebbi.json",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "cityCode": 3604,
+  "queueRank": 1954,
+  "city": "Birnin Kebbi",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [12.4522438477914, 4.20568589599672],
+  "reviewStatus": "complete",
+  "outcome": "complete_no_verified_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "KEBGIS is a first-party Kebbi State Geographic Information Services Agency site with land-registration, digital-C of-O, property-document verification, and geospatial-service descriptions. The official Kebbi State e-services page links KEBGIS under land administration. This establishes a state/local cadastral custodian, not an open parcel-vector service.",
+  "provider": "Kebbi Geographic Information Services Agency (KEBGIS), with Kebbi State government e-services corroboration",
+  "discoveryUrls": [
+    "https://kebgis.com/",
+    "https://kebgis.com/about.html",
+    "https://kebbistate.gov.ng/kebbi-state-e-services",
+    "https://kebbistate.gov.ng/ministry-lands-housing",
+    "https://kebgis.ng/",
+    "https://osgof.gov.ng/cadastral-legal-surveys/"
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Birnin Kebbi Nigeria official cadastral parcel map GIS land registry Kebbi surveyor general",
+      "outcome": "Found first-party KEBGIS and Kebbi State government land-administration sources, plus general federal cadastral-service material; no anonymous parcel geometry response verified."
+    },
+    {
+      "language": "Hausa (local-language search)",
+      "query": "Birnin Kebbi Najeriya taswirar kadastara fili rajistar ƙasa Kebbi hukuma",
+      "outcome": "Search surfaced the same first-party KEBGIS and Kebbi State sources; no separate Hausa public parcel map/API or anonymous parcel geometry response verified."
+    }
+  ],
+  "attemptedRoutes": [
+    {"route": "GET https://kebgis.com/", "outcome": "HTTP 200; informational KEBGIS landing page and linked JavaScript inspected; no public parcel map/API, schema, CRS, ID, or geometry exposed."},
+    {"route": "GET https://kebgis.com/about.html", "outcome": "HTTP 200; agency and digital-land-registry scope confirmed; no parcel feature payload."},
+    {"route": "GET https://kebbistate.gov.ng/kebbi-state-e-services", "outcome": "HTTP 200; official state page links KEBGIS as land administration; no parcel feature payload."},
+    {"route": "GET https://kebbistate.gov.ng/ministry-lands-housing", "outcome": "HTTP 200; official ministry page retrieved; no public parcel geometry route exposed."},
+    {"route": "GET https://app.kebgis.com/", "outcome": "HTTP 200 after redirect to https://app.kebgis.com/useraccounts/login; login wall. No login or credential/private-token attempt."},
+    {"route": "GET https://kebgis.ng/", "outcome": "HTTP 200; separate KEBGIS-branded land archive describes document/search services; no geometry exposed and no owner-based search submitted."},
+    {"route": "GET https://osgof.gov.ng/cadastral-legal-surveys/", "outcome": "HTTP 200; general federal cadastral GIS responsibilities only, not a Birnin Kebbi parcel service."},
+    {"route": "Birnin Kebbi exact-point or bounded map query", "outcome": "Not run because no anonymous parcel endpoint was identified. No absence inference was made and the WUP point was not shifted."}
+  ],
+  "scope": "Research covered first-party Kebbi State/KEBGIS discovery, the linked public application host, a separate KEBGIS-branded archive, and the federal cadastral-services page. No citywide or countrywide parcel coverage was verified.",
+  "schemaAndCrs": "Unavailable; no anonymous parcel feature response was obtained.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained; therefore no source-specific attributes or synthetic identity are present.",
+  "scopeLimits": [
+    "No full parcel polygon was available for safe retention.",
+    "No owner, titleholder, address, contact, personal, tax, account, legal-description, rights/title, or private credential/token data was requested or retained.",
+    "The application login wall and absence of an exposed public endpoint are access limitations, not evidence of citywide absence.",
+    "General federal cadastral prose is not local Birnin Kebbi registry evidence; local/state registry evidence comes from KEBGIS and the Kebbi State government e-services link.",
+    "Packet completion records research only and is not source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier if later exposed", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A public or authenticated KEBGIS map may exist behind the application host, but no anonymous route was identified. Native parcel ID, CRS, geometry type, exact-point coverage, and citywide completeness remain unknown.",
+  "qualification": {"verifiedSample": false, "nativeIdReadiness": "not_applicable_no_verified_parcel_response", "runtimeEligible": false}
+}

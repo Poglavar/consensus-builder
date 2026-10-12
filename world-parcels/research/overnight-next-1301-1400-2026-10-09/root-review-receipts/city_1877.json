@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1877",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-1877-baidoa.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/baidoa-service-review.json",
+    "tmp/valhalla-parcel-research/1877/baidoa-home.html",
+    "tmp/valhalla-parcel-research/1877/swalim-api-base.json"
+  ],
+  "checkedAt": "2026-10-09T14:45:33Z",
+  "reason": "Official municipal land-registration custody and non-cadastral SWALIM catalogue evidence; no native parcel polygon or independently qualified adapter."
+}

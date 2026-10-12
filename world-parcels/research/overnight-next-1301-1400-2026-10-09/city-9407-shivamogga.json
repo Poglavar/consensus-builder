@@ -1,0 +1,45 @@
+{
+  "cityCode": 9407,
+  "queueRank": 1319,
+  "name": "Shivamogga",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [13.9367090537284, 75.5664297271675],
+  "population2025": 423880,
+  "population2025k": 423.88,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Official Shivamogga district and Karnataka Bhoomi land-record references were evidenced, but this attempt did not establish a city-scoped cadastral custodian or an anonymous public parcel-vector response. General national DILRMP status is not treated as city-specific registry evidence.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shivamogga Karnataka official cadastral parcel map Bhu Naksha Bhoomi survey map",
+        "result": "Found the official Shivamogga district government site, which links Land Records-Bhoomi; the official DILRMP Shivamogga district page reports cadastral-map/ULPIN status; the NIC Bhu-Naksha site confirms Karnataka customization. No city-specific open parcel geometry endpoint was exposed by these discovery results.",
+        "actualResultUrls": ["https://shivamogga.nic.in/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/570", "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp"]
+      },
+      {
+        "language": "Kannada",
+        "query": "ಶಿವಮೊಗ್ಗ ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ನಕ್ಷೆ ಪಹಣಿ ಸರ್ವೆ ನಕ್ಷೆ Bhoomi",
+        "result": "Kannada discovery returned the official Shivamogga district site and references to Bhoomi/land records, plus general Bhu-Naksha information. It did not identify a public anonymous Shivamogga parcel API or safe ID-plus-geometry response.",
+        "actualResultUrls": ["https://shivamogga.nic.in/", "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://shivamogga.nic.in/", "role": "Shivamogga district government portal", "observation": "Search result identifies the government district portal and a Land Records-Bhoomi link; direct fetch timed out in the available client."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/570", "role": "Government of India DILRMP Shivamogga district map/ULPIN status", "observation": "Search result is explicitly scoped to State/UT Karnataka and District Name Shivamogga and presents cadastral-map/parcel status fields; direct open returned a 502 in the web client."},
+    {"url": "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp", "role": "NIC Bhu-Naksha state customization reference", "observation": "Search result lists Karnataka among states customized/integrated with Bhu-Naksha; it is a general national agency reference, not proof of an accessible Shivamogga parcel layer."},
+    {"url": "https://landrecords.karnataka.gov.in/", "role": "Karnataka land-records/Bhoomi candidate official portal", "observation": "Anonymous HTTPS GET timed out after 20 seconds; no viewer JavaScript, endpoint, schema, CRS, or geometry was obtained."}
+  ],
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and was not shifted; timeout/failed viewer retrieval is not evidence of citywide absence."},
+  "coverageAssessment": {"claimedScope": "Shivamogga district government land-record reference, Karnataka Bhoomi, and NIC Bhu-Naksha references.", "verifiedOpenScope": "Official service existence/status references were partially evidenced, but citywide parcel-vector access, exact-point containment, native schema/identity, CRS, and open coverage were not verified.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

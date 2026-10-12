@@ -1,0 +1,22 @@
+{
+  "taskId": "packet:60",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-60-geneva.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/geneva-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/geneva-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/geneva/layer-4.json",
+    "tmp/valhalla-parcel-research/geneva/query-point.json",
+    "tmp/valhalla-parcel-research/geneva/query-3.geojson"
+  ],
+  "reason": "Geneva code 60, rank 1277, Switzerland, point and 436587 persons match the immutable roster and pending queue; English and French executed-search records are present. The saved first-party SITG layer/point/bounded query confirms one EGRID point hit and three full polygon features with safe EGRID sample IDs. All three retained features are metric GEOS valid and pairwise nonoverlapping, but two coordinate arrays are not exactly unchanged from the original source response. The bounded query reports exceededTransferLimit. Fresh adapter native-ID reads, forced paging, 13 bounded cells, full operation/source binding, and headed Details verification are not evidenced. Public local geometry discovery is held; no citywide absence or coverage is inferred and no admission is made.",
+  "firstPartySourceUrls": [
+    "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+    "https://sitg.ge.ch/cartes/cadastre"
+  ],
+  "checkedAt": "2026-10-09T13:50:53.730053Z"
+}

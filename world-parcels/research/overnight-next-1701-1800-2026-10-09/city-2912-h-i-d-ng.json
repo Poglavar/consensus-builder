@@ -1,0 +1,96 @@
+{
+  "cityCode": 2912,
+  "queueRank": 1776,
+  "name": "Hải Dương",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso3": "VNM",
+  "point": [20.932851006062, 106.300401670949],
+  "population2025": 323442,
+  "population2025k": 323.442,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hai Duong Vietnam official cadastral parcel map GIS land registration natural resources",
+        "result": "First-party results identified official Hải Dương local-government land-data/cadastral notices and the provincial land-registration/legal framework, but no public parcel viewer or anonymous parcel feature endpoint.",
+        "actualResultUrls": [
+          "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-day-nhanh-tien-do-hoan-thien-co-so-du-lieu-dat-dai-964799",
+          "https://haiduong.haiphong.gov.vn/chi-dao-dieu-hanh/thong-bao-ve-viec-phoi-hop-cung-cap-ho-so-giay-to-ve-quyen-su-dung-dat-phuc-vu-xay-dung-co-so-du-937116",
+          "https://vbpl.vn/haiduong/Pages/vbpq-toanvan.aspx?ItemID=176544"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Hải Dương bản đồ địa chính thửa đất cổng thông tin chính thức Sở Tài nguyên Môi trường",
+        "result": "Official Vietnamese results confirm local cadastral surveying, land-record and land-database work, including measurement/revision of parcels, but expose no anonymous public parcel ID plus geometry service.",
+        "actualResultUrls": [
+          "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-day-nhanh-tien-do-hoan-thien-co-so-du-lieu-dat-dai-964799",
+          "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-day-nhanh-thu-thap-bo-sung-thong-tin-hoan-thien-co-so-du-lieu-dat-dai-977788",
+          "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-trien-khai-xay-dung-co-so-du-lieu-dat-dai-tang-cuong-bao-dam-trat-tu-do-thi-va--915907"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Hải Dương ward/local-government notices identify the local public authority conducting cadastral measurement, cadastral-map preparation, cadastral records and land-database completion. Provincial legal material identifies Văn phòng đăng ký đất đai and its branches as responsible for cadastral extracts, updates and land-database operation. This establishes local custody/procedure, not an open parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-day-nhanh-tien-do-hoan-thien-co-so-du-lieu-dat-dai-964799",
+      "observation": "Official local-government notice dated 2026-09-08: cadastral measurement, cadastral records and land-database completion are underway; no map/API link is exposed."
+    },
+    {
+      "url": "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-trien-khai-xay-dung-co-so-du-lieu-dat-dai-tang-cuong-bao-dam-trat-tu-do-thi-va--915907",
+      "observation": "Official local-government report describes re-survey, new survey and cadastral correction for named parcel groups; it states HN72 and national-reference survey context but provides no downloadable parcel features."
+    },
+    {
+      "url": "https://vbpl.vn/haiduong/Pages/vbpq-toanvan.aspx?ItemID=176544",
+      "observation": "Official Hải Dương legal database text assigns cadastral extracts, land-database updates and operation to land-registration offices/branches; it is institutional/legal evidence, not a public data service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-day-nhanh-tien-do-hoan-thien-co-so-du-lieu-dat-dai-964799",
+      "method": "GET",
+      "outcome": "HTTP 200; official local notice retrieved and inspected. Page contains prose and an image attachment, not a public parcel viewer/API."
+    },
+    {
+      "url": "https://haiduong.haiphong.gov.vn/chi-dao-dieu-hanh/thong-bao-ve-viec-phoi-hop-cung-cap-ho-so-giay-to-ve-quyen-su-dung-dat-phuc-vu-xay-dung-co-so-du-937116",
+      "method": "GET",
+      "outcome": "HTTP 200; official local notice retrieved. It requests land-rights documents for database construction and gives no anonymous parcel feature route."
+    },
+    {
+      "url": "https://haiduong.haiphong.gov.vn/tin-tuc-su-kien/phuong-hai-duong-trien-khai-xay-dung-co-so-du-lieu-dat-dai-tang-cuong-bao-dam-trat-tu-do-thi-va--915907",
+      "method": "GET via first-party discovery result",
+      "outcome": "Official page reviewed in search result; cadastral survey scope and HN72/national-reference context reported, but no public parcel endpoint or safe ID+geometry response."
+    },
+    {
+      "url": "https://vbpl.vn/haiduong/Pages/vbpq-toanvan.aspx?ItemID=176544",
+      "method": "GET via first-party discovery result",
+      "outcome": "Official legal text reviewed; institutional responsibilities confirmed, with no public parcel service."
+    },
+    {
+      "url": "https://xaydungchinhsach.chinhphu.vn/thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-119240828062200893.htm",
+      "method": "GET",
+      "outcome": "HTTP 200; national official procedure guidance retrieved. It describes requests/fees for land information, not a public anonymous parcel geometry API."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Hải Dương local-government cadastral survey, land-record and land-database work, plus provincial land-registration-office legal responsibilities.",
+    "verifiedOpenScope": "Local custody/procedure evidence only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss test was used. No parcel geometry or native parcel identity was retained. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained. Packet completion is not source integration/admission; serial reviewer qualification remains required."
+}

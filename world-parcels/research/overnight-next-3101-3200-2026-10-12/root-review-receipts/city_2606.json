@@ -1,0 +1,26 @@
+{
+  "taskId": "city:2606",
+  "decision": "held",
+  "checkedAt": "2026-10-12T03:48:47Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-2606-divo.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/divo-service-review.json",
+    "tmp/valhalla-parcel-research/divo/map-_5_37_5_82__5_35_5_84.json",
+    "tmp/valhalla-parcel-research/divo/map-_5_3608_5_8310__5_3598_5_8320.json",
+    "tmp/valhalla-parcel-research/divo/extent-divo.json",
+    "tmp/valhalla-parcel-research/divo/filters.json"
+  ],
+  "review": {
+    "identity": "Rank 3133, WUP code 2606, Côte d'Ivoire, point [5.83156567218637,-5.36038273330132], and 191745 persons match the SHA-256-verified original WUP 2025 CSV and immutable queue.",
+    "research": "English and French executed queries and official result URLs are recorded. The original AFOR cache has DIVO department and sub-prefecture filters, two empty bounded FeatureCollections around the WUP point, and a DIVO department extent with geometryCount 3925. Department scope does not establish Divo city parcel coverage; an empty point response is not citywide absence. No city-relevant native-ID polygon sample was retained.",
+    "firstPartyUrlsChecked": [
+      "https://geoportail.afor.ci/",
+      "https://api.geoportail.afor.ci/filters",
+      "https://api.geoportail.afor.ci/parcels/extent?department=DIVO"
+    ],
+    "samplePolygonCount": 0,
+    "admissionGates": "City-relevant fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced; no runtime admission."
+  }
+}

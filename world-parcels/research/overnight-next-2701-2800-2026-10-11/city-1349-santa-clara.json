@@ -1,0 +1,93 @@
+{
+  "cityCode": 1349,
+  "name": "Santa Clara",
+  "country": "Cuba",
+  "iso2": "CU",
+  "iso3": "CUB",
+  "countryCode": "CU",
+  "point": [22.4050537577981, -79.9711534835801],
+  "population2025": 213948,
+  "population2025k": 213.948,
+  "populationUnit": "persons",
+  "rank": 2770,
+  "queueRank": 2770,
+  "wupCityCode": 1349,
+  "cityName": "Santa Clara",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "registryFound": null,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "discoveryMethod": "first-party-discovery-attempt-1",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santa Clara Cuba official cadastral parcel map catastro GIS parcels",
+        "result": "Search did not identify a Santa Clara-specific official parcel viewer/API. It identified the official Cuban INOTU site as the national territorial-planning and cadastre authority, including its Catastro section, but no anonymous ID+geometry service for Santa Clara.",
+        "actualResultUrls": ["https://www.inotu.gob.cu/es", "https://www.inotu.gob.cu/es/catastro"]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Santa Clara Cuba sitio oficial catastro parcelas mapa catastral Villa Clara; Catastro Nacional Cuba mapa parcelario Santa Clara Villa Clara sitio oficial",
+        "result": "La búsqueda encontró el sitio oficial del INOTU y su sección Catastro. No se encontró un visor o API público específico de Santa Clara/Villa Clara con identidad nativa de parcela y geometría; los resultados de visor catastral fueron de otros países y se descartaron.",
+        "actualResultUrls": ["https://www.inotu.gob.cu/es", "https://www.inotu.gob.cu/es/catastro"]
+      }
+    ]
+  },
+  "sourceReview": {
+    "localCustodian": null,
+    "nationalAgency": {
+      "name": "Instituto Nacional de Ordenamiento Territorial y Urbanismo (INOTU)",
+      "evidenceUrl": "https://www.inotu.gob.cu/es/catastro",
+      "scope": "Official national Cuban territorial-planning and cadastre authority. The Catastro page defines the cadastral inventory and links official articles on national cadastral development; it does not expose a public Santa Clara parcel API or downloadable ID+geometry response."
+    },
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "safeFieldAllowlist": ["id", "geometry"],
+    "sampleFile": null,
+    "scopeLimits": [
+      "No full parcel polygon retained because no safe native parcel identity plus unchanged native geometry was obtained.",
+      "No exact-point hit, map-extent miss, timeout, or unusable UI was treated as evidence of citywide absence.",
+      "Owner, address, contact, titleholder, personal, tax/account, and other unsafe fields were not requested.",
+      "The exact WUP point was preserved and not shifted.",
+      "No local Santa Clara/Villa Clara registry or public parcel service was independently evidenced; national INOTU prose is not treated as local registry evidence."
+    ]
+  },
+  "attempts": [
+    {
+      "stage": "official-national-custodian-discovery",
+      "method": "GET/source inspection",
+      "url": "https://www.inotu.gob.cu/es",
+      "outcome": "HTTP 200. Official INOTU landing page identifies the institute and links a Catastro section; no parcel endpoint was exposed on the landing page."
+    },
+    {
+      "stage": "official-cadastre-section-and-configuration-inspection",
+      "method": "GET/source inspection",
+      "url": "https://www.inotu.gob.cu/es/catastro",
+      "outcome": "HTTP 200. Page defines the cadastral inventory of rural and urban immovable property and links official national-cadastre articles. Source inspection exposed no viewer, WMS/WFS/REST endpoint, downloadable parcel layer, schema, CRS, or bounded anonymous ID+geometry response."
+    },
+    {
+      "stage": "official-cadastre-status-follow-up",
+      "method": "GET/source inspection",
+      "url": "https://www.inotu.gob.cu/es/catastro/evolucion-del-catastro-en-cuba-y-estado-actual",
+      "outcome": "HTTP 200. Official article describes national cadastral history and says the initial work covered rural land control and urban surface determination without cadastral surveying of buildings and blocks; it provides no public parcel API or Santa Clara dataset."
+    },
+    {
+      "stage": "official-cadastre-development-follow-up",
+      "method": "GET/source inspection",
+      "url": "https://www.inotu.gob.cu/es/catastro/evolucion-del-catastro-nacional-de-cuba-analisis-de-aciertos-desaciertos-y-proyecciones",
+      "outcome": "HTTP 200. Official article describes urban cadastre development for measurements and boundaries needed in property-registration procedures; no public machine-readable parcel service, native field schema, or CRS was exposed."
+    },
+    {
+      "stage": "official-local-government-check",
+      "method": "GET",
+      "url": "https://www.misantaclara.gob.cu/",
+      "outcome": "Connection timed out after 20 seconds in this environment. This failed request is not evidence of registry absence; no login, retry bypass, or TLS exception was used."
+    }
+  ],
+  "uncertainty": "Cuba's official national cadastre authority and its cadastral scope are evidenced, but this attempt did not qualify a public Santa Clara/Villa Clara parcel viewer or machine-readable ID+geometry source. The local government site timed out, and no local registry procedure or parcel endpoint could be verified. This cannot establish citywide parcel coverage or absence.",
+  "runtimeAdmission": "held pending independent serial qualification of a real adapter and public safe ID+geometry service. Packet completion does not mean source integration or admission."
+}

@@ -1,0 +1,26 @@
+{
+  "taskId": "city:10159",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-10159-ramagundam.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ramagundam-service-review.json",
+    "tmp/valhalla-parcel-research/10159/lis-service.json",
+    "tmp/valhalla-parcel-research/10159/layer13.json",
+    "tmp/valhalla-parcel-research/10159/layer14.json",
+    "tmp/valhalla-parcel-research/10159/dls-4.json",
+    "tmp/valhalla-parcel-research/10159/dls-5.json",
+    "tmp/valhalla-parcel-research/10159/query-point-LIS_Folder_LandInformationSystem_MapServer_13.json",
+    "tmp/valhalla-parcel-research/10159/query2-LIS_Folder_LandInformationSystem_MapServer_13.json",
+    "tmp/valhalla-parcel-research/10159/query2-DLSFolder_Digital_Land_Survey_MapServer_4.json",
+    "tmp/valhalla-parcel-research/10159/query2-DLSFolder_Digital_Land_Survey_MapServer_5.json"
+  ],
+  "checkedAt": "2026-10-11T17:26:08Z",
+  "city": "Ramagundam",
+  "queueRank": 2667,
+  "population2025Persons": 221352,
+  "registryFound": true,
+  "reviewFinding": "WUP identity and English/Telugu search records match the immutable queue. First-party TGRAC parcel layer metadata describes polygon layers, but the inspected parcel layer extents miss the WUP latitude. Original point-query caches initially contain 400 errors; corrected queries contain zero features at the point only. No full Ramagundam parcel polygon, fresh native-ID read, safe-ID-only adapter, forced paging, 13-cell coverage, metric GEOS checks, source binding, or headed Details verification is evidenced. The service review reports outFields=* on zero-feature queries, which is broader than the safe-field policy; it must not be reused for a qualifying read. No citywide absence or runtime admission is established.",
+  "runtimeAdmission": false
+}

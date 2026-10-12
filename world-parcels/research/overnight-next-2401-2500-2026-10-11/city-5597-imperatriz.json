@@ -1,0 +1,44 @@
+{
+  "cityCode": 5597,
+  "queueRank": 2468,
+  "name": "Imperatriz",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-5.51712507222712, -47.4746385528263],
+  "population2025": 237188,
+  "population2025k": 237.188,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Imperatriz Maranhão official cadastral map parcel cadastre GIS API",
+        "result": "Official results identified the Prefeitura municipal map, the municipal SEPLU urban-planning custodian, a municipal technical/multifunctional cadastre implementation notice, and official federal/state land agencies. No public parcel viewer or anonymous parcel ID+geometry endpoint was evidenced.",
+        "actualResultUrls": [
+          "https://imperatriz.ma.gov.br/mapa/",
+          "https://imperatriz.ma.gov.br/pmi/seplu/",
+          "https://novo.imperatriz.ma.gov.br/noticias/fazenda-e-gestao/implantacao-de-cadastro-tecnico-permite-panorama-territorial-de-imperatriz.html",
+          "https://www.gov.br/incra/pt-br/composicao/superintendencias-regionais/maranhao",
+          "https://sicarf.iterma.ma.gov.br/"
+        ]
+      },
+      {
+        "language": "Portuguese (local/native)",
+        "query": "Imperatriz Maranhão cadastro imobiliário mapa lotes cadastro técnico multifinalitário serviço oficial",
+        "result": "Resultados oficiais confirmam o Cadastro Técnico Multifinalitário/georreferenciamento municipal, o Cadastro Imobiliário Fiscal e a SEPLU como órgão responsável por loteamentos e parcelamento de glebas/terrenos. Não foi demonstrado um serviço público anônimo que devolva identidade parcelar segura e geometria.",
+        "actualResultUrls": [
+          "https://novo.imperatriz.ma.gov.br/noticias/fazenda-e-gestao/implantacao-de-cadastro-tecnico-permite-panorama-territorial-de-imperatriz.html",
+          "https://imperatriz.ma.gov.br/pmi/seplu/",
+          "https://transparencia.imperatriz.ma.gov.br/upload/atos_oficiais/38945.pdf",
+          "https://imperatriz.ma.gov.br/mapa/",
+          "https://sti.imperatriz.ma.gov.br/media/contracts/files/bidding/660/EDITAL_PP_107_I_PARTE.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Attempt 1 completed. Municipal cadastral/urban-planning custodian and cadastral-program evidence exist, but no anonymous public parcel identity/geometry service was qualified. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "imperatriz-service-review.json"
+}

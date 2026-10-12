@@ -1,0 +1,14 @@
+{
+  "taskId": "city:818",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-818-boma.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/boma-service-review.json",
+    "tmp/valhalla-parcel-research/818/circonscriptions.html",
+    "tmp/valhalla-parcel-research/818/boma-request.html"
+  ],
+  "checkedAt": "2026-10-11T11:38:55Z",
+  "reason": "Rank 2421, Democratic Republic of the Congo, point [-5.8308666761627, 13.0561881029742], and 242042 persons match the immutable roster. English and French executed searches are recorded. Original ministry HTML lists Boma under Kongo-Central and exposes a formal land-record request; this supports custody, not an anonymous parcel service. No sample or native-ID polygon response exists, and fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are missing. DNS failure and absent endpoint evidence are not citywide absence."
+}

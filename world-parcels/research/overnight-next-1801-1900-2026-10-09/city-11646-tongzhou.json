@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11646,
+  "queueRank": 1821,
+  "cityId": "queue:1821",
+  "name": "Tongzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [32.0756834083008, 121.069037390254],
+  "centerLatLon": [32.0756834083008, 121.069037390254],
+  "population2025": 315167,
+  "population2025k": 315.167,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tongzhou Nantong Jiangsu official cadastral parcel map GIS natural resources real estate registration",
+        "result": "Search identified first-party Nantong government material for the Tianditu Nantong public geospatial platform, a Nantong public-data portal, a Tongzhou cadastral-survey/cartographic project notice, and the Jiangsu online real-estate registration portal. No public anonymous parcel ID-plus-geometry endpoint was exposed in the indexed results.",
+        "actualResultUrls": [
+          "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html",
+          "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202507/t20250731_25072405.htm",
+          "https://data.nantong.gov.cn/",
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "南通市通州区 不动产登记 地籍图 地籍调查 地理信息 官方",
+        "result": "Native-language discovery found the official Nantong Tongzhou cadastral-survey and cadastral-map procurement notice, the official Nantong government description of the Tianditu Nantong platform, the Tongzhou district registration service procedure, and the Jiangsu online registration portal. These evidence local custody and procedures, not an open parcel feature service.",
+        "actualResultUrls": [
+          "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202507/t20250731_25072405.htm",
+          "https://www.nantong.gov.cn/tzqrmzf/upload/23739680-0d6d-4f65-81bb-5fdf2ed2c2f5.pdf",
+          "https://nttz.jszwfw.gov.cn/jszwfw/bscx/itemlist/briefbszn.do?iddept_ql_inf=1132068301423723694000715001007&iddept_yw_inf=113206830142372369400071500100706&ql_kind=07&type=1&webId=49",
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by TLS-verified bounded GETs; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html",
+      "observation": "Official Nantong government report describes Tianditu Nantong as a public geospatial platform and says vector/imagery/place-name interfaces can be requested; it does not publish an anonymous parcel endpoint in the page."
+    },
+    {
+      "url": "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202507/t20250731_25072405.htm",
+      "observation": "Official procurement notice identifies Nantong Tongzhou Natural Resources and Planning Bureau as the procuring local authority for a cadastral survey and cadastral-map project, establishing local cadastral custody but not open API access."
+    },
+    {
+      "url": "https://nttz.jszwfw.gov.cn/jszwfw/bscx/itemlist/briefbszn.do?iddept_ql_inf=1132068301423723694000715001007&iddept_yw_inf=113206830142372369400071500100706&ql_kind=07&type=1&webId=49",
+      "observation": "Official Tongzhou/Nantong government-services procedure page references cadastral survey forms, parcel maps and boundary-point coordinates as application materials; it is a procedure page, not a public parcel viewer."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+      "observation": "Official Jiangsu online real-estate registration portal loaded anonymously and provides city/district registration-service navigation; no parcel feature layer or safe anonymous geometry response was exposed in the inspected HTML."
+    },
+    {
+      "url": "https://data.nantong.gov.cn/",
+      "observation": "Official Nantong public-data host was reachable as a host but denied the bounded request with ACL 403; no dataset/API inspection was possible."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.nantong.gov.cn/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "Panyun ACL denial; not evidence of cadastral absence."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Portal HTML loaded; inspection found registration navigation and no public parcel ID-plus-geometry endpoint."
+    },
+    {
+      "url": "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html",
+      "method": "GET via indexed first-party result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "First-party search result inspected; platform description recorded, but no parcel API route identified."
+    },
+    {
+      "url": "https://nttz.jszwfw.gov.cn/jszwfw/bscx/itemlist/briefbszn.do?iddept_ql_inf=1132068301423723694000715001007&iddept_yw_inf=113206830142372369400071500100706&ql_kind=07&type=1&webId=49",
+      "method": "GET via indexed first-party result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Procedure evidence inspected; no public parcel geometry response."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tongzhou District, Nantong, Jiangsu local natural-resources, cadastral-survey and real-estate-registration administration.",
+    "verifiedOpenScope": "Local custodial/procedure evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current Tianditu Nantong viewer/API route, access controls, parcel schema, CRS, stable native identity and citywide coverage remain unresolved. ACL denial and the absence of an endpoint in portal HTML are access/inspection limits, not evidence of citywide cadastral absence. The exact WUP point was preserved and never shifted; no exact-point hit or miss was inferred.",
+  "nextStep": "A later attempt may inspect an officially exposed Nantong map viewer or approved public API route and issue only a bounded anonymous ID-plus-geometry request if one is revealed."
+}

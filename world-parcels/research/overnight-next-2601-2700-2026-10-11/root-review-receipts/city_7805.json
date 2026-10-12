@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7805",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7805-samundri.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/samundri-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7805-samundri-sample.geojson",
+    "tmp/valhalla-parcel-research/7805/layer7.json",
+    "tmp/valhalla-parcel-research/7805/point-query.geojson",
+    "tmp/valhalla-parcel-research/7805/extent-query.geojson"
+  ],
+  "reason": "WUP 2025 source archive and immutable queue agree on code 7805, rank 2618, Pakistan, point [31.0623974892014,72.9552373817102], and 225170 persons. English and Urdu searches are recorded. Original first-party layer metadata identifies Faisalabad polygon layer 7 and OBJECTID as an OID field. The original bounded ArcGIS GeoJSON response contains three Samundri polygons; all three retained safe ID-only sample geometries exactly match source OBJECTIDs 6944825, 6944853, and 6944854. The original response sets exceededTransferLimit=true; the zero-feature exact-point response is point-level only. Fresh native-ID reads, complete forced paging, 13 bounded cells, independent metric GEOS validity/overlap/operation checks, source binding, and headed Details verification are not evidenced. Hold without runtime admission.",
+  "custodyFinding": "true: first-party provincial viewer/service and returned Faisalabad/Tehsil=Samundri polygons support provincial cadastral custody; no separate municipal registry is claimed",
+  "retainedFullPolygons": 3,
+  "checkedAt": "2026-10-11T16:17:38Z",
+  "runtimeAdmitted": false
+}

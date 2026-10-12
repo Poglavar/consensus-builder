@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-1018-saint-marc.json",
+  "cityCode": 1018,
+  "queueRank": 2669,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "requests": [
+    {
+      "route": "https://mtptc.gouv.ht/media/upload/doc/publications/Bilan_MTPTC_2013.pdf",
+      "method": "GET/search-open",
+      "outcome": "Official MTPTC report was found and inspected through first-party discovery. It documents ONACA cadastral work and historical mobilization in Saint-Marc, but no current public viewer, API, schema, CRS, or parcel download route was provided."
+    },
+    {
+      "route": "https://mail.mtptc.gouv.ht/accueil/page_oast.html",
+      "method": "GET/search-open",
+      "outcome": "Official MTPTC institutional page identifies ONACA as responsible for establishing Haiti's general cadastre; agency mandate only, not a city parcel response."
+    },
+    {
+      "route": "https://dgi.gouv.ht/",
+      "method": "GET/search-open",
+      "outcome": "Official DGI public site was located for land/property administration context. No public Saint-Marc parcel viewer or anonymous parcel feature route was exposed in the inspected pages. No owner, address, title, tax/account, or personal fields were requested."
+    },
+    {
+      "route": "https://ciat.gouv.ht/legislation-institutions-foncier/",
+      "method": "GET/search-open",
+      "outcome": "Official CIAT page provides cadastre and land-policy documentation, not an operational parcel map or feature API."
+    },
+    {
+      "route": "https://mjsp.gouv.ht/cartographie-judiciaire",
+      "method": "GET/search-open",
+      "outcome": "Official MJSP cartography lists Saint-Marc as a judicial jurisdiction. It is administrative/judicial mapping and not cadastral geometry."
+    },
+    {
+      "route": "https://www.haitidocs.org/doc/onaca-2014-nouvelle-vision-gestion-cadastre-haiti?lang=fr",
+      "method": "GET/search-open",
+      "outcome": "Official-document mirror surfaced historical ONACA coverage context including Saint-Marc, but no live first-party parcel service or anonymous feature response. Treated as supporting discovery only, not as a live service."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not qualified",
+    "reason": "No public viewer JavaScript/configuration or anonymous parcel response was available from the inspected first-party routes. Native parcel identity fields, source CRS, geometry encoding, pagination, and bounded query semantics could not be verified."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS only when explicitly returned"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "The exact WUP point [19.1043514220814, -72.6963014126943] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, map extent miss, timeout, login wall, or unusable UI is treated as evidence of citywide parcel absence.",
+    "Historical official evidence of ONACA activity in Saint-Marc is not equivalent to current open parcel coverage or a local registry endpoint.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity plus full polygon was obtained.",
+    "runtimeReadiness remains held pending independent serial adapter qualification; packet completion is not source integration or admission."
+  ],
+  "uncertainty": "Saint-Marc may have historical or controlled cadastral records through ONACA/DGI or municipal channels, but the inspected first-party public routes did not expose a current anonymous parcel viewer/API. The result records bounded discovery and does not claim cadastral absence or citywide coverage."
+}

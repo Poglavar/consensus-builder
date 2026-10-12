@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11486-liyang.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Liyang sources establish a municipal real-estate registration custodian and a reachable official Tianditu·Liyang viewer. Viewer configuration inspection and bounded public requests did not produce a safe anonymous parcel ID-plus-complete-polygon response.",
+  "registryAssessment": "Local registry custody found through official Liyang government pages describing the Liyang Real-Estate Registration and Trading Center's unified registration, cadastral/measurement and registration-platform duties. This is local registry evidence, not proof of open parcel geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.liyang.gov.cn/html/czly/2015/AQQKAIBE_1216/11115.html",
+      "observation": "Official organizational page lists unified registration for land and other real estate, cadastral/measurement technical services, registration-platform maintenance and lawful public registration-information query responsibilities."
+    },
+    {
+      "url": "https://www.liyang.gov.cn/html/czly/2023/AQQKAIBE_1016/31544.html",
+      "observation": "Official 2023 authority-list page places the registration center under the Liyang Natural Resources and Planning Bureau and repeats its municipal registration, survey and platform duties."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/czly/",
+      "observation": "Official Jiangsu Natural Resources Liyang site loaded successfully and linked a Liyang natural-resources information system and Tianditu-related materials."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/liyang/",
+      "observation": "Official Tianditu·Liyang public geospatial viewer loaded successfully."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://jiangsu.tianditu.gov.cn/liyang/",
+    "javascriptUrl": "https://jiangsu.tianditu.gov.cn/liyang/js/index.BPR-kCxb.js",
+    "observedServiceTypes": ["public geospatial viewer", "general map resources", "Tianditu-linked map/developer resources"],
+    "schemaAndCrs": "No parcel feature response obtained; parcel schema and parcel CRS not verified.",
+    "nativeFieldNames": "Not retained; no parcel feature response obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.liyang.gov.cn/html/czly/2015/AQQKAIBE_1216/11115.html",
+      "method": "GET/web search and public GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official local registration-center responsibilities observed. No parcel geometry."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/czly/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official local natural-resources site loaded. HTML linked a Liyang information-system route and Tianditu-related content, but no parcel feature schema or anonymous parcel API was exposed in the page."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/liyang/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official Tianditu·Liyang viewer loaded. Current JavaScript was downloaded and inspected. No parcel/cadastre feature service or safe parcel field mapping was found."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/liyang/js/index.BPR-kCxb.js",
+      "method": "GET and static configuration inspection",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; configuration exposed general map resources and a Changzhou backend/vector reference, but no parcel endpoint, parcel schema or CRS."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/changzhou/backend",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Redirected to Tianditu OAuth/login interception (HTTP 418 at final response). No login attempted and no token or credential used."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/server/rest/services/Hosted/320000_%E5%9C%B0%E7%90%86%E5%AE%9E%E4%BD%93_%E6%B0%B4%E7%B3%BB/VectorTileServer",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404; this exposed reference was not a usable parcel service and produced no geometry."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because the current official viewer configuration did not expose a parcel feature endpoint or safe parcel schema."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local sources cover municipal registration/cadastral responsibilities; Tianditu·Liyang is a public geospatial viewer.",
+    "verifiedOpenScope": "Official custody and viewer availability verified; current anonymous parcel layer, native identity, schema, CRS and complete polygon response not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "Login/interception and 404 outcomes are route/access limitations only, not evidence of cadastral absence. Current parcel endpoint, schema, CRS, stable native identity, geometry availability, safe fields and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

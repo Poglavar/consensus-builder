@@ -1,0 +1,15 @@
+{
+  "taskId": "city:5858",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-5858-luena.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/luena-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:26:11Z",
+  "identityCheck": "Ranked roster, pending queue and packet agree: rank 2897, WUP code 5858, Luena, Democratic Republic of the Congo (COD), point [-9.43622182802295, 25.7896506045544], 205691 persons. This is distinct from the Angola Luena already in the registry under WUP code 3898.",
+  "researchCheck": "Separate English and French executed searches have source URLs. No Luena full polygon or source-proven native parcel ID was retained; sample count is zero. Official jurisdiction material does not identify a Luena/Bukama office; the bounded Haut-Lomami and coordinate-box public-view responses were empty, while an unrelated control record showed the view was readable.",
+  "custodyDecision": "Keep registryFound unresolved (null). The national ministry is evidenced, but local custody and public Luena coverage are not established; empty bounded responses are not citywide absence.",
+  "reason": "No fresh native-ID plus full-polygon read, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held."
+}

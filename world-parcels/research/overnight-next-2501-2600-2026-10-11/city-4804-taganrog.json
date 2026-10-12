@@ -1,0 +1,59 @@
+{
+  "cityCode": 4804,
+  "queueRank": 2537,
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "name": "Taganrog",
+  "point": [47.234231592592, 38.9019133582081],
+  "population2025": 231897,
+  "population2025k": 231.897,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Taganrog official cadastral map parcel GIS public map API Rosreestr NSPD",
+        "result": "Official Russian cadastral-platform documentation and the official Taganrog municipal planning portal were found. No Taganrog-specific anonymous parcel API, public cadastral viewer response, schema, or downloadable parcel geometry was verified in the bounded search.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/",
+          "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/pravila-zemlepolzovaniya-i-zastroyki-munitsipalnogo-obrazovaniya-gorod-taganrog/",
+          "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/generalnyy-plan-munitsipalnogo-obrazovaniya-gorod-taganrog/"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Таганрог официальный сайт кадастровые номера земельных участков карта Росреестр НСПД",
+        "result": "The official Taganrog portal exposes land-use/zoning and general-plan materials, while official Rosreestr/Roskadastr material documents the national Public Cadastral Map’s move to NSPD. No local Taganrog registry custodian endpoint or safe anonymous parcel geometry response was found.",
+        "actualResultUrls": [
+          "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/pravila-zemlepolzovaniya-i-zastroyki-munitsipalnogo-obrazovaniya-gorod-taganrog/",
+          "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/generalnyy-plan-munitsipalnogo-obrazovaniya-gorod-taganrog/",
+          "https://roskadastr.tatarstan.ru/index.htm/news/2499998.htm",
+          "https://cgko.tatarstan.ru/index.htm/news/2372481.htm"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "name": "Official Taganrog municipal planning portal and Russian NSPD/Rosreestr public-cadastral documentation",
+    "operator": "Municipal formation City of Taganrog; Federal Service for State Registration, Cadastre and Cartography / Roskadastr public documentation",
+    "viewerUrl": "https://nspd.gov.ru/",
+    "scope": "Municipal planning and zoning documents plus national public-cadastral service documentation; no verified open Taganrog parcel endpoint.",
+    "crs": null,
+    "nativeIdentity": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_municipal_planning_and_national_cadastral_documentation_no_verified_open_taganrog_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official Taganrog planning documents and national Russian cadastral-platform documentation only; no citywide parcel coverage claim.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No safe native parcel ID, service schema, CRS response, or parcel polygon was obtained. The exact WUP point was preserved unchanged; no exact-point hit, map extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+  "safeFieldAllowlist": ["geometry", "CRS", "stable native parcel identity", "source scope/provenance"],
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No GeoJSON sample was retained because no safe native parcel geometry was verified."
+}

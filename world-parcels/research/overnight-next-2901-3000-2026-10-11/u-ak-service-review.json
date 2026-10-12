@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-3761-u-ak.json",
+  "cityCode": 3761,
+  "queueRank": 2994,
+  "name": "Uşak",
+  "country": "Türkiye",
+  "attempt": 1,
+  "reviewStatus": "complete_research_hold",
+  "registryFound": true,
+  "registrySummary": "TKGM's official regional page lists UŞAK KADASTRO MÜDÜRLÜĞÜ/UŞAK and UŞAK TAPU MÜDÜRLÜĞÜ/UŞAK. The current public Parsel Sorgu viewer is first-party and its configuration exposes the MEGSİS API.",
+  "sourceCandidate": {"publisher": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)", "urls": ["https://parselsorgu.tkgm.gov.tr/", "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.6711970321796/29.405476611097/"], "kind": "Public TKGM Parsel Sorgu / MEGSİS coordinate parcel API", "coverage": "Turkey-wide API route observed; citywide Uşak coverage not independently quantified"},
+  "queryAndRequestReview": "Separate English and Turkish first-party discovery was performed. The official viewer HTML and JavaScript configuration were retrieved, then the province list and exact WUP-point parcel endpoint were requested anonymously with ordinary GET and viewer-origin headers. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification exception was used.",
+  "geometryReview": {"verified": true, "sampleFile": "u-ak-tkgm-sample.geojson", "featureCount": 1, "nativeIdField": "composite pafta|mahalleAd|adaNo|parselNo", "crs": "Undeclared; GeoJSON lon/lat observed", "reason": "Exact point returned unchanged Polygon geometry and safe cadastral properties."},
+  "nativeFieldsObserved": ["ilAd", "ilId", "ilceAd", "ilceId", "mahalleAd", "mahalleId", "pafta", "adaNo", "parselNo", "alan", "nitelik", "mevkii", "durum", "zeminKmdurum"],
+  "compositeKeyProvenance": "K22-C09-D-1-A|Kurtuluş|97|516 = pafta|mahalleAd|adaNo|parselNo from the unchanged API response.",
+  "safeFieldAllowlist": ["stable source-proven parcel identity", "full parcel geometry", "geometry coordinate order/CRS note", "public source/service URL", "source schema metadata", "retrieval date", "non-personal cadastral classification fields"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "scopeLimits": ["Exact WUP point [38.6711970321796, 29.405476611097] was preserved in latitude/longitude order and not shifted.", "One returned polygon does not prove citywide coverage or completeness.", "Formal CRS declaration was absent from the response; EPSG:4326 is not asserted as authoritative.", "Research packet completion is not source integration/admission."],
+  "uncertainty": "The public endpoint is operational and returned a usable sample, but independent serial review is still required for adapter qualification, coverage semantics, rate limits, and identity stability beyond this composite."
+}

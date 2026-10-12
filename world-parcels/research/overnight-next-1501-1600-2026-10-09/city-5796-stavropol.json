@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:5796",
+  "cityCode": 5796,
+  "wupCityCode": 5796,
+  "name": "Stavropol",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "rank": 1508,
+  "queueRank": 1508,
+  "point": [45.0347992411262, 41.9574361606745],
+  "centerLatLon": [45.0347992411262, 41.9574361606745],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 376062,
+  "population2025k": 376.062,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Stavropol municipal regulations document a municipal service for approving land-plot schemes on the cadastral plan; official Rosreestr Stavropol Krai custody is also evidenced by the regional territorial-office source. This establishes local/regional cadastral custody, not anonymous citywide geometry.",
+  "registryEvidenceUrls": [
+    "https://www.stavropol-gov.ru/doc/52829",
+    "https://rosreestr.gov.ru/about/struct/territorialnye-organy/upravlenie-rosreestra-po-stavropolskomu-krayu/",
+    "https://nspd.gov.ru/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current first-party public-map route is NSPD (nspd.gov.ru), but bounded anonymous HTTPS retrieval timed out in this environment. Rosreestr also timed out; the municipal host had an untrusted certificate and was not accessed with verification disabled. No safe anonymous ID-plus-complete-polygon response, layer schema, CRS, or parcel query route was verified.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Stavropol municipal land/cadastral procedure and Rosreestr regional territorial custody are evidenced; NSPD is the national public map channel.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Stavropol Russia official cadastral map parcel public viewer Rosreestr кадастровая карта Ставрополь официальный",
+        "scope": "Identify first-party municipal/regional cadastral custody and the current public parcel-map route.",
+        "result": "Search located the official Stavropol municipal regulation for land-plot schemes on the cadastral plan, an official Rosreestr regional-office reference, and Rosreestr's current NSPD public-map announcement. Search results also showed non-first-party map mirrors, which were not used as evidence.",
+        "actualResultUrls": [
+          "https://www.stavropol-gov.ru/doc/52829",
+          "https://rosreestr.gov.ru/about/struct/territorialnye-organy/upravlenie-rosreestra-po-stavropolskomu-krayu/",
+          "https://nspd.gov.ru/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Ставрополь официальный кадастровая карта земельные участки Росреестр публичная кадастровая карта",
+        "scope": "Independent Russian-language discovery of local cadastral custody and public parcel geometry.",
+        "result": "Russian-language search located the official municipal land-plot cadastral-plan procedure, the regional Rosreestr custody reference, and evidence that the public cadastral map moved to NSPD. No safe anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.stavropol-gov.ru/doc/52829",
+          "https://rosreestr.gov.ru/about/struct/territorialnye-organy/upravlenie-rosreestra-po-stavropolskomu-krayu/",
+          "https://nspd.gov.ru/"
+        ],
+        "executionMethod": "Separate Russian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact NSPD viewer configuration, parcel layer, native identity, schema, CRS, anonymous query shape, parcel coverage, and citywide completeness remain unverified. The exact WUP point was preserved; no point-hit, map-extent miss, timeout, or unavailable UI was treated as evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently qualify the NSPD/Rosreestr route; do not enable runtime from this packet alone."
+}

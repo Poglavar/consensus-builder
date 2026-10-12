@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6811-barishal.json",
+  "cityCode": 6811,
+  "purpose": "Document first-party discovery, current viewer configuration, and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Ministry of Land viewer is a real public first-party map service and names Barishal Sadar in its current notice. Its page JavaScript was inspected: it uses OpenLayers, a GeoServer WMS/WMTS backend at gis.land.gov.bd, and POST routes /getGeomByCode and /GetPlotInfo for plot geometry/info. No owner, address, contact, titleholder, tax, account, or personal fields were requested. The GIS backend was unavailable during the bounded check, so no geometry was retained.",
+  "registryAssessment": "Local/public-service evidence is present through the Ministry of Land/DLRS viewer and the official Barishal zonal settlement-office context. This is stronger than general agency prose but does not establish a city-maintained cadastral registry or a complete public cadastral dataset.",
+  "safeFieldAllowlist": ["safe parcel/plot identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Barishal Bangladesh official cadastral map land parcel GIS land records map","outcome":"Official Ministry of Land map viewer, DLRS/Settlement portal, Survey of Bangladesh map service, Barishal City Corporation, and LGED Barishal map directory found.","actualResultUrls":["https://map.land.gov.bd/","https://settlement.gov.bd/Home/","https://dlrs.gov.bd/","https://sob.gov.bd/pages/static-pages/6922dce0933eb65569e1284b","https://www.barishalcity.gov.bd/","https://oldweb.lged.gov.bd/uploadeddocument/Map/BARISAL/Barishal/"]},
+    {"language":"Bengali (Bangla)","query":"বরিশাল বাংলাদেশ সরকারি ভূমি মানচিত্র জমি রেকর্ড অনলাইন","outcome":"Official Bengali viewer and DLRS sources found; map.land.gov.bd describes mouza/plot mapping and lists বরিশাল সদর.","actualResultUrls":["https://map.land.gov.bd/","https://settlement.gov.bd/Home/","https://dlrs.portal.gov.bd/","https://barisaldiv.gov.bd/pages/static-pages/6978949e35ce18e1c06687e5","https://barishal.judiciary.gov.bd/bn/servicve-box-detail/mouza-rate"]}
+  ],
+  "attempts": [
+    {"url":"https://map.land.gov.bd/","method":"GET","httpStatus":200,"result":"Official viewer loaded. Page/configuration inspected; Barishal Sadar listed; plot/mouza selectors and public map service documented."},
+    {"url":"https://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities","method":"GET","httpStatus":503,"result":"GIS host returned Service Unavailable; no capabilities/schema/geometry response."},
+    {"url":"https://map.land.gov.bd/getGeomByCode","method":"GET","httpStatus":405,"result":"POST-only route confirmed by method-not-allowed response; no credentials or token used, and no plot identifier was invented."},
+    {"url":"https://map.land.gov.bd/GetPlotInfo","method":"GET","httpStatus":405,"result":"POST-only route confirmed by method-not-allowed response; no owner/address or other unsafe fields requested."},
+    {"url":"https://settlement.gov.bd/Home/","method":"GET","httpStatus":200,"result":"Official DLRS/Settlement portal reviewed; it describes draft/ongoing survey khatians and links map/search services, but no anonymous geometry response was obtained."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because the official GIS backend returned HTTP 503 and the viewer's plot POST routes require a selected plot/table context; zero hit must not be interpreted as absence."},
+  "remainingUncertainty": "The WUP point's exact parcel inclusion, native safe plot identifier, CRS response, and citywide coverage remain unverified. The official service may be temporarily unavailable or may require UI-derived plot context.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

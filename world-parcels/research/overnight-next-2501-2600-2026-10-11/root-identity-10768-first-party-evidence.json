@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "purpose": "First-party WUP 2025 identity comparison for the two Suining settlements; prior-work scope is recorded separately.",
+  "checkedAt": "2026-10-11T13:25:42.164Z",
+  "wupArchive": {
+    "path": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "sha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "rows2025": {
+      "7988": {
+        "LocID": "156",
+        "Location": "China",
+        "ISO3_Code": "CHN",
+        "ISO2_Code": "CN",
+        "City_Code": "7988",
+        "City_Name": "Suining",
+        "Capital": "0",
+        "Year": "2025",
+        "PWCent_Latitude": "30.511307967251",
+        "PWCent_Longitude": "105.580153252327",
+        "Pop_plausibility": "Moderate",
+        "Pop": "613.678"
+      },
+      "10768": {
+        "LocID": "156",
+        "Location": "China",
+        "ISO3_Code": "CHN",
+        "ISO2_Code": "CN",
+        "City_Code": "10768",
+        "City_Name": "Suining",
+        "Capital": "0",
+        "Year": "2025",
+        "PWCent_Latitude": "33.9010628899826",
+        "PWCent_Longitude": "117.957401441094",
+        "Pop_plausibility": "Moderate",
+        "Pop": "234.397"
+      }
+    },
+    "populationUnit": "thousands"
+  },
+  "distanceKmBetweenWupPoints": 1223.04,
+  "priorAttempt": {
+    "packetPath": "world-parcels/research/overnight-cities-2026-10-08/city-7988-suining.json",
+    "cityId": "wup2025:7988",
+    "wupCityCode": 7988,
+    "countryCode": "CN",
+    "centerLatLon": [
+      30.511307967251,
+      105.580153252327
+    ],
+    "checkedAt": "2026-10-09",
+    "registryEvidenceUrls": [
+      "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+      "https://sns.sczwfw.gov.cn/",
+      "https://www.suining.gov.cn/"
+    ],
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+  },
+  "observation": "Original UN rows assign the shared romanized name to distinct City_Codes and distant 2025 settlement points. The previous research packet and registry row are explicitly keyed to 7988, not 10768. The prior Sichuan service evidence and failed geometry checks do not transfer to 10768.",
+  "scope": "Identity and prior-attempt classification only; no parcel custody, public geometry, citywide absence, or runtime admission conclusion for 10768."
+}

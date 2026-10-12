@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-5874-pachuca.json",
+  "cityCode": 5874,
+  "queueRank": 1846,
+  "city": "Pachuca",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official state and municipal cadastral/map custodians were verified, but no anonymous safe native parcel ID plus polygon response was obtained. No sample GeoJSON was retained.",
+  "queryOutcomes": "Separate English and Spanish discovery queries, exact text, outcomes and actual result URLs are recorded in city-5874-pachuca.json.",
+  "requestOutcomes": [
+    {"route":"https://catastro.hidalgo.gob.mx/","method":"GET","status":200,"outcome":"Official Instituto Catastral del Estado de Hidalgo page identified the state cadastral authority and its mandate; accessible page shell required JavaScript and exposed no parcel schema."},
+    {"route":"https://www.pachuca.gob.mx/portal/predial/","method":"GET/search discovery","status":200,"outcome":"Official municipal predial page states that predial records/services use a predial account number and municipal treasury procedures; no public parcel geometry endpoint exposed."},
+    {"route":"https://imip.pachuca.gob.mx/sitep/","method":"GET","status":"timeout","outcome":"Official SITEP territorial/statistical viewer was found by discovery, but direct retrieval timed out; no schema, CRS or parcel response obtained."},
+    {"route":"https://geoportal.hidalgo.gob.mx/maps","method":"GET","status":200,"outcome":"Official state geoportal loaded an accessible shell naming Instituto Catastral del Estado de Hidalgo; the visible response exposed search and registration/login controls but no parcel layer schema or anonymous feature response."},
+    {"route":"https://sigcatastro.hidalgo.gob.mx/sgche/","method":"GET","status":502,"outcome":"Official state cadastral management system was identified; retrieval returned a gateway error in this attempt. Search evidence shows it requires a user account and password; no login or credentials used."},
+    {"route":"https://datos.pachuca.gob.mx/acciones/maps.php","method":"GET","status":200,"outcome":"Official municipal map page exposed layers named Pachuca de Soto, AGEB Pachuca and Puntos Pachuca; no parcel layer or safe parcel ID-plus-geometry response was exposed."},
+    {"route":"https://ruts.hidalgo.gob.mx/ver/3793","method":"GET","status":200,"outcome":"Official state service record for municipal base-plan printing identifies the Ayuntamiento/IMIP service as in-person/request-based and describes boundaries, roads, neighborhoods and geographic elements; it does not establish parcel polygons."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[20.1045916685925,-98.7389475491326],"coordinateOrderNote":"WUP point preserved as latitude/longitude. No exact-point parcel query completed and no coordinate shift applied."},
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source":null,"retainedSample":null},
+  "geometryQuality": "No parcel geometry response obtained; zero samples retained.",
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because no anonymous parcel feature service was verified; this is not evidence of parcel absence.","requestEvidence":"tmp/valhalla-parcel-research/5874/"},
+  "coverageAssessment": {"claimedScope":"Official Hidalgo state cadastral infrastructure plus Pachuca municipal territorial/cadastral map services.","verifiedOpenScope":"Custodian identity and portal existence verified; anonymous parcel schema, CRS, stable identity and citywide coverage unverified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "The state cadastral management system requires authentication; no login or credentials were used.",
+    "The municipal base-plan service is request/print oriented and does not establish parcel-level geometry.",
+    "SITEP timeout, gateway error, JavaScript shell, or absent visible parcel layer are service-access limitations, not evidence of citywide parcel absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested, logged or retained.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "A current authenticated or request-gated cadastral source may provide parcel data, and the public portals may have additional client-side layers, but no anonymous safe ID-plus-geometry response was verified in this attempt. Parcel completeness, legal status, update currency and stable native identity remain unverified."
+}

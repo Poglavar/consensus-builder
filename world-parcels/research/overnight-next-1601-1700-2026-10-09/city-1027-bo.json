@@ -1,0 +1,129 @@
+{
+  "cityCode": 1027,
+  "queueRank": 1654,
+  "name": "Bo",
+  "country": "Sierra Leone",
+  "countryCode": "SL",
+  "iso3": "SLE",
+  "locId": 694,
+  "point": [7.9551092048514, -11.7358330659544],
+  "population2025": 345988,
+  "population2025k": 345.988,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bo Sierra Leone official cadastral parcel map land registry GIS parcel viewer",
+        "result": "First-party discovery found the official Ministry of Lands, Housing and Country Planning portal, its Surveys & Mapping/GIS Directorate page, the OARG land-registration procedure, and the National Land Commission digital-portal page. These describe land registration, cadastral surveys, and planned interactive maps, but no public Bo parcel viewer or anonymous parcel API was exposed.",
+        "actualResultUrls": [
+          "https://app.molhcp.gov.sl/",
+          "https://molhcp.gov.sl/directorate-of-gis-and-remote-sensing/",
+          "https://oarg.gov.sl/land-register/",
+          "https://nlc.gov.sl/digital-portal"
+        ]
+      },
+      {
+        "language": "Krio",
+        "query": "Bo Salone official land registry cadastral map parcel GIS",
+        "result": "A separate Krio-oriented first-party discovery query did not surface a Krio cadastral viewer or parcel service. The official Sierra Leone results remained English-language Ministry, OARG, and NLC pages describing land registration, surveys, and a digital portal under development; no safe anonymous parcel geometry or native parcel ID was found.",
+        "actualResultUrls": [
+          "https://app.molhcp.gov.sl/",
+          "https://nlc.gov.sl/digital-portal",
+          "https://oarg.gov.sl/land-register/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://app.molhcp.gov.sl/",
+      "observation": "Official MLHCP portal links land registration through OARG and cadastral survey requests through the Surveys Directorate; actions require account/application workflow and no public map endpoint is linked."
+    },
+    {
+      "url": "https://molhcp.gov.sl/directorate-of-gis-and-remote-sensing/",
+      "observation": "Official MLHCP GIS Directorate page states that a GIS-based National Land Information System is being developed; the page contains institutional description only, with no parcel service configuration or geometry endpoint."
+    },
+    {
+      "url": "https://oarg.gov.sl/land-register/",
+      "observation": "Official OARG land-registration procedure describes title/search and registration steps, but it is a formal registry workflow and does not publish anonymous parcel geometry."
+    },
+    {
+      "url": "https://nlc.gov.sl/digital-portal",
+      "observation": "Official National Land Commission digital portal advertises land search and interactive cadastral maps but explicitly marks the LMIS/digital portal as under development with pilot coming soon."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://app.molhcp.gov.sl/landing.aspx",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. Current HTML exposes account/application links for land registration and cadastral survey requests; no map, API, schema, CRS, or parcel response was exposed."
+    },
+    {
+      "url": "https://app.molhcp.gov.sl/services.aspx",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. The page describes OARG land registration and Surveys & Mapping cadastral surveys, with register.aspx workflow links; no anonymous parcel layer or service configuration was exposed."
+    },
+    {
+      "url": "https://molhcp.gov.sl/directorate-of-gis-and-remote-sensing/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. The official page states that the National Land Information System is being developed; no ArcGIS/GeoServer/WMS/WFS/FeatureServer route or parcel schema was present in the page/configuration."
+    },
+    {
+      "url": "https://nlc.gov.sl/digital-portal",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. Next.js page says Digital Land Portal/LMIS is under development and pilot coming soon; current JavaScript/configuration exposed no backend parcel route."
+    },
+    {
+      "url": "https://nlc.gov.sl/api",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "outcome": "No generic public API route at this bounded path; no alternate parcel endpoint was inferred or probed beyond the official page configuration."
+    },
+    {
+      "url": "https://oarg.gov.sl/land-register/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 500,
+      "contentType": "text/html",
+      "outcome": "The official URL returned server error on direct request during this attempt. Search-indexed official content still documents a formal land-registration procedure; no retry with credentials or unsafe lookup was made."
+    },
+    {
+      "url": "https://www.nma.gov.sl/mining-cadastre-office/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully but this is the National Minerals Agency mining cadastre, not a general land-parcel cadastre for Bo; it was excluded from source qualification."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Sierra Leone MLHCP and OARG pages evidence the national land-registration and cadastral-survey custodians and formal procedures applicable to land administration. This is custodian/procedure evidence only, not evidence of a public Bo parcel adapter or anonymous parcel coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Sierra Leone Ministry of Lands, Housing and Country Planning (Surveys & Mapping/GIS) with OARG land-registration workflow and National Land Commission LMIS initiative",
+    "viewerUrls": [],
+    "crs": null
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_custodian_no_public_parcel_endpoint",
+  "coverageAssessment": {
+    "claimedScope": "National Sierra Leone land registration, cadastral survey, and planned land-information services; no Bo-specific public coverage claim was found.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "A restricted, account-gated, formal-request, or not-yet-published cadastral service may exist. The absence of an anonymous response in these bounded requests is not evidence of citywide parcel absence. No unsafe owner, address, titleholder, tax, account, or contact fields were requested, and the WUP point was not shifted."
+}

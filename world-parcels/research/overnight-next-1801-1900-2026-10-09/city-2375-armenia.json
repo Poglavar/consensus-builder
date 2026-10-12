@@ -1,0 +1,61 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "cityCode": 2375,
+  "queueRank": 1802,
+  "cityId": "wup:2375",
+  "name": "Armenia",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "iso3": "COL",
+  "centerLatLon": [4.53471433784223, -75.6850339180663],
+  "point": [4.53471433784223, -75.6850339180663],
+  "population2025": 319234,
+  "population2025k": 319.234,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Armenia Quindío Colombia official cadastral map parcel viewer GIS cadastre Alcaldía IGAC",
+        "result": "Found the official Alcaldía de Armenia Subsecretaría de Catastro page, its municipal geovisor, and official IGAC cadastral open-data and service references.",
+        "actualResultUrls": ["https://www.armenia.gov.co/armenia/subsecretaria-de-catastro", "https://apps.nazcacatastro.com/public/63001/", "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales"]
+      },
+      {
+        "language": "Spanish",
+        "query": "Armenia Quindío Colombia mapa catastral oficial predios visor geográfico catastro Alcaldía IGAC",
+        "result": "La búsqueda identificó la Subsecretaría de Catastro municipal, el Geovisor Catastral de Armenia y el servicio cartográfico oficial de IGAC para Catastro Armenia.",
+        "actualResultUrls": ["https://www.armenia.gov.co/armenia/subsecretaria-de-catastro", "https://apps.nazcacatastro.com/public/63001/", "https://pruebassig.igac.gov.co/server/rest/services/SIG_QUINDIO/Cartografia_basica/MapServer/76"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://www.armenia.gov.co/armenia/subsecretaria-de-catastro", "operator": "Alcaldía de Armenia, Subsecretaría de Catastro", "observation": "Official municipal catastro page links the current Geovisor Catastral de Armenia and identifies the municipal cadastral office."},
+    {"url": "https://apps.nazcacatastro.com/public/63001/", "operator": "Municipal geovisor linked by Alcaldía de Armenia", "observation": "Current viewer configuration was inspected; it declares EPSG:9377, WFS workspace ws011_armenia, and parcel layer PrediosConsulta."},
+    {"url": "https://pruebassig.igac.gov.co/server/rest/services/SIG_QUINDIO/Cartografia_basica/MapServer/76", "operator": "IGAC", "observation": "Official indexed ArcGIS REST group metadata identifies Catastro Armenia and reports EPSG:9377 extent and GeoJSON query support; sublayer feature response was not obtained."},
+    {"url": "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales", "operator": "IGAC", "observation": "Official open-data page lists Quindío cadastral geographic/alfanumeric coverage and national cadastral services."}
+  ],
+  "registryFound": true,
+  "registryBasis": "The official municipal Subsecretaría de Catastro page and its linked municipal cadastral geovisor evidence a local cadastral/map custodian. This establishes local custody, not an anonymously retrievable parcel feature or citywide completeness.",
+  "registryEvidenceUrls": ["https://www.armenia.gov.co/armenia/subsecretaria-de-catastro", "https://apps.nazcacatastro.com/public/63001/"],
+  "requests": [
+    {"url": "https://apps.nazcacatastro.com/public/63001/", "method": "GET; anonymous; verified TLS", "httpStatus": 200, "outcome": "Viewer HTML retrieved; current JavaScript/configuration inspected."},
+    {"url": "https://apps.nazcacatastro.com/public/63001/config_armenia.js", "method": "GET; anonymous; verified TLS", "httpStatus": 200, "outcome": "Configuration retrieved; WFS base URL, EPSG:9377, and PrediosConsulta layer identified."},
+    {"url": "https://geoservicios.nazcacatastro.com/geoserver/ws011_armenia/ows?service=WFS&version=1.0.0&request=GetCapabilities", "method": "GET; anonymous; verified TLS", "httpStatus": null, "outcome": "TLS certificate verification failed in the environment; no insecure retry was made and no feature result was accepted."},
+    {"url": "https://geoservicios.nazcacatastro.com/geoserver/ws011_armenia/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ws011_armenia:PrediosConsulta&outputFormat=application/json&srsName=EPSG:9377", "method": "GET; anonymous; bounded parcel-layer probe planned from viewer configuration", "httpStatus": null, "outcome": "Not executed after the same verified-TLS certificate failure; no geometry retained."},
+    {"url": "https://pruebassig.igac.gov.co/server/rest/services/SIG_QUINDIO/Cartografia_basica/MapServer/76", "method": "GET; anonymous official REST metadata", "httpStatus": 200, "outcome": "Group metadata retrieved/indexed; it reports EPSG:9377 and GeoJSON support but no parcel feature was returned."}
+  ],
+  "sourceCandidate": {"url": "https://geoservicios.nazcacatastro.com/geoserver/ws011_armenia/ows", "kind": "Official municipal WFS parcel service", "publisher": "Alcaldía de Armenia / municipal geovisor", "scope": "Municipal cadastral parcel candidate; current public viewer configuration identifies PrediosConsulta, but feature retrieval was blocked by verified-TLS failure.", "nativeFields": ["T_ID", "CODIGO_NUMERO_PREDIAL", "CODIGO_TERRENO", "GEOMETRIA"], "fieldMapping": {"nativeIdentityCandidates": ["CODIGO_NUMERO_PREDIAL", "CODIGO_TERRENO", "T_ID only if returned as a stable service identity"], "geometry": "GEOMETRIA", "excludedFields": ["owner", "address", "contact", "titleholder", "tax/account and personal fields"]}},
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "No exact-point parcel response was obtained at unchanged WUP point [4.53471433784223, -75.6850339180663]; no coordinate shift was made.", "requestEvidence": ["The current municipal viewer's WFS endpoint was identified, but verified TLS failed before a bounded response could be inspected."]},
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "Official Armenia municipal cadastral geovisor/WFS and IGAC Quindío cadastral references.", "verifiedOpenScope": "Municipal custodian and current service configuration; no anonymous parcel feature response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable native parcel/cadastral identifier only if verified in a returned feature", "geometry", "CRS/layer metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_local_registry_context_no_verified_public_geometry",
+  "remainingUncertainty": "The current municipal service may be usable from a client with a trusted certificate chain or through a future verified endpoint. TLS failure and absence of an exact-point response do not establish parcel absence or citywide incompleteness. No unsafe fields were requested or retained."
+}

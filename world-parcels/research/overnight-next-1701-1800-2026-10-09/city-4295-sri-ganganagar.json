@@ -1,0 +1,96 @@
+{
+  "cityCode": 4295,
+  "queueRank": 1705,
+  "name": "Sri Ganganagar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [29.9162589272516, 73.8756109353512],
+  "population2025": 335747,
+  "population2025k": 335.747,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sri Ganganagar official cadastral parcel map GIS Rajasthan land records property registration",
+        "result": "First-party results identified Rajasthan's official BhuNaksha cadastral mapping portal, the Rajasthan Urban GIS portal with Khasra search, and official Rajasthan land-record integration pages. A Sri Ganganagar-specific public parcel geometry response was not obtained.",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://swcstest.rajasthan.gov.in/ComprehensiveLandInformation.aspx",
+          "https://sriganganagar.rajasthan.gov.in/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "श्रीगंगानगर आधिकारिक भू-नक्शा भूलेख कैडस्ट्रल नक्शा राजस्थान",
+        "result": "First-party discovery identified the official Rajasthan BhuNaksha portal and a Ganganagar district plot-report route. The search results evidence cadastral-map availability at the state/district service level, but not an anonymous city-bounded ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://bhunaksha.rajasthan.gov.in/",
+          "https://bhunaksha.rajasthan.gov.in/Viewmap/plotreport.jsp?giscode=2826719900796231862001&plotno=018704110290002101&state=08",
+          "https://edharti.rajasthan.gov.in/PDF/Bhunaksha3.0UserGuide.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "An official Rajasthan government/NIC BhuNaksha cadastral map service is evidenced, and its public plot-report result identifies district 28 Ganganagar. This establishes a state/district cadastral map custodian, not a verified citywide open parcel API.",
+  "officialSources": [
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "observation": "Official Rajasthan BhuNaksha viewer describes a public cadastral mapping interface with plot information; the page was discoverable through first-party search but direct retrieval from this environment timed out."
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/Viewmap/plotreport.jsp?giscode=2826719900796231862001&plotno=018704110290002101&state=08",
+      "observation": "Official plot report is readable and identifies district 28 Ganganagar, with tehsil/village/sheet and plot identifiers. It is a Ganganagar district example, not a city-4295 geometry sample, and no owner or other unsafe fields were requested or retained."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "observation": "Official Rajasthan Urban GIS portal exposes Khasra search, map viewing and land-profile functions, with a disclaimer that displayed data is for viewing only; no anonymous feature payload or schema was captured."
+    },
+    {
+      "url": "https://rajkaj.rajasthan.gov.in/reports/PAR-Report-of-offices-by-appointing-dept-and-office.php?AppointDeptId=3000307&OfficeId=3067637",
+      "observation": "Official Rajasthan administrative report identifies a Land Record Section in the Office of District Collector and District Magistrate, Sri Ganganagar; this supports local custodial responsibility but is not a parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "method": "GET",
+      "outcome": "bounded 20-second request timed out; no HTML, JavaScript configuration, service URL, schema or CRS was captured"
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "method": "HEAD",
+      "outcome": "bounded 8-second request timed out; no response headers or service configuration captured"
+    },
+    {
+      "url": "https://apnakhata.rajasthan.gov.in",
+      "method": "HEAD",
+      "outcome": "bounded 8-second request timed out; no payload captured"
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/Viewmap/plotreport.jsp?giscode=2826719900796231862001&plotno=018704110290002101&state=08",
+      "method": "GET via public web search/open",
+      "outcome": "readable official Ganganagar district plot report; no full parcel geometry response was retained and no city-4295 match was asserted"
+    }
+  ],
+  "source": "Rajasthan BhuNaksha / NIC cadastral map service",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan state cadastral mapping service with a public Ganganagar district plot-report route, plus Rajasthan urban GIS/Khasra functions.",
+    "verifiedOpenScope": "Official state/district service presence and one readable Ganganagar district plot report; no city-bounded anonymous geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss inference was made. A timeout, map extent miss, login wall or unusable viewer is not evidence of citywide absence. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained. Packet completion is not source integration or runtime admission."
+}

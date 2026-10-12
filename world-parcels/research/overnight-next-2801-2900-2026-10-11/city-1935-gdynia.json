@@ -1,0 +1,136 @@
+{
+  "cityCode": 1935,
+  "queueRank": 2831,
+  "name": "Gdynia",
+  "country": "Poland",
+  "countryCode": "PL",
+  "iso2": "PL",
+  "iso3": "POL",
+  "point": [54.5322041862711, 18.5076341710355],
+  "population2025": 209918,
+  "population2025k": 209.918,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gdynia official cadastral parcel map GIS land register Poland Geoportal",
+        "result": "Official Gdynia WebEWID map documentation and Poland's official Geoportal EGiB download service were found. The bounded WFS request returned three parcel polygons near the preserved WUP point.",
+        "actualResultUrls": [
+          "https://nasze.miasto.gdynia.pl/dokuweb/portal-mapowy/portal-mapowy.html",
+          "https://www.geoportal.gov.pl/en/data/land-and-building-register-egib/",
+          "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
+        ]
+      },
+      {
+        "language": "Polish (local/native)",
+        "query": "Gdynia oficjalna mapa działek ewidencja gruntów geoportal miejski",
+        "result": "Polish-language discovery identified the official Gdynia WebEWID portal documentation and the GUGiK EGiB WFS service. The service response exposed parcel geometry and stable ID_DZIALKI values without requesting owner or other unsafe fields.",
+        "actualResultUrls": [
+          "https://nasze.miasto.gdynia.pl/dokuweb/portal-mapowy/portal-mapowy.html",
+          "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+          "https://www.gov.pl/web/gugik/zbiorcza-usluga-wfs-dla-ewidencji-gruntow-i-budynkow-udostepniona-w-modulach-mapowych-serwisu-geoportalgovpl"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Gdynia's official WebEWID map portal documentation describes public map search for parcels (działki), buildings and addresses; the documented portal is hosted on the official city domain.",
+    "nationalCustodian": "Główny Urząd Geodezji i Kartografii (GUGiK) publishes the official aggregate EGiB WFS, built from county EGiB services and covering Poland to the extent supplied by those services.",
+    "registryEvidence": "Local official map procedure plus a successful official EGiB parcel-vector response for Gdynia; registryFound=true reflects evidenced public cadastral/map access, not owner or title access.",
+    "registryEvidenceUrls": [
+      "https://nasze.miasto.gdynia.pl/dokuweb/portal-mapowy/portal-mapowy.html",
+      "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+      "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "GET",
+      "url": "https://nasze.miasto.gdynia.pl/is2/iEwid/",
+      "httpStatus": 404,
+      "outcome": "A historical Gdynia map URL cited by an official municipal PDF returned 404; no absence inference was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://nasze.miasto.gdynia.pl/dokuweb/portal-mapowy/portal-mapowy.html",
+      "httpStatus": 200,
+      "outcome": "Official Gdynia WebEWID documentation loaded and states that the map viewer supports searching parcels, buildings and addresses and viewing map objects. It is documentation, not the parcel-vector endpoint itself."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza?service=WFS&request=GetCapabilities",
+      "httpStatus": 200,
+      "outcome": "Official GUGiK aggregate WFS capabilities returned ms:dzialki with default CRS EPSG:2180 and supported EPSG:4326; safe parcel and geometry schema was identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza?service=WFS&request=DescribeFeatureType&version=2.0.0&typeNames=ms:dzialki",
+      "httpStatus": 200,
+      "outcome": "Schema exposed geom and ID_DZIALKI plus other source fields. Only geom and ID_DZIALKI were requested; unsafe fields were not requested or retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:dzialki&outputFormat=text/xml;%20subtype=gml/3.2.1&srsName=urn:ogc:def:crs:EPSG::4326&bbox=54.5305,18.5065,54.5338,18.5088,urn:ogc:def:crs:EPSG::4326&count=3&propertyName=geom,ID_DZIALKI",
+      "httpStatus": 200,
+      "outcome": "Returned three unchanged GML parcel polygons near the exact WUP point. EPSG:4326 response coordinates were converted to GeoJSON axis order [longitude, latitude]; native IDs were 226201_1.0026.704, 226201_1.0026.718 and 226201_1.0026.719."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Gdynia WebEWID documentation was inspected; its live application configuration was not needed because the official GUGiK EGiB WFS was independently qualified.",
+    "geometryCrs": "EPSG:4326 in the retained sample; service default is EPSG:2180 and EPSG:4326 is an advertised alternate CRS.",
+    "nativeIdentity": "ID_DZIALKI",
+    "sourceFieldMapping": {
+      "id": "ID_DZIALKI",
+      "geometry": "geom"
+    },
+    "compositeKeyProvenance": "The returned ID_DZIALKI values encode the Gdynia cadastral unit and precinct/parcel path (for example 226201_1.0026.704); the complete native value is retained as the canonical id."
+  },
+  "boundedAnonymousResponse": {
+    "requestScope": "BBox around exact WUP point [54.5322041862711, 18.5076341710355], preserved in latitude/longitude order; no coordinate shift was used.",
+    "featureCount": 3,
+    "geometryFeatureCount": 3,
+    "nativeIds": ["226201_1.0026.704", "226201_1.0026.718", "226201_1.0026.719"]
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier ID_DZIALKI",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source layer and service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": "gdynia-parcel-sample.geojson",
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "ID_DZIALKI",
+    "sampleCount": 3,
+    "sampleFile": "gdynia-parcel-sample.geojson",
+    "nativeId": "ID_DZIALKI values retained as properties.id",
+    "nativeIdField": "ID_DZIALKI",
+    "exactWupPointTest": "The request bbox contained the exact point; this is bounded sample evidence only and not a citywide coverage claim."
+  },
+  "coverageAssessment": {
+    "claimedScope": "GUGiK aggregate EGiB WFS says it aggregates county EGiB services across Poland to the extent those services provide data.",
+    "verifiedOpenScope": "Three Gdynia parcel polygons were verified in one bounded anonymous response; local citywide completeness and update cadence were not independently measured.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_serial_review_required",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "This is cadastral-source research, not source integration or runtime admission.",
+    "The exact WUP point and population values were preserved; no coordinate was moved to force a parcel hit.",
+    "Three polygons are a bounded sample and do not prove citywide parcel coverage, completeness, or freshness.",
+    "Only safe IDs and geometry were retained; source-specific raw attributes remain in ignored temporary evidence only.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "The official GUGiK aggregate WFS and Gdynia WebEWID documentation provide credible public cadastral access, and the sample geometry/IDs are verified. The live Gdynia application endpoint, county-level completeness, and production adapter suitability remain for independent serial review."
+}

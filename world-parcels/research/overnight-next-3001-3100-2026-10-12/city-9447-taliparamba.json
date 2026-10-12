@@ -1,0 +1,135 @@
+{
+  "cityCode": 9447,
+  "queueRank": 3034,
+  "name": "Taliparamba",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [12.0414748876206, 75.3670390105881],
+  "population2025": 197119,
+  "population2025k": 197.119,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Taliparamba Kerala official cadastral parcel map land records GIS Bhoomi Kerala survey map",
+        "result": "First-party discovery identified Kerala's Directorate of Survey and Land Records, the Ente Bhoomi integrated land-information portal, the official eMaps/Bhu-Naksha cadastral viewer, and an official Taliparamba Village Office page. The public material evidences a local/state cadastral service and parcel-map workflow, but no anonymous Taliparamba parcel feature response was exposed.",
+        "actualResultUrls": [
+          "https://dslr.kerala.gov.in/en/erekha/1000/",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+          "https://landrevenue.kerala.gov.in/core/Office_websites/contactus.php?nm=788Taliparambavillageoffice"
+        ]
+      },
+      {
+        "language": "Malayalam",
+        "query": "തളിപ്പറമ്പ് കേരള ഔദ്യോഗിക ഭൂമി രേഖ കഡസ്ട്രൽ ഭൂപടം സർവേ മാപ്പ്",
+        "result": "Malayalam first-party discovery returned Kerala Ente Bhoomi/eMaps material describing digital land records, real-time land parcel maps, survey-record services, and the Taliparamba resurvey office. No safe anonymous parcel geometry or stable native parcel identity was returned.",
+        "actualResultUrls": [
+          "https://survey.entebhoomi.kerala.gov.in/portal/",
+          "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+          "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+          "https://cmo.kerala.gov.in/office_display_level_en.php?RTbdb578sjHHsbaQWNmvSdhFFhbzZ=ZGlkPTM1JmRpc3Q9MTMmb2ZjX2lkPTE3MjRiZWVlLWU5N2EtNDZhOC05MTE2LTdhYmFlMTZmNWUyMSZmZD1TdXJ2ZXkrYW5kK0xhbmQrUmVjb3JkcytEZXBhcnRtZW50"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Government of Kerala Directorate of Survey and Land Records / Revenue, Survey and Registration departments; Taliparamba Superintendent Survey and Land Records (Resurvey) office is listed in the Kerala government service directory.",
+    "localRegistryOrProcedure": "Kerala eMaps/Bhu-Naksha is the official cadastral-map workflow, with search labels for block, survey and subdivision details. Ente Bhoomi describes integrated land records and real-time land parcel maps. The official Revenue portal lists Taliparamba Village Office in Taliparamba municipality and taluk.",
+    "registryEvidenceUrls": [
+      "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+      "https://entebhoomi.kerala.gov.in/web/home",
+      "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+      "https://landrevenue.kerala.gov.in/core/Office_websites/contactus.php?nm=788Taliparambavillageoffice",
+      "https://cmo.kerala.gov.in/office_display_level_en.php?RTbdb578sjHHsbaQWNmvSdhFFhbzZ=ZGlkPTM1JmRpc3Q9MTMmb2ZjX2lkPTE3MjRiZWVlLWU5N2EtNDZhOC05MTE2LTdhYmFlMTZmNWUyMSZmZD1TdXJ2ZXkrYW5kK0xhbmQrUmVjb3JkcytEZXBhcnRtZW50"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+      "httpStatus": 200,
+      "outcome": "Official Bhu-Naksha page was discovered and its public UI described parcel-map search by block, survey number and subdivision. A direct anonymous curl request could not be completed because TLS verification rejected the host's expired certificate; the certificate was not bypassed. No geometry request was attempted through an untrusted connection."
+    },
+    {
+      "method": "GET",
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/",
+      "httpStatus": 200,
+      "outcome": "Anonymous Ente Bhoomi survey portal loaded. It exposed official digital-survey, survey-record and land-parcel-map descriptions and listed village/service material, but no bounded ID-plus-geometry response for Taliparamba was returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+      "httpStatus": "not separately fetched",
+      "outcome": "The official discovery result exposed the search workflow requiring district, taluk, village, block code, survey number and a visual challenge. No login, CAPTCHA bypass, owner lookup, or unsafe field request was attempted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://landrevenue.kerala.gov.in/core/Office_websites/contactus.php?nm=788Taliparambavillageoffice",
+      "httpStatus": 200,
+      "outcome": "Official Revenue portal identified Taliparamba Village Office, Kannur district, Taliparamba taluk and municipality. This is custodian/procedure evidence, not parcel geometry."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://cmo.kerala.gov.in/office_display_level_en.php?RTbdb578sjHHsbaQWNmvSdhFFhbzZ=ZGlkPTM1JmRpc3Q9MTMmb2ZjX2lkPTE3MjRiZWVlLWU5N2EtNDZhOC05MTE2LTdhYmFlMTZmNWUyMSZmZD1TdXJ2ZXkrYW5kK0xhbmQrUmVjb3JkcytEZXBhcnRtZW50",
+      "httpStatus": 200,
+      "outcome": "Kerala government directory listed Superintendent Survey and Land Records (Resurvey) Taliparamba. No parcel schema or geometry was provided."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [12.0414748876206, 75.3670390105881] was preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No safe public parcel ID-plus-geometry response was obtained, so no geometry was retained."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kerala state cadastral and integrated land-information services, with Taliparamba-specific survey and village offices evidenced.",
+    "verifiedOpenScope": "Official local/state service existence and cadastral procedure were verified; Taliparamba parcel geometry, schema, CRS and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, timeout, TLS failure, map extent miss, login wall, visual challenge or unusable UI was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate or title fields were requested or retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Kerala's official cadastral and integrated land-information services and Taliparamba custodians are evidenced. The eMaps host's expired certificate prevented a verified direct request without an unauthorized TLS exception, while Ente Bhoomi exposed workflow information but no safe parcel geometry response. Citywide coverage and runtime qualification remain unverified."
+}

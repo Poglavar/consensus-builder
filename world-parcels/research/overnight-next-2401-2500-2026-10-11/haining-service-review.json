@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-11788-haining.json",
+  "cohort": "overnight-next-2401-2500-2026-10-11",
+  "purpose": "Document first-party Haining cadastral-service discovery and bounded anonymous access review.",
+  "assessment": "Official Haining/Zhejiang material evidenced the local natural-resources and real-estate-registration custodians, but bounded inspection found no public cadastral viewer/API or safe anonymous parcel ID-plus-geometry response. No geometry was retained; runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by official Haining government and Zhejiang-hosted documents naming 海宁市自然资源和规划局 and 海宁市不动产登记服务中心 and describing cadastral investigation, surveying, and registration-data responsibilities. This evidences local registry custody, not a qualified open parcel adapter.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceInferred": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://www.haining.gov.cn/", "operator": "Haining Municipal People's Government", "scope": "Official city government portal."},
+    {"url": "https://www.haining.gov.cn/art/2024/1/4/art_1229293383_59041032.html", "operator": "Haining Natural Resources and Planning Bureau", "scope": "Official land-supply notice identifying the local natural-resources authority."},
+    {"url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2780/site/attach/0/ea7d7c41099d4f81b9e3b8ef3cf33e45.pdf", "operator": "Haining Real Estate Registration Service Center", "scope": "Official budget document describing registration, cadastral investigation, surveying, and data-management functions."},
+    {"url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2780/site/attach/0/ad26824354034ddea088ab1d6d327534.pdf", "operator": "Haining Natural Resources and Planning Bureau", "scope": "Official bureau budget document naming the registration service center."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Haining China official cadastral parcel map GIS natural resources land registration public map", "result": "Local first-party custodian material found; no public parcel feature route qualified.", "resultUrls": ["https://www.haining.gov.cn/art/2024/1/4/art_1229293383_59041032.html", "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2780/site/attach/0/ea7d7c41099d4f81b9e3b8ef3cf33e45.pdf"]},
+    {"language": "Chinese", "query": "海宁市 官方 不动产登记 地籍图 地图 查询 自然资源局", "result": "Local first-party registration and natural-resources custodian material found; no anonymous parcel geometry/schema/CRS response qualified.", "resultUrls": ["https://www.haining.gov.cn/col/col1229278691/index.html", "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2780/site/attach/0/ea7d7c41099d4f81b9e3b8ef3cf33e45.pdf"]}
+  ],
+  "attempts": [
+    {"url": "https://www.haining.gov.cn/col/col1229278691/index.html", "method": "GET anonymous; TLS verified", "httpStatus": 403, "outcome": "Official institution page denied direct retrieval; no bypass attempted."},
+    {"url": "https://www.haining.gov.cn/art/2024/1/4/art_1229293383_59041032.html", "method": "GET anonymous; TLS verified", "httpStatus": 403, "outcome": "Official land-supply page denied direct retrieval after first-party discovery; no bypass attempted."},
+    {"url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2780/site/attach/0/ea7d7c41099d4f81b9e3b8ef3cf33e45.pdf", "method": "GET anonymous; TLS verified", "httpStatus": 0, "outcome": "Host-resolution timeout after 20 seconds; not treated as source absence."},
+    {"url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2780/site/attach/0/ad26824354034ddea088ab1d6d327534.pdf", "method": "GET anonymous; TLS verified", "httpStatus": 403, "outcome": "Official document host denied retrieval; no token or bypass attempted."}
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official Haining/Zhejiang registration and natural-resources sources plus bounded anonymous requests.", "verifiedOpenScope": "Custodian/procedure evidence only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A separate municipal or provincial viewer, village-level service, or future public API may expose safe parcel geometry. The present responses do not establish absence or completeness.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

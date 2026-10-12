@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3825",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3825-lalpur.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/lalpur-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:36:54Z",
+  "reason": "WUP code 3825, rank 1512, Bangladesh, exact point and 375833 persons match immutable roster and queue. Separate English and Bengali searches are recorded with queries and result URLs. Official Lalpur land-office custody is supported. The DLRS Natore BDS thana response was empty; no valid Lalpur parcel query or safe native-ID plus complete-polygon response was recorded. The empty branch does not establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unproved.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://acl.lalpur.natore.gov.bd/pages/static-pages/697f6dcf35ce18e1c06b18fd"
+  ],
+  "sourceAdmission": "not_admitted"
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3322",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3322-oita.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/oita-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/oita/city-cadastral.html",
+    "tmp/valhalla-parcel-research/oita/wagmap.html",
+    "tmp/valhalla-parcel-research/oita/package.json"
+  ],
+  "checkedAt": "2026-10-10T09:08:31.079345Z",
+  "reviewFindings": "Official survey program and 44201 registry-map archive metadata exist, but no bounded native-ID parcel feature or adapter qualification.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not independently evidenced; no runtime admission."
+}

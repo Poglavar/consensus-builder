@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6058",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6058-ulyanovsk.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ulyanovsk-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:24:31.835958Z",
+  "reason": "Official regional page documents a public cadastral map, supporting registry custody, but map hosts timed out. No native ID or polygon response, adapter qualification, or headed details check.",
+  "registryFound": true,
+  "admissionQualified": false
+}

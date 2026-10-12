@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 6590,
+  "queueRank": 2823,
+  "name": "Araraquara",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-21.7835875883219, -48.1648994122687],
+  "population2025": 210694,
+  "population2025k": 210.694,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Araraquara Brazil municipal cadastral parcel map official GIS cadastro imobiliário mapa lotes",
+        "result": "Found an official municipal planning document referencing the municipal technical cadastre (CTMGEO), plus an official municipal land-parceling procedure page. No indexed public Araraquara parcel geometry service was found. A discovered ArcGIS cadastral layer was verified by item metadata as Paracatu/MG and not used as Araraquara evidence.",
+        "actualResultUrls": ["https://siave.camara-arq.sp.gov.br/arquivo?Id=262688", "https://webnetserver.com.br/araraquara/secretarias/desenvolvimento-urbano/sobre-a-secretaria-desenvolvimento-urbano/parcelamento-do-solo", "https://www.arcgis.com/sharing/rest/content/items/2c34751b3ae140edb499eda42a8d6e7c?f=pjson"]
+      },
+      {
+        "language": "Portuguese (local/native)",
+        "query": "Araraquara cadastro imobiliário mapa lotes cadastro técnico municipal CTMGEO geoprocessamento prefeitura",
+        "result": "The official municipal planning material describes modernization and public access goals for the cadastro técnico municipal (ctmgeo), and the municipal Desenvolvimento Urbano page documents parcelamento do solo procedures. No anonymous public parcel ID-plus-geometry endpoint or current municipal viewer configuration was identified.",
+        "actualResultUrls": ["https://siave.camara-arq.sp.gov.br/arquivo?Id=262688", "https://webnetserver.com.br/araraquara/secretarias/desenvolvimento-urbano", "https://webnetserver.com.br/araraquara/secretarias/desenvolvimento-urbano/sobre-a-secretaria-desenvolvimento-urbano/parcelamento-do-solo"]
+      }
+    ],
+    "sources": ["https://siave.camara-arq.sp.gov.br/arquivo?Id=262688", "https://webnetserver.com.br/araraquara/secretarias/desenvolvimento-urbano", "https://webnetserver.com.br/araraquara/secretarias/desenvolvimento-urbano/sobre-a-secretaria-desenvolvimento-urbano/parcelamento-do-solo", "https://services2.arcgis.com/TTjvoDigLsVzc1HV/ArcGIS/rest/services/Sistema_de_Informa%C3%A7%C3%B5es_Geogr%C3%A1ficas/FeatureServer/13", "https://www.arcgis.com/sharing/rest/content/items/2c34751b3ae140edb499eda42a8d6e7c?f=pjson"]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Araraquara municipal planning material identifies the Cadastro Técnico Municipal (ctmgeo) as a municipal modernization/access program, and the official Desenvolvimento Urbano material documents municipal parceling procedures. This evidences a local cadastral/procedural custodian, not a successful public parcel extraction.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {"claimedScope": "Municipal CTMGEO cadastral program and Desenvolvimento Urbano parceling procedures", "verifiedOpenScope": null, "countrywideVerified": false, "citywideVerified": false},
+  "requestsAndEndpointChecks": [
+    {"url": "https://siave.camara-arq.sp.gov.br/arquivo?Id=262688", "method": "GET/search inspection", "status": "HTTP/search result available", "summary": "Official municipal legislative document describes modernization and public-access goals for the municipal technical cadastre (ctmgeo); no endpoint URL or parcel schema was supplied."},
+    {"url": "https://webnetserver.com.br/araraquara/secretarias/desenvolvimento-urbano/sobre-a-secretaria-desenvolvimento-urbano/parcelamento-do-solo", "method": "GET/search inspection", "status": "HTTP/search result available", "summary": "Municipal Desenvolvimento Urbano parcelamento do solo procedure page was found; it documents an administrative procedure, not anonymous parcel polygons."},
+    {"url": "https://services2.arcgis.com/TTjvoDigLsVzc1HV/ArcGIS/rest/services/Sistema_de_Informa%C3%A7%C3%B5es_Geogr%C3%A1ficas/FeatureServer/13", "method": "GET", "status": "HTTP 200", "summary": "Public polygon layer schema inspected. CRS is EPSG:31983; safe fields include OBJECTID and COD_IMOVEL, with fields such as NUM_AREA, COD_ESTADO, NOM_MUNICI, NUM_MODULO, TIPO_IMOVE, and SITUACAO. Layer extent and item metadata identify the service as Paracatu/MG, not Araraquara."},
+    {"url": "https://services2.arcgis.com/TTjvoDigLsVzc1HV/ArcGIS/rest/services/Sistema_de_Informa%C3%A7%C3%B5es_Geogr%C3%A1ficas/FeatureServer/13/query", "method": "GET", "status": "HTTP 200", "summary": "Bounded query with where NOM_MUNICI='ARARAQUARA', outFields limited to OBJECTID,COD_IMOVEL,NUM_AREA,COD_ESTADO,NOM_MUNICI, returnGeometry=true, resultRecordCount=3 returned an empty FeatureCollection. This is not evidence of citywide absence and no sample was retained."},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/2c34751b3ae140edb499eda42a8d6e7c?f=pjson", "method": "GET", "status": "HTTP 200", "summary": "Service item metadata says title Sistema de Informações Geográficas, tags Paracatu, snippet 'Dados geográficos referentes ao município de Paracatu/MG', extent around Paracatu, and public access; rejected as wrong-city evidence."}
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned", "geometry", "source CRS", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner/titleholder", "address/contact", "tax/account", "protected cadastral data"],
+  "sourceFieldMapping": {"rejectedArcGISLayer": {"nativeIdentityCandidates": ["OBJECTID", "COD_IMOVEL"], "geometryField": "geometry", "crs": "EPSG:31983", "reasonRejected": "service item metadata identifies Paracatu/MG rather than Araraquara"}},
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "No current Araraquara public viewer/API, native parcel identity, parcel geometry, or service CRS was obtained. The exact WUP point was preserved and not shifted. The zero-result wrong-city service query was not treated as citywide absence. CTMGEO references evidence a local custodian/program but not open machine-readable coverage.",
+  "nextStep": "If Araraquara publishes a public cadastral viewer or API, inspect its current JavaScript/configuration and request a bounded anonymous ID-plus-geometry response using only safe fields."
+}

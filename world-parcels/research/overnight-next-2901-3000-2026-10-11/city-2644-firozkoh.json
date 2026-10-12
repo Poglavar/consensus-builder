@@ -1,0 +1,43 @@
+{
+  "cityCode": 2644,
+  "queueRank": 2915,
+  "name": "Firozkoh",
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "iso3": "AFG",
+  "point": [34.5231971054867, 65.2534642263476],
+  "population2025": 204753,
+  "population2025k": 204.753,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Afghanistan official cadastral map parcel Firozkoh Ghor land records GIS",
+        "result": "First-party discovery identified the Ministry of Urban Development and Housing (MUDH) land-affairs/cadastre responsibilities and an official Firozkoh detailed-plan announcement. No anonymous city-specific parcel viewer, feature service, or safe parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://mudh.gov.af/",
+          "https://www.mudh.gov.af/index.php/dr/معینیت-امور-زمینداری",
+          "https://mudh.gov.af/index.php/dr/روند-تطبیق-قسمت-ششم-پلان-تفصیلی-شهر-فیروزکوه-در-غور-آغاز-گردید"
+        ]
+      },
+      {
+        "language": "Dari/Pashto",
+        "query": "افغانستان فیروزکوه غور کادستر نقشه زمین ثبت اراضی رسمی",
+        "result": "نتایج رسمی وزارت شهرسازی و مسکن/اراضی از سروی، ثبت و پلان تفصیلی زمین در غور و فیروزکوه خبر می‌دهند، اما واسطۀ عمومی نقشه پارسل یا پاسخ برداری ناشناس با شناسه امن و هندسه پیدا نشد.",
+        "actualResultUrls": [
+          "https://mudh.gov.af/index.php/dr/روند-تطبیق-قسمت-ششم-پلان-تفصیلی-شهر-فیروزکوه-در-غور-آغاز-گردید",
+          "https://www.mudh.gov.af/index.php/dr/node/2677",
+          "https://www.mudh.gov.af/index.php/dr/معینیت-امور-زمینداری",
+          "https://firouzkoh-m.gov.af/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "MUDH is evidenced as the national land-affairs custodian: its official land-affairs page assigns geodesy, cadastre, deed registration, cadastral surveying, and land-information modernization responsibilities. Official MUDH results also document detailed planning in Firozkoh and surveying/registration of state land in Ghor. This is custodian and activity evidence, not evidence of a local public parcel registry or anonymous geometry service.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "sampleGeojson": null,
+  "uncertainty": "Firozkoh municipality, the Ghor provincial land-affairs office, or MUDH may maintain operational cadastral records or non-public map services. The municipal HTTPS endpoint presented a self-signed certificate, so it was not accessed under the default TLS policy; no certificate exception was authorized. No absence inference is made from timeouts, TLS failure, login walls, or lack of a public endpoint. Packet completion is research completion only and is not source integration or runtime admission."
+}

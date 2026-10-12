@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11757",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-11757-katwa.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/katwa-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-12T07:04:19Z",
+  "reason": "Immutable WUP identity and English/Bengali search records match. West Bengal cadastral custody is evidenced, but no native parcel ID plus full polygon response or independent adapter qualification exists. Timed-out and 502 routes do not establish citywide absence; runtime admission remains held."
+}

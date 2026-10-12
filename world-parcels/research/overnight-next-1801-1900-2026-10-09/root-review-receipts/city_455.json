@@ -1,0 +1,18 @@
+{
+  "taskId": "city:455",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-455-aktau.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/aktau-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/valhalla-parcel-research/455/aisgzk.html",
+    "tmp/valhalla-parcel-research/455/constants.js",
+    "tmp/valhalla-parcel-research/455/mapserver.json"
+  ],
+  "checkedAt": "2026-10-10T16:50:38Z",
+  "reviewNotes": "First-party Aktau government documentation points to EGKN; inspected cached AIS GZK viewer HTML/configuration and tested-route 404 body. No anonymous native-ID polygon response or sample was retained. A 404 on these routes is not citywide absence.",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, full-parcel source binding, or headed Details-panel verification. No runtime/catalog/report admission."
+}

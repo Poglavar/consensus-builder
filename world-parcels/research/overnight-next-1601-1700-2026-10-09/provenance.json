@@ -1,0 +1,34 @@
+{
+  "organization": "United Nations, Department of Economic and Social Affairs, Population Division",
+  "publication": "World Urbanization Prospects: The 2025 Revision, Online Edition",
+  "downloadPage": "https://population.un.org/wup/downloads?tab=Cities",
+  "bulkFile": "WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+  "downloadUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+  "localSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "retrievedAt": "2026-10-09",
+  "populationField": "Pop for Year=2025; units are thousands; ranking does not remove low-plausibility rows.",
+  "identity": "City_Code is the WUP settlement identity; coordinates use the Year=2025 PWCent fields and are settlement points, not municipal boundaries or cadastral coverage claims. Some older normalized queue coordinates differ; e.g. Dighwara old point 25.969189,84.824243 vs this source point 25.9220863,84.8502742.",
+  "sourceDescription": "Official WUP 2025 downloadable bulk city table; includes annual population, settlement centroid, city code, and source-reported population plausibility.",
+  "downloadPageObservation": "Official UN download page lists WUP2025 F21 city population and the bulk CSV format for DEGURBA city statistics.",
+  "priorCoordinatesComparison": "New queue coordinates use official Year=2025 PWCent fields. Older normalized coordinates are historical and not reused; Dighwara example: old 25.969189,84.824243; current source 25.9220863,84.8502742.",
+  "localFileBytes": 58726569,
+  "localFileSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "sourceRows2025": 12138,
+  "outputFiles": [
+    "ranked-top1000.json",
+    "skip-ledger.json",
+    "pending-queue.json",
+    "identity-review.json",
+    "attempt-crosswalks.json"
+  ],
+  "downloadRequest": {
+    "method": "GET",
+    "requestedUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "responseStatus": 200,
+    "responseDate": "Fri, 09 Oct 2026 06:46:20 GMT",
+    "capturedMetadata": "source-download.json",
+    "localArchivePath": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz (ignored repository temp)",
+    "localArchiveBytes": 58726569,
+    "sha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-11015-rafiganj.json",
+  "cityCode": 11015,
+  "queueRank": 3070,
+  "attempt": 1,
+  "reviewedAt": "2026-10-12",
+  "service": "Government of Bihar BhuNaksha",
+  "serviceUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+  "status": "complete",
+  "registryFound": true,
+  "localRegistryCustodian": "Directorate of Land Records & Survey / Revenue and Land Reforms Department, Government of Bihar",
+  "localScope": "Aurangabad district code 34, subdivision code 01, Rafiganj circle code 06 were returned by the live public location API.",
+  "queries": [
+    {"language": "English", "query": "Rafiganj Bihar official cadastral parcel map land records GIS Bihar Bhunaksha", "outcome": "Official Bihar BhuNaksha, BiharBhumi, and Revenue and Land Reforms sources found."},
+    {"language": "Hindi (local)", "query": "रफीगंज बिहार सरकारी भू नक्शा जमीन रिकॉर्ड खसरा", "outcome": "Official BiharBhumi and BhuNaksha sources found; Hindi and English Rafiganj location labels observed in the live viewer API."}
+  ],
+  "requestSummary": "Viewer HTML, current config, and current JavaScript were inspected. Anonymous location enumeration succeeded through the public REST endpoints. WMS GetCapabilities returned HTTP 500 with no body. An unparameterized MapInfo/getPlotAtXY POST returned HTTP 405 and no parcel. No valid mauza-specific giscode and projected coordinates were available for a safe bounded identify request, so no geometry was invented or retained.",
+  "routesAttempted": [
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "result": "200"},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp", "result": "200"},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/config.js", "result": "200"},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.js", "result": "200; route and field inspection"},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "result": "200; 7 levels"},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "result": "200; Aurangabad/Rafiganj administrative enumeration"},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities", "result": "500; empty body"},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "result": "405; no response body parcel"}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity if returned", "full parcel geometry", "geometry CRS", "public administrative codes/labels", "public service metadata"],
+  "geometry": {"found": false, "retainedSample": null, "reason": "No successful parcel identify or geometry response; no sample GeoJSON written."},
+  "scopeLimits": [
+    "The service's administrative enumeration is not proof of complete municipal or citywide polygon coverage.",
+    "A zero exact-point hit, extent miss, HTTP error, or unavailable identify context is not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or unsafe fields were requested.",
+    "Runtime readiness remains held pending independent serial adapter review of a real public parcel response."
+  ],
+  "finalDisposition": "Research packet complete; registry/map service evidenced; public parcel geometry not verified; runtime held; not admitted."
+}

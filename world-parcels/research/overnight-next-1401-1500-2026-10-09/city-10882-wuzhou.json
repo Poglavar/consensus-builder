@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10882,
+  "cityId": "wup2025:10882",
+  "name": "Wuzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [23.4893972770269, 111.267039426206],
+  "point": [23.4893972770269, 111.267039426206],
+  "queueRank": 1418,
+  "population2025": 398593,
+  "population2025k": 398.593,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wuzhou China official cadastral map parcel GIS land registry natural resources bureau",
+        "result": "Found Guangxi Natural Resources Department material describing cadastral-data and visual-query work and its official link to the Wuzhou Natural Resources Bureau. No public anonymous Wuzhou parcel response with a safe native ID and geometry was found.",
+        "actualResultUrls": [
+          "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/zcfg/btzdgkwj/t18974413.shtml",
+          "https://dnr.gxzf.gov.cn/sjcx/chzzdwcx/index.shtml",
+          "https://zrzyj.wuzhou.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "梧州 不动产登记 地籍图 宗地 查询 官方 梧州市自然资源局",
+        "result": "找到广西壮族自治区自然资源厅关于地籍数据库、地籍图可视化查询及梧州市自然资源局官方入口的材料；未发现无需登录即可返回安全宗地标识与几何的梧州公开接口。",
+        "actualResultUrls": [
+          "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/zcfg/btzdgkwj/t18974413.shtml",
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+          "https://zrzyj.wuzhou.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The Guangxi Natural Resources Department's official 2024 cadastral-guidance page lists 梧州市自然资源局 (Wuzhou Natural Resources Bureau) as the municipal natural-resources authority and describes cadastral databases, cadastral-unit identifiers, and cadastral-map visualization/query work. This evidences a local statutory custodian, not an open parcel-data integration.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/zcfg/btzdgkwj/t18974413.shtml",
+      "operator": "广西壮族自治区自然资源厅 / Guangxi Zhuang Autonomous Region Department of Natural Resources",
+      "observation": "Official guidance says cadastral work is organized by municipal/county natural-resources bureaus, uses the real-estate-unit code as identifier, and promotes cadastral-data and cadastral-map visualization. It links the official Wuzhou bureau and Guangxi Tianditu portals."
+    },
+    {
+      "url": "https://zrzyj.wuzhou.gov.cn/",
+      "operator": "梧州市自然资源局 / Wuzhou Natural Resources Bureau",
+      "observation": "Official local custodian URL linked from the Guangxi department page. Normal TLS GET failed because the certificate was expired; no certificate exception was used."
+    },
+    {
+      "url": "https://guangxi.tianditu.gov.cn/",
+      "operator": "广西地理信息公共服务平台 / Guangxi geographic-information public-service platform",
+      "observation": "Current public map shell loaded. Its module JavaScript was inspected for cadastral/parcel routes and exposed service configuration; no anonymous parcel layer/API with safe ID-plus-geometry response was identified."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+      "operator": "广西壮族自治区自然资源厅",
+      "observation": "Official announcement describes Guangxi online visual queries for cadastral parcels and buildings through an authenticated real-estate-registration platform; it does not provide an anonymous machine-readable parcel endpoint."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/zcfg/btzdgkwj/t18974413.shtml",
+      "method": "GET",
+      "status": "HTTP 200 / official page retrieved",
+      "summary": "Read official guidance. It identifies Wuzhou's municipal bureau and describes cadastral identifiers/database and visualization goals; it does not return parcel geometry."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/sjcx/chzzdwcx/index.shtml",
+      "method": "GET",
+      "status": "Search result/page timeout",
+      "summary": "Official directory/search lead timed out during fetch; search-result text still exposed the Wuzhou bureau link and Guangxi platform links. No inference of absence was made."
+    },
+    {
+      "url": "https://zrzyj.wuzhou.gov.cn/",
+      "method": "GET",
+      "status": "TLS certificate verification failed (expired certificate)",
+      "summary": "Request stopped at normal TLS verification. No login, credentials, private token, or certificate exception was used."
+    },
+    {
+      "url": "https://guangxi.tianditu.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200 / 728-byte application shell",
+      "summary": "Current JavaScript/configuration entry point loaded."
+    },
+    {
+      "url": "https://guangxi.tianditu.gov.cn/assets/index-b709b382.js",
+      "method": "GET",
+      "status": "HTTP 200 / current JavaScript inspected",
+      "summary": "Bounded string/configuration inspection found no exposed cadastral, parcel, 地籍, 宗地, or anonymous ID-plus-geometry request route."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+      "method": "GET",
+      "status": "Search result retrieved; direct fetch timed out",
+      "summary": "Official announcement was reviewed from indexed result text. It requires identity authentication for visual queries and does not expose a safe anonymous geometry response."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Wuzhou municipal custodian lead, Guangxi cadastral guidance, Guangxi public map shell/current JavaScript, and official online-registration announcement reviewed.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No qualifying anonymous official response containing a safe native parcel identity plus unchanged geometry was available. The exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel/cadastral identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "A local statutory custodian is evidenced, but the Wuzhou portal could not be inspected under normal TLS and no anonymous parcel endpoint, schema, CRS, exact-point inclusion, or citywide machine-readable coverage was verified. The Guangxi authenticated visual-query program and map shell do not establish open parcel-service availability or citywide absence.",
+  "nextStep": "A serial reviewer should independently check the Wuzhou bureau portal after its TLS configuration is repaired or through a separately published official route, and qualify a geometry-only sample before any adapter consideration."
+}

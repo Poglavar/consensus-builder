@@ -1,0 +1,24 @@
+{
+  "taskId": "city:4555",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-4555-charikar.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/charikar-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:40:05Z",
+  "reason": "WUP rank 2592, code 4555, Afghanistan, point [35.0201265104779,69.1683757152762], and 227054 persons match roster and queue. English and Dari/Pashto searches are recorded. National cadastral-programme context exists, but the Charikar municipal endpoint timed out/TLS failed and no anonymous native-ID polygon response was obtained. Institutional custody remains unresolved (null), not false. No full polygon is durably retained. All live adapter admission gates remain unevidenced.",
+  "geometryReview": {
+    "fullDurablePolygonsRetained": 0,
+    "safeNativeIdVerifiedInFirstPartyCache": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "fullMetricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

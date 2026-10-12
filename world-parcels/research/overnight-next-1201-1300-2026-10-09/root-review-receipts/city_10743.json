@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10743",
+  "decision": "held",
+  "reason": "Cuddalore rank 1279 matches the immutable WUP queue (India, unchanged point, 436495 persons); English/Tamil executed-search records are present. Official district Survey and Land Records and land e-services pages ground local custody and procedure. The paired review and empty timeout header artifacts contain no inspectable feature response, native parcel ID, CRS, or polygon. Viewer timeouts do not show citywide absence. No independent adapter or headed Details qualification is evidenced; held without admission.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10743-cuddalore.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/cuddalore-service-review.json",
+    "tmp/valhalla-parcel-research/cuddalore/eservices.headers",
+    "tmp/valhalla-parcel-research/cuddalore/tngis.headers"
+  ],
+  "checkedAt": "2026-10-09T12:55:03.396436Z"
+}

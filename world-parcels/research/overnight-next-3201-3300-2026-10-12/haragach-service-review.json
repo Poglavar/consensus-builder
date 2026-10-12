@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-2782-haragach.json",
+  "cityCode": 2782,
+  "queueRank": 3225,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Bangla first-party discovery identified Bangladesh DLRS and Ministry of Land services. Current public API inspection verified the Haragach mouza under Kaunia, Rangpur and one digitized RS sheet-2 map inventory record. No anonymous parcel ID-plus-geometry response was obtained. All executed routes and limits are recorded in the city record.",
+  "attemptedRoutes": [
+    {"route": "https://map.settlement.gov.bd/", "outcome": "Official portal reachable over default TLS; current JavaScript inspected; no parcel vector service exposed."},
+    {"route": "https://map.settlement.gov.bd/api/locations/*", "outcome": "Anonymous location calls returned Rangpur, Kaunia, Haragach-related mouza names, sheet numbers ২/৪, and survey type আর.এস."},
+    {"route": "https://map.settlement.gov.bd/api/search?...Haragach...sheetNumber=২", "outcome": "Anonymous bounded search returned map inventory id 717896987571195000, AVAILABLE and digitized; metadata only, no parcel geometry."},
+    {"route": "https://settlement.gov.bd/Map/MapSearch and legacy POST routes", "outcome": "Official legacy viewer and route configuration inspected; division/district/survey discovery worked, but no usable parcel geometry response was obtained."},
+    {"route": "https://map.land.gov.bd/", "outcome": "Official Ministry of Land map landing page reachable; no anonymous parcel feature response exposed."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [25.8215474389735, 89.3089300003341] was preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "The map inventory id is not treated as a parcel identity and no map thumbnail/raster is retained as parcel geometry.",
+    "No raw source-specific attribute set or unsafe ownership/address/titleholder/tax/account field was requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No registry/catalog/runtime configuration, global report, queue ledger, or another city's file was changed."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "The observed official service is a mouza-map inventory/search service, not a verified open parcel vector service. Independent serial adapter qualification remains required."},
+  "uncertainty": "Additional official viewer state or a paid/download workflow may expose a mouza raster or parcel detail, but this attempt did not obtain a bounded anonymous parcel feature. Local registry evidence is established without claiming citywide machine-readable coverage.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with the current DLRS map viewer configuration and independent parcel-layer qualification.",
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10238-haicheng.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh English and Chinese searches found an official Anshan public-resources notice issued by Haicheng Natural Resources Bureau for a land-use parcel procedure. The notice contains a native 宗地编号 but no open cadastral map/API. Two ordinary TLS GET attempts to the likely Haicheng government host timed out. No anonymous safe parcel ID-plus-geometry response was found.",
+  "registryAssessment": "Local land-administration procedure custody is evidenced, so registryFound is true under the packet rule allowing a local procedure. This is not evidence of an open cadastral registry or citywide parcel layer; geometry access and runtime qualification remain held.",
+  "officialPrimarySources": [
+    {"title": "Haicheng Natural Resources Bureau land-use notice", "url": "https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html", "observation": "Official Anshan public-resources page identifies 海城市自然资源局 as issuer and publishes 宗地编号 HC-WT-2025-M-20 for a Haicheng parcel procedure."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Haicheng China official cadastral parcel map GIS natural resources bureau public service", "executionMethod": "Executed separate web search", "resultUrls": ["https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html"]},
+    {"language": "Chinese", "query": "海城市 不动产登记 地籍图 自然资源局 官方 地图 服务", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html"]}
+  ],
+  "attempts": [
+    {"attempt": "official land-procedure notice", "url": "https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html", "result": "Search-visible official notice; local issuer and native land-parcel identifier verified, but no cadastral geometry, schema, CRS, or map endpoint published.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "likely Haicheng government host", "url": "https://www.haicheng.gov.cn", "result": "Ordinary TLS GET timed out after 20 seconds; no inference about citywide absence.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "likely Haicheng government search route", "url": "https://www.haicheng.gov.cn/search?keyword=不动产登记", "result": "Ordinary TLS GET timed out after 20 seconds; no login or bypass attempted.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response with stable native identity, schema, and CRS was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "The official notice covers one advertised land-use parcel procedure in Haicheng's 望台镇.", "verifiedOpenScope": "No anonymous parcel geometry, schema, CRS, map extent, or citywide query coverage verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "A local authenticated or currently unavailable system may expose cadastral geometry. The exact WUP point was not shifted, and no exact-point or map-extent absence claim is made.",
+  "runtimeReadiness": "held_unqualified"
+}

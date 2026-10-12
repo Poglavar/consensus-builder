@@ -1,0 +1,29 @@
+{
+  "taskId": "city:3810",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-3810-sevastopol.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/sevastopol-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T15:56:28Z",
+  "reason": "Official cadastral-service custody is evidenced while the public map timed out and local service pages yielded no bounded safe native-ID polygon response. WUP identity remains Ukraine/UA; jurisdictional source ambiguity is recorded without changing it. The timeout does not establish citywide absence, and no adapter qualification exists.",
+  "custodyFinding": "true; first-party cadastral custodian evidence; geometry discovery and citywide coverage assessed separately",
+  "firstPartyUrls": [
+    "https://e.land.gov.ua/",
+    "https://sevbti.ru/"
+  ],
+  "qualification": {
+    "directExactNativeIdRead": false,
+    "freshAdapterNativeIdReads": false,
+    "fullPolygonsRetained": 0,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

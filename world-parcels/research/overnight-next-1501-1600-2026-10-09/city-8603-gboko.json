@@ -1,0 +1,73 @@
+{
+  "cityCode": 8603,
+  "queueRank": 1556,
+  "name": "Gboko",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [7.33058929237838, 9.00335182125963],
+  "population2025": 367407,
+  "population2025k": 367.407,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:gov.ng Gboko cadastral parcel land registry map Benue official",
+        "result": "First-party discovery identified BENGIS (Benue Geographic Information System) and the Benue State Ministry of Lands and Survey. BENGIS describes itself as the official geospatial-data custodian and describes digital cadastral/topographic maps and land-records management; the ministry describes official land-document registration. No public parcel feature response was verified.",
+        "actualResultUrls": ["https://bengis.benuestate.gov.ng/", "https://lands.benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/scope-of-operations/"]
+      },
+      {
+        "language": "Tiv/local",
+        "query": "Gboko ior u sha u survey map BENGIS",
+        "result": "No first-party Tiv-language cadastral viewer or parcel-geometry service was located. English official Benue land-service material was the available procedural/source-custody evidence; this discovery limitation is not evidence of citywide absence.",
+        "actualResultUrls": ["https://bengis.benuestate.gov.ng/", "https://lands.benuestate.gov.ng/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Benue State Government through BENGIS and the Benue State Ministry of Lands and Survey.",
+    "scope": "Official sources describe state geospatial-data custody, digital cadastral/topographic mapping, land-records management, surveys, Certificates of Occupancy and registration of land documents. This evidences a state/local registry custodian, not verified open parcel coverage for Gboko.",
+    "urls": ["https://bengis.benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/scope-of-operations/", "https://lands.benuestate.gov.ng/"]
+  },
+  "source": {
+    "sourceId": null,
+    "name": "Benue Geographic Information System (BENGIS) / Benue State Ministry of Lands and Survey",
+    "url": "https://bengis.benuestate.gov.ng/",
+    "operator": "Benue State Government",
+    "serviceType": "First-party state land/cadastral custodian and workflow evidenced; public parcel geometry service not verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "No credentials, private tokens, owner/address/contact/titleholder/tax/account fields, or unsafe attributes were requested or retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Benue state geospatial and land-administration custody, including cadastral mapping and land records.",
+    "verifiedOpenScope": "No anonymous safe parcel ID-plus-complete-geometry response, native field, CRS, or public vector layer was verified. The unchanged WUP point was not used as a parcel hit/miss test.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_custody_evidenced_geometry_unverified",
+  "technicalBlocker": "Bounded direct HTTPS requests to https://bengis.benuestate.gov.ng/ and https://lands.benuestate.gov.ng/ failed by connection timeout. Search-indexed official pages exposed descriptive scope but not a retrievable viewer JavaScript/configuration or anonymous safe feature endpoint.",
+  "remainingUncertainty": "Whether BENGIS has a separately documented public map/API route, its native parcel identity and CRS, anonymous request shape, and whether any such service covers the unchanged Gboko WUP point remain unverified. Timeout or unusable UI is not evidence of cadastral absence.",
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "pointBasis": "Exact WUP 2025 settlement point in latitude/longitude order; not a municipal-boundary or parcel-coverage claim.",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1
+}

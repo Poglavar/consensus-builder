@@ -1,0 +1,30 @@
+{
+  "taskId": "city:3042",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-3042-ayacucho.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ayacucho-service-review.json",
+    "tmp/valhalla-parcel-research/3042/municipal.html",
+    "tmp/valhalla-parcel-research/3042/sncp.html",
+    "tmp/valhalla-parcel-research/3042/sncp-app.js"
+  ],
+  "checkedAt": "2026-10-11T20:55:23Z",
+  "reason": "Official Huamanga cadastral-office page describes maintaining the municipal cadastre, supporting registryFound true. The cached municipal HTML redirects to a generic portal; the official indexed office page was separately checked. The SNCP cache contains a viewer shell/bootstrap, not a parcel response. No safe public Ayacucho polygon, native ID, or live adapter qualification is evidenced.",
+  "sourceUrlsChecked": [
+    "https://www.munihuamanga.gob.pe/gerencia-municipal/gerencia-de-desarrollo-territorial/subgerencia-de-ordenamiento-territorial-y-catastro/",
+    "https://www.idep.gob.pe/geovisor/SNCP/"
+  ],
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "durableSamplePolygonCount": 0
+}

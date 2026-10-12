@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2224",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-2224-holgu-n.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/holgu-n-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "checkedAt": "2026-10-10T16:38:23Z",
+  "reason": "Secondary cadastral-work leads and failed official-site probes do not establish first-party open parcel geometry or even settled local custody. Public access and citywide coverage remain unresolved."
+}

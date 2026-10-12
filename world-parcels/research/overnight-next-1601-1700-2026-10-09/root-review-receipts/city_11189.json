@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11189",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11189-madhubani.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/madhubani-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:23:02Z",
+  "reason": "Official Madhubani district/Bihar cadastral-map custody and viewer hierarchy are supported, but the extent probe was unusable and WMS returned 500; no native parcel ID or full polygon was verified.",
+  "admissionGates": "No parcel polygon or native ID response; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not evidenced. No runtime admission."
+}

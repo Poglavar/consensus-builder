@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-5024-bogale.json",
+  "reviewType": "serial-service-review",
+  "checkedAt": "2026-10-12",
+  "cityCode": 5024,
+  "queueRank": 3272,
+  "decision": "hold",
+  "registryFound": true,
+  "summary": "Hold. Myanmar's first-party Settlement and Land Records Department is evidenced, and Burmese SLRD material names Bogale, but no public anonymous parcel API, stable native parcel ID, CRS, or full polygon was retrieved.",
+  "queryAndRequestOutcome": "Separate English and Burmese discovery queries were executed and recorded in the paired city packet. The SLRD English homepage and Burmese Bogale-related pages were reachable through first-party discovery; the Survey Department homepage timed out and the Myanmar government ministry page returned 502 on open. No login, credential, CAPTCHA/Cloudflare bypass, TLS exception, unsafe-field request, exact-point absence claim, or coordinate shift was used.",
+  "scopeLimits": [
+    "SLRD is a national custodian lead with Bogale references, but a local registry office or citywide parcel coverage was not directly evidenced.",
+    "SLRD informational pages and Form 105 explanations are not parcel-level geometry or an open map service.",
+    "A timeout, 502, or lack of a visible viewer is not evidence of citywide parcel absence; no exact-point hit/miss was asserted.",
+    "No source adapter, runtime admission, or parcel integration is implied by packet completion."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "The public SLRD pages expose institutional and procedural information but no anonymous parcel feature route. Future work should inspect only public first-party map configuration/routes if exposed and retain no unsafe attributes.",
+  "reviewedFiles": [
+    "city-5024-bogale.json",
+    "https://slrd.gov.mm/en",
+    "https://slrd.gov.mm/my/plans-regional",
+    "https://slrd.gov.mm/my/production-costs",
+    "https://slrd.gov.mm/my/node/154",
+    "https://www.surveydepartment.gov.mm/"
+  ]
+}

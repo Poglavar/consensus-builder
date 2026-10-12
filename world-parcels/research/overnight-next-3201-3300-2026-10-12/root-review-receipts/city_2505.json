@@ -1,0 +1,16 @@
+{
+  "taskId": "city:2505",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-2505-kulob.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/kulob-service-review.json",
+    "tmp/valhalla-parcel-research/2505/geoportal.headers",
+    "tmp/valhalla-parcel-research/2505/baqaydgiri.headers",
+    "tmp/valhalla-parcel-research/2505/baqaydgiri.html",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T07:23:38Z",
+  "reason": "WUP 2025 identity, rank 3263, Tajikistan point and 184502 persons match the original archive; English and Tajik searches were executed. National custodian evidence does not resolve Kulob-local registry custody, so registryFound stays null. The Geoportal TLS failure and registration-list page yield no safe parcel polygon/native ID response. No sample or independent adapter qualification, paging, 13 cells, metric geometry checks, source binding, or headed Details check exists. City remains held; TLS failure is not citywide absence."
+}

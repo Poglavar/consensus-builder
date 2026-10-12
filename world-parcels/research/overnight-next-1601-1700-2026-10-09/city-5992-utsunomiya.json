@@ -1,0 +1,89 @@
+{
+  "cityCode": 5992,
+  "queueRank": 1622,
+  "name": "Utsunomiya",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "locId": 392,
+  "point": [36.5514923896268, 139.885051050438],
+  "population2025": 352816,
+  "population2025k": 352.816,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Utsunomiya cadastral parcel map official Tochigi registry map GIS land parcel shapefile",
+        "result": "First-party discovery found Utsunomiya City's official page announcing public cadastral-map data and its official open-data catalog dataset. The city dataset is a citywide Shapefile package with parcel polygons, native fields, and a declared CRS.",
+        "actualResultUrls": [
+          "https://www.city.utsunomiya.lg.jp/kurashi/zeikin/koteishisanzei/1041437.html",
+          "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "宇都宮市 公式 地籍図 地番図 GIS シェープファイル 公図",
+        "result": "First-party Japanese discovery found the same Utsunomiya City Asset Tax Division publication. It states the map is based on Legal Affairs Bureau public maps and is a tax-assessment reference map, not proof of parcel boundaries, exact position/shape, or rights. The catalog identifies the spatial scope as all Utsunomiya City and the CRS as JGD2011 Japan Plane Rectangular CS IX.",
+        "actualResultUrls": [
+          "https://www.city.utsunomiya.lg.jp/kurashi/zeikin/koteishisanzei/1041437.html",
+          "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101",
+          "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/336eb550-3dc5-457a-88ab-24c0f345c72b/download/gis_.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Utsunomiya City itself publishes a citywide parcel-number/cadastral reference dataset and describes its Asset Tax Division as the contact. This is local registry/map evidence, distinct from national-agency prose, but the city limits it to tax-assessment reference use.",
+  "officialSources": [
+    {
+      "url": "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101",
+      "observation": "Official Utsunomiya open-data catalog dataset, titled 地籍図データ, states spatial scope is all Utsunomiya City, temporal extent 2026-01-01, and CRS is JGD2011 / Japan Plane Rectangular CS IX. It provides six parcel-map Shapefile ZIP resources and a field-definition PDF."
+    },
+    {
+      "url": "https://www.city.utsunomiya.lg.jp/kurashi/zeikin/koteishisanzei/1041437.html",
+      "observation": "Official city page says the data was published in Shapefile form and is based on Legal Affairs Bureau public maps for fixed-asset-tax assessment; it warns the data does not certify parcel boundaries, exact position/shape, or rights."
+    },
+    {
+      "url": "https://www.moj.go.jp/MINJI/minji05_00494.html",
+      "observation": "Ministry of Justice first-party page documents the separate national G-Space publication of registry-office map data. It was recorded as national context only, not as proof of an Utsunomiya-local API."
+    }
+  ],
+  "source": {
+    "sourceId": "utsunomiya-city-chisekizu-2026",
+    "name": "Utsunomiya City 地籍図データ (2026-01-01)",
+    "operator": "Utsunomiya City Asset Tax Division / official open-data catalog",
+    "scope": "Utsunomiya Citywide according to the official dataset catalog",
+    "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101",
+    "format": "ESRI Shapefile ZIP",
+    "nativeFields": ["BUKKEN_NO", "SYO_CHO_CD", "SYO_AZA_CD", "SYO_HON", "SYO_EDA", "SYO_KOEDA", "MISAI_NO", "HYOJI", "ANGLE"],
+    "nativeIdentity": "BUKKEN_NO (city tax-ledger land-object number); source field mapping retained in service review",
+    "crs": "JGD2011 / Japan Plane Rectangular CS IX (EPSG:6677)",
+    "reuseStatus": "Official catalog lists Creative Commons Attribution; current catalog terms and city warning apply."
+  },
+  "verifiedParcelResponse": {
+    "requestUrl": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/85dcff85-23b0-4b30-95cc-c16f02f2bb73/download/01_01.zip",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/zip",
+    "spatialTestPointLatLon": [36.5514923896268, 139.885051050438],
+    "spatialTestPointNative": [4629.915, 61190.994],
+    "layer": "筆界線01",
+    "geometryType": "Polygon",
+    "boundedResponseFeatureCount": 6,
+    "sampleFeatureCountRetained": 3,
+    "sampleFile": "utsunomiya-parcel-samples.geojson",
+    "idField": "BUKKEN_NO"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official catalog says all Utsunomiya City; six split Shapefile resources are published.",
+    "verifiedOpenScope": "One downloaded split around the preserved WUP point was inspected; a bounded native-coordinate query returned six polygon features and three full polygons were retained.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_tax_assessment_reference_map_and_independent_serial_review_required",
+  "remainingUncertainty": "The citywide catalog claim was not independently reconstructed from all six archives. The source is explicitly an assessment/reference map and not a legal cadastral boundary or rights source. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained. Exact-point intersection is not used as a citywide completeness claim.",
+  "retainedSample": "utsunomiya-parcel-samples.geojson"
+}

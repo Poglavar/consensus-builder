@@ -1,0 +1,25 @@
+{
+  "taskId": "city:1864",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:40:46Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-1864-beersheba.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/beersheba-service-review.json"
+  ],
+  "identityCheck": "Rank 2767, city code 1864, Israel, original point [31.2545180899882,34.7869140000578] and 214104 persons match the immutable ranked roster and pending queue (214.104 thousand).",
+  "discoveryCheck": "English and Hebrew executed searches and outcomes are recorded. The cached ArcGIS item c2c7c6fc5eb74f96a3ceb9f4a1a85bed and its live public overview identify Petah Tikva (tag פתח תקווה; item latitude extent 32.015-32.139), not Beersheba. Its parcel layer and three unfiltered polygons are around 32.07 N, 34.917 E. Original cached point and city-envelope responses each contain zero features; that is not citywide absence. No full polygon was durably retained for Beersheba (0 of maximum 3).",
+  "firstPartyCacheChecks": {
+    "itemJsonSha256": "25a4cb4dd124fdeec72ef66a334cbc83cd07d1b12efd72d0198a78f0766bc1f9",
+    "itemDataJsonSha256": "a29d942de852961cda67bfede2cf1db934c49c0be9d24515ac41e77ad643c361",
+    "layerJsonSha256": "f515d07bd415a2a31b37ab6f012a12b14cee848ec90e4d5c572a380c7209fb6c",
+    "pointAndEnvelopeFeatureCounts": [0, 0],
+    "unfilteredFeatureCount": 3
+  },
+  "registryFound": null,
+  "custodyDecision": "The packet's Beersheba-specific registryFound=true basis is unsupported because its purported municipal map is for Petah Tikva. National Survey of Israel custody is separate context and does not authenticate this as a Beersheba source.",
+  "admissionCheck": "Wrong-city source binding and no independent live adapter qualification for fresh exact native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap, full-parcel proposal binding, or headed Details panel verification.",
+  "runtimeDisposition": "held; no catalog, runtime, registry or coverage/report admission change"
+}

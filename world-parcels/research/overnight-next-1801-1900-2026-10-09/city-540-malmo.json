@@ -1,0 +1,74 @@
+{
+  "cityCode": 540,
+  "queueRank": 1806,
+  "name": "Malmo",
+  "country": "Sweden",
+  "countryCode": "SE",
+  "iso3": "SWE",
+  "point": [55.5881237274507, 13.008169923296],
+  "population2025": 318242,
+  "population2025k": 318.242,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Malmö Sweden official cadastral parcel map API property boundaries Lantmäteriet Malmö stad",
+        "result": "Found Malmö city's official ArcGIS parcel-boundary service and Lantmäteriet official product/API documentation.",
+        "actualResultUrls": [
+          "https://gis.malmo.se/arcgis/rest/services/SEPlan/fastigheter_primarkarta/MapServer",
+          "https://www.lantmateriet.se/en/geodata/our-products/",
+          "https://www.lantmateriet.se/globalassets/geodata/geodatatjanster/e_pb_fastind_visn_v1.2.0_2.3.pdf"
+        ]
+      },
+      {
+        "language": "Swedish (local)",
+        "query": "Malmö kommun fastighetskarta fastighetsgränser API Lantmäteriet",
+        "result": "Found Malmö stads official map page/service and Lantmäteriet Swedish guidance for fastighetsgränser and geodata products.",
+        "actualResultUrls": [
+          "https://gis.malmo.se/arcgis/rest/services/SEPlan/Bakgrund_primarkarta/MapServer",
+          "https://malmo.se/Bo-och-leva/Bygga-och-bo/Lantmateri-kartor-och-matning/Stadens-kartor/Stadskarta.html",
+          "https://www.lantmateriet.se/sv/fastighet-och-mark/oklarheter-kring-fastighetsgranser/Hitta-granser/",
+          "https://www2.lantmateriet.se/sv/geodata/vara-produkter/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Malmö stad",
+    "service": "SEPlan/fastigheter_primarkarta/MapServer",
+    "layer": 0,
+    "layerName": "Fastighetsgräns",
+    "serviceUrl": "https://gis.malmo.se/arcgis/rest/services/SEPlan/fastigheter_primarkarta/MapServer",
+    "queryUrl": "https://gis.malmo.se/arcgis/rest/services/SEPlan/fastigheter_primarkarta/MapServer/0/query",
+    "serviceType": "ArcGIS REST FeatureServer-compatible MapServer layer",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:3008",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "OBJECTID",
+    "geometryField": "SHAPE",
+    "safeFieldsRequested": ["OBJECTID", "SHAPE"],
+    "sampleFile": "malmo-parcel-sample.geojson"
+  },
+  "verifiedSample": {
+    "count": 1,
+    "nativeIds": ["295"],
+    "exactWupPointQuery": true,
+    "queryCoordinateEpsg3008": [118987.94, 6162815.31],
+    "geometryReturnedAs": "GeoJSON EPSG:4326"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Malmö city primärkarta parcel-boundary layer; service full extent is local map coverage, not proven cadastral completeness for every municipality parcel.",
+    "verifiedOpenScope": "Public anonymous parcel polygon query for the Malmö service extent; one exact-point feature verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent adapter review required",
+  "notes": "The public Malmö layer exposes a stable ArcGIS OBJECTID and polygon geometry. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+}

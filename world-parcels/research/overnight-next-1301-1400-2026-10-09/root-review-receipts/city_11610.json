@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11610",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11610-huidong.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/huidong-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T14:06:08Z",
+  "reason": "Official Huidong custody is supported; Guangdong public-map configuration GETs returned 404, and no safe anonymous native parcel ID or full polygon was verified. No adapter qualification or headed Details proof.",
+  "admission": "not_integrated"
+}

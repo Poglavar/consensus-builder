@@ -1,0 +1,36 @@
+{
+  "taskId": "city:7793",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:39:14Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-7793-sete-lagoas.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/sete-lagoas-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 7793,
+    "rank": 3005,
+    "country": "Brazil",
+    "point": [
+      -19.4475797252093,
+      -44.2340188238421
+    ],
+    "populationPersons": 199145
+  },
+  "checks": {
+    "bilingualExecutedSearches": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://cecon.setelagoas.mg.gov.br/"
+  ],
+  "reason": "Municipal property services and geoprocessing custody are evidenced. The anonymous e-Cidade property page timed out; no public parcel feature, schema, CRS, or native ID response was retained. Timeout is not citywide absence."
+}

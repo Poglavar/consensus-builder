@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 10508,
+  "cityCode": 10508,
+  "cityId": "wup2025:10508",
+  "name": "Guigang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [23.1029510016224, 109.598226062243],
+  "point": [23.1029510016224, 109.598226062243],
+  "queueRank": 1935,
+  "population2025": 298077,
+  "population2025k": 298.077,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Guigang China cadastral parcel map official natural resources bureau",
+        "result": "First-party Guangxi Guigang Natural Resources Bureau material was found for real-estate registration records and cadastral-map documents. No anonymous public parcel-vector endpoint was established.",
+        "actualResultUrls": ["https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml", "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t3186494.shtml"]
+      },
+      {
+        "language": "Chinese",
+        "query": "贵港 不动产登记 地籍图 宗地图 官方 自然资源局",
+        "result": "First-party Guigang Natural Resources Bureau pages identify the local real-estate registration service and list cadastral-map/parcel-map materials in registration procedures. No anonymous public parcel-vector response was found.",
+        "actualResultUrls": ["https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml", "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t19265268.shtml"]
+      }
+    ],
+    "officialViewerInspection": "The official Guigang Natural Resources Bureau homepage request timed out after 20 seconds in this environment. The first-party registration pages were available through search/open results and describe query procedures and required parcel-map materials, but expose no current JavaScript viewer, public map API, CRS/schema, safe native parcel ID, or bounded geometry response. No login, CAPTCHA bypass, credential, private token, or unsafe owner/address/titleholder field was used."
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Guigang Natural Resources Bureau pages name the Guigang Real Estate Registration Certification Center/service and document public-service procedures for querying real-estate registration materials, including natural-condition information and parcel maps (宗地图). This evidences a local registry/procedure custodian, not open parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Guigang local registry/procedure evidence and attempted official bureau access.",
+    "verifiedOpenScope": "Local registry/procedure custodian evidenced; no anonymous safe parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was not shifted; timeout and unavailable viewer/API are not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "A current public cadastral viewer/API, CRS, schema, safe native parcel ID, and bounded geometry response remain unverified."
+}

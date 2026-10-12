@@ -1,0 +1,156 @@
+{
+  "cityCode": 11570,
+  "queueRank": 3289,
+  "name": "Pretoria",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [31.2687177699523, 119.837739464339],
+  "population2025": 183301,
+  "population2025k": 183.301,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pretoria China 31.2687177699523 119.837739464339 cadastral parcel map official; China Jiangsu cadastral parcel map official natural resources; Yixing real-estate registration map",
+        "result": "The identity/name is inconsistent with the supplied point. First-party discovery located Jiangsu natural-resources public mapping policy, the Jiangsu online real-estate registration portal, and Yixing's official local real-estate registration service notice. No anonymous public parcel-vector endpoint was found.",
+        "actualResultUrls": [
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+          "https://www.yixing.gov.cn/doc/2022/02/24/1020869.shtml",
+          "https://www.jiangsu.gov.cn/art/2021/8/24/art_84418_10235939.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "中国 江苏 宜兴 不动产登记 地籍图 公开 查询 官方；江苏省不动产登记网上一窗办事 宜兴市",
+        "result": "第一方检索确认宜兴市不动产登记中心及市自然资源和规划局服务网点，并找到江苏省不动产登记网上一窗办事平台。宜兴入口重定向到政务服务登录流程；没有取得匿名安全的宗地编号加完整几何响应、字段模式或坐标参考系。",
+        "actualResultUrls": [
+          "https://www.yixing.gov.cn/doc/2022/02/24/1020869.shtml",
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+          "https://www.yixing.gov.cn/zrzyghj/zfxxgk/xxgkml/xzfgzbmxxgkml/index.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Yixing Real Estate Registration Center (宜兴市不动产登记中心), under the Yixing Natural Resources and Planning Bureau (宜兴市自然资源和规划局)",
+    "scope": "Local real-estate registration service counters and land/natural-resources administrative service; the official notice lists the city center and township/district service locations.",
+    "evidenceUrls": [
+      "https://www.yixing.gov.cn/doc/2022/02/24/1020869.shtml",
+      "https://www.jszwfw.gov.cn/bdczt/bdcindex.html"
+    ],
+    "scopeNote": "This establishes a local custodian and registration function, not an open cadastral parcel-vector feed or runtime adapter.",
+    "localityNote": "The supplied WUP point is preserved exactly and appears geographically consistent with the Jiangsu/Yixing research lead; the queue name Pretoria is not reconciled or corrected."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Jiangsu online real-estate registration portal and Yixing government/Natural Resources and Planning Bureau",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. No exact-point hit/miss or citywide absence inference was made."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official Jiangsu registration landing page loaded and exposed a current JavaScript/data configuration listing Yixing (code 320282). It linked the Yixing route to qyy.wuxi.gov.cn:8996/login.do; no parcel layer/API was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://qyy.wuxi.gov.cn:8996/login.do?uuid=3bef627f-f143-4dfa-af31-abaec53ae590&params=aHR0cHM6Ly93eHN5eC5qc3p3ZncuZ292LmNuOjExNDQzL3N4ZC9pbmRleC5odG1sIy8=",
+      "httpStatus": 302,
+      "contentType": "text/html; charset=UTF-8 after redirect",
+      "outcome": "Official Yixing-configured route redirected to the Jiangsu government login flow; no login or credential attempt was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.yixing.gov.cn/doc/2022/02/24/1020869.shtml",
+      "httpStatus": "search-result/opened",
+      "contentType": "official HTML",
+      "outcome": "Official notice identifies the Yixing Real Estate Registration Center and local service windows; administrative custodian evidence only, no parcel geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.yixing.gov.cn/zrzyghj/zfxxgk/xxgkml/xzfgzbmxxgkml/index.shtml",
+      "httpStatus": "attempted/search-result lead",
+      "contentType": "official government lead",
+      "outcome": "Local Natural Resources and Planning Bureau government-information lead was recorded; no anonymous parcel API or viewer configuration was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.jiangsu.gov.cn/art/2021/8/24/art_84418_10235939.html",
+      "httpStatus": "search-result/opened",
+      "contentType": "official HTML",
+      "outcome": "Jiangsu policy describes provincial and city/county natural-resources geospatial platforms and public geographic-information services; it is general agency/platform prose, not evidence of an accessible local parcel layer."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "featureCount": 0,
+      "result": "No parcel response obtained; zero is not an absence finding."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public service/layer metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel endpoint reached; exact WUP point [31.2687177699523, 119.837739464339] preserved in latitude/longitude order. No hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Yixing local real-estate registration and Jiangsu natural-resources/geospatial public-service administration",
+    "verifiedOpenScope": "Local custodian and service workflow only; anonymous parcel schema, CRS, geometry, and citywide vector coverage not verified",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [31.2687177699523, 119.837739464339] preserved; no coordinate shift.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "No native parcel identity, schema, CRS, or polygon geometry verified; no sample GeoJSON retained.",
+    "No unsafe fields requested or retained.",
+    "This packet is research only, not source integration or runtime admission."
+  ],
+  "uncertainty": "The local registration custodian is evidenced, but the public workflow is login-gated and no anonymous parcel endpoint, native identity semantics, CRS, geometry delivery, update behavior, or citywide completeness was verified. The queue's Pretoria label remains unresolved against the supplied Jiangsu coordinate."
+}

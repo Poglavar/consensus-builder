@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7140,
+  "cityId": "wup2025:7140",
+  "name": "Bandar Abbas",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "centerLatLon": [27.1967377823746, 56.3015895089066],
+  "point": [27.1967377823746, 56.3015895089066],
+  "queueRank": 1492,
+  "population2025": 381008,
+  "population2025k": 381.008,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bandar Abbas official cadastral map parcel GIS land registry Iran",
+        "result": "Search found Iranian national registration/cadastre leads and a Hormozgan registry-office listing, but no reachable official Bandar Abbas parcel viewer or public geometry API.",
+        "actualResultUrls": [
+          "https://ssaa.ir/",
+          "https://shamim.ssaa.ir/",
+          "https://avval.ir/profile/b73c9/%D8%A7%D8%AF%D8%A7%D8%B1%D9%87-%DA%A9%D9%84-%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%88-%D8%A7%D9%85%D9%84%D8%A7%DA%A9-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%B1%D9%85%D8%B2%DA%AF%D8%A7%D9%86"
+        ]
+      },
+      {
+        "language": "Persian (local/native)",
+        "query": "بندرعباس نقشه کاداستر املاک اداره ثبت اسناد و املاک",
+        "result": "Persian search found a Hormozgan General Registration and Real Estate office listing and general Iranian cadastral guidance, but no first-party anonymous Bandar Abbas parcel service or geometry response.",
+        "actualResultUrls": [
+          "https://avval.ir/profile/b73c9/%D8%A7%D8%AF%D8%A7%D8%B1%D9%87-%DA%A9%D9%84-%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%88-%D8%A7%D9%85%D9%84%D8%A7%DA%A9-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%B1%D9%85%D8%B2%DA%AF%D8%A7%D9%86",
+          "https://amagestate.com/legal/cadastral-map-changes-organization/",
+          "https://shamim.ssaa.ir/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "The accessible evidence identifies the national Registration Organization and a third-party directory entry for Hormozgan and Bandar Abbas registration offices, but does not provide first-party local custodian evidence or a public local parcel layer; registryFound remains null.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://ssaa.ir/",
+      "operator": "Iran national Registration Organization lead",
+      "observation": "Direct anonymous request timed out; no current viewer or service configuration was inspected."
+    },
+    {
+      "url": "https://shamim.ssaa.ir/",
+      "operator": "Iran national cadastral positioning lead",
+      "observation": "Direct anonymous request timed out; no public parcel geometry endpoint was verified."
+    },
+    {
+      "url": "https://avval.ir/profile/b73c9/%D8%A7%D8%AF%D8%A7%D8%B1%D9%87-%DA%A9%D9%84-%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%88-%D8%A7%D9%85%D9%84%D8%A7%D9%83-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%B1%D9%85%D8%B2%DA%AF%D8%A7%D9%86",
+      "operator": "Third-party directory",
+      "observation": "Lists Hormozgan General Registration and Real Estate and Bandar Abbas registration offices; not first-party service or geometry evidence."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://ssaa.ir/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "status": "timeout; no HTTP response within 15 seconds",
+      "summary": "National official lead unreachable from this client."
+    },
+    {
+      "url": "https://shamim.ssaa.ir/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "status": "timeout; no HTTP response within 15 seconds",
+      "summary": "National cadastral-positioning lead unreachable; no login or bypass attempted."
+    },
+    {
+      "url": "https://my.ssaa.ir/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "status": "bounded request did not complete before command timeout",
+      "summary": "No response or service schema obtained."
+    },
+    {
+      "url": "https://kateb.ir",
+      "method": "GET; anonymous; TLS verification enabled",
+      "status": "not reached because the preceding bounded request exhausted the command window",
+      "summary": "No request was made; not evidence of absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Iran national registration/cadastre leads and a non-first-party Hormozgan office listing.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No anonymous safe native-ID-plus-geometry response was obtained; the exact WUP point was not queried against a parcel service and no absence inference is made.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "Official service availability, current JavaScript/configuration, local Bandar Abbas coverage, schema/CRS, exact-point inclusion, and citywide completeness remain unverified.",
+  "nextStep": "A serial reviewer should retry the first-party Iranian registration/cadastre services and inspect any public viewer bootstrap for a bounded geometry-only request before considering adapter qualification."
+}

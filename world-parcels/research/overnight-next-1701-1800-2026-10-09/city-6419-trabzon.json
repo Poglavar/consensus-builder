@@ -1,0 +1,79 @@
+{
+  "cityCode": 6419,
+  "queueRank": 1794,
+  "name": "Trabzon",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "point": [40.9928288453735, 39.732671671214],
+  "population2025": 320468,
+  "population2025k": 320.468,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Trabzon official GIS cadastral parcel map Turkey parcel data",
+        "result": "First-party discovery identified TKGM's official Parsel Sorgulama service, the TKGM Trabzon Regional Directorate contact page, and the official Ortahisar municipality zoning-status service exposed through e-Devlet. The TKGM viewer's current JavaScript/configuration was inspected and identifies the public MEGSIS API host.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://tkgm.gov.tr/trabzon-bm/iletisim",
+          "https://www.turkiye.gov.tr/trabzon-ortahisar-belediyesi-imar-durum-sorgulama",
+          "https://parselsorgu.tkgm.gov.tr/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Trabzon resmi parsel sorgu kadastro harita TKGM",
+        "result": "First-party Turkish-language discovery identified TKGM Parsel Sorgulama, the TKGM Trabzon Regional Directorate, and the Ortahisar e-Devlet zoning-status procedure. The public viewer describes province, district, neighborhood, block and parcel search and map display.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://tkgm.gov.tr/trabzon-bm/iletisim",
+          "https://www.turkiye.gov.tr/trabzon-ortahisar-belediyesi-imar-durum-sorgulama"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "TKGM officially identifies the Trabzon Regional Directorate, and its official public Parsel Sorgulama viewer/API exposes cadastral parcel map results. This evidences a local/regional registry custodian and public map procedure, not legal title access or guaranteed municipal completeness.",
+  "officialSources": [
+    {"url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama", "observation": "TKGM describes the official public parcel service and its province/district/neighborhood/block/parcel search and map functions."},
+    {"url": "https://tkgm.gov.tr/trabzon-bm/iletisim", "observation": "Official TKGM page identifies Tapu ve Kadastro IX. (Trabzon) Bölge Müdürlüğü in Ortahisar, Trabzon."},
+    {"url": "https://www.turkiye.gov.tr/trabzon-ortahisar-belediyesi-imar-durum-sorgulama", "observation": "Official e-Devlet page identifies the Ortahisar municipal zoning-status procedure with map and parcel-query options."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/", "observation": "Current official viewer configuration points to the public MEGSIS API host; endpoint responses were obtained over TLS with the viewer's public origin/referrer."}
+  ],
+  "requests": [
+    {"url": "https://parselsorgu.tkgm.gov.tr/", "method": "GET", "outcome": "TLS-verified HTTP 200; current HTML loaded main.js?v=76.3 and the RequireJS application."},
+    {"url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3", "method": "GET", "outcome": "TLS-verified HTTP 200; current configuration loads app modules and constants."},
+    {"url": "https://parselsorgu.tkgm.gov.tr/app/util/constants.min.js", "method": "GET", "outcome": "TLS-verified HTTP 200; current API host recorded as https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/ilListe", "method": "GET", "outcome": "TLS-verified HTTP 200; Trabzon returned as public administrative feature id 83."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/ilceListe/83", "method": "GET", "outcome": "TLS-verified HTTP 200; Ortahisar returned as public administrative feature id 6158."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/mahalleListe/6158", "method": "GET", "outcome": "TLS-verified HTTP 200; bounded response returned 98 Ortahisar neighborhood features."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.9928288453735/39.732671671214/", "method": "GET", "outcome": "TLS-verified HTTP 404 / Parsel Bulunamadı at the exact WUP point; recorded as an exact-point miss only, not absence evidence."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{lat}/{lon}/", "method": "GET", "outcome": "Six bounded nearby coordinate probes were attempted with the exact WUP point preserved separately; four returned Polygon features and two returned 404. Unchanged full responses are retained only under ignored tmp/valhalla-parcel-research/trabzon/."}
+  ],
+  "source": "Tapu ve Kadastro Genel Müdürlüğü (TKGM) / MEGSIS public Parsel Sorgulama API; local custodian evidenced by TKGM Trabzon Regional Directorate",
+  "sourceIds": ["204205/228/108", "204206/307/18", "123826/504/21", "123826/878/60"],
+  "verifiedParcelResponse": true,
+  "publicParcelGeometryFound": true,
+  "coverageAssessment": {
+    "claimedScope": "TKGM public Parsel Sorgulama/MEGSIS service for Turkish cadastral parcels.",
+    "verifiedOpenScope": "Anonymous coordinate endpoint returned four full Polygon features near Trabzon's WUP point and public administrative lists; no city boundary completeness test was performed.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_serial_review",
+  "nativeFieldMapping": {"nativeIdFields": ["mahalleId", "adaNo", "parselNo"], "geometryField": "geometry", "ignoredUnsafeFields": ["ilAd", "ilceAd", "mahalleAd", "mevkii", "nitelik", "alan", "pafta", "durum", "zeminKmdurum", "ozet", "gittigiParselListe", "gittigiParselSebep"]},
+  "compositeKeyProvenance": "The public coordinate response has no single explicit object-id field. The stable parcel identity is represented by the returned administrative neighborhood id plus block (adaNo) and parcel number (parselNo), e.g. 204205/228/108. No synthetic row number was used.",
+  "crs": "API GeoJSON coordinates are longitude/latitude; interpreted as EPSG:4326 for the returned geometry. Query input used API latitude/longitude path order. Exact WUP point remains stored in city record as latitude/longitude.",
+  "geometryQuality": "Four unchanged full Polygon responses were verified in ignored scratch; no retained sample GeoJSON was created because the source uses a composite native identity and the packet does not need to retain raw source attribute sets.",
+  "geometryDecision": {"verified": true, "sampleCount": 0, "sampleFile": null, "nearbyResponses": 4, "exactWupPointTest": "404 at exact point; no citywide inference", "sourceIds": ["204205/228/108", "204206/307/18", "123826/504/21", "123826/878/60"]},
+  "safeFieldAllowlist": ["native composite identity mahalleId/adaNo/parselNo", "full parcel polygon geometry if retained", "source API and CRS metadata"],
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The exact WUP point fell outside a returned parcel at query precision, while nearby probes succeeded; this is not evidence of citywide absence. Municipal boundary completeness, update cadence, legal survey accuracy, parcel identity stability across service revisions, and runtime adapter suitability remain unresolved. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained."
+}

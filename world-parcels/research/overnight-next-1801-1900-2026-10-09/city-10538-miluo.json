@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 10538,
+  "queueRank": 1820,
+  "cityId": "queue:1820",
+  "name": "Miluo",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [28.7909045228648, 113.122226486114],
+  "centerLatLon": [28.7909045228648, 113.122226486114],
+  "population2025": 315273,
+  "population2025k": 315.273,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Miluo China cadastral parcel map land registration GIS official",
+        "result": "Search identified the official Miluo government site, an official Yueyang real-estate registration center cadastral-map page, and official Miluo natural-resources information-system reporting. No public anonymous parcel feature endpoint was exposed by the inspected first-party pages.",
+        "actualResultUrls": [
+          "https://www.miluo.gov.cn/",
+          "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+          "https://miluo.gov.cn/25221/25222/26735/26747/29710/content_2265680.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "汨罗市 不动产登记 地籍图 宗地图 GIS 官方",
+        "result": "Official results identify the Yueyang real-estate registration center's 地籍图查询 (cadastral map query) entry and Miluo natural-resources digital platform / real-estate registration platform custody. The linked Hunan public query portal timed out before a viewer, schema, CRS, or parcel response could be inspected.",
+        "actualResultUrls": [
+          "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+          "https://portal.hunanbdc.cn/query/index?field=query&DJFS=2&district=NDMwNjAw",
+          "https://miluo.gov.cn/25221/25222/26735/26747/29710/content_2265680.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GETs; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or global TLS disablement used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+      "observation": "Official Yueyang City Real Estate Registration Center page exposes a public 地籍图查询 (cadastral map query) section and links to the Hunan public query portal. The page itself contains no parcel feature response."
+    },
+    {
+      "url": "https://miluo.gov.cn/25221/25222/26735/26747/29710/content_2265680.html",
+      "observation": "Official Miluo government report states that the Miluo Natural Resources Bureau operates a land-space information platform and real-estate registration platform. This establishes local institutional custody, not open vector access."
+    },
+    {
+      "url": "https://portal.hunanbdc.cn/query/index?field=query&DJFS=2&district=NDMwNjAw",
+      "observation": "Official linked Hunan real-estate public-query route; bounded anonymous GET timed out before HTML, JavaScript/configuration, schema, CRS, or API could be inspected."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official cadastral-map query landing page loaded; source HTML exposes only the linked portal, not parcel geometry or an API response."
+    },
+    {
+      "url": "https://portal.hunanbdc.cn/query/index?field=query&DJFS=2&district=NDMwNjAw",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request timed out after 20 seconds; not evidence of cadastral absence and no retry/bypass attempted."
+    },
+    {
+      "url": "https://www.miluo.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Official homepage fetch timed out in the web reader; search indexing and the official Miluo report supplied the custody evidence. Not evidence of absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Miluo City local natural-resources and real-estate registration administration under Yueyang, China.",
+    "verifiedOpenScope": "Local registry/cadastral-map procedure and platform custody only; no anonymous parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current public viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, geometry quality, update currency, and citywide coverage remain unresolved. The timeout and unusable portal route are access limitations, not evidence of citywide absence.",
+  "nextStep": "A later attempt may inspect the linked Hunan viewer from an allowed network and retain at most three full polygons only after independently confirming a safe native parcel identity and CRS."
+}

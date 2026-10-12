@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 9298,
+  "queueRank": 2903,
+  "name": "Xinji",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [37.9135274291282, 115.217027251809],
+  "population2025": 205480,
+  "population2025k": 205.48,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinji China official cadastral parcel map property map GIS land registry Xinji city",
+        "result": "Search found no verified Xinji-specific public cadastral viewer or anonymous parcel API. Results included general Chinese cadastral guidance and an unrelated Fujian municipal map announcement; those were not treated as Xinji sources. The official Xinji government home page was then fetched directly.",
+        "actualResultUrls": ["https://www.xinji.gov.cn/", "https://www.jinjiang.gov.cn/xxgk/zfxxgkzl/bmzfxxgk/zrzyj/zfxxgkml/202312/t20231225_2985366.htm"]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "辛集市 不动产登记 地籍图 地理信息 自然资源和规划局 官方",
+        "result": "Official Xinji government results identified the Xinji Natural Resources and Planning Bureau and the real-estate registration center in registration and land-use policy/service pages, but no public map viewer, vector endpoint, API schema, CRS, or anonymous parcel geometry route was exposed.",
+        "actualResultUrls": ["https://www.xinji.gov.cn/", "https://xy.xinji.gov.cn/article-details/qhddt/fe916ad9-58e7-47ff-a7c6-be140f5dd32a", "https://xy.xinji.gov.cn/article-details/city_statute/c031de11-214f-4d62-93a4-e10f75ceec91"]
+      }
+    ],
+    "sources": [
+      "https://www.xinji.gov.cn/",
+      "https://xy.xinji.gov.cn/article-details/qhddt/fe916ad9-58e7-47ff-a7c6-be140f5dd32a",
+      "https://xy.xinji.gov.cn/article-details/city_statute/c031de11-214f-4d62-93a4-e10f75ceec91"
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Xinji government pages identify the local Natural Resources and Planning Bureau and real-estate registration center as custodians for land and real-estate registration procedures. This establishes a local administrative custodian, not an open parcel-data service.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Local Xinji land and real-estate registration administration; no public cadastral data-service scope was evidenced.",
+    "verifiedOpenScope": "No anonymous parcel endpoint or public cadastral viewer was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "sourceCandidate": null,
+  "sourceFieldMapping": {
+    "nativeFieldsObserved": [],
+    "retainedIdentity": null,
+    "compositeKeyProvenance": null,
+    "geometryCrs": null
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.xinji.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Xinji government homepage loaded. HTML navigation/search evidence identified Natural Resources Bureau and real-estate-registration policy links, but no cadastral viewer or parcel API configuration was found in the fetched page.",
+      "evidence": "tmp/valhalla-parcel-research/xinji/xinji-gov.html",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://xy.xinji.gov.cn/article-details/qhddt/fe916ad9-58e7-47ff-a7c6-be140f5dd32a",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Xinji service article states that real-estate transfer procedures involve the real-estate registration center and government service platform; it provides no public parcel geometry or map endpoint.",
+      "evidence": "tmp/valhalla-parcel-research/xinji/xinji-policy.html",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://xy.xinji.gov.cn/article-details/city_statute/c031de11-214f-4d62-93a4-e10f75ceec91",
+      "method": "GET/search result",
+      "status": "Official result located",
+      "summary": "Official policy identifies the Xinji Natural Resources and Planning Bureau's role in land-use review and real-estate registration, but does not expose an anonymous public cadastral service.",
+      "tlsVerification": "enabled"
+    }
+  ],
+  "safeFieldAllowlist": ["canonical native parcel identity only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner/titleholder", "address/contact", "personal data", "tax/account", "certificate/title information"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The official local custodian is evidenced, but the current anonymous public map/API route, parcel schema, native identity semantics, CRS, and geometry availability remain unresolved. No exact-point hit or miss is inferred from the absence of a discovered endpoint or from map extent behavior.",
+  "nextStep": "Independent serial reviewer should check for a current official Xinji or Hebei cadastral viewer/API and qualify any anonymous safe ID-plus-geometry response before runtime consideration."
+}

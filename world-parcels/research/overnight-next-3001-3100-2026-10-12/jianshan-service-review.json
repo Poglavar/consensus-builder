@@ -1,0 +1,62 @@
+{
+  "cityRecord": "city-10404-jianshan.json",
+  "cityCode": 10404,
+  "queueRank": 3083,
+  "name": "Jianshan",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [46.6160899700731, 131.14008793902],
+  "population2025": 195003,
+  "population2025k": 195.003,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "reviewDecision": "held_no_verified_public_geometry",
+  "summary": "Separate English and Chinese first-party discovery identified the Shuangyashan Real Estate Registration Center and Shuangyashan Natural Resources Bureau as relevant local custodial/service institutions. Official pages and bounded anonymous requests produced procedure and institutional evidence only; no safe native parcel ID plus unchanged full polygon, public parcel schema, CRS, or anonymous geometry endpoint was qualified.",
+  "queryAndRequestOutcome": "All executed discovery queries and bounded requests, including the official HTML inspection, registration-site timeout/empty response, provincial service shell, and Tianditu anti-automation response, are recorded in city-10404-jianshan.json. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS verification disablement was used.",
+  "custodians": [
+    {
+      "name": "双鸭山市不动产登记中心 (Shuangyashan Real Estate Registration Center)",
+      "scope": "Local city-level real-estate registration service; official notice says properties in its jurisdiction can use the online registration workflow. No open parcel-vector service was evidenced.",
+      "evidence": "https://sys.zwfw.hlj.gov.cn/yshjzq/yshjzczl/djcc/art/2023/art_5846c0aab3fd463cbb816b60b8257b05.html"
+    },
+    {
+      "name": "双鸭山市自然资源局 (Shuangyashan Natural Resources Bureau)",
+      "scope": "Municipal natural-resources authority relevant to Jianshan District's cadastral and real-estate-registration administration.",
+      "evidence": "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31729432.shtml"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "No exact-point lookup or map-extent hit/miss was used as evidence of citywide presence or absence.",
+    "No full parcel polygon is retained because no safe native identity and geometry response were obtained.",
+    "Procedure pages and registration-custodian evidence do not establish public vector coverage or citywide parcel completeness.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission; runtime readiness remains held pending independent serial qualification."
+  ],
+  "uncertainty": [
+    "The current sysbdc.org.cn public route was unreachable during bounded anonymous checks.",
+    "The public government-service and national map shells did not expose an anonymous parcel layer or API in this attempt.",
+    "Native parcel identity semantics, schema, CRS, current endpoint, anonymous accessibility, and citywide coverage remain unresolved.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No qualified anonymous parcel geometry response was available for independent serial review."
+  },
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

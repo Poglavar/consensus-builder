@@ -1,0 +1,44 @@
+{
+  "cityCode": 2919,
+  "queueRank": 1960,
+  "city": "Colima",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [19.2520671207364, -103.729356511311],
+  "population2025": 295757,
+  "population2025k": 295.757,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Colima Mexico official cadastral parcel map viewer land registry GIS",
+        "result": "Found the first-party Government of Colima IRTEC cadastral viewer, its public parcel-search procedure, and the official municipal predio search page. The viewer's current JavaScript identifies a public GeoServer WMS and parcel lookup routes.",
+        "actualResultUrls": [
+          "https://www.col.gob.mx/Portal/DetalleTramiteReTYS2/1654",
+          "http://rppccolima.col.gob.mx:8000/geoportal/vc",
+          "https://tesoreria.colima.gob.mx/m04_DesarrolloUrb/ConsultaPred_DU.php?lstbuscar=PRED&mod=7"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Colima México visor catastral oficial mapa predios catastro IRTEC",
+        "result": "La fuente oficial IRTEC describe la consulta del visualizador catastral y exige clave catastral, domicilio o ubicación cartográfica; el visor público cargó las capas de predios urbanos, rústicos y ejidales y devolvió un polígono para el punto WUP exacto.",
+        "actualResultUrls": [
+          "https://www.col.gob.mx/Portal/DetalleTramiteReTYS2/1654",
+          "https://www.col.gob.mx/irtec",
+          "https://www.col.gob.mx/irtec/contenido/MzQyMzE%3D"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Government of Colima IRTEC page identifies the state cadastral visualizer at rppccolima.col.gob.mx:8000/geoportal/vc and describes it as a free public cadastral-information consultation for the public.",
+  "serviceReview": "colima-service-review.json",
+  "retainedSample": "colima-parcels-sample.geojson",
+  "runtimeReadiness": "held_no_verified_adapter"
+}

@@ -1,0 +1,25 @@
+{
+  "cityRecord": "city-3506-i-neg-l.json",
+  "cityCode": 3506,
+  "queueRank": 2766,
+  "city": "İnegöl",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "reviewStatus": "held",
+  "reviewOutcome": "A first-party local cadastral custodian and municipal parcel/planning interfaces were verified, but no safe anonymous ID-plus-geometry response or current service schema was verified; runtime readiness remains held pending serial reviewer qualification.",
+  "queryAndRequestOutcomes": "Separate English and Turkish discovery was completed. The İnegöl Kaymakamlığı page confirms the district cadastral unit and parcel-related duties. The municipality Kent Rehberi search result describes parcel search but its current page hit a redirect loop; E-İmar exposes Ada/Parsel and map-selection controls but direct inspection exceeded the client size limit. TKGM's first-party page documents public parcel search and map display, but no documented anonymous geometry route was established.",
+  "cityOrLocalCustodian": "İnegöl Kaymakamlığı İlçe Kadastro Birimi / TKGM is evidenced as the local cadastral custodian; İnegöl Belediyesi is evidenced as the local public GIS/planning operator. General national prose was not used as the sole local-source evidence.",
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "geometry if independently verified", "geometry CRS", "source layer/schema metadata", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": null,
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "No citywide completeness or legal/public-use admission claim.",
+    "No exact-point absence inference; WUP point remains exactly [40.0879571953575,29.5066565146545].",
+    "No parcel polygon was retained because no safe native ID-plus-geometry response was verified.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "Independent serial review is still needed for adapter qualification, stable identity, schema/CRS, service stability, update cadence, and runtime policy; public search descriptions and local custodian evidence alone do not admit the source.",
+  "integrationDisposition": "Research packet only; no registry/catalog/runtime files changed."
+}

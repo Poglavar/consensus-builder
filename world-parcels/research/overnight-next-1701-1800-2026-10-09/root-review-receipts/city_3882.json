@@ -1,0 +1,20 @@
+{
+  "taskId": "city:3882",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3882-uruapan.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/uruapan-service-review.json",
+    "tmp/valhalla-parcel-research/3882/implanuruapan_gob_mx_directorio_sig_.html",
+    "tmp/valhalla-parcel-research/3882/veide-index-5fdfbd4d13464e9afba0.js",
+    "tmp/valhalla-parcel-research/3882/https___ide_sedatu_gob_mx_geoserver_wfs_service_WFS_26request_GetCapabilities",
+    "tmp/valhalla-parcel-research/3882/https___sig_ran_gob_mx_cgi_bin_mapserv_map__wms_ran_wfs_map_service_WFS_request_GetCapabilities"
+  ],
+  "checkedAt": "2026-10-10T14:43:33Z",
+  "reason": "Official IMPLAN inventory has cadastral-related entries. Saved SEDATU WFS probe is an exception to a malformed parameter and RAN probe an access-denied page; neither is parcel geometry or citywide absence. No native ID read, paging, 13-cell metric audit, source binding, or headed Details verification exists.",
+  "queueIdentityVerified": true,
+  "bilingualSearchesDocumented": true,
+  "retainedPolygonCount": 0,
+  "adapterQualified": false
+}

@@ -1,0 +1,22 @@
+{
+  "taskId": "city:8219",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-8219-anning.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/anning-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:20:23Z",
+  "finding": "Queue identity matches rank 3114, China, point [24.9149021522368,102.486371886561], and 192799 persons. English and Simplified Chinese searches and bounded official-page attempts are documented. Provincial registration guidance does not establish an Anning-specific custodian or public parcel endpoint; registry custody remains unresolved (null). No native-ID full polygon was returned or retained.",
+  "firstPartySources": [
+    {
+      "url": "https://dnr.yn.gov.cn/html/2024/wendalei_0222/4048862.html",
+      "observation": "First-party Yunnan guidance describes registration and lawful cadastral-map queries in general, without Anning parcel geometry."
+    }
+  ],
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced pagination, thirteen bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime/catalog/report admission.",
+  "absenceInference": "None; unavailable routes or viewers do not establish citywide parcel absence."
+}

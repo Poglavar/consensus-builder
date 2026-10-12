@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 3345,
+  "queueRank": 1646,
+  "name": "Ondjiva",
+  "country": "Angola",
+  "countryCode": "AO",
+  "iso3": "AGO",
+  "locId": 24,
+  "point": [-17.0691708465801, 15.7237660210887],
+  "population2025": 347591,
+  "population2025k": 347.591,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ondjiva Angola cadastral parcel map official land registry",
+        "result": "First-party discovery identified Angola's official Instituto Geográfico e Cadastral de Angola (IGCA) as the national cartography and cadastre authority, plus official government property-registration services. No Ondjiva-specific public parcel viewer or anonymous parcel API was identified.",
+        "actualResultUrls": [
+          "https://www.igca.gov.ao/home",
+          "https://inscrevaja.minfin.gov.ao/",
+          "https://siac.gov.ao/servicos-administrativos-publicos/"
+        ]
+      },
+      {
+        "language": "Portuguese (Angola)",
+        "query": "Ondjiva Angola cadastro predial mapa parcelas registo predial oficial",
+        "result": "A pesquisa em português identificou o IGCA, o serviço oficial Inscreva Já de inscrição de imóveis e o portal SIAC com Registo Predial. These are national or service-registration evidence; no public Ondjiva parcel layer, schema, CRS or safe native parcel identity was exposed.",
+        "actualResultUrls": [
+          "https://www.igca.gov.ao/home",
+          "https://inscrevaja.minfin.gov.ao/",
+          "https://siac.gov.ao/servicos-administrativos-publicos/",
+          "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.igca.gov.ao/home",
+      "observation": "Official IGCA site identifies the Instituto Geográfico e Cadastral de Angola as the national authority for cartography and cadastre and advertises cadastral/geographic services. It does not expose an anonymous Ondjiva parcel layer in the reviewed page."
+    },
+    {
+      "url": "https://inscrevaja.minfin.gov.ao/",
+      "observation": "Official MINFIN Inscreva Já portal describes nationwide property self-registration and includes polygon/map registration functions. It is a registration workflow, not evidence of an open downloadable city parcel dataset."
+    },
+    {
+      "url": "https://siac.gov.ao/servicos-administrativos-publicos/",
+      "observation": "Official SIAC service directory lists Registo Predial services for first registration and already-registered properties. It provides service context only, not public parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.igca.gov.ao/home",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "TLS certificate hostname mismatch for www.igca.gov.ao; verification was not disabled and no certificate exception was attempted. Search result content from the official site was retained as discovery evidence only."
+    },
+    {
+      "url": "https://inscrevaja.minfin.gov.ao/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official landing page loaded. Its current JavaScript bundle was inspected; it references the public site, an authenticated property API and an authenticated map/embed service. No anonymous parcel feature endpoint or city parcel response was identified."
+    },
+    {
+      "url": "https://ggpen-maps.onrender.com/api/embed-url",
+      "method": "POST",
+      "httpStatus": 400,
+      "outcome": "Anonymous JSON POST returned authentication-required. No credentials, exposed configuration keys, private tokens or login flow were used. No geometry was requested or retained."
+    },
+    {
+      "url": "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public form page loaded and showed property-registration fields including NIP and property classification, but no public parcel geometry or anonymous city query was available. Unsafe owner/titleholder fields were not queried or retained."
+    },
+    {
+      "url": "https://siac.gov.ao/servicos-administrativos-publicos/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official service directory loaded and confirmed Registo Predial service descriptions; no parcel map/API was exposed."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Angola's national cadastral custodian and official property-registration procedures are evidenced, but no Ondjiva-local public registry/map/parcel procedure with anonymous safe geometry access was established. registryFound therefore remains null.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Angola national cadastral/property-registration discovery and bounded anonymous inspection of the current Inscreva Já map/API route.",
+    "verifiedOpenScope": "National IGCA authority prose, official property-registration service pages and an authenticated map/embed boundary were verified. No Ondjiva parcel geometry, stable native ID, source schema or CRS was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Angola may hold offline, restricted or authenticated cadastral/property records, and Ondjiva may have local or provincial land administration not indexed by the reviewed official pages. The exact WUP point was preserved and was not used to infer presence or absence. No login, credentials, private token, CAPTCHA bypass, unsafe-field request or TLS-disable action was used."
+}

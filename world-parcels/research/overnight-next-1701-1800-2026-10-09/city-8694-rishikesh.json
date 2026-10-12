@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 8694,
+  "cityCode": 8694,
+  "cityId": "wup2025:8694",
+  "name": "Rishikesh",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [30.096522613497, 78.2806609890294],
+  "point": [30.096522613497, 78.2806609890294],
+  "population2025": 325933,
+  "population2025k": 325.933,
+  "populationUnit": "persons",
+  "queuePriority": 1762,
+  "queueRank": 1762,
+  "cohorts": ["overnight-next-1701-1800-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rishikesh Uttarakhand official cadastral map Bhu Naksha land records",
+        "result": "First-party discovery identified the Uttarakhand Board of Revenue land-records page, the official state BhuNaksha URL documented by a Uttarakhand government publication, and the official Dehradun district directory/document pages for Rishikesh administration. The BhuNaksha host timed out during direct retrieval.",
+        "actualResultUrls": [
+          "https://bor.uk.gov.in/bhu-abhilekh/",
+          "https://investuttarakhand.uk.gov.in/themes/backend/uploads/Fees-for-mutation-name-change-services.pdf",
+          "https://dehradun.nic.in/directory/",
+          "https://bhunaksha.uk.gov.in/05/index.html"
+        ]
+      },
+      {
+        "language": "Hindi (native/local)",
+        "query": "ऋषिकेश भू नक्शा उत्तराखंड आधिकारिक भूमि अभिलेख",
+        "result": "First-party discovery returned the same official Uttarakhand land-record/cadastral-map sources; no separate Rishikesh parcel endpoint or public geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bor.uk.gov.in/bhu-abhilekh/",
+          "https://bhunaksha.uk.gov.in/05/index.html",
+          "https://eservices.uk.gov.in/service/mutation-of-revenue-records"
+        ]
+      }
+    ],
+    "officialViewer": "https://bhunaksha.uk.gov.in/05/index.html",
+    "resolvedHierarchy": null,
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://bor.uk.gov.in/bhu-abhilekh/",
+        "status": 200,
+        "outcome": "Official Board of Revenue page loaded and states that computerized land records are available at tehsil level across Uttarakhand; it did not expose a parcel API or Rishikesh map response."
+      },
+      {
+        "method": "GET",
+        "url": "https://investuttarakhand.uk.gov.in/themes/backend/uploads/Fees-for-mutation-name-change-services.pdf",
+        "status": 200,
+        "outcome": "Official Uttarakhand government publication identifies online cadastral-map access at https://bhunaksha.uk.gov.in/05/index.html."
+      },
+      {
+        "method": "GET",
+        "url": "https://bhunaksha.uk.gov.in/05/index.html",
+        "status": "timeout",
+        "outcome": "Connection timed out after 20 seconds; no HTML, JavaScript/configuration, hierarchy, schema, CRS, ID, or geometry response was obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://bhunaksha.uk.gov.in/",
+        "status": "timeout",
+        "outcome": "Connection timed out after 20 seconds; no public landing response obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://dehradun.nic.in/directory/",
+        "status": 200,
+        "outcome": "Official district directory lists the SDM Rishikesh office; it is administrative custodian evidence, not a parcel-data response."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Uttarakhand Board of Revenue is the state land-record custodian, and an official Uttarakhand government publication documents the public BhuNaksha cadastral-map portal. Rishikesh is additionally evidenced as an official Dehradun district/SDM jurisdiction. The specific Rishikesh map hierarchy and parcel coverage were not resolved.",
+  "verifiedParcelResponse": null,
+  "statusDetail": "official_state_cadastral_portal_documented_but_unreachable_no_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Uttarakhand public BhuNaksha cadastral maps, if available for the selected Rishikesh revenue areas.",
+    "verifiedOpenScope": "Official custodian/procedure and viewer URL only; no Rishikesh extent, parcel ID, schema, CRS response, or polygon was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_cadastral_portal_documented_unreachable_no_open_geometry",
+  "sourceIds": [],
+  "technicalBlocker": "The documented Uttarakhand BhuNaksha viewer timed out on both the state root and /05/index.html. No endpoint discovery was possible without the current JavaScript/configuration.",
+  "remainingUncertainty": "The exact WUP point was preserved and never queried as a shifted or forced parcel point. Portal availability, Rishikesh revenue-village hierarchy, current map extent, native parcel identity fields, CRS, geometry access, citywide coverage, and update currency remain unresolved. A timeout is not evidence of cadastral absence.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "sampleGeojson": null
+}

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7618,
+  "queueRank": 1927,
+  "name": "Novokuznetsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [53.757031870213, 87.1337275834255],
+  "population2025": 298733,
+  "population2025k": 298.733,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Novokuznetsk official cadastral map public parcel service Rosreestr",
+        "result": "Found the official current NSPD public cadastral-map route, official Novokuznetsk municipal map references, and official municipal land/property pages. No anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://old.admnkz.info/web/guest/karta-goroda",
+          "https://www.admnkz.info/for-business/munitsipalnoe-imushchestvo/"
+        ]
+      },
+      {
+        "language": "Russian (native/local)",
+        "query": "официальная публичная кадастровая карта Новокузнецк Росреестр кадастровые участки",
+        "result": "Found an official Novokuznetsk administration notice explaining that the public cadastral map moved to NSPD, and official municipal land/property and city-map pages. The NSPD viewer timed out and the old municipal map page returned 403; no parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://www.mik.admnkz.info/news/31121/",
+          "https://www.mik.admnkz.info/for-business/munitsipalnoe-imushchestvo/",
+          "https://old.admnkz.info/web/guest/karta-goroda"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://nspd.gov.ru/map",
+      "operator": "Rosreestr / National Spatial Data System (NSPD)",
+      "evidence": "Current official public cadastral-map viewer route identified by the official Novokuznetsk administration notice; the viewer was not retrievable from this workspace."
+    },
+    {
+      "url": "https://www.mik.admnkz.info/news/31121/",
+      "operator": "Official Novokuznetsk city administration",
+      "evidence": "Official Russian-language notice says the public cadastral map moved to NSPD and describes public information available for land plots, buildings, and boundaries."
+    },
+    {
+      "url": "https://old.admnkz.info/web/guest/karta-goroda",
+      "operator": "Official Novokuznetsk city administration",
+      "evidence": "Official city-map index references the regional AIS OGD and other city maps; direct anonymous retrieval returned HTTP 403."
+    },
+    {
+      "url": "https://www.admnkz.info/for-business/munitsipalnoe-imushchestvo/",
+      "operator": "Official Novokuznetsk city administration",
+      "evidence": "Official municipal-property page exposes information about land plots and other municipal real-estate objects. This is local custodian evidence, not proof of an open parcel feature service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Direct official NSPD root request exceeded approximately 20 seconds; no HTML or JavaScript configuration returned."
+    },
+    {
+      "url": "https://nspd.gov.ru/maps",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Direct official NSPD maps-route request exceeded approximately 20 seconds; no viewer configuration or feature response returned."
+    },
+    {
+      "url": "https://nspd.gov.ru/portal",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Direct official NSPD portal-route request exceeded approximately 20 seconds; no viewer configuration or feature response returned."
+    },
+    {
+      "url": "https://old.admnkz.info/web/guest/karta-goroda",
+      "method": "GET",
+      "status": 403,
+      "summary": "Official municipal city-map page was reachable only as an nginx 403 response; no map links, JavaScript, service URL, schema, or geometry were returned."
+    },
+    {
+      "url": "https://www.mik.admnkz.info/news/31121/",
+      "method": "GET via web search/index",
+      "status": 200,
+      "summary": "Official municipal notice was inspected and used to confirm the current NSPD route and public cadastral-map scope."
+    },
+    {
+      "url": "https://www.admnkz.info/for-business/munitsipalnoe-imushchestvo/",
+      "method": "GET via web search/index",
+      "status": 200,
+      "summary": "Official municipal land/property page was inspected for local custodian evidence; no open parcel API was exposed in indexed content."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no bounded anonymous parcel feature response returned.",
+      "native identity": "Not available: official viewer/API configuration and schema could not be retrieved."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official NSPD public cadastral map is a federal public route; official Novokuznetsk municipal material confirms local users are directed to it for public land and property information.",
+    "verifiedOpenScope": "Official federal viewer and local custodian/procedure evidence only; citywide parcel geometry and completeness were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point parcel hit was obtained because the official viewer routes timed out or were blocked. This is an access limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_current_viewer_and_local_custodian_geometry_unverified",
+  "remainingUncertainty": "The current NSPD viewer is the strongest official route, but this attempt could not retrieve its JavaScript/configuration, public API, CRS, schema, native parcel identity, or geometry. Novokuznetsk-specific open coverage remains unverified.",
+  "nextStep": "Serial reviewer should retry the official NSPD viewer/API from an eligible network, follow first-party JavaScript/configuration, and issue a tiny safe ID-plus-geometry request before considering adapter qualification."
+}

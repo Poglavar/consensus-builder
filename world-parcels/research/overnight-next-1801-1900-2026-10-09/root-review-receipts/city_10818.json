@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10818",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-10818-hezhou.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/hezhou-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:19:06Z",
+  "reviewNotes": "Hezhou Natural Resources Bureau and Guangxi first-party material establish institutional registration custody and platform context. Direct indexed notice page was unavailable for full response inspection; no parcel response, native ID, or geometry was retained. Host timeout is unresolved access, not parcel absence.",
+  "firstPartyCustodyUrl": "https://hz.dnr.gxzf.gov.cn/zfxxgk_001/FDZDGKNR_001/wjtz/index.shtml",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime, catalog, or generated coverage admission."
+}

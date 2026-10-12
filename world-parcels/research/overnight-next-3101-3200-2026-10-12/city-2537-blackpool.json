@@ -1,0 +1,99 @@
+{
+  "cityCode": 2537,
+  "queueRank": 3104,
+  "name": "Blackpool",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso3": "GBR",
+  "locId": 826,
+  "capital": false,
+  "point": [53.8313704516172, -3.02949278235616],
+  "population2025": 193561,
+  "population2025k": 193.561,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Blackpool Council official map GIS planning map cadastral parcels public map API",
+        "result": "First-party discovery evidenced Blackpool Council's online planning system and a public planning map-based register, plus the council's local land-charges procedure. The planning map link resolved to a generic blackpool.maps.arcgis.com home page during bounded inspection; no parcel layer or parcel API was exposed.",
+        "actualResultUrls": [
+          "https://www.blackpool.gov.uk/Residents/Planning-environment-and-community/Planning/Planning-applications/View-planning-applications.aspx",
+          "https://blackpool.maps.arcgis.com/home/index.html",
+          "https://www.blackpool.gov.uk/Residents/Planning-environment-and-community/Land-charges/Local-authority-local-land-charge-searches.aspx"
+        ]
+      },
+      {
+        "language": "English (local language)",
+        "query": "Blackpool Council official local land charges map parcels property map",
+        "result": "The applicable local language is English. First-party results documented Blackpool Council's local land-charge search procedure and HM Land Registry's official INSPIRE index-polygon dataset, including a Blackpool Borough Council download entry. The route is national HMLR data rather than a Blackpool cadastral API; no safe bounded feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.blackpool.gov.uk/Residents/Planning-environment-and-community/Land-charges/Local-land-charges.aspx",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download?back=true",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Blackpool Council is evidenced as the local planning and local-land-charges procedure custodian; HM Land Registry is the national custodian for the open INSPIRE index polygons dataset.",
+    "scope": "Blackpool Council's official pages evidence a public planning map route and local land-charge search procedure. HM Land Registry provides indicative registered freehold property polygons by local authority, including Blackpool Borough Council. Neither route was qualified here as an anonymous citywide cadastral parcel API.",
+    "evidenceUrls": [
+      "https://www.blackpool.gov.uk/Residents/Planning-environment-and-community/Planning/Planning-applications/View-planning-applications.aspx",
+      "https://www.blackpool.gov.uk/Residents/Planning-environment-and-community/Land-charges/Local-authority-local-land-charge-searches.aspx",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire"
+    ],
+    "scopeNote": "The council route is local planning/land-charge context, not proof that Blackpool Council publishes parcel boundaries. HMLR is recorded separately as national cadastral-index data custodian."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Blackpool Council public planning/local-land-charges routes and HM Land Registry INSPIRE Index Polygons",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://www.blackpool.gov.uk/Residents/Planning-environment-and-community/Planning/Planning-applications/View-planning-applications.aspx",
+        "outcome": "HTTP 200 official council page received; it linked to the online planning system and public planning map-based register. The page states the map register is under development and may be incomplete."
+      },
+      {
+        "method": "GET",
+        "url": "https://blackpool.maps.arcgis.com/home/index.html",
+        "outcome": "HTTP 200 ArcGIS HTML received; current JavaScript/configuration references were inspected, but the linked destination was only the generic ArcGIS home shell and did not expose a Blackpool map item, service URL, parcel schema, or CRS in the bounded inspection."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.blackpool.gov.uk/Residents/Planning-environment-and-community/Land-charges/Local-authority-local-land-charge-searches.aspx",
+        "outcome": "HTTP 200 official council procedure received; searches require a full property address, marked location plan, and fee. This is a search/procedure route, not an anonymous parcel geometry endpoint."
+      },
+      {
+        "method": "GET",
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download?back=true",
+        "outcome": "HTTP 200 HTML received; page listed Blackpool Borough Council and the download path /datasets/inspire/download/Blackpool_Borough_Council.zip."
+      },
+      {
+        "method": "GET",
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Blackpool_Borough_Council.zip",
+        "outcome": "Download request followed redirects and failed with a redirect loop before receiving GML/ZIP content; no geometry or schema response was retained."
+      }
+    ],
+    "note": "The exact WUP point was preserved and was not shifted or used as an absence test. No parcel ID, geometry, schema, CRS, or bounded anonymous parcel-feature response was obtained."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The public planning map may depend on an ArcGIS item or client-side route not exposed by the generic destination inspected here.",
+    "The HMLR Blackpool download is officially listed, but the current anonymous request encountered a redirect loop; this is an access limitation, not evidence of no parcels.",
+    "HMLR INSPIRE polygons are indicative registered freehold-property extents and are not a complete legal title-boundary substitute; the official dataset documentation warns that title extent cannot be established from the polygons alone.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

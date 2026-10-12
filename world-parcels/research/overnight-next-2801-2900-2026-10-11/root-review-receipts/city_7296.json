@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7296",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-7296-fahraj.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/fahraj-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:38:19Z",
+  "review": {
+    "identity": "WUP city 7296, rank 2812, Iran, point [28.9472573133135,58.8834025501694], 211342 persons match both immutable queue records.",
+    "searches": "English and Persian queries and their result URLs are recorded in the city packet.",
+    "custody": "National cadastral mandate and local reporting do not establish directly accessible first-party Fahraj parcel custody; preserve registryFound=null.",
+    "geometry": "The saved Map.ir vector style exposes general map layers, with no cadastral parcel layer; no Fahraj parcel polygon, safe native ID, CRS, or geometry response is evidenced. Durable sample count is zero.",
+    "admission": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced. Keep runtime and catalog unadmitted. Portal timeouts and DNS failures are not citywide absence."
+  }
+}

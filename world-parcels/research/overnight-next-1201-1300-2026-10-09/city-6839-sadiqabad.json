@@ -1,0 +1,144 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T10:50:00Z",
+  "cityCode": 6839,
+  "queueRank": 1225,
+  "cityId": "wup:6839",
+  "name": "Sadiqabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [28.3029997816214, 70.1214652699818],
+  "point": [28.3029997816214, 70.1214652699818],
+  "population2025": 454465,
+  "population2025k": 454.465,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sadiqabad Pakistan official cadastral map land records parcel GIS Punjab",
+        "result": "Found the official Municipal Committee Sadiqabad services-map page and its 2025-2026 Sadiqabad Base Map PDF; official Rahim Yar Khan revenue material lists Sadiqabad Arazi Record and Qanungoi centers; the official Punjab PULSE viewer exposes a cadastral Parcels layer and current ArcGIS service configuration.",
+        "actualResultUrls": [
+          "https://mcsadiqabad.lgpunjab.org.pk/map/",
+          "https://mcsadiqabad.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Sadaiqabad_22-Jan-2026.pdf",
+          "https://rykhan.punjab.gov.pk/Revenue_department",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "صادق آباد پاکستان سرکاری نقشہ کادستر اراضی ریکارڈ GIS پارسل",
+        "result": "Results led to official Punjab land-record/PULSE services and an official Urdu valuation document mentioning Tehsil Sadiqabad; no anonymous safe Sadiqabad parcel polygon or schema was exposed.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/",
+          "https://lis.pulse.gop.pk/",
+          "https://onlinefard.punjab-zameen.gov.pk/",
+          "https://sbip.org.pk/wp-content/uploads/2021/01/Addendum-ARAP-urdu-final.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://mcsadiqabad.lgpunjab.org.pk/map/",
+      "observation": "Official Municipal Committee Sadiqabad map index publishes an Updated Map 2025-2026 entry named Sadiqabad Base Map."
+    },
+    {
+      "url": "https://mcsadiqabad.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Sadaiqabad_22-Jan-2026.pdf",
+      "observation": "Official one-page A0 PDF created by Esri ArcMap, dated 2026-01-22; extracted legend includes MC Boundary PLGA (2013), Road Boundary, and Parcel Boundary. It is rendered map evidence, not a public vector endpoint."
+    },
+    {
+      "url": "https://rykhan.punjab.gov.pk/Revenue_department",
+      "observation": "Official Rahim Yar Khan district revenue page lists Sadiqabad with one Arazi Record Center and one Qanungoi Arazi Record Center named Shahbaz Pur, and describes revenue/land-record administrative context."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official/public Punjab PULSE viewer displays a Cadastral Maps group with a Parcels layer and warns that digital property lines are indicative and not legal boundaries; complete parcel details require login."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority site describes provincial digitized, GIS-linked land records and public land-record services."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer HTML loaded over TLS. Current JavaScript/configuration identified the Punjab cadastral MapServer and public Parcels layer; no login or token was used."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "ArcGIS REST response body was error code 499 Token Required; no schema or geometry returned and no token requested."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer metadata response was error code 499 Token Required; no field schema or CRS returned."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&resultRecordCount=1&f=geojson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous ID-plus-geometry query returned ArcGIS error code 499 Token Required; no feature, ID, geometry, CRS, or exact-point test available."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Admin__Boundaries/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer-configured administrative service route returned ArcGIS error code 499 Token Required."
+    },
+    {
+      "url": "https://mcsadiqabad.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Sadaiqabad_22-Jan-2026.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official rendered base-map PDF downloaded and inspected; parcel boundary is present in the legend, but no native vector parcel IDs or geometry were retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official MC Sadiqabad publishes a current city base map with an explicit Parcel Boundary legend, and the official district revenue page identifies Sadiqabad land-record service centers. This establishes local/public registry-map context, not legal title scope or complete citywide vector coverage.",
+  "registryEvidenceUrls": [
+    "https://mcsadiqabad.lgpunjab.org.pk/map/",
+    "https://mcsadiqabad.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Sadaiqabad_22-Jan-2026.pdf",
+    "https://rykhan.punjab.gov.pk/Revenue_department"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://lis.pulse.gop.pk/",
+    "kind": "Public Punjab PULSE cadastral viewer with ArcGIS-backed layers",
+    "publisher": "Punjab Urban Land Systems Enhancement / Punjab Land Records Authority",
+    "scope": "Viewer advertises Punjab cadastral parcel mapping; anonymous REST metadata and feature access for the configured service was token-gated during this bounded review.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a returned feature layer because the configured anonymous ArcGIS metadata and query routes were token-gated; exact WUP point was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official MC Sadiqabad city base map, Rahim Yar Khan district revenue/land-record context, and Punjab PULSE cadastral viewer.",
+    "verifiedOpenScope": "Rendered municipal map with parcel-boundary legend; no anonymous safe vector feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["OBJECTID", "safe parcel/cadastral identifier only if exposed by a future anonymous safe endpoint", "geometry"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_local_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The municipal PDF is rendered map evidence and does not prove complete or current vector coverage. PULSE's advertised Sadiqabad-area/cadastral coverage, current schema, CRS, legal status, and citywide completeness remain unverified because anonymous REST access returned Token Required. No owner, address, contact, titleholder, tax, or account fields were requested or retained."
+}

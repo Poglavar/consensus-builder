@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-7729-hammond.json",
+  "cityCode": 7729,
+  "queueRank": 1903,
+  "city": "Hammond",
+  "country": "United States of America",
+  "countryCode": "US",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Lake County Indiana GIS / Lake County Auditor parcel fabric",
+  "serviceUrl": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer",
+  "scope": "Lake County parcel polygons; Hammond-filtered query returned three features.",
+  "schemaAndCrs": "Layer 0 is esriGeometryPolygon; native service CRS EPSG:2245 (latest WKID 2966). Retained response requested in EPSG:4326 GeoJSON.",
+  "nativeIdentity": "PARCELID (Parcel Identification Number) is the preferred stable native identity; OBJECTID is a service OID fallback only. No synthetic row IDs or composite key were used.",
+  "fieldMapping": {
+    "PARCELID": "canonical native parcel identity",
+    "OBJECTID": "ArcGIS service object identifier",
+    "geometry": "native parcel polygon, transformed to EPSG:4326 in retained sample"
+  },
+  "requestOutcome": "Anonymous metadata and schema GETs succeeded. Hammond-scoped geometry-only query succeeded with three polygons. Exact WUP point and bounded EPSG:4326 envelopes returned zero, so no exact hit is claimed.",
+  "retainedSample": "hammond-parcels-sample.geojson",
+  "retainedProperties": "Exactly one canonical property, id=PARCELID, per feature; no raw source attribute set retained.",
+  "safeFieldAllowlist": ["PARCELID", "OBJECTID", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description and source link fields were not requested for the retained sample. Service schema exposed such fields, but they are documented only as excluded names.",
+  "officialCustodyEvidence": "Lake County Surveyor page identifies official county maps and GIS/property-boundary responsibilities; service description attributes maintenance to Lake County Auditor parcel fabric.",
+  "limits": [
+    "Countywide scope does not prove every Hammond parcel is covered at all times.",
+    "Exact WUP point miss is not evidence of citywide absence.",
+    "Service data are frequently changing per publisher metadata.",
+    "No owner or title records were accessed.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm service continuity, CRS transformation, Hammond filter semantics, and identity stability before any adapter admission."
+}

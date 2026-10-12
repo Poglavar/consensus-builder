@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4264",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-4264-lucena.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/lucena-service-review.json",
+    "tmp/valhalla-parcel-research/lucena/geoportal.html",
+    "tmp/valhalla-parcel-research/lucena/arcgis-parcel-search.json"
+  ],
+  "checkedAt": "2026-10-10T14:56:56.695392Z",
+  "reason": "Immutable WUP code 4264/rank 1777, Philippines point and 323308 persons match the roster. English and Tagalog searches are recorded. Quezon Provincial Assessor first-party page proves provincial map custody but its Lucena office address alone does not prove custody of Lucena city parcels; city-specific custody scope remains unresolved. The original public catalog response has nine non-Lucena results, and no native-ID parcel polygon was retained. Adapter paging, 13-cell, metric GEOS, source-binding and headed Details qualification are missing. Search non-discovery is not citywide absence.",
+  "firstPartyUrlsOpened": [
+    "https://quezon.gov.ph/pao/"
+  ]
+}

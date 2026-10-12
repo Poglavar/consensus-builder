@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6246",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6246-gorgan.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/gorgan-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:50:38Z",
+  "reviewNotes": "Worker records English and Persian searches and SSAA-related timeouts, but its cited scratch directory is empty. The packet registryFound:true custody assertion lacks retained first-party content for independent confirmation; keep custody unresolved at root rather than infer false absence.",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, full-parcel source binding, or headed Details-panel verification. No runtime/catalog/report admission."
+}

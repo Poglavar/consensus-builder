@@ -1,0 +1,82 @@
+{
+  "cityCode": 7952,
+  "queueRank": 1619,
+  "name": "Kurukshetra",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [29.9674026272771, 76.8569110935626],
+  "population2025": 353119,
+  "population2025k": 353.119,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kurukshetra Haryana official cadastral parcel map GIS land records portal",
+        "result": "First-party results identified the District Kurukshetra official directory, Haryana Web-HALRIS, the Haryana State GIS portal, and the Haryana Urban Local Bodies GIS viewer. The district and state systems document land-record/cadastral-map services, but no anonymous safe parcel-ID plus full-polygon response was exposed.",
+        "actualResultUrls": [
+          "https://kurukshetra.gov.in/directory/",
+          "https://haryanait.gov.in/web-halris/",
+          "https://stategisportal.nic.in/stategisportal/Home/Map/6",
+          "https://gis.ulbharyana.gov.in/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "कुरुक्षेत्र हरियाणा सरकारी भू-अभिलेख नक्शा GIS पार्सल",
+        "result": "The official Hindi District Kurukshetra information-system page exposes land-record links including Jamabandi and a cadastral-map viewer. It is evidence of a local district revenue/map custodian, but did not expose an anonymous safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://kurukshetra.gov.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80/",
+          "https://kurukshetra.gov.in/hi/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official District Kurukshetra Hindi information-system page explicitly lists Jamabandi and cadastral-map services under land records, and the district directory links the official revenue/Jamabandi portal. This evidences a local district revenue/map custodian, not an open parcel API or legal-title dataset.",
+  "officialSources": [
+    {"url": "https://kurukshetra.gov.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80/", "observation": "Official Hindi district page lists Jamabandi, HALRIS/HARIS, property registration, mutation, and cadastral-map services."},
+    {"url": "https://kurukshetra.gov.in/directory/", "observation": "Official district directory identifies revenue/census services and links the Jamabandi portal."},
+    {"url": "https://haryanait.gov.in/web-halris/", "observation": "Official Haryana IT page describes Web-HALRIS as integrated deed-registration and land-record management for all 143 tehsils, including Jamabandi, mutation, Khasra Girdawari and reports."},
+    {"url": "https://gis.ulbharyana.gov.in/", "observation": "Official Urban Local Bodies GIS viewer describes mapped properties, ward/colony boundaries and municipal features; page requires department mobile/OTP login."},
+    {"url": "https://stategisportal.nic.in/stategisportal/Home/Map/6", "observation": "Official Haryana State GIS map page returned in discovery and exposes administrative/tehsil map controls; direct request failed TLS verification in this environment, so no data was extracted."}
+  ],
+  "source": {
+    "sourceId": "kurukshetra-district-revenue-cadastral-map-services",
+    "name": "District Kurukshetra revenue and cadastral-map services",
+    "operator": "District Administration Kurukshetra / Haryana Revenue and Disaster Management Department",
+    "endpoint": "https://kurukshetra.gov.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80/",
+    "method": "First-party English/Hindi discovery and bounded anonymous GET/HTML/JavaScript inspection",
+    "responseFormat": "HTML service directory and JavaScript-backed GIS viewer; no parcel feature response",
+    "nativeCrs": null,
+    "queryOutputCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "District/state land-record and cadastral-map service references; no verified open parcel-feature coverage for Kurukshetra city."
+  },
+  "requests": [
+    {"url": "https://kurukshetra.gov.in/directory/", "method": "GET", "httpStatus": 200, "outcome": "Official directory returned; revenue/Jamabandi service links were visible."},
+    {"url": "https://kurukshetra.gov.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80/", "method": "GET", "httpStatus": 200, "outcome": "Official Hindi page returned and explicitly listed cadastral maps, Jamabandi, HALRIS/HARIS and mutation services."},
+    {"url": "https://haryanait.gov.in/web-halris/", "method": "GET", "httpStatus": 200, "outcome": "Official Web-HALRIS description returned; it documented land-record modules but no parcel geometry."},
+    {"url": "https://gis.ulbharyana.gov.in/", "method": "GET", "httpStatus": 200, "outcome": "Current HTML and JavaScript inspected. The public page presents a department mobile/OTP login. Its JavaScript references https://gis.ulbharyana.gov.in/geoserver/DULBGIS/wms/ and POST /api/getRevenue; the latter response path renders owner, address, mobile and other unsafe fields, so it was not called."},
+    {"url": "https://gis.ulbharyana.gov.in/maps", "method": "GET", "httpStatus": 200, "outcome": "Map route returned but no authenticated map data or safe parcel feature response was obtained."},
+    {"url": "https://gis.ulbharyana.gov.in/api/getRevenue", "method": "GET", "httpStatus": 405, "outcome": "Endpoint allows POST only; no POST was attempted because the inspected JavaScript showed unsafe owner/contact response fields."},
+    {"url": "https://gis.ulbharyana.gov.in/geoserver/DULBGIS/wms?service=WMS&request=GetCapabilities", "method": "GET", "httpStatus": 403, "outcome": "WMS capabilities request was forbidden; no layer schema or geometry retained."},
+    {"url": "https://stategisportal.nic.in/stategisportal/Home/Map/6", "method": "GET", "httpStatus": "TLS verification failure", "outcome": "TLS certificate chain was not trusted by the default verifier. No certificate exception was authorized or used; no request data was retained."}
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "legal_description", "value", "full parcel attributes"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official Kurukshetra district revenue/cadastral-map references, Haryana Web-HALRIS, state GIS and urban GIS routes investigated.",
+    "verifiedOpenScope": "Local cadastral-map service is evidenced by the district page, but no anonymous native parcel identity plus full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_map_evidenced_no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The district page establishes service custody but not open API access, CRS, native parcel identity, city boundary coverage, or completeness. A login wall, forbidden WMS request, TLS verification failure, and skipped unsafe-field endpoint are not evidence of citywide parcel absence. Packet completion is not source integration or admission."
+}

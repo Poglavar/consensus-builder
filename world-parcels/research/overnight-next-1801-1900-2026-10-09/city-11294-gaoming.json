@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "status": "complete",
+  "cityCode": 11294,
+  "wupCityCode": 11294,
+  "cityId": "wup2025:11294",
+  "name": "Gaoming",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [22.8907762058845, 112.859967460881],
+  "centerLatLon": [22.8907762058845, 112.859967460881],
+  "queueRank": 1884,
+  "population2025": 304429,
+  "population2025k": 304.429,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "plausibility": "High",
+  "registryFound": true,
+  "registryBasis": "Official Foshan/Gaoming government information identifies the Foshan Natural Resources Bureau Gaoming Branch as a local custodian, and official Foshan online real-estate-registration pages plus Gaoming government material evidence registration/map procedures. This is administrative/procedural evidence only; no anonymous parcel geometry endpoint was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gaoming China official cadastral parcel map GIS natural resources Foshan",
+        "result": "Search identified the official Foshan Surveying Supervision and Service Network, which lists the Foshan Natural Resources Bureau Gaoming Branch, and the official Foshan online real-estate-registration portal. No public anonymous parcel feature service with stable native IDs and geometry was exposed.",
+        "actualResultUrls": [
+          "https://dtgx.fszrzy.foshan.gov.cn/FSCHQY/SiteInfo/Home",
+          "https://hlwbdc.fszrzy.foshan.gov.cn/hlwbdc_fs/wechat/",
+          "https://hlwbdc.fszrzy.foshan.gov.cn/hlwbdc_fs/proxyWebService/nature"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "高明区 自然资源局 不动产登记 地籍图 宗地图 公开地图 服务 官方",
+        "result": "Official/first-party-indexed results identify the Foshan Natural Resources Bureau Gaoming Branch and describe Gaoming certificate QR access to house/parcel maps for eligible registered properties. The public portal is registration/property-workflow oriented; no anonymous citywide parcel-ID-plus-geometry response was available.",
+        "actualResultUrls": [
+          "https://ysqgk.gd.gov.cn/757004/index",
+          "https://hlwbdc.fszrzy.foshan.gov.cn/hlwbdc_fs/wechat/",
+          "https://www.thepaper.cn/newsDetail_forward_30312234",
+          "https://dtgx.fszrzy.foshan.gov.cn/FSCHQY/SiteInfo/Home"
+        ]
+      }
+    ],
+    "searchLimits": "First-party discovery was supplemented by indexed official-domain results. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/contact/titleholder/tax/account fields, or global TLS disable was used."
+  },
+  "officialSources": [
+    {
+      "url": "https://dtgx.fszrzy.foshan.gov.cn/FSCHQY/SiteInfo/Home",
+      "operator": "Foshan Natural Resources Bureau / Foshan Surveying and Mapping Association",
+      "observation": "Official Foshan surveying service site lists the Natural Resources Bureau Gaoming Branch among district branches; it is a surveying supervision/service site, not an open parcel feature API."
+    },
+    {
+      "url": "https://hlwbdc.fszrzy.foshan.gov.cn/hlwbdc_fs/wechat/",
+      "operator": "Foshan Natural Resources Bureau / Guangdong government service platform",
+      "observation": "Official Foshan online real-estate query portal was identified; it is JavaScript-based and property/registration oriented."
+    },
+    {
+      "url": "https://ysqgk.gd.gov.cn/757004/index",
+      "operator": "Gaoming District People's Government",
+      "observation": "Official government information-request system names the Foshan Natural Resources Bureau Gaoming Branch as a local government body."
+    },
+    {
+      "url": "https://www.thepaper.cn/newsDetail_forward_30312234",
+      "operator": "Gaoming Natural Resources Branch statement reproduced by Pengpai政务",
+      "observation": "Describes Gaoming's 2025 certificate QR workflow for viewing registered property parcel maps and floor plans; it requires an eligible certificate/QR context and is not citywide anonymous geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://dtgx.fszrzy.foshan.gov.cn/FSCHQY/SiteInfo/Home",
+      "method": "GET",
+      "outcome": "HTTP 420 blacklist page",
+      "summary": "The direct request returned a websaas blacklist page stating the client IP was blocked for suspected attack behavior. No site configuration, API route, schema, CRS, parcel ID, or geometry was accepted from this response."
+    },
+    {
+      "url": "https://hlwbdc.fszrzy.foshan.gov.cn/hlwbdc_fs/wechat/",
+      "method": "GET",
+      "outcome": "HTTP 420 blacklist page",
+      "summary": "The direct request returned the same access-control page. No login, bypass, or alternate credentialed route was attempted."
+    },
+    {
+      "url": "https://hlwbdc.fszrzy.foshan.gov.cn/hlwbdc_fs/proxyWebService/nature",
+      "method": "GET",
+      "outcome": "HTTP 420 blacklist page",
+      "summary": "The direct request returned the same access-control page; no API response or safe field schema was obtained."
+    },
+    {
+      "url": "https://ysqgk.gd.gov.cn/757004/index",
+      "method": "GET",
+      "outcome": "HTTP 200",
+      "summary": "Official Gaoming government information-request page fetched successfully and identifies the local Natural Resources Bureau branch; it provides no parcel geometry endpoint."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Gaoming District registration and natural-resources functions are locally administered under Foshan, with official property-map viewing procedures.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_evidenced_no_verified_open_parcel_endpoint",
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_source",
+  "verifiedSample": false,
+  "source": null,
+  "sourceFields": null,
+  "sourceIds": [],
+  "crs": null,
+  "publicParcelGeometryFound": false,
+  "safeFieldAllowlist": ["stable native parcel ID if publicly returned", "geometry", "source URL", "CRS", "bounded retrieval metadata"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous, city-scoped parcel geometry plus stable native parcel identity was verified. The available portal routes were blocked by an HTTP 420 blacklist page or limited to registration/property workflows.",
+  "remainingUncertainty": "The exact WUP point is preserved unchanged in latitude/longitude order as a research locator. No exact-point hit/miss was used, and no map extent or access failure was treated as evidence of citywide absence.",
+  "nextStep": "On a later attempt, inspect any currently published Gaoming/Foshan public cadastral viewer configuration through normal anonymous access, then request only a bounded geometry-plus-safe-native-ID response and validate CRS and geographic scope before considering admission."
+}

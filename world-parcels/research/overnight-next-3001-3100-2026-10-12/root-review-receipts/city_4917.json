@@ -1,0 +1,37 @@
+{
+  "taskId": "city:4917",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4917-fayzabad.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/fayzabad-service-review.json",
+    "tmp/valhalla-parcel-research/fayzabad/mudh-lands.html",
+    "tmp/valhalla-parcel-research/fayzabad/mudh-badakhshan.html"
+  ],
+  "checkedAt": "2026-10-12T02:29:42Z",
+  "identityCheck": {
+    "cityCode": 4917,
+    "rank": 3080,
+    "country": "Afghanistan",
+    "point": [
+      37.1037839848929,
+      70.5527449911059
+    ],
+    "populationPersons": 195148,
+    "matchesImmutableQueue": true
+  },
+  "researchCheck": {
+    "englishAndLocalLanguageQueriesRecorded": true,
+    "fullPolygonSampleCount": 0,
+    "safeNativeIdPolygonResponseVerified": false
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official cadastral custody and Badakhshan survey activity are evidenced, but no anonymous full polygon with a native ID, schema, or CRS was found; no adapter qualification exists."
+}

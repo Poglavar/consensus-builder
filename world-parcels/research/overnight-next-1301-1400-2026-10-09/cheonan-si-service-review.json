@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1721-cheonan-si.json",
+  "cohort": "overnight-next-1301-1400",
+  "purpose": "Review official Korean cadastral/parcel map channels for safe anonymous geometry and stable parcel identity.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "K-GeoP is an evidenced official parcel-information map service. Its current viewer and configuration were retrieved, but the declared map WFS host was not resolvable from this host. No geometry or native parcel identity was retained.",
+  "registryAssessment": "The official national K-GeoP service and Government24 cadastral-map procedure establish a real Korean cadastral service. Cheonan's own official page confirms city land administration/statistics, but it does not expose a public parcel-vector endpoint in this research.",
+  "officialPrimarySources": [
+    {"url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "operator": "Ministry of Land, Infrastructure and Transport / National Spatial Data Center", "scope": "Official public parcel-information map viewer with 일필지정보 and land-map controls."},
+    {"url": "https://www.kgeop.go.kr/js/map/config/odf-config-wavus.json", "operator": "K-GeoP", "scope": "Current map configuration; EPSG:5179 and WFS/WMS/WMTS route declarations."},
+    {"url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208", "operator": "Government24 / Ministry of Land, Infrastructure and Transport", "scope": "Cadastral-map/forest-map viewing and issuance procedure."},
+    {"url": "https://mng.cheonan.go.kr/prog/stat/gimok/list.do?mno=sub02_02_02&siteCode=stat", "operator": "Cheonan City", "scope": "Official local land statistics; local administrative context only."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Cheonan-si official cadastral map parcel GIS Korea K-GeoP land parcel service", "result": "Official K-GeoP and Government24 sources found; no safe anonymous polygon response verified.", "actualResultUrls": ["https://www.kgeop.go.kr/", "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208"]},
+    {"language": "Korean", "query": "천안시 지적도 지적편집도 공식 토지정보 지도 지적측량", "result": "공식 K-GeoP와 정부24 지적도 안내를 확인했으나 안전한 익명 필지 폴리곤은 확인하지 못했다.", "actualResultUrls": ["https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208", "https://mng.cheonan.go.kr/prog/stat/gimok/list.do?mno=sub02_02_02&siteCode=stat"]}
+  ],
+  "attempts": [
+    "Retrieved the current K-GeoP viewer HTML anonymously and inspected its parcel-information controls.",
+    "Retrieved the current K-GeoP JavaScript/configuration; documented EPSG:5179 and declared map WFS/WMS/WMTS routes.",
+    "Attempted the declared anonymous WFS GetCapabilities route; DNS resolution failed for map.kgeop.go.kr from this host.",
+    "Retrieved Government24's official cadastral-map procedure page and Cheonan's official land-statistics page.",
+    "Did not log in, use credentials, defeat CAPTCHA/Cloudflare, request owner/address/titleholder/tax data, or retain source attribute sets.",
+    "Did not shift the exact WUP point and did not infer citywide absence from the failed route."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No feature query completed because the viewer-declared map host failed DNS resolution.", "requestEvidence": [{"url": "http://map.kgeop.go.kr:20000/bag/api/map/wfs?service=WFS&request=GetCapabilities", "method": "GET", "httpStatus": null, "result": "DNS resolution failure"}]},
+  "coverageAssessment": {"claimedScope": "Official K-GeoP national parcel map plus Government24 and Cheonan local land pages reviewed.", "verifiedOpenScope": "Viewer/configuration verified; map service network route unavailable from this host; citywide coverage unknown.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "nextStep": "Serial reviewer may re-check the declared K-GeoP route from a resolving network and qualify only safe ID+geometry fields; preserve held runtime state.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned; route failure is not evidence of cadastral absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

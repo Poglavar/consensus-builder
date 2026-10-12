@@ -1,0 +1,120 @@
+{
+  "cityCode": 8138,
+  "queueRank": 3023,
+  "name": "Macaé",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-22.3663234129104, -41.7792861170735],
+  "population2025": 197873,
+  "population2025k": 197.873,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Macaé Brazil official cadastral parcel map GIS municipality",
+        "result": "Found the official municipal GeoMacaé GIS portal and municipal property-cadastre functions. The public material describes thematic maps and a municipal GIS, but the bounded anonymous inspection did not expose a parcel feature service or safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://plan.apps.macae.rj.gov.br/portal/geomacae",
+          "https://macae.rj.gov.br/semfaz/conteudo/titulo/apresentacao",
+          "https://www.macae.rj.gov.br/geomacae/conteudo/titulo/mapas-e-imagens"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Macaé cadastro imobiliário geoprocessamento mapa lotes prefeitura serviço oficial",
+        "result": "Official Portuguese-language municipal pages identify the Secretaria Municipal de Fazenda as custodian of the municipal cadastro imobiliário and describe a geoprocessing solution; the official GeoMacaé pages expose thematic map/PDF and Google My Maps links, not an anonymous parcel ID-plus-geometry API.",
+        "actualResultUrls": [
+          "https://macae.rj.gov.br/semfaz/atendimento",
+          "https://macae.rj.gov.br/semfaz/conteudo/titulo/apresentacao",
+          "https://plan.apps.macae.rj.gov.br/portal/geomacae/mapasEImagens",
+          "https://macae.rj.gov.br/conteudo/leitura/titulo/aprovacao-de-loteamento"
+        ]
+      }
+    ]
+  },
+  "custodians": [
+    {
+      "name": "Prefeitura Municipal de Macaé / Secretaria Municipal de Fazenda / Coordenadoria de Lançamento Imobiliário",
+      "scope": "Local municipal custodian for the cadastro imobiliário and property-tax workflow; official responsibilities include maintaining the municipal real-estate cadastre and developing a geoprocessing solution with IT.",
+      "evidenceUrls": [
+        "https://macae.rj.gov.br/semfaz/conteudo/titulo/apresentacao",
+        "https://macae.rj.gov.br/semfaz/atendimento"
+      ]
+    },
+    {
+      "name": "GeoMacaé / Secretaria Municipal de Planejamento e Gestão",
+      "scope": "Official municipal GIS portal describing territory mapping and thematic municipal information; public pages inspected provide maps, images, PDFs, and Google My Maps links, but no qualified parcel vector service.",
+      "evidenceUrls": [
+        "https://plan.apps.macae.rj.gov.br/portal/geomacae",
+        "https://plan.apps.macae.rj.gov.br/portal/geomacae/mapasEImagens",
+        "https://macae.rj.gov.br/geomacae/conteudo/titulo/mapas-e-imagens"
+      ]
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "request": "GET https://plan.apps.macae.rj.gov.br/portal/geomacae",
+      "outcome": "HTTP 200 anonymous HTML. Page describes GeoMacaé as a municipal GIS created by the municipal planning secretariat; no parcel layer schema or feature endpoint was present in the returned HTML.",
+      "evidence": "Retrieved HTML was saved under tmp/valhalla-parcel-research/maca-8138/portal.html; no login or credentials used."
+    },
+    {
+      "request": "GET https://plan.apps.macae.rj.gov.br/portal/geomacae/mapasEImagens",
+      "outcome": "HTTP 200 anonymous HTML. Returned links were thematic Google My Maps views and links back to municipal map/PDF pages; no parcel ID-plus-geometry response was obtained.",
+      "evidence": "Returned page links include political-administrative, zoning, physical-environmental, land-cover, works, heritage, and transport map products."
+    },
+    {
+      "request": "GET https://macae.rj.gov.br/geomacae/conteudo/titulo/zoneamento-municipal",
+      "outcome": "HTTP 200 anonymous HTML. The page advertises an embedded map and thematic zone information, but the bounded HTML inspection exposed no public parcel feature service, schema, or safe native identity.",
+      "evidence": "No parcel geometry was downloaded or retained."
+    },
+    {
+      "request": "GET https://macae.rj.gov.br/semfaz/atendimento and GET https://macae.rj.gov.br/semfaz/conteudo/titulo/apresentacao",
+      "outcome": "Official municipal pages confirm the local Finance Secretariat's Coordenadoria de Lançamento Imobiliário and its responsibility for maintaining the municipal real-estate cadastre and developing geoprocessing with IT. These are custodian/procedure evidence, not a public parcel API.",
+      "evidence": "Search result and official page text; no property-owner, address, contact, titleholder, tax/account, or personal fields requested."
+    },
+    {
+      "request": "GET https://macae.rj.gov.br/conteudo/leitura/titulo/aprovacao-de-loteamento",
+      "outcome": "Official procedure page confirms municipal subdivision/loteamento approval workflow and required project submissions, but provides no downloadable parcel geometry or stable parcel identity.",
+      "evidence": "Official municipal procedure page."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-22.3663234129104, -41.7792861170735] was preserved in latitude/longitude order and was not shifted.",
+    "A local municipal cadastral custodian and official GIS are evidenced, but public citywide machine-readable parcel coverage is not evidenced.",
+    "No exact-point hit or miss was inferred from the inspected map pages or absent endpoint details.",
+    "No native parcel ID, parcel schema, CRS, anonymous geometry response, or citywide parcel coverage was qualified; no GeoJSON sample is retained.",
+    "No unsafe owner, address, contact, titleholder, personal, tax/account, certificate, or other sensitive fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The current GeoMacaé map products may be backed by interactive or provider-hosted resources not exposed in the bounded anonymous HTML checks.",
+    "The municipal real-estate cadastre exists as an administrative function, but its public parcel geometry endpoint and native identity semantics remain unresolved.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "runtimeReadiness": "held",
+  "admissionDecision": "held",
+  "doNotInfer": [
+    "Absence of a parcel endpoint in the inspected HTML is not evidence of citywide parcel absence.",
+    "A municipal cadastral custodian or loteamento procedure is not proof of an open parcel API.",
+    "Thematic maps, PDFs, or Google My Maps products are not qualified cadastral parcel polygons."
+  ]
+}

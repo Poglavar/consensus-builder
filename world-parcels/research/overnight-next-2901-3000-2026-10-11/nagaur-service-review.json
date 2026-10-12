@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-6005-nagaur.json",
+  "cityCode": 6005,
+  "queueRank": 2905,
+  "city": "Nagaur",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and Hindi discovery identified Rajasthan Apna Khata, Rajdharaa Urban GIS Khasra Search, the Rajasthan BhuNaksha viewer, and the Nagaur district portal. No bounded anonymous parcel geometry response was obtained; runtime remains held.",
+  "queryAndRequestOutcomes": "All executed queries and routes, timeout/redirect outcomes, custodians, scope limits, and safe-field policy are recorded in city-6005-nagaur.json.",
+  "custodians": [
+    {"name": "Government of Rajasthan Revenue Board / Apna Khata", "scope": "state land-record and land-map access, including Bho Naksha link", "evidence": "official Hindi portal"},
+    {"name": "Rajasthan Settlement Department / Rajdharaa", "scope": "state GIS and urban Khasra/cadastral viewing workflow", "evidence": "official public Urban GIS page"},
+    {"name": "Nagaur district administration", "scope": "district government portal discovered, no parcel endpoint evidenced", "evidence": "official district portal"}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": "No live parcel schema obtained; no raw source fields retained", "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["canonical native parcel identifier", "geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": ["The exact WUP point [27.1993937927472, 73.7354959348155] was preserved in latitude/longitude order and not shifted.", "No parcel geometry was retained because no safe anonymous response was obtained.", "BhuNaksha GET timed out after 20 seconds; Apna Khata and Rajdharaa direct requests were unavailable/redirected from this environment.", "Official viewer pages and search results do not establish citywide parcel completeness.", "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.", "Packet completion is not source integration/admission."],
+  "uncertainty": ["No independent runtime adapter qualification", "No public parcel schema/CRS response", "No citywide coverage proof", "A timeout or unusable UI is not evidence of citywide absence"],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["An exact-point miss, timeout, login wall, or unusable UI is not evidence of citywide parcel absence", "State GIS workflow evidence is not a parcel API qualification", "No geometry means no source identity or CRS should be invented"]
+}

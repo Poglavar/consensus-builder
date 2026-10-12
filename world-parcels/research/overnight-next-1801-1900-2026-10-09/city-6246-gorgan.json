@@ -1,0 +1,70 @@
+{
+  "cityCode": 6246,
+  "queueRank": 1849,
+  "name": "Gorgan",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [36.8372658716276, 54.4407998384708],
+  "population2025": 310644,
+  "population2025k": 310.644,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gorgan Iran official cadastral map parcel registry municipality GIS",
+        "result": "Search found the national Iranian Registration Organization (SSAA) land-registration/cadastral systems, a Golestan provincial registration office in Gorgan, and non-official GIS/map references. No confirmed anonymous Gorgan parcel viewer or ID-plus-geometry API was identified.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://gs.ssaa.ir",
+          "https://shamim.ssaa.ir"
+        ]
+      },
+      {
+        "language": "Persian (local)",
+        "query": "ایران گرگان سامانه کاداستر نقشه ثبتی قطعه زمین سازمان ثبت اسناد و املاک شهرداری GIS",
+        "result": "نتایج، سازمان ثبت اسناد و املاک کشور، اداره کل ثبت اسناد و املاک استان گلستان در گرگان و سامانه شمیم را نشان دادند. دسترسی عمومی ناشناس به پاسخ هندسه و شناسه امن قطعات گرگان تأیید نشد؛ منابع GIS تجاری یا عمومی غیرثبتی به‌عنوان کاداستر پذیرفته نشدند.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://gs.ssaa.ir",
+          "https://shamim.ssaa.ir",
+          "https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Iranian National Organization for Registration of Deeds and Properties (SSAA), with Golestan provincial registration office in Gorgan",
+    "viewerUrl": "https://shamim.ssaa.ir",
+    "serviceRoutePublishedByViewer": null,
+    "serviceType": "Official registration/cadastral systems identified; public anonymous parcel feature service not verified",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable parcel ID if publicly exposed", "geometry only"],
+    "crs": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No anonymous parcel ID-plus-geometry response was obtained. No exact-point hit, map extent miss, or service timeout is evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/6246/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Iran national cadastral/land-registration infrastructure and the Golestan provincial registration custodian located in Gorgan.",
+    "verifiedOpenScope": "Official service identities and local custodian were identified, but anonymous parcel schema, CRS, geometry, and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Exact WUP point preserved in latitude/longitude order; no coordinate shift applied. No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained. This packet is research evidence only and is not source integration or runtime admission."
+}

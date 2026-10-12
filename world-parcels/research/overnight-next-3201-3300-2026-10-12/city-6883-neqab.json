@@ -1,0 +1,116 @@
+{
+  "cityCode": 6883,
+  "queueRank": 3280,
+  "name": "Neqab",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "locId": 364,
+  "capital": false,
+  "point": [36.7101127912688, 57.4073287697321],
+  "population2025": 183769,
+  "population2025k": 183.769,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Neqab Iran cadastral map parcel registry official GIS; Neqab Joweyn official land registration parcel map",
+        "result": "Search identified Neqab as a city in Joweyn County and found general Iranian national cadastral/registration references, but no Neqab municipal registry custodian, public cadastral viewer, map service, or anonymous parcel ID-plus-geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85",
+          "https://www.samanehha.com/web/196/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B3%D8%A7%D8%B2%D9%85%D8%A7%D9%86-%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D و-%D8%A7%D9%85%D9%84%D8%A7%DA%A9-%DA%A9%D8%B4%D9%88%D8%B1",
+          "https://abadis.ir/fatofa/%D9%86%D9%82%D8%A7%D8%A8/",
+          "https://cadastre.ssaa.ir/"
+        ]
+      },
+      {
+        "language": "Persian (local/native)",
+        "query": "نقاب جوین نقشه کاداستر پلاک ثبتی اداره ثبت اسناد و املاک؛ سامانه حدنگاری نقاب",
+        "result": "جست‌وجوی فارسی، نقاب را مرکز شهرستان جوین معرفی کرد و منابع عمومی درباره سازمان ثبت اسناد و املاک و سامانه شمیم یافت؛ هیچ مرجع محلی نقاب/جوین با نقشه عمومی قطعات، سرویس GIS، پیکربندی viewer یا پاسخ ناشناس شناسه+هندسه پیدا نشد.",
+        "actualResultUrls": [
+          "https://abadis.ir/fatofa/%D9%86%D9%82%D8%A7%D8%A8/",
+          "https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85",
+          "https://nezamat.ir/post-44174/",
+          "https://cadastre.ssaa.ir/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "Iran's سازمان ثبت اسناد و املاک کشور is evidenced only as a national cadastral/land-registration institution; no Neqab or Joweyn local registry custodian or public parcel service was evidenced.",
+    "scopeNote": "National agency prose and national service references were not treated as local registry proof. The search evidence also confirms Neqab's locality identity, not parcel-service availability."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": [],
+      "compositeKeyProvenance": null
+    },
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted or used as a citywide absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://cadastre.ssaa.ir/",
+      "outcome": "TLS-verified anonymous request timed out after 20 seconds; no certificate bypass, login, CAPTCHA, or WAF bypass was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://shamim.ssaa.ir/",
+      "outcome": "TLS-verified anonymous request timed out after 8 seconds; no authenticated access or bypass was attempted. Public search descriptions characterize this as a restricted professional GNSS/cadastral survey service, not an open parcel-vector endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://my.ssaa.ir/portal",
+      "outcome": "TLS-verified anonymous request timed out after 8 seconds; no login, credentials, private property data, or bypass was attempted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://abadis.ir/fatofa/%D9%86%D9%82%D8%A7%D8%A8/",
+      "outcome": "Search result identifies Neqab as the center of Joweyn County; it exposes no cadastral map, parcel schema, service URL, or geometry."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://nezamat.ir/post-44174/",
+      "outcome": "Persian legal text describes the national land-management window and participating agencies, but provides no Neqab-local public parcel service or safe parcel geometry."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "parcelApi": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if publicly exposed and source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "admissionDecision": "held",
+  "geometrySamples": [],
+  "uncertainty": [
+    "The national Iranian registration systems may contain non-public, authenticated, or non-indexed cadastral data; no login or private access was attempted.",
+    "Timeouts are transport/discovery limitations, not evidence of citywide cadastral absence.",
+    "No local registry custodian, current viewer JavaScript/configuration, parcel API route, safe source schema, CRS, coverage, licensing, or update cadence was verified.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ]
+}

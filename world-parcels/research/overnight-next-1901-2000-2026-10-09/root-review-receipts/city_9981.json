@@ -1,0 +1,11 @@
+{
+  "taskId": "city:9981",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-9981-attingal.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/attingal-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:11:27.632391Z",
+  "reason": "Kerala cadastral service and Attingal survey custody evidenced; Bhu-Naksha TLS verification fails and no alternate parcel feature response, native ID, or polygon was found. Adapter qualification and headed Details check are absent."
+}

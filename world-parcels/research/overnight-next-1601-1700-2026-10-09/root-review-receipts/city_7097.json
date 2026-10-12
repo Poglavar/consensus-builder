@@ -1,0 +1,11 @@
+{
+  "taskId": "city:7097",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7097-sidfa.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/sidfa-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:07:08.053825Z",
+  "reviewNotes": "Held: official Egyptian Survey Authority pages document requested/purchased maps, with no anonymous Sidfa parcel ID plus polygon response. Worker log Arabic query misspelled Sidfa (صفا); root executed the correctly spelled صدفا query and found only first-party map/custody context. Local custody and public access remain unresolved."
+}

@@ -1,0 +1,116 @@
+{
+  "cityCode": 4684,
+  "queueRank": 1647,
+  "name": "Southampton",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso3": "GBR",
+  "locId": 826,
+  "point": [50.9183161488384, -1.39571519357],
+  "population2025": 347446,
+  "population2025k": 347.446,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Southampton UK official cadastral map land registry parcel boundaries GIS",
+        "result": "First-party discovery found Southampton City Council's official interactive map and personal local land-charges search procedure, and HM Land Registry's official INSPIRE polygon dataset. No directly exposed city parcel API was found.",
+        "actualResultUrls": [
+          "https://www.southampton.gov.uk/whereilive/interactive-map/",
+          "https://www.southampton.gov.uk/council-democracy/land-charges/personal-land-searches",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire"
+        ]
+      },
+      {
+        "language": "English (local/native language)",
+        "query": "Southampton City Council official property map local land charges parcel boundaries",
+        "result": "A separate local-language query is not applicable because English is the country's local/native administrative language. The first-party results confirmed the council's local land-search route and official map, but exposed no anonymous parcel feature response.",
+        "actualResultUrls": [
+          "https://www.southampton.gov.uk/council-democracy/land-charges/personal-land-searches",
+          "https://data.southampton.gov.uk/place/maps/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.southampton.gov.uk/council-democracy/land-charges/personal-land-searches",
+      "observation": "Southampton City Council states that it provides personal local land-charges searches for SO14-SO19, requiring an uploaded plan and later publication of requested data. This evidences a local custodian/procedure, not an open parcel API."
+    },
+    {
+      "url": "https://www.southampton.gov.uk/whereilive/interactive-map/",
+      "observation": "Official council interactive-map route; the anonymous GET returned an Incapsula interstitial rather than viewer HTML/configuration."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "observation": "HM Land Registry official national source documents INSPIRE polygons as indicative freehold registered-property extents with stable INSPIRE IDs, British National Grid geometry, and stated limitations."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "observation": "Official download page lists Southampton City Council, but the page could not be retrieved in the bounded request because of repeated redirects."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.southampton.gov.uk/whereilive/interactive-map/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Returned an Incapsula _Incapsula_Resource interstitial with no viewer JavaScript, configuration, schema, CRS, or parcel endpoint. No bypass was attempted."
+    },
+    {
+      "url": "https://www.southampton.gov.uk/council-democracy/land-charges/personal-land-searches",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. The page described the council's SO14-SO19 local search procedure and linked the booking form. No search was submitted and no property/owner/title data was requested."
+    },
+    {
+      "url": "https://data.southampton.gov.uk/place/maps/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. It exposed Southampton map visualisations and a Power BI geographies dashboard, but no cadastral parcel schema or anonymous parcel geometry endpoint."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 400,
+      "contentType": "text/html",
+      "outcome": "The official page was observed by first-party search and listed Southampton City Council, but direct retrieval encountered a redirect loop (curl exit 47; web retrieval reported HTTP 400). No download URL or GML bytes were obtained."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "method": "GET; anonymous; TLS verification enabled via first-party indexed page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "First-party indexed documentation was reviewed for source scope, INSPIRE_ID identity, indicative geometry, CRS guidance, and limitations. No parcel feature response was requested from a private or authenticated route."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Southampton City Council's official local land-charges page evidences a local land-search custodian and procedure covering SO14-SO19. This does not establish an open parcel geometry service or citywide cadastral coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Southampton City Council local land-charges service; HM Land Registry national INSPIRE dataset",
+    "viewerUrls": [
+      "https://www.southampton.gov.uk/whereilive/interactive-map/",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire"
+    ],
+    "crs": "EPSG:27700 (British National Grid) documented by HM Land Registry; not verified on a Southampton feature response"
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_procedure_and_national_dataset_no_retrieved_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Southampton City Council local land-charges/search procedure for SO14-SO19; HM Land Registry INSPIRE freehold registered-property polygons for England and Wales.",
+    "verifiedOpenScope": "No anonymous Southampton parcel record, native identity, schema response, or geometry was retrieved in this attempt.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "remainingUncertainty": "The council interactive map may expose parcel/property layers when accessed through its normal browser flow, and the HM Land Registry Southampton GML may be downloadable when the official service is reachable. Redirect/interstitial outcomes do not evidence citywide parcel absence. No coordinates were shifted and no unsafe fields were requested."
+}

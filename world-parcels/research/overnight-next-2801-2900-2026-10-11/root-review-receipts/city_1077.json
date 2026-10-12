@@ -1,0 +1,26 @@
+{
+  "taskId": "city:1077",
+  "decision": "held",
+  "checkedAt": "2026-10-11T22:13:48Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-1077-nablus.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/nablus-service-review.json",
+    "tmp/valhalla-parcel-research/nablus/parcels-service.json",
+    "tmp/valhalla-parcel-research/nablus/layer-0.json",
+    "tmp/valhalla-parcel-research/runs/20261011T220825-070a4a2b/stdout.jsonl"
+  ],
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Rank 2888, code 1077, State of Palestine, exact WUP point and 206378 persons match the immutable queue and source roster. English and Arabic searches are recorded in the worker run. PLA locality custody and a parcel viewer are evidenced, but the saved first-party ArcGIS service and layer responses both say 499 Token Required. No anonymous native-ID polygon read or adapter qualification is evidenced; token and viewer failures do not establish citywide absence."
+}

@@ -1,0 +1,150 @@
+{
+  "cityCode": 5901,
+  "queueRank": 3061,
+  "name": "Abu Qurqas",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso2": "EG",
+  "iso3": "EGY",
+  "point": [27.9302841905639, 30.8264500677775],
+  "population2025": 195803,
+  "population2025k": 195.803,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abu Qurqas Egypt official cadastral parcel map land registry GIS",
+        "result": "First-party discovery identified the Egyptian Survey Authority as the national survey/map custodian, and official Egyptian planning and real-estate-service references for Abu Qurqas. No Abu Qurqas-local public anonymous parcel-vector service, native parcel-ID schema, or safe ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.alamiria.com/Sec/TashTxt?id=%2FFXLki3emy8%3D",
+          "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6"
+        ]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "أبو قرقاص مصر خريطة كادستر قطع الأراضي السجل العقاري",
+        "result": "أثبت البحث العربي وجود الهيئة المصرية العامة للمساحة وخدمات الخرائط الرقمية، ومراجع رسمية تخص التخطيط الاستراتيجي وخدمات التسجيل/البيان المساحي لمنطقة أبو قرقاص، لكنه لم يكشف خدمة عامة مجهولة تعيد معرفات قطع أراضٍ ومضلعاتها أو واجهة API محلية.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://gopp.gov.eg/",
+          "https://gopp.gov.eg/%D9%85%D8%AD%D8%A7%D9%81%D8%B8-%D8%A7%D9%84%D9%85%D9%86%D9%8A%D8%A7-%D9%8A%D8%B9%D8%AA%D9%85%D8%AF-%D8%A7%D9%84%D9%85%D8%AE%D8%B7%D8%B7-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%D9%8A%D8%AC/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "nationalCustodian": "Egyptian Survey Authority (ESA) states that it produces topographic, digital and property-related maps and offers digital map products; its public pages describe ordering maps by location, scale, layers, format and projection.",
+    "localCustodian": "Official planning material identifies Abu Qurqas in Minya Governorate and an official public-service entry identifies a survey statement service requiring a governorate/area selection, but no Abu Qurqas-local public cadastral map/API was evidenced.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": []
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "httpStatus": 200,
+      "outcome": "ESA history and service overview were reachable; the page describes cadastral/property record and map responsibilities but exposes no anonymous parcel-vector endpoint."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "httpStatus": 200,
+      "outcome": "ESA services listed digital maps, coordinate certificates and land-boundary-related services; no public parcel layer URL or schema was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "httpStatus": 200,
+      "outcome": "ESA digital-map page was fetched and inspected. It describes a paid/request workflow for digital maps with selected layers and projection. Linked map pages were static national/administrative maps; no current JavaScript/configuration for parcel querying, WMS/WFS, ArcGIS FeatureServer, or ID-plus-geometry response was found."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/egypt_maps.aspx",
+      "httpStatus": 200,
+      "outcome": "ESA map index exposed static PDF maps and an Egypt map page, not cadastral parcel vector data."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "httpStatus": 200,
+      "outcome": "ESA directorate page used a static image map; it did not expose parcel geometry or a query API."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.alamiria.com/Sec/TashTxt?id=%2FFXLki3emy8%3D",
+      "httpStatus": 200,
+      "outcome": "Official Gazette material evidenced approval/modification of Abu Qurqas strategic urban planning, not cadastral parcel-vector access."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6",
+      "httpStatus": null,
+      "outcome": "Search result described an official survey-statement service, but direct TLS request failed certificate validation because the certificate was expired. No TLS exception was attempted. The result did not expose parcel geometry."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://gopp.gov.eg/%D9%85%D8%AD%D8%A7%D9%81%D8%B8-%D8%A7%D9%84%D9%85%D9%86%D9%8A%D8%A7-%D9%8A%D8%B9%D8%AA%D9%85%D8%AF-%D8%A7%D9%84%D9%85%D8%AE%D8%B7%D8%B7-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%D9%8A%D8%AC/",
+      "httpStatus": 200,
+      "outcome": "GOPP material evidenced Abu Qurqas strategic planning and local planning participation, not a parcel registry viewer or anonymous geometry service."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No official Abu Qurqas cadastral viewer configuration or parcel API was exposed by the inspected first-party pages.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "The exact WUP point [27.9302841905639, 30.8264500677775] was preserved in latitude/longitude order. No coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No bounded anonymous parcel ID-plus-geometry response was available because no public parcel endpoint was exposed."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian national survey/map authority and official Abu Qurqas/Minya planning and public-service references.",
+    "verifiedOpenScope": "National map production and Abu Qurqas planning/service context were evidenced, but anonymous Abu Qurqas parcel geometry coverage was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not moved to force a parcel hit.",
+    "A zero exact-point hit, absent map extent, inaccessible service, or TLS certificate failure was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Egypt has an evidenced national survey/map custodian and Abu Qurqas-specific official planning/service references, but no safe anonymous parcel-vector endpoint, native identity, schema, CRS, or citywide open coverage was established in this attempt."
+}

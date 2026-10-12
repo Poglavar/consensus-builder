@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 10298,
+  "queueRank": 2697,
+  "cityId": "wup2025:10298",
+  "name": "Xintai",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [35.9049699147698, 117.752197273894],
+  "centerLatLon": [35.9049699147698, 117.752197273894],
+  "population2025": 219313,
+  "population2025k": 219.313,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Xintai Municipal Natural Resources and Planning Bureau is evidenced through official Taian municipal government material as a local real-estate-registration custodian; no anonymous public parcel feature service was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xintai China official cadastral map parcel GIS Natural Resources Bureau",
+        "result": "Search identified official Taian Natural Resources and Planning Bureau material about Xintai real-estate registration, plus a non-government technical article describing Xintai's spatial-data platform. No public Xintai parcel ID-plus-geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://zrzyj.taian.gov.cn/art/2024/5/24/art_47377_10325606.html",
+          "https://o.southgis.com/news/detail/7529"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "新泰市 自然资源和规划局 地籍图 宗地 GIS 地图 服务",
+        "result": "官方结果确认新泰市自然资源和规划局参与不动产登记服务；泰安市官方材料说明地籍数据库、宗地矢量格式和字段，但未发现可匿名获取新泰宗地稳定ID与完整几何的公开服务。",
+        "actualResultUrls": [
+          "https://zrzyj.taian.gov.cn/art/2024/5/24/art_47377_10325606.html",
+          "https://zrzyj.taian.gov.cn/art/2023/9/7/art_340358_10322911.html",
+          "https://zrzyj.taian.gov.cn/art/2025/3/17/art_212208_10330311.html"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://zrzyj.taian.gov.cn/art/2024/5/24/art_47377_10325606.html",
+      "operator": "Taian Municipal Natural Resources and Planning Bureau; Xintai Municipal Natural Resources and Planning Bureau",
+      "scope": "Xintai City real-estate-registration service",
+      "observation": "Official article states the Xintai bureau director conducted work at the Xintai government-service-center real-estate-registration window and describes registration service responsibilities. It does not publish parcel geometry or an API."
+    },
+    {
+      "url": "https://zrzyj.taian.gov.cn/art/2023/9/7/art_340358_10322911.html",
+      "operator": "Taian Municipal Natural Resources and Planning Bureau",
+      "scope": "Taian municipal cadastral/registration system guidance; county-level systems are supervised rather than directly exposed",
+      "observation": "Official page says the registration system supports SHP vector cadastral data, uses CGCS2000 with 3-degree Gauss projection, and lists cadastral field examples. These are schema/context evidence, not a public Xintai feature response."
+    },
+    {
+      "url": "https://o.southgis.com/news/detail/7529",
+      "operator": "SouthGIS technical publication; not a registry custodian",
+      "scope": "Xintai spatial-temporal data platform description",
+      "observation": "Describes a Xintai natural-resources private-cloud spatial-data platform and broad thematic layers. It is general technical/vendor prose and does not provide an anonymous parcel endpoint; it is not used as registry proof."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://zrzyj.taian.gov.cn/art/2024/5/24/art_47377_10325606.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Xintai registration-service article fetched; local custodian evidence recorded; no parcel API or geometry present."
+    },
+    {
+      "url": "https://zrzyj.taian.gov.cn/art/2023/9/7/art_340358_10322911.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official cadastral-format page fetched; CGCS2000/3-degree Gauss and SHP context recorded; no feature response present."
+    },
+    {
+      "url": "https://zrzyj.taian.gov.cn/art/2025/7/8/art_51079_10332021.html",
+      "method": "GET",
+      "status": "HTTP 404",
+      "summary": "Search result route for Taian cadastral visualization article returned 404 on direct GET; no retry with altered host or TLS bypass. Search snippet was not treated as geometry evidence."
+    },
+    {
+      "url": "https://www.xintai.gov.cn/",
+      "method": "GET",
+      "status": "TLS certificate hostname validation failure",
+      "summary": "Direct Xintai government-host attempt failed certificate validation; TLS verification was not disabled and no exception was used. This route failure is not evidence of absence."
+    },
+    {
+      "url": "https://o.southgis.com/news/detail/7529",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Non-first-party technical article fetched for lead context only; no public parcel feature endpoint or safe parcel response found."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Xintai local registration custodian and Taian cadastral-system documentation discovery.",
+    "verifiedOpenScope": "Official local-custodian and cadastral-format documentation only; no anonymous parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Local Xintai registration custodian evidenced; public registry parcel-data access not evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No parcel geometry obtained.",
+    "crs": "CGCS2000/3-degree Gauss is documented for Taian municipal cadastral systems, but not verified on a Xintai parcel response.",
+    "identityReadiness": "No native parcel identity observed.",
+    "safeFieldAllowlist": ["stable native parcel ID if later exposed", "full parcel polygon geometry", "source CRS if explicitly returned", "source layer/year", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained; no owner, address, titleholder, contact, tax, account, certificate, or other unsafe fields were accessed."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous public parcel ID-plus-geometry response or downloadable cadastral dataset was verified. Serial review must independently qualify coverage, native identity, CRS and adapter semantics.",
+  "scopeLimits": [
+    "Exact WUP point [35.9049699147698,117.752197273894] was preserved in latitude/longitude order and was not shifted.",
+    "No sample GeoJSON retained because no safe native parcel ID plus full polygon was obtained.",
+    "No exact-point hit, map-extent miss, timeout, TLS route failure, or absent endpoint is treated as evidence of citywide cadastral absence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS verification bypass was used.",
+    "Packet completion is research evidence only and is not source integration or admission."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If a future source is qualified, retain exactly one stable native parcel identity as properties.id and keep source field mapping in metadata.",
+  "nextStep": "Serial reviewer should independently inspect any authorized anonymous official Xintai or Shandong parcel service, verify native IDs, CRS/axis handling and city coverage, and keep runtime held until qualification."
+}

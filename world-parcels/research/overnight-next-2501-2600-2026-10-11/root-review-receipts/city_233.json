@@ -1,0 +1,32 @@
+{
+  "taskId": "city:233",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-233-aarhus.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/aarhus-service-review.json",
+    "tmp/valhalla-parcel-research/aarhus/layers.json",
+    "tmp/valhalla-parcel-research/aarhus/wfs-headers.txt",
+    "tmp/valhalla-parcel-research/aarhus/clientinfo.json"
+  ],
+  "checkedAt": "2026-10-11T13:50:32.428594Z",
+  "reason": "Held: Municipal cadastral theme metadata was returned, but no native parcel ID or geometry. National WFS returned 401 Bearer; municipal client-info cache reports an invalid session. Independent live adapter qualification (fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, headed Details) is absent. This is not evidence of citywide parcel absence.",
+  "identityCheck": {
+    "rank": 2516,
+    "cityCode": 233,
+    "country": "Denmark",
+    "countryCode": "DK",
+    "point": [
+      56.1561141942173,
+      10.1849131498758
+    ],
+    "populationPersons": 233587,
+    "matchedQueueAndRankedRoster": true
+  },
+  "searchesChecked": [
+    "English",
+    "Danish"
+  ],
+  "retainedPolygonCount": 0
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8617",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8617-jiangyang.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/jiangyang-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T114700-4de8711c/stdout.jsonl",
+    "tmp/valhalla-parcel-research/8617/jiangyang.headers"
+  ],
+  "checkedAt": "2026-10-09T11:51:28Z",
+  "review": "No verified fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel check. No adapter admission.",
+  "reason": "Immutable code 8617, rank 1232, China, [28.9293929790689,105.441729966685], 452500 persons match roster and queue. English and Simplified Chinese web searches are recorded as executed. Official Luzhou service material names registration custodians, while cached direct Jiangyang response is CloudWAF 418. No anonymous native-ID parcel geometry or exact-point result was obtained; registry custody is supported but public geometry and citywide presence remain unresolved."
+}

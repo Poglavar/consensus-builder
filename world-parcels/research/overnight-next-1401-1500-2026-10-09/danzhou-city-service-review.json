@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10932-danzhou-city.json",
+  "purpose": "Document separate English/local-language research, local registry custody, anonymous request outcomes, and safe geometry limits for Danzhou City.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Danzhou government sources support a local real-estate registration custodian and describe the municipal 儋洋资源云 spatial platform. Direct anonymous fetches to the official host returned HTTP 403; no parcel vector, schema, CRS, or safe native parcel ID was verified.",
+  "registryAssessment": "Local registration custody is supported by official Danzhou government material naming 儋州市不动产登记中心 and the municipal natural-resources bureau. This is distinct from proving public parcel geometry or runtime adapter readiness.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+      "operator": "Danzhou Municipal Government / Hainan real-estate registration directory",
+      "scope": "Lists the Danzhou Real Estate Registration Center as a local registration office."
+    },
+    {
+      "url": "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+      "operator": "Danzhou Municipal Government / Danzhou Natural Resources and Planning Bureau",
+      "scope": "Describes 儋洋资源云 as a spatial display, query, monitoring, and public-participation platform for Danzhou resources."
+    },
+    {
+      "url": "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zcfg/202305/t20230510_3413994.html",
+      "operator": "Danzhou Municipal Government",
+      "scope": "Describes city/county natural-resources and real-estate-registration department roles under Hainan registration procedures."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Danzhou City official cadastral parcel map GIS land registration natural resources bureau China",
+      "result": "Official Danzhou government pages found; no public parcel vector route or schema identified.",
+      "actualResultUrls": [
+        "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+        "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+        "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zcfg/202305/t20230510_3413994.html"
+      ],
+      "scope": "Exact unchanged WUP point; public custody and geometry only."
+    },
+    {
+      "language": "Chinese",
+      "query": "儋州市 不动产登记 地籍图 自然资源和规划局 官方",
+      "result": "Official results identified the local registration center, natural-resources bureau, and 儋洋资源云; direct anonymous requests were denied with HTTP 403.",
+      "actualResultUrls": [
+        "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+        "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+        "https://www.danzhou.gov.cn/danzhou/zfxxgkzl/bm/gtj/gknb/202401/t20240126_3581558.html"
+      ],
+      "method": "Separate local-language discovery followed by first-party review and bounded anonymous GET attempts.",
+      "scope": "No owner, address, tax, account, applicant, or private-property values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned or inspected at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://www.danzhou.gov.cn/",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 146,
+        "assessment": "Official host denied anonymous request; no endpoint discovery possible."
+      },
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 146,
+        "assessment": "No JavaScript/configuration or map service payload available."
+      },
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 146,
+        "assessment": "Search-indexed custody evidence exists, but the official PDF bytes were not accessible."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Danzhou official sources identify local registration custody and a city resource-map platform.",
+    "verifiedOpenScope": "No public source-native parcel polygon, native ID, CRS, or vector endpoint was retained or verified; this does not establish parcel absence or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "English discovery identified official Danzhou municipal sources; no public vector route was found.",
+    "Chinese discovery identified 儋州市不动产登记中心 and 儋洋资源云 in official indexed sources.",
+    "Anonymous GET to the official home page returned HTTP 403, 146 bytes.",
+    "Anonymous GET to the official 儋洋资源云 article returned HTTP 403, 146 bytes.",
+    "Anonymous GET to the official registration-center directory PDF returned HTTP 403, 146 bytes."
+  ],
+  "remainingUncertainty": "The described 儋洋资源云 or Hainan public-service systems may expose map data through a client or access-controlled route not discoverable from the blocked official pages. Exact-point geometry, native IDs, CRS, legal/title scope, completeness, and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until serial review independently qualifies a public adapter and safe geometry response.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

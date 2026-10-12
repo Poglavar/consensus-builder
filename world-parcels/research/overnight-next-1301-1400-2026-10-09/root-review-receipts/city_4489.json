@@ -1,0 +1,11 @@
+{
+  "taskId": "city:4489",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4489-sariwon.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/sariwon-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:57:00.075055+00:00",
+  "reason": "Queue identity and rank match the WUP 2025 source. English and Korean queries are recorded. The cited official domains still fail TLS verification here; no Sariwon parcel response or qualifying adapter evidence exists. This is unresolved access, not citywide absence."
+}

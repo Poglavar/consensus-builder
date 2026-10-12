@@ -1,0 +1,105 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Inayat Killi, Pakistan; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 3084,
+  "queueRank": 2788,
+  "name": "Inayat Killi",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [34.8234858944967, 71.4163851737553],
+  "population2025": 212640,
+  "population2025k": 212.64,
+  "populationUnit": "persons",
+  "aliases": ["inayat killi"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Inayat Killi Pakistan cadastral map land records official",
+        "result": "Search identified the official Khyber Pakhtunkhwa Revenue & Estate Department land-record program and its merged-district GIS settlement page. No Inayat Killi parcel viewer, public API, schema/CRS response, or safe anonymous parcel geometry was identified.",
+        "actualResultUrls": ["https://revenue.kp.gov.pk/settlement-and-land-record-7-districts/", "https://sdlr.kp.gov.pk/", "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/"]
+      },
+      {
+        "language": "Urdu/Pashto local-language attempt",
+        "query": "انایت کلی خیبر پختونخوا اراضی ریکارڈ نقشہ",
+        "result": "Search returned the official Khyber Pakhtunkhwa land-record and e-stamping pages, but no Inayat Killi-specific public parcel layer or ID-plus-geometry endpoint. General national/provincial service prose was not treated as city-local evidence.",
+        "actualResultUrls": ["https://sdlr.kp.gov.pk/", "https://revenue.kp.gov.pk/", "https://estamping.kp.gov.pk/"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://revenue.kp.gov.pk/settlement-and-land-record-7-districts/",
+      "observation": "Official Khyber Pakhtunkhwa Revenue & Estate Department page states that the merged-district settlement project covers Khar Bajaur, uses GIS-based measurement, and reports 3,067 measured parcels in Khar Bajaur. It does not expose a public Inayat Killi parcel layer, native parcel IDs, geometry service, schema, or CRS in the observed page. This is provincial program evidence, not city-local service evidence."
+    },
+    {
+      "url": "https://sdlr.kp.gov.pk/",
+      "observation": "Official Settlement & Digitization of Land Records site was identified as the merged-district GIS land-management entry point, but the anonymous request timed out before the viewer or configuration could be inspected. No absence inference was made."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "observation": "Official department page describes computerized land records, mutations, Fard-e-Bader, and service delivery in selected Khyber Pakhtunkhwa districts. It does not provide an open Inayat Killi parcel geometry response and does not establish citywide coverage."
+    },
+    {
+      "url": "https://estamping.kp.gov.pk/",
+      "observation": "Official Khyber Pakhtunkhwa e-stamping page exposes valuation and e-registry workflows, but no public parcel geometry or safe cadastral schema for Inayat Killi."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://revenue.kp.gov.pk/settlement-and-land-record-7-districts/",
+      "method": "GET official merged-district settlement page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Page returned through first-party search/open inspection. It documents Khar Bajaur GIS settlement progress and parcel totals, but no public parcel ID-plus-geometry response, map endpoint, schema, or CRS was exposed."
+    },
+    {
+      "url": "https://sdlr.kp.gov.pk/",
+      "method": "GET official SDLR entry point",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Anonymous request timed out during DNS/connection resolution after 20 seconds. Viewer configuration and API route could not be inspected; this is an access/transport limitation, not evidence of cadastral absence."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "method": "GET official computerization program page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Page returned through first-party search/open inspection. It describes land-record computerization and services, but no Inayat Killi geometry or public query schema was available."
+    },
+    {
+      "url": "https://estamping.kp.gov.pk/",
+      "method": "GET official e-stamping/e-registry page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Public workflow returned. No parcel geometry, native parcel identity, or anonymous cadastral feature response was requested or retained."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "A provincial land-record custodian and merged-district GIS program were evidenced, but no Inayat Killi-local registry/cadastre map, public parcel service, or local custodian endpoint was actually verified.",
+  "registryEvidenceUrls": ["https://revenue.kp.gov.pk/settlement-and-land-record-7-districts/", "https://sdlr.kp.gov.pk/"],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "nativeSchema": null,
+  "resultCategory": "provincial_custodian_program_found_parcel_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa provincial land-record programs and Khar Bajaur merged-district GIS settlement documentation.",
+    "verifiedOpenScope": "No open Inayat Killi parcel ID-plus-geometry response, schema, CRS, or city-local registry service was verified.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "south-asia",
+  "remainingUncertainty": "The SDLR viewer may expose a non-indexed service when reachable, and Khar Bajaur may have local or controlled access to measured parcel data. The exact WUP point was preserved and not shifted. No exact-point or map-extent miss was used as evidence of citywide absence. No credentials, private tokens, owner/address/contact/titleholder/personal/tax/account fields, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"]
+}

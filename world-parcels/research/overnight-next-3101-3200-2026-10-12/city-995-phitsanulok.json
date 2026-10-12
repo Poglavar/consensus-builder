@@ -1,0 +1,108 @@
+{
+  "cityCode": 995,
+  "queueRank": 3171,
+  "name": "Phitsanulok",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "iso3": "THA",
+  "locId": 764,
+  "capital": false,
+  "point": [16.812077346364, 100.254071434807],
+  "population2025": 189643,
+  "population2025k": 189.643,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Phitsanulok Thailand official cadastral parcel map GIS public service Department of Lands",
+        "result": "First-party discovery found the Department of Lands Landmap/land-parcel information center, the current LandsPublic viewer, and the official Phitsanulok Provincial Land Office. The current viewer is a public-land (NSL) map service rather than evidence of a complete private cadastral parcel service.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/landmap/home/",
+          "https://portal.dol.go.th/landspublic/",
+          "https://www.dol.go.th/phitsanulok/pl/home/"
+        ]
+      },
+      {
+        "language": "Thai (local/official language)",
+        "query": "พิษณุโลก แผนที่แปลงที่ดิน กรมที่ดิน ระบบค้นหารูปแปลงที่ดิน",
+        "result": "แหล่งทางการพบศูนย์ข้อมูลแผนที่รูปแปลงที่ดินของกรมที่ดิน ระบบ LandsPublic และสำนักงานที่ดินจังหวัดพิษณุโลก ระบบ LandsPublic ปัจจุบันเปิดชั้นข้อมูล น.ส.ล. (ที่สาธารณประโยชน์) และขอบเขตการปกครอง ไม่ใช่หลักฐานว่ามีข้อมูลแปลงกรรมสิทธิ์เอกชนแบบสาธารณะครบถ้วน.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/landmap/home/",
+          "https://portal.dol.go.th/landspublic/",
+          "https://www.dol.go.th/phitsanulok/pl/home/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "The Department of Lands is the evidenced national custodian of the Landmap/LandsPublic service, and the Phitsanulok Provincial Land Office is the evidenced local DOL office. No public anonymous private-parcel registry/API was qualified.",
+    "scope": "The official local office page establishes the provincial office and its public service role. The LandsPublic viewer exposes a public-land NSL service, not a complete city cadastral registry. registryFound remains null.",
+    "evidenceUrls": [
+      "https://www.dol.go.th/phitsanulok/pl/home/",
+      "https://portal.dol.go.th/landspublic/",
+      "https://www.dol.go.th/landmap/home/"
+    ]
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Current official DOL LandsPublic viewer and its exposed public API/WFS were checked; no safe parcel polygon was returned for the bounded Phitsanulok request.",
+    "nativeIdField": null,
+    "crs": "EPSG:4326 declared by WFS capabilities for LPCPUBLIC:DOLNSL; no retained geometry",
+    "boundedResponse": {"type": "FeatureCollection", "features": [], "totalFeatures": 0, "numberMatched": 0, "numberReturned": 0},
+    "fieldMapping": {"DOLNSL": ["geom", "nsl_id", "nsl_id_e", "nsl_name", "pro_nam_s", "amp_nam_s", "tam_nam_s", "org_respo"]},
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://www.dol.go.th/landmap/home/",
+        "outcome": "HTTP 200 official DOL Landmap center page; it links public-land and related map services but did not expose a private parcel-vector endpoint in the page itself."
+      },
+      {
+        "method": "GET",
+        "url": "https://portal.dol.go.th/landspublic/",
+        "outcome": "HTTP 200 current official LandsPublic viewer. JavaScript configuration exposed the anonymous NSL point API, DOLNSL TMS layer, and LPCPUBLIC WFS/WMS service."
+      },
+      {
+        "method": "GET",
+        "url": "https://portal.dol.go.th/api/nsldata/search-by-point?lat=16.812077346364&lng=100.254071434807",
+        "outcome": "With ordinary browser User-Agent and official viewer Referer, HTTP 404 JSON: No data found at this location. This exact-point miss was not treated as citywide absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://portal.dol.go.th/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "outcome": "HTTP 200 WFS capabilities. LPCPUBLIC:DOLNSL is titled public-land (NSL), declares EPSG:4326, and exposes only public-land attributes including nsl_id; no private cadastral parcel layer was evidenced."
+      },
+      {
+        "method": "GET",
+        "url": "https://portal.dol.go.th/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=LPCPUBLIC:DOLNSL",
+        "outcome": "HTTP 200 schema. Native fields include geom, nsl_id, nsl_id_e, nsl_name, administrative names, and responsible organization. No feature was retained."
+      },
+      {
+        "method": "GET",
+        "url": "https://portal.dol.go.th/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=LPCPUBLIC:DOLNSL&outputFormat=application/json&count=3&bbox=100.20,16.76,100.30,16.86,urn:ogc:def:crs:EPSG::4326",
+        "outcome": "HTTP 200 bounded anonymous response: empty FeatureCollection, totalFeatures 0. This is a bounded public-land-layer result only, not evidence of citywide parcel absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.dol.go.th/phitsanulok/pl/home/",
+        "outcome": "HTTP 200 official Phitsanulok Provincial Land Office page; local office identity and service context confirmed, but no anonymous parcel geometry/API was exposed."
+      }
+    ],
+    "note": "The exact WUP point was preserved and never shifted. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe-field request, or TLS exception was used."
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The official viewer is demonstrably a public-land NSL service; it does not establish public access to the complete private cadastral parcel fabric.",
+    "The exact point miss, bounded empty response, and unavailable legacy DOLWMS host are limited route outcomes and are not citywide absence evidence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No sample GeoJSON was written because no safe native parcel identity plus full polygon was returned.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

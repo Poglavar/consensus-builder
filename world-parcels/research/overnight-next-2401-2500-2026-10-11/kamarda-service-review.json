@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-11831-kamarda.json",
+  "cityCode": 11831,
+  "queueRank": 2433,
+  "name": "Kamarda",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [21.9435677602839, 87.9713883863074],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://wb.gov.in/departments-details.aspx?id=D190305165850306","httpStatus":200,"outcome":"Official Government of West Bengal department page identifies Banglarbhumi as the web-based land-record system used to display migrated blocks' live land records. General state-system custodian evidence; it does not expose a Kamarda parcel response."},
+    {"method":"SEARCH","url":"https://prd.wb.gov.in/resources/notification/cscrfp-vol1.pdf","httpStatus":200,"outcome":"Official West Bengal government project document lists Kamarda among Khejuri-I block's localities and gives the Khejuri-I block contact. This is local administrative/block scope evidence, not parcel geometry."},
+    {"method":"SEARCH","url":"https://purbamedinipur.gov.in/past-notices/tenders/page/15","httpStatus":200,"outcome":"Official Purba Medinipur district site has a Kamarda notice under Khejuri-I Block, confirming the district/block relationship. It is not a cadastral feature service."},
+    {"method":"GET","url":"https://banglarbhumi.gov.in/","httpStatus":null,"outcome":"Bounded anonymous GET timed out after 20 seconds. TLS verification remained enabled. No retry with disabled verification, credentials, CAPTCHA interaction, or guessed private endpoint was made."},
+    {"method":"SEARCH","url":"https://wb.gov.in/government-schemes-details-mutation-of-land-records.aspx","httpStatus":200,"outcome":"Official Bengali/English state procedure page describes access to updated Record of Rights, khatian, plot information, and land documents. It does not provide anonymous parcel geometry."},
+    {"method":"SEARCH","url":"https://wb.gov.in/government-schemes-details-minor-correction-of-land-records.aspx","httpStatus":200,"outcome":"Official state land-record procedure page confirms plot and khatian are land-record concepts in the state workflow; no parcel API or geometry was exposed."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig":"Banglarbhumi was identified as the first-party land-record system from the official West Bengal department page, but the live host timed out before current JavaScript/configuration could be inspected.",
+    "apiBase":"https://banglarbhumi.gov.in/",
+    "geometryCrs":null,
+    "nativeIdentity":null,
+    "sourceFieldMapping":null,
+    "boundedAnonymousResponse":{"requestScope":"Root public host only; no response body or parcel feature query obtained.","featureCount":0,"nativeIdentity":null}
+  },
+  "sourceFieldMapping":{"hierarchyFields":["district","block","mouza"],"parcelFields":null,"compositeKeyProvenance":"Kamarda/Khejuri-I relationship comes from official government documents; no parcel composite key was observed."},
+  "localCustodianAssessment":"Government of West Bengal is the evidenced state land-record custodian/system owner. Purba Medinipur district and Khejuri-I block are evidenced by first-party government pages/documents. No local registry office page or anonymous cadastral feature endpoint was directly reached; registryFound reflects the evidenced official land-record procedure/system, not a successful parcel lookup.",
+  "safeFieldAllowlist":["stable native parcel identity if later exposed anonymously","full parcel polygon only if later exposed anonymously and bounded","source service URL","source CRS and coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","certificate/title","personal data","citizenship","mobile number","OTP"],
+  "sampleGeoJSON":null,
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"First-party state land-record system and Kamarda/Khejuri-I administrative relationship are evidenced, but live anonymous viewer access timed out and no parcel identity, schema, CRS, or geometry was independently qualified."},
+  "scopeLimits":["Exact WUP point [21.9435677602839,87.9713883863074] was preserved and not shifted.","No exact-point hit or miss, map extent miss, or citywide absence is claimed.","The Banglarbhumi timeout is a transport/access outcome, not evidence that Kamarda lacks cadastral coverage.","No full parcel polygon is retained.","No owner, address, contact, titleholder, tax/account, personal, certificate, citizenship, mobile, or OTP fields were requested or retained.","No login, CAPTCHA bypass, private token, guessed private endpoint, or TLS-verification exception was used."],
+  "uncertainty":"Official first-party state land-record custody and the Kamarda/Khejuri-I location relationship are supported. Current public viewer configuration, anonymous parcel feature schema, native parcel identity, CRS, citywide coverage, update cadence, licensing, and safe geometry access remain unverified. Runtime adapter qualification remains held for serial review."
+}

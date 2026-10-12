@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11982",
+  "cityCode": 11982,
+  "wupCityCode": 11982,
+  "name": "Tong'an",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1562,
+  "queueRank": 1562,
+  "point": [24.7203857534751, 118.144402804556],
+  "centerLatLon": [24.7203857534751, 118.144402804556],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 366871,
+  "population2025k": 366.871,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Xiamen Natural Resources and Planning Bureau materials identify the Tong'an branch (同安分局) and the city's Real Estate Registration Center as local institutional custodians. The official iXiamen listing identifies the Xiamen Surveying and Basic Geographic Information Center service as providing cadastral maps, parcel maps and basic surveying results.",
+  "registryEvidenceUrls": [
+    "https://zygh.xm.gov.cn/zfxxgk/gfjzfxxgk/",
+    "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm",
+    "https://bdc.zygh.xm.gov.cn/yhrzpt/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Xiamen cadastral-map service host https://chzx.zygh.xm.gov.cn/ timed out during bounded normal-TLS GET attempts. No current JavaScript/configuration, parcel service endpoint, schema, CRS or safe anonymous ID-plus-complete-polygon response was verified. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_map_reference_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Local Tong'an/Xiamen institutional custody and an official cadastral/geospatial service are evidenced.",
+    "verifiedOpenScope": "Official local custody and service listing verified; current parcel layer, schema, CRS, native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tong'an Xiamen China official cadastral parcel map GIS land registration",
+        "scope": "Identify the local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search located official Xiamen Natural Resources and Planning Bureau materials for Tong'an branch and Real Estate Registration Center, and an official iXiamen listing for the Xiamen Surveying and Basic Geographic Information Center cadastral-map service. No anonymous parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://zygh.xm.gov.cn/zfxxgk/gfjzfxxgk/",
+          "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm",
+          "https://bdc.zygh.xm.gov.cn/yhrzpt/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "同安 厦门 不动产登记 地籍图 宗地图 官方",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search located official Xiamen Natural Resources and Planning Bureau pages naming 同安分局 and 不动产登记中心, plus the official iXiamen cadastral-map service listing. The service host did not return within the bounded request window; no parcel schema or geometry was obtained.",
+        "actualResultUrls": [
+          "https://zygh.xm.gov.cn/zfxxgk/gfjzfxxgk/",
+          "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm",
+          "https://www.saac.gov.cn/daj/c100298/202403/5189e53e6fbf412d8172c547e6eef295.shtml"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The timeout is a route/access limitation only and does not support citywide absence. Current viewer configuration, service URL, parcel layer, schema, CRS, stable native identity, geometry availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Xiamen/Tong'an cadastral service. Do not enable runtime from this packet alone."
+}

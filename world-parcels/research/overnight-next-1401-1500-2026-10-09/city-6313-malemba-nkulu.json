@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6313,
+  "cityId": "wup2025:6313",
+  "name": "Malemba-Nkulu",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "centerLatLon": [-8.04093595753573, 26.7903547160209],
+  "point": [-8.04093595753573, 26.7903547160209],
+  "queueRank": 1471,
+  "population2025": 386790,
+  "population2025k": 386.79,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Malemba-Nkulu cadastral parcels land registry GIS Democratic Republic of the Congo",
+        "result": "Search found the official Ministry of Land Affairs, a public land-record consultation service, a ministry circonscriptions page, and non-cadastral administrative/mining references. No official Malemba-Nkulu parcel viewer or public parcel API was identified.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Malemba-Nkulu cadastre parcelles registre foncier carte GIS RDC",
+        "result": "La recherche a trouvé le Ministère des Affaires Foncières, la procédure officielle de demande de recherche foncière et la liste des circonscriptions. La liste Haut-Lomami consultée ne montre que Kamina et Kanyama; aucun visualiseur parcellaire public ou service API anonyme pour Malemba-Nkulu n'a été trouvé.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/ressources/lois-decrets-arretes"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "The national Ministry of Land Affairs and its formal search procedure are evidenced, but no Malemba-Nkulu local registry/cadastre service or public parcel layer was evidenced. The official Haut-Lomami circonscriptions page lists Kamina and Kanyama, not Malemba-Nkulu.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "operator": "Ministère des Affaires Foncières, RDC",
+      "observation": "Official form describes a formal, identity-bearing land search workflow and asks for a province/circonscription, property references, and supporting documents; it is not an anonymous parcel geometry service. No form was submitted."
+    },
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "operator": "Ministère des Affaires Foncières, RDC",
+      "observation": "Official page lists 143 land/cadastral circonscriptions and Haut-Lomami entries Kamina and Kanyama. No Malemba-Nkulu entry, viewer, service URL, schema, or CRS was exposed."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "operator": "Ministère des Affaires Foncières, RDC",
+      "observation": "Official ministry homepage exposes laws, land services, and digitisation references but no public parcel map/API for this city."
+    },
+    {
+      "url": "https://bic.cd/",
+      "operator": "Bureau d'Informations Cadastrales",
+      "observation": "Public-facing cadastral information site claims coverage across 26 provinces, but the inspected landing page exposed no anonymous parcel geometry endpoint or safe city-specific response."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.affairesfoncieres.gouv.cd/", "method": "GET", "status": "HTTP 200", "summary": "Official ministry homepage loaded; no public map/API route advertised."},
+    {"url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes", "method": "GET", "status": "HTTP 200", "summary": "Official multi-step land-search form loaded; it requires identity and property details, so no submission was made and no unsafe fields were requested."},
+    {"url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "method": "GET", "status": "HTTP 200", "summary": "Official current JavaScript-rendered page loaded; source inspection found static circonscription content and no parcel viewer, public API, WMS/WFS, schema, or CRS."},
+    {"url": "https://bic.cd/", "method": "GET", "status": "HTTP 200", "summary": "Landing page loaded; no anonymous parcel query or geometry service was exposed."},
+    {"url": "https://www.cadastre.gouv.cd/", "method": "GET", "status": "DNS failure", "summary": "Candidate cadastre host did not resolve; unavailable, not evidence of absence."},
+    {"url": "https://www.rdc-cadastre.cd/", "method": "GET", "status": "connection failure", "summary": "Candidate host could not be reached; unavailable, not evidence of absence."},
+    {"url": "https://geoportail-rdc.cd/", "method": "GET", "status": "DNS failure", "summary": "Candidate geoportal host did not resolve; unavailable, not evidence of absence."},
+    {"url": "https://www.arcgis.com/sharing/rest/search?q=Malemba-Nkulu%20cadastre&f=json", "method": "GET", "status": "HTTP 200", "summary": "ArcGIS public search returned total=0; not a first-party DRC service and not evidence of citywide absence."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National Ministry of Land Affairs procedures and official circonscriptions listing, with city-specific discovery for Malemba-Nkulu.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No safe anonymous native parcel ID-plus-geometry response was available; the exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or survey identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "A local Malemba-Nkulu registry or unpublished/credentialed parcel service may exist. The reviewed official pages do not expose its public map/API, schema, CRS, exact-point inclusion, or citywide coverage.",
+  "nextStep": "A serial reviewer should independently check whether the Haut-Lomami land administration exposes a current anonymous geometry service, without treating the endpoint failures or zero ArcGIS search result as absence."
+}

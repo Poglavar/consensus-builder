@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4367",
+  "cityCode": 4367,
+  "wupCityCode": 4367,
+  "name": "Qazvin",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso2": "IR",
+  "iso3": "IRN",
+  "rank": 1599,
+  "queueRank": 1599,
+  "point": [36.2899147204586, 50.0074565965657],
+  "centerLatLon": [36.2899147204586, 50.0074565965657],
+  "pointBasis": "Exact immutable WUP2025 settlement point; not shifted to force a parcel hit and not a municipal-boundary or coverage claim.",
+  "population2025": 355865,
+  "population2025k": 355.865,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Qazvin's local notary association publicly links the Provincial Organization for Registration of Deeds and Properties and publishes cadastral/document-registration notices. This evidences local registration/cadastre custody context, but not an open parcel-vector service or citywide geometry coverage.",
+  "registryEvidenceUrls": [
+    "https://qazvinnotary.ir/",
+    "https://ssaa.ir/",
+    "https://shamim.ssaa.ir/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No anonymous safe parcel ID-plus-polygon response was verified. The national SSAA, My SSAA, SHAMIM, and Qazvin municipal HTTPS routes timed out from this environment; the accessible Qazvin notary-association site exposed institutional links and notices but no parcel feature service. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local_registry_context_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Qazvin local registration/cadastre context and national Iranian cadastral portals; bounded anonymous public route review.",
+    "verifiedOpenScope": "Local registration/cadastre institutional context only; no anonymous complete-polygon parcel response, schema, CRS, or native identity was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qazvin official cadastral parcel map GIS land registry Iran",
+        "scope": "Identify first-party local registration/cadastre custody and a safe anonymous parcel-geometry route.",
+        "result": "Search found the Qazvin local notary association, official-national SSAA/SHAMIM references, and general land-management material. The accessible local site linked the provincial registration organization but exposed no public parcel map/API. National SSAA/SHAMIM HTTPS routes were attempted directly and timed out.",
+        "actualResultUrls": [
+          "https://qazvinnotary.ir/",
+          "https://ssaa.ir/",
+          "https://my.ssaa.ir/portal",
+          "https://shamim.ssaa.ir"
+        ],
+        "executionMethod": "Separate English web search followed by first-party URL review and bounded anonymous HTTPS GET attempts."
+      },
+      {
+        "language": "Persian (Farsi)",
+        "query": "قزوین نقشه کاداستر قطعات ملکی سامانه رسمی سازمان ثبت اسناد املاک",
+        "scope": "Independent local-language discovery for Qazvin cadastral custody and public parcel geometry.",
+        "result": "Search located Qazvin notary-association material and references to the Iranian registration/cadastre organization, SHAMIM, and land-management services. No anonymous public parcel-vector endpoint was verified; results describing ownership or property lookups were not queried because they require unsafe personal/property fields.",
+        "actualResultUrls": [
+          "https://qazvinnotary.ir/",
+          "https://ssaa.ir/",
+          "https://shamim.ssaa.ir"
+        ],
+        "executionMethod": "Separate Persian-language web search followed by first-party/local institutional source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. Whether Qazvin has an open cadastral viewer or vector endpoint, its request shape, native parcel identity, schema, CRS, point inclusion, and citywide completeness remain unknown. A timeout or unavailable UI is not evidence of parcel absence.",
+  "nextStep": "Serial reviewer should independently validate any first-party anonymous parcel endpoint and safe geometry-only response before adapter qualification; keep runtime held."
+}

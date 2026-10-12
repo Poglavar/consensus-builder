@@ -1,0 +1,89 @@
+{
+  "cityCode": 2597,
+  "queueRank": 2775,
+  "city": "Ica",
+  "country": "Peru",
+  "countryCode": "PE",
+  "point": [-14.0626820695639, -75.734916080588],
+  "population2025": 213644,
+  "population2025k": 213.644,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ica Peru official cadastral parcel map registry municipal GIS API catastro",
+        "result": "First-party discovery found the official Municipalidad Provincial de Ica/ICL cadastral modernization project, SUNARP's official BGR viewer, and official Peruvian geospatial services. No anonymous public parcel geometry endpoint with a safe stable parcel ID was verified.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/muniica/noticias/751884-municipalidad-provincial-de-ica-avanza-en-la-implementacion-de-un-sistema-catastral-de-primer-nivel",
+          "https://catastroica.icl.gob.pe/",
+          "https://www.gob.pe/es/63173-acceder-al-visor-de-la-base-grafica-registral",
+          "https://geoservidorperu.minam.gob.pe/arcgis/rest/services/ZEE_VISOR/04_CARTOGRAF%C3%8DA_BASE_ICA/MapServer"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Ica Perú mapa catastral parcelas visor oficial catastro municipal SUNARP",
+        "result": "La búsqueda oficial confirmó que la Municipalidad Provincial de Ica y el Instituto Catastral de Lima ejecutan la actualización del catastro urbano; no se verificó un visor/API público anónimo que entregue geometría parcelaria completa y un identificador nativo seguro.",
+        "actualResultUrls": [
+          "https://muniica.gob.pe/portal/index.php/2026/02/13/actualizaciones-del-castrato-urbano-en-ica/",
+          "https://www.gob.pe/institucion/muniica/noticias/751884-municipalidad-provincial-de-ica-avanza-en-la-implementacion-de-un-sistema-catastral-de-primer-nivel",
+          "https://catastroica.icl.gob.pe/",
+          "https://www.gob.pe/es/63173-acceder-al-visor-de-la-base-grafica-registral"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Municipalidad Provincial de Ica, working with Instituto Catastral de Lima (ICL); SUNARP is the national registral custodian for its separate Base Gráfica Registral.",
+  "registryEvidence": {
+    "localEvidenceUrls": [
+      "https://catastroica.icl.gob.pe/",
+      "https://muniica.gob.pe/portal/index.php/2026/02/13/actualizaciones-del-castrato-urbano-en-ica/",
+      "https://www.gob.pe/institucion/muniica/noticias/751884-municipalidad-provincial-de-ica-avanza-en-la-implementacion-de-un-sistema-catastral-de-primer-nivel",
+      "https://www.muniica.gob.pe/transparencia/GESTION2018/docus/tupa-uit-2018.pdf"
+    ],
+    "interpretation": "A local cadastral custodian and actual cadastral project/procedure are evidenced. The 2026 municipal notice reports an ICL-led urban-cadastre update, while the older municipal TUPA documents cadastral certificates and the Subgerencia de Obras Privadas y Catastro. This does not establish an open parcel API or complete city coverage."
+  },
+  "sourceReview": {
+    "service": "Catastro Ica project site (ICL/Municipalidad Provincial de Ica); no public parcel API verified",
+    "baseUrl": "https://catastroica.icl.gob.pe/",
+    "officialAssetsInspected": [
+      "https://catastroica.icl.gob.pe/",
+      "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/ICA/MapServer",
+      "https://geoservidorperu.minam.gob.pe/arcgis/rest/services/ZEE_VISOR/04_CARTOGRAF%C3%8DA_BASE_ICA/MapServer",
+      "https://visor-bgr.sunarp.gob.pe/visor-bgr/inicio"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified for local cadastral project; MINAM base-cartography service metadata reports EPSG:32718, but its layers are not parcels",
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service and layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://catastroica.icl.gob.pe/", "outcome": "TLS-verified request timed out after 20 seconds; no page/configuration or parcel endpoint was obtained. Timeout is not evidence of cadastral absence."},
+    {"method": "GET", "url": "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/ICA/MapServer?f=pjson", "outcome": "HTTP 200; ArcGIS service is a cached raster imagery service in EPSG:3857, not a parcel feature service."},
+    {"method": "GET", "url": "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/ICA/MapServer/0?f=pjson", "outcome": "HTTP 200; layer 0 is a Raster Layer, confirming no parcel schema or geometry response."},
+    {"method": "GET", "url": "https://geoservidorperu.minam.gob.pe/arcgis/rest/services/ZEE_VISOR/04_CARTOGRAF%C3%8DA_BASE_ICA/MapServer?f=pjson", "outcome": "HTTP 200; official Ica base-cartography service exposes points, roads, urban footprint and physical geography, with EPSG:32718 metadata, but no parcel layer."},
+    {"method": "GET", "url": "https://visor-bgr.sunarp.gob.pe/visor-bgr/inicio", "outcome": "Request timed out; official SUNARP instructions state viewer access requires DNI, issue date and CAPTCHA. No login, credentials, CAPTCHA bypass, or private fields were attempted."},
+    {"method": "GET", "url": "https://www.gob.pe/institucion/muniica/noticias/751884-municipalidad-provincial-de-ica-avanza-en-la-implementacion-de-un-sistema-catastral-de-primer-nivel", "outcome": "Official municipal notice confirms ICL/Municipalidad Provincial de Ica cadastral-system implementation and incorporation into national cartographic data; no public geometry endpoint."},
+    {"method": "GET", "url": "https://muniica.gob.pe/portal/index.php/2026/02/13/actualizaciones-del-castrato-urbano-en-ica/", "outcome": "Official municipal notice reports the urban-cadastre update is in progress, with 18,000 cadastral units surveyed and a first-phase target near 84,000; no public parcel download/API."},
+    {"method": "GET", "url": "https://www.muniica.gob.pe/transparencia/GESTION2018/docus/tupa-uit-2018.pdf", "outcome": "Official municipal procedure document evidences cadastral certificates and Subgerencia de Obras Privadas y Catastro; it is a procedure, not an anonymous geometry service."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against parcel geometry; no usable public parcel geometry endpoint was verified."},
+  "coverageAssessment": {"claimedScope": "Ica urban cadastral update by Municipalidad Provincial de Ica and ICL", "verifiedOpenScope": "Local cadastral custodian and active project/procedure only; no anonymous parcel vector response", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": [
+    "Exact WUP point [-14.0626820695639, -75.734916080588] was preserved in latitude/longitude order and was not shifted.",
+    "The exact-point test was not run; no hit/miss, map extent miss, timeout, login wall, or unusable UI was treated as citywide absence.",
+    "SUNARP BGR is a separate national registral viewer with DNI/date/CAPTCHA access requirements; it was not accessed beyond public instructions and was not treated as an open parcel API.",
+    "IDEMIL and MINAM Ica services were inspected as official geospatial leads but contain imagery/base-cartography layers, not parcel geometry.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set and no GeoJSON sample were retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current Catastro Ica project API/configuration, native parcel identity semantics, schema, CRS, geometry access conditions, city-boundary relationship and citywide completeness remain unresolved."
+}

@@ -1,0 +1,38 @@
+{
+  "taskId": "city:11034",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:47:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-11034-zixing.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/zixing-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 11034,
+    "rank": 3012,
+    "country": "China",
+    "point": [
+      25.951835582064,
+      113.234825992777
+    ],
+    "populationPersons": 198617
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/responsibilityDetail.jsp?areaCode=431081999000&id=rxofMVUBTR6jgTCZhqhsNg",
+    "https://zrzyt.hunan.gov.cn/zrzyt/tslm/ywgz/chgis/201608/t20160823_4397411.html"
+  ],
+  "reason": "Hunan first-party service evidence names the Zixing Natural Resources Bureau for real-estate registration; the historical Digital Zixing platform does not establish current public parcel vectors. No safe native parcel ID or polygon response was retained. Platform timeout does not establish citywide absence."
+}

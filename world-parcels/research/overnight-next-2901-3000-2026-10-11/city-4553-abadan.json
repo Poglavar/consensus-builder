@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 4553,
+  "queueRank": 2973,
+  "name": "Abadan",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [30.3501066006537, 48.281247639755],
+  "population2025": 200998,
+  "population2025k": 200.998,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abadan Iran official cadastral parcel map GIS land registry Organization for Registration of Deeds and Properties",
+        "result": "Search found official national registration and cartographic organizations, plus non-first-party references to the Iranian property-registration portal. No public Abadan cadastral viewer, current JavaScript configuration, anonymous parcel API, schema, CRS, or safe ID-plus-geometry response was found.",
+        "actualResultUrls": ["https://my.ssaa.ir/portal", "https://ssaa.ir/", "https://ncc.gov.ir/"]
+      },
+      {
+        "language": "Persian (local/native)",
+        "query": "آبادان نقشه کاداستر پارسل ثبتی اداره ثبت اسناد و املاک سامانه رسمی",
+        "result": "Search identified the national cadastral/property-registration service references and National Cartographic Center, but did not identify a public Abadan parcel map or anonymous API with safe parcel identity and geometry. Search results mentioning Abadan registration offices or property notices were not treated as an open cadastral service.",
+        "actualResultUrls": ["https://my.ssaa.ir/portal", "https://ssaa.ir/", "https://ncc.gov.ir/"]
+      }
+    ],
+    "sources": ["https://my.ssaa.ir/portal", "https://ssaa.ir/", "https://ncc.gov.ir/"]
+  },
+  "registryFound": null,
+  "registryBasis": "No first-party evidence of an Abadan-local public registry or parcel service was verified. National registration-portal references establish a possible country-level custodian only; they do not establish local open coverage.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Iranian national property-registration/cadastral services and national cartographic information; no Abadan open-data scope established.",
+    "verifiedOpenScope": "No anonymous parcel endpoint, public cadastral viewer, schema, CRS, or parcel geometry response was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "sourceCandidate": null,
+  "sourceFieldMapping": {
+    "nativeFieldsObserved": [],
+    "retainedIdentity": null,
+    "compositeKeyProvenance": null,
+    "geometryCrs": null
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://my.ssaa.ir/portal",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Direct public HTTPS request with TLS verification enabled timed out; no viewer configuration or API route was inspected. This is not evidence of parcel absence.",
+      "evidence": "tmp/valhalla-parcel-research/abadan/my-ssaa.headers",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://ssaa.ir/",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Direct public HTTPS request with TLS verification enabled timed out; no public cadastral route was inspected.",
+      "evidence": "tmp/valhalla-parcel-research/abadan/ssaa.headers",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://ncc.gov.ir/",
+      "method": "GET",
+      "status": "HTTP 502",
+      "summary": "National Cartographic Center homepage returned 502 through the request path; no map service configuration or parcel geometry was obtained.",
+      "evidence": "tmp/valhalla-parcel-research/abadan/ncc.headers",
+      "tlsVerification": "enabled"
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner/titleholder", "address/contact", "personal data", "tax/account", "certificate/title information"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The current public Iranian cadastral viewer/API route, Abadan coverage, schema, CRS, native parcel identity semantics, and anonymous geometry availability remain unresolved. The exact WUP point was preserved and was not used to infer a parcel hit or miss.",
+  "nextStep": "A serial reviewer should inspect any reachable current first-party Iranian registration/cadastral viewer and qualify only a bounded anonymous safe ID-plus-geometry response before runtime consideration."
+}

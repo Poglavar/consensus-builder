@@ -1,0 +1,118 @@
+{
+  "cityCode": 1347,
+  "queueRank": 1635,
+  "name": "Chimbote",
+  "country": "Peru",
+  "countryCode": "PE",
+  "point": [-9.09305568649011, -78.5620620979407],
+  "population2025": 350281,
+  "population2025k": 350.281,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chimbote Peru official cadastral parcel map geospatial GIS municipal parcel service",
+        "result": "Found official Peru sources for the national GeoPeru/IDEP map catalogue, the SUNARP Visor de la Base Gráfica Registral (BGR), and an official MEF 2024 Chimbote urban-land-value cadastral plan. The SUNARP viewer is a parcel-capable first-party service, but public access requires DNI, date of issue, and CAPTCHA; no anonymous parcel response was obtained.",
+        "actualResultUrls": [
+          "https://www.gob.pe/63173-acceder-al-visor-de-la-base-gr-fica-registral",
+          "https://visor-bgr.sunarp.gob.pe/",
+          "https://www.mef.gob.pe/es/por-instrumento/resolucion-ministerial/31981-resolucion-ministerial-n-369-2023-ef-15/file",
+          "https://www.geoidep.gob.pe/"
+        ]
+      },
+      {
+        "language": "Spanish (Peru local language)",
+        "query": "catastro Chimbote visor predios Municipalidad Provincial del Santa",
+        "result": "Found first-party Municipalidad Provincial del Santa evidence of municipal cadastral custody and cadastral-information procedures, plus an official COFOPRI agreement granting the municipality restricted access to Catastro Virtual for the province of Santa. No public municipal parcel viewer or anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://www.munisanta.gob.pe/documentos/2024/ADICIONAL/RESUMEN_EJECUTIVO_1ra_AUDI_PUBL.pdf",
+          "https://munisanta.gob.pe/download/audiencia_publica_2022/2/4.pdf",
+          "https://cdn.www.gob.pe/uploads/document/file/3112586/Convenio%20N%C2%BA%202022000005%20-%20Municipalidad%20Provincial%20del%20Santa.pdf.pdf",
+          "https://www.gob.pe/munisanta"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A first-party Municipalidad Provincial del Santa organizational report identifies Sub Gerencia de Catastro and Sub Gerencia de Catastro under urban development, and a first-party COFOPRI–Municipalidad Provincial del Santa agreement documents restricted municipal access to Catastro Virtual for the province of Santa. This establishes a local municipal/COFOPRI cadastral custodian, not an openly accessible parcel API or proof of citywide completeness.",
+  "officialSources": [
+    {
+      "url": "https://www.gob.pe/63173-acceder-al-visor-de-la-base-gr-fica-registral",
+      "observation": "Official SUNARP service page. States that BGR displays registered-property polygons nationally and requires DNI, date of issue, and CAPTCHA; searches can use location, partida, or coordinates."
+    },
+    {
+      "url": "https://visor-bgr.sunarp.gob.pe/",
+      "observation": "First-party SUNARP BGR viewer host. Anonymous GET timed out during this attempt; no login, CAPTCHA, credential, or bypass was attempted."
+    },
+    {
+      "url": "https://cdn.www.gob.pe/uploads/document/file/3112586/Convenio%20N%C2%BA%202022000005%20-%20Municipalidad%20Provincial%20del%20Santa.pdf.pdf",
+      "observation": "Official government-hosted COFOPRI agreement; documents restricted municipal access to Catastro Virtual for the province of Santa and records queries through Geo Llaqta."
+    },
+    {
+      "url": "https://www.munisanta.gob.pe/documentos/2024/ADICIONAL/RESUMEN_EJECUTIVO_1ra_AUDI_PUBL.pdf",
+      "observation": "Official Municipalidad Provincial del Santa report; identifies municipal cadastral subgerencias."
+    },
+    {
+      "url": "https://munisanta.gob.pe/download/audiencia_publica_2022/2/4.pdf",
+      "observation": "Official municipal accountability PDF; lists the municipal Certificado de Información Catastral and cadastral-plan validation procedures."
+    },
+    {
+      "url": "https://www.mef.gob.pe/es/por-instrumento/resolucion-ministerial/31981-resolucion-ministerial-n-369-2023-ef-15/file",
+      "observation": "Official MEF PDF containing the 2024 Chimbote urban-land-value cadastral plan; identifies UTM zone 17, WGS84, and states the plan is referential and not a title."
+    }
+  ],
+  "source": {
+    "sourceId": "peru-sunarp-bgr-and-santa-municipal-cadastre",
+    "name": "SUNARP Visor BGR with Municipalidad Provincial del Santa / COFOPRI cadastral custody",
+    "operator": "SUNARP nationally; Municipalidad Provincial del Santa and COFOPRI for local cadastral custody",
+    "endpoint": "https://visor-bgr.sunarp.gob.pe/",
+    "method": "First-party discovery, official-page/manual review, and bounded anonymous HTTP checks",
+    "responseFormat": "Official HTML/PDF service documentation; no parcel feature response obtained",
+    "nativeCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "National registered-property BGR and local municipal/COFOPRI cadastral custody are evidenced; parcel layer schema, CRS, native identity, public query route, exact-point hit, update cadence, and citywide completeness remain unverified."
+  },
+  "requests": [
+    {
+      "url": "https://www.gob.pe/63173-acceder-al-visor-de-la-base-gr-fica-registral",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official SUNARP service page returned. It documents BGR scope and the DNI/date-of-issue/CAPTCHA access gate."
+    },
+    {
+      "url": "https://visor-bgr.sunarp.gob.pe/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Timed out after 20 seconds from the anonymous request environment. No retry, login, CAPTCHA interaction, or bypass was attempted; this is not evidence of parcel absence."
+    },
+    {
+      "url": "https://www.munisanta.gob.pe/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Redirected to the official Municipalidad Provincial del Santa web domain. No anonymous parcel API was exposed by the checked public pages."
+    },
+    {
+      "url": "https://georural.midagri.gob.pe/sicar/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Timed out after 15 seconds. The official search result documents SICAR as a public agricultural cadastral viewer, but no Chimbote parcel geometry or schema was obtained."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "titleholder", "address", "contact", "tax/account", "legal/title", "personal data"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "SUNARP national registered-property BGR plus Santa province municipal/COFOPRI cadastral custody.",
+    "verifiedOpenScope": "Official documentation, municipal custody/procedure evidence, and anonymous timeout/HTTP outcomes only; no parcel extent or parcel feature query was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_evidenced_no_anonymous_parcel_api",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "Exact-point hit status, map extent, parcel layer names, schema, CRS, native identity, and citywide completeness are unknown. The official cadastral plan is cartographic and referential, so no polygon was reconstructed or retained. Packet completion is not source integration or admission."
+}

@@ -1,0 +1,20 @@
+{
+  "taskId": "city:206",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-206-brikama.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/brikama-service-review.json",
+    "tmp/valhalla-parcel-research/brikama-206/molrg.html",
+    "tmp/valhalla-parcel-research/brikama-206/land-commission.json"
+  ],
+  "checkedAt": "2026-10-12T07:42:41Z",
+  "findings": {
+    "identity": "WUP roster, pending queue, and packet agree on city code 206, rank 3271, Gambia, point [13.2737769054355, -16.6451648906323], and 184321 persons.",
+    "searches": "The packet records two executed discovery slots, but the supposed native/local query is also English. Distinct bilingual search execution is not evidenced.",
+    "custody": "The official Gambian government directory identifies the Ministry of Lands and Regional Government and Department of Lands and Survey. This grounds national custody, not an open Brikama parcel layer; keep registryFound true with that scope limit.",
+    "geometry": "No public safe native parcel ID and full polygon response or durable polygon sample is evidenced. A missing viewer or endpoint does not establish citywide absence.",
+    "admission": "No independently qualified live adapter, fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification. Runtime and catalog stay unaltered."
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 10034,
+  "queueRank": 1803,
+  "cityId": "queue:1803",
+  "name": "Zhangqiu",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [36.6865877983191, 117.512788572118],
+  "centerLatLon": [36.6865877983191, 117.512788572118],
+  "population2025": 319153,
+  "population2025k": 319.153,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhangqiu cadastral parcel map official natural resources China",
+        "result": "Search surfaced national natural-resources catalog material and general Chinese natural-resources sources, but no Zhangqiu anonymous parcel feature service. First-party municipal evidence was subsequently found through the Jinan government portal.",
+        "actualResultUrls": [
+          "https://www.webmap.cn/main.do?method=index1",
+          "https://www.jinan.gov.cn/art/2024/1/23/art_81008_4969733.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "章丘 不动产登记 地籍图 官方 自然资源局",
+        "result": "First-party Jinan government and Jinan natural-resources service results identify the Zhangqiu District Natural Resources Bureau and Zhangqiu real-estate registration service hall/procedure. No public anonymous parcel ID-plus-geometry API was exposed.",
+        "actualResultUrls": [
+          "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370114000000&innerCode=a52763d0-09f6-4b81-bd3c-eb063ffbd0e6&taskType=GG",
+          "https://nrp.jinan.gov.cn/oshs/pages/oshs/appoint3/telephone.jsf?mbean=pointMBean&subType=3-1&type=3",
+          "https://www.jinan.gov.cn/art/2024/1/23/art_81008_4969733.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by TLS-verified bounded GETs with Chrome User-Agent, Accept, Accept-Language, cookie jar, and no credentials."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370114000000&innerCode=a52763d0-09f6-4b81-bd3c-eb063ffbd0e6&taskType=GG",
+      "observation": "Official Jinan government service page for '依法查询、复制不动产登记材料'; identifies the implementing body as 济南市章丘区自然资源局 and a Zhangqiu service-center location. Direct anonymous curl was blocked by WAF with HTTP 403."
+    },
+    {
+      "url": "https://nrp.jinan.gov.cn/oshs/pages/oshs/appoint3/telephone.jsf?mbean=pointMBean&subType=3-1&type=3",
+      "observation": "Official Jinan Natural Resources and Planning service-hall listing names 章丘区不动产登记服务大厅. Direct anonymous curl was blocked by WAF with HTTP 403."
+    },
+    {
+      "url": "https://www.jinan.gov.cn/art/2024/1/23/art_81008_4969733.html",
+      "observation": "Official Jinan government report names the Zhangqiu District Natural Resources Bureau and district real-estate registration center in a property-registration procedure context."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "observation": "Official national geographic-information resource catalog operated by the National Geomatics Center; loaded successfully, but the inspected HTML exposed general catalog/map-service navigation rather than a Zhangqiu cadastral parcel layer or anonymous geometry endpoint."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu portal; bounded request returned HTTP 418 CloudWAF interception. No bypass attempted."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370114000000&innerCode=a52763d0-09f6-4b81-bd3c-eb063ffbd0e6&taskType=GG",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "WAF block; official procedure page was independently evidenced by search indexing, but no API or parcel geometry response."
+    },
+    {
+      "url": "https://nrp.jinan.gov.cn/oshs/pages/oshs/appoint3/telephone.jsf?mbean=pointMBean&subType=3-1&type=3",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "WAF block; not evidence of cadastral absence."
+    },
+    {
+      "url": "https://nrp.jinan.gov.cn/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "WAF block on official host; no viewer configuration could be inspected."
+    },
+    {
+      "url": "https://www.jnzq.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "TLS connection failed with server alert; no certificate exception or retry bypass used. Not evidence of absence."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=utf-8",
+      "assessment": "National catalog page loaded; inspection found catalog categories and Tianditu navigation, not a public parcel feature endpoint."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "CloudWAF interception; no challenge defeat attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Zhangqiu district property-registration and natural-resources administration under Jinan.",
+    "verifiedOpenScope": "Local registry custodian/procedure only; no anonymous parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current public viewer/API route, access controls, parcel schema, CRS, stable native parcel identity and citywide coverage remain unresolved. Official pages establish custody and inquiry procedures but not an open vector parcel service. WAF/TLS failures and a general catalog result are access limitations, not evidence that Zhangqiu lacks cadastral data.",
+  "nextStep": "A later attempt may inspect an officially exposed Jinan/Shandong map viewer from an allowed network and only test a bounded anonymous ID-plus-geometry query if the viewer reveals one; do not infer absence from these access failures."
+}

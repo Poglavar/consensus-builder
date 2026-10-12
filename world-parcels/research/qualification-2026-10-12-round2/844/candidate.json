@@ -1,0 +1,78 @@
+{
+  "descriptor": {
+    "adapter": "wfs",
+    "id": "il-govmap-cadastral-parcel-rows",
+    "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+    "featureType": "opendata:PARCEL_ALL",
+    "geometryField": "the_geom",
+    "requestProperties": true,
+    "version": "2.0.0",
+    "idField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "govmap:row:",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 100,
+    "idBatchSize": 3,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "responseSrid": 3857,
+    "minRequestIntervalMs": 100,
+    "name": "Govmap public cadastral parcel rows",
+    "countryCode": "IL",
+    "metricSrid": 32636,
+    "cityIds": [
+      "jerusalem",
+      "eastjerusalem",
+      "844"
+    ],
+    "maxConcurrentQueries": 2,
+    "scope": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "evidenceFile": "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+    "catalogueUrl": "https://www.govmap.gov.il/",
+    "attribution": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "licenceNote": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "additionalCityEvidence": {
+      "eastjerusalem": "research/world-capitals-2026-10-08/east-jerusalem-acceptance.json",
+      "jerusalem": "research/world-capitals-2026-10-08/jerusalem-acceptance.json"
+    },
+    "cityScopes": {
+      "eastjerusalem": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "jerusalem": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
+    },
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "IL",
+        "basis": "Survey of Israel national cadastral parcel layer published through GovMap.",
+        "evidence": [
+          "research/countries/IL.json",
+          "research/world-capitals-2026-10-08/jerusalem-acceptance.json"
+        ]
+      }
+    }
+  },
+  "city": {
+    "code": "844",
+    "name": "Netanya",
+    "point": [
+      34.8598375549541,
+      32.3143145554001
+    ]
+  },
+  "sampleIds": [
+    "govmap:row:722352",
+    "govmap:row:722353",
+    "govmap:row:722354"
+  ],
+  "absentId": "govmap:row:999999999",
+  "metricEpsg": "EPSG:32636",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Govmap public cadastral parcel rows",
+      "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

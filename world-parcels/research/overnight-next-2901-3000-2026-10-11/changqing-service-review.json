@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-9906-changqing.json",
+  "cityCode": 9906,
+  "queueRank": 2946,
+  "name": "Changqing",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [36.5469342033281, 116.748404914705],
+  "population2025": 202186,
+  "population2025k": 202.186,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Chinese first-party discovery evidenced the Changqing local natural-resources / real-estate-registration custodian and official Jinan cadastral-map service documentation. The documented public visualization IP timed out; the official HTTPS map portal returned WAF 403. No safe anonymous parcel feature response was obtained.",
+  "schemaAndCrs": {
+    "viewerConfig": "Not exposed",
+    "geometryCrs": "Not observed",
+    "nativeIdentity": "Not observed",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local registry custody is evidenced, but the public parcel service was not independently qualified for safe native ID plus geometry."
+  },
+  "reviewDecision": "held_no_verified_public_geometry",
+  "scopeLimits": [
+    "Exact WUP point preserved; no coordinate shift.",
+    "Timeout and WAF block are not evidence of citywide parcel absence.",
+    "No raw source-specific attribute set retained and no GeoJSON sample retained.",
+    "This packet does not admit or integrate a runtime source."
+  ],
+  "uncertainty": "Custodian evidence is strong, but current public API reachability, schema, CRS, coverage, and native parcel identity remain unverified. Runtime remains held.",
+  "evidenceUrls": [
+    "https://nrp.jinan.gov.cn/nav/",
+    "https://nrp.jinan.gov.cn/oshs/pages/oshs/guide/index.jsf",
+    "https://nrp.jinan.gov.cn/oshs/pages/oshs/window/serviceCommitment/bdcDT.jsf?mbean=pointMBean&subType=2-9-1&type=2",
+    "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370113000000&innerCode=1dfc965f-f813-4a72-8e80-9872709e92bc&taskType=QR",
+    "https://nrp.jinan.gov.cn/cms_files/jcms1/web136/site/attach/0/c146c483fbc6479093c8b889921068c6.pdf?fileName=c146c483fbc6479093c8b889921068c6.pdf",
+    "http://60.208.121.161:8083/bdcApiNew/index.html"
+  ]
+}

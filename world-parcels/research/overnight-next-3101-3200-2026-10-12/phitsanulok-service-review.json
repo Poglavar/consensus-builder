@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-995-phitsanulok.json",
+  "cityCode": 995,
+  "queueRank": 3171,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "summary": "Official Thai Department of Lands discovery and the current LandsPublic viewer were reviewed. The viewer exposes a public-land NSL layer and anonymous APIs, but the exact WUP point and a bounded city-area WFS request returned no public-land features. No complete private cadastral parcel source or safe polygon sample was qualified.",
+  "custodian": "Department of Lands is the national service custodian; the Phitsanulok Provincial Land Office is the local DOL office. The public-land NSL layer is not treated as a complete private cadastral registry.",
+  "requests": "English and Thai discovery queries, viewer/configuration inspection, exact-point API request, WFS/WMS capability requests, schema request, and bounded WFS request are recorded in the city record. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe-field request, or TLS exception was used.",
+  "schemaAndCrs": {"parcelSchema": "LPCPUBLIC:DOLNSL public-land/NSL schema", "nativeIdFields": ["nsl_id", "nsl_id_e"], "geometryCrs": "EPSG:4326", "fieldMapping": {"geom": "full public-land geometry", "nsl_id": "native public-land identity", "nsl_id_e": "native public-land identity (English/alternate)"}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel/public-land identifier only if source-proven", "full polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The WUP point [16.812077346364, 100.254071434807] and population 189643 persons are preserved.",
+    "The exact-point HTTP 404 and bounded empty WFS response concern only the exposed public-land route and are not citywide absence evidence.",
+    "A legacy DOLWMS discovery URL was unavailable from this environment; no TLS exception or bypass was attempted.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": [
+    "A supported authenticated or separate interactive DOL cadastral workflow may expose additional parcel data, but it was outside anonymous safe research scope.",
+    "No current private-parcel identity, geometry response, or citywide cadastral coverage was qualified.",
+    "No sample GeoJSON was written."
+  ]
+}

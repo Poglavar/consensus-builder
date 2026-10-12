@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3563-tula.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Tula-region BTI sources evidence cadastral-work and cadastral-valuation activity and reference NSPD/Rosreestr channels. No anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryFound": true,
+  "registryAssessment": "The official regional BTI is a local/regional cadastral-work and valuation institution, while Rosreestr/Roskadastr and NSPD are the federal registration/spatial-data channels. This establishes custodian/procedure evidence for Tula-region cadastral work, not a separate open Tula parcel API and not source integration.",
+  "officialPrimarySources": [
+    {"url": "https://bti-tula.ru/", "observation": "Official site of the State Tula-region Bureau of Technical Inventory; lists cadastral works and state cadastral valuation."},
+    {"url": "https://bti-tula.ru/uslugi/kadastrovye-raboty/", "observation": "Official BTI service page for cadastral works, including technical and boundary plans."},
+    {"url": "https://bti-tula.ru/news/novosti_/tsifrovaya-platforma-natsionalnaya-sistema-prostranstvennykh-dannykh-nspd-/", "observation": "Official BTI article says the institution receives real-estate object lists through NSPD services for cadastral valuation."},
+    {"url": "https://bti-tula.ru/ob-uchrezhdenii/news/novosti_/gu-to-oblastnoe-bti-prinimaet-obrashcheniya-po-voprosam-gosudarstvennoy-kadastrovoy-otsenki-/", "observation": "Official BTI notice identifies NSPD as a channel for cadastral-valuation submissions and gives the Tula office address."},
+    {"url": "https://nspd.gov.ru/", "observation": "Current national spatial-data platform route identified, but viewer retrieval timed out anonymously."},
+    {"url": "https://pkk.rosreestr.ru/", "observation": "Official legacy public cadastral-map route identified, but retrieval timed out anonymously."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://nspd.gov.ru/",
+    "observedTechnology": "No current viewer JavaScript or configuration was retrieved.",
+    "observedControls": [],
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://bti-tula.ru/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; official BTI HTML retrieved. It exposed institutional/service information but no parcel feature endpoint or geometry."},
+    {"url": "https://nspd.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Connection timeout after 8 seconds; no HTML, JavaScript configuration, API route, layer response, or geometry retrieved."},
+    {"url": "https://pkk.rosreestr.ru/", "method": "GET", "normalTlsVerification": true, "result": "Connection timeout after 8 seconds; no public-map response or API configuration retrieved."},
+    {"url": "https://rosreestr.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Connection timeout after 8 seconds; no service configuration retrieved."},
+    {"url": "https://bti-tula.ru/uslugi/kadastrovye-raboty/", "method": "GET", "normalTlsVerification": true, "result": "Located as an official BTI cadastral-work route during source review; no parcel feature response was requested because it is a service/procedure page."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel feature query was submitted because the current public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Tula-region cadastral administration and official BTI cadastral-work/valuation activity plus federal NSPD/Rosreestr channels.", "verifiedOpenScope": "Official BTI pages retrieved; no anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact viewer configuration, layer schema, CRS, native parcel identity, anonymous query shape, and coverage remain unverified. Timeout or unusable UI is not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

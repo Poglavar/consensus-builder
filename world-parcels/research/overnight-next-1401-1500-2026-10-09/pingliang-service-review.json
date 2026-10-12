@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6083-pingliang.json",
+  "purpose": "Document first-party Pingliang cadastral-service discovery and bounded anonymous parcel-geometry attempts.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Pingliang's municipal natural-resources authority and unified real-estate registration service are evidenced by official first-party pages. The reviewed public routes did not expose a verified anonymous parcel ID-plus-geometry response, so no geometry sample is retained and production integration remains held.",
+  "registryAssessment": "Local municipal registry custodian verified through the official Pingliang Municipal Natural Resources Bureau site and its registration/service links; this does not establish open cadastral geometry access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.pingliang.gov.cn/",
+      "observation": "Official Pingliang Municipal Natural Resources Bureau homepage. It identifies the bureau as the site owner and links 不动产统一登记, the municipal real-estate-registration service area, and the Tianditu Pingliang map." 
+    },
+    {
+      "url": "https://zwfw.gansu.gov.cn/pingliang/index.html",
+      "observation": "Official Gansu government-service page for Pingliang; it lists 不动产 as a service category and reports the municipal service portal ownership." 
+    },
+    {
+      "url": "https://zrzy.pingliang.gov.cn/zfxxgk/fdzdgknr/zcjd/sjzcjd/art/2024/art_b60d8b3872ed451e8f33b45395342401.html",
+      "observation": "Official Pingliang Natural Resources Bureau policy interpretation describing provincial Internet-plus real-estate-registration information querying and authenticated handling." 
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn/pingliang/map/",
+      "observation": "Official provincial Tianditu Pingliang map URL was identified, but the direct HTTPS request timed out without a response; no service configuration or parcel schema was inferred." 
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Pingliang China official cadastral parcel map land registry GIS",
+      "result": "Search found the official municipal Natural Resources Bureau, Tianditu Pingliang, and national real-estate-registration portal references. No anonymous parcel geometry API was verified.",
+      "actualResultUrls": ["https://zrzy.pingliang.gov.cn/", "https://gansu.tianditu.gov.cn/pingliang/map/", "https://bdcyc.mnr.gov.cn/"]
+    },
+    {
+      "language": "Chinese",
+      "query": "平凉市 官方 不动产登记 地籍图 宗地图 查询",
+      "result": "Search found official municipal registration and government-service information. The described real-estate query path requires authentication or an in-person/self-service channel; no anonymous geometry response was verified.",
+      "actualResultUrls": ["https://zrzy.pingliang.gov.cn/", "https://zwfw.gansu.gov.cn/pingliang/index.html", "https://zwfw.gansu.gov.cn/jingning/zczx/zxfb/art/2023/art_f9460f650f9a4b92bffdc1c191ff459c.html"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://zrzy.pingliang.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official homepage fetched successfully. HTML exposed links for 不动产统一登记, registration notices, and the Tianditu Pingliang map; no public parcel-feature endpoint or field schema was exposed in the page."
+    },
+    {
+      "url": "https://zwfw.gansu.gov.cn/pingliang/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official Pingliang government-service homepage fetched successfully. It exposed a general 不动产 service category and login/user-space routes; no anonymous parcel geometry endpoint was exposed or called."
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn/pingliang/map/",
+      "method": "GET",
+      "timeoutSeconds": 20,
+      "result": "TLS-verified public GET timed out with no response bytes. This is an unavailable route, not evidence of citywide parcel absence; no TLS exception or retry bypass was used."
+    },
+    {
+      "url": "https://bdcyc.mnr.gov.cn/",
+      "method": "GET",
+      "result": "Official national real-estate-registration portal was recorded as a linked general service. No login, credential submission, owner/address query, or geometry request was attempted."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "sourceFieldsObserved": [],
+    "retainedIdentity": null,
+    "retainedIdentityProvenance": null
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not executed against a usable public parcel endpoint; exact WUP point [35.5403516109263, 106.67835520171] was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal natural-resources and unified real-estate-registration services, with a provincial Tianditu Pingliang map link.",
+    "verifiedOpenScope": "Official custodian and service links verified; no anonymous parcel geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The public pages do not expose the current map JavaScript/configuration or a safe anonymous parcel API. The Tianditu route timed out, and the registration-query descriptions indicate authentication or controlled service access. No statement about parcel absence, completeness, CRS, update cadence, or adapter compatibility is made.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

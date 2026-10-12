@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7690,
+  "queueRank": 1950,
+  "cityId": "wup2025:7690",
+  "name": "Valsad",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [20.6071970627016, 72.9300434535826],
+  "population2025": 296851,
+  "population2025k": 296.851,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Valsad Gujarat official cadastral parcel map land records GIS site:gov.in",
+        "result": "Found the official Valsad District DILR page, Gujarat Revenue Department links to AnyRoR and e-Milkat, and national DILRMP map/CLR status pages. No public city parcel vector endpoint was found in search results.",
+        "actualResultUrls": [
+          "https://valsad.nic.in/d-i-l-r/",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://dilrmp.gov.in/physicalProgressReports/map/district-level/24",
+          "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/24"
+        ]
+      },
+      {
+        "language": "Gujarati",
+        "query": "વલસાડ જમીન રેકોર્ડ નકશો કેડસ્ટ્રલ ગુજરાત સરકાર",
+        "result": "Search surfaced the official Gujarat/Valsad district land-record and settlement map pages, including the Valsad district PDF map. No anonymous parcel geometry API was identified.",
+        "actualResultUrls": [
+          "https://valsad.nic.in/d-i-l-r/",
+          "https://revenuedepartment.gujarat.gov.in/downloads/valsad_district.pdf",
+          "https://gujarat.s3waas.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://valsad.nic.in/d-i-l-r/",
+      "operator": "District Inspector Land Records, Valsad; city/district land-record custodian",
+      "observation": "Official district page identifies the Valsad DILR office and says it measures fields, updates land records, and prepares property cards with NA orders and Gamthan Mojni. It gives the Valsad office address and contact details."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+      "operator": "Gujarat Revenue Department",
+      "observation": "Official page documents state responsibility for survey, settlement and city-survey matters and links the public AnyRoR rural RoR and e-Milkat property-card services. This is state-level custody, not proof of an open vector feed."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/downloads/valsad_district.pdf",
+      "operator": "Gujarat Settlement commissionerate and Land Record",
+      "observation": "Official Valsad district administrative map; it is a non-parcel district map and was not used as parcel geometry."
+    },
+    {
+      "url": "https://dilrmp.gov.in/physicalProgressReports/map/district-level/24",
+      "operator": "Government of India DILRMP",
+      "observation": "Indexed official status reports Valsad's cadastral-map/FMB/Tippan and parcel digitization counts. This supports record digitization status, not anonymous geometry availability or urban city coverage."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://e-milkat.gujarat.gov.in/",
+      "method": "GET",
+      "status": "timeout after 20 seconds; no HTTP response",
+      "summary": "Official property-card portal linked by Gujarat Revenue Department; no login or retry bypass attempted."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "status": "timeout after 15 seconds; no HTTP response",
+      "summary": "Official rural RoR portal linked by Gujarat Revenue Department; no credentials or CAPTCHA bypass attempted."
+    },
+    {
+      "url": "https://landrecords.gujarat.gov.in/",
+      "method": "GET",
+      "status": "timeout after 15 seconds; no HTTP response",
+      "summary": "State land-records host; no public response obtained."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "method": "GET (web inspection)",
+      "status": "HTTP page returned JavaScript loader only",
+      "summary": "National NAKSHA portal was reachable in web inspection but exposed no usable anonymous Valsad parcel endpoint in the bounded attempt; no CAPTCHA/authentication was bypassed."
+    },
+    {
+      "url": "https://valsad.nic.in/d-i-l-r/",
+      "method": "GET (web inspection)",
+      "status": "official page found",
+      "summary": "Confirmed local DILR custodian and property-card/city-survey functions."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Valsad district/city land-record and city-survey custody is officially evidenced; public parcel geometry scope is not verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "no parcel geometry retrieved",
+    "identityReadiness": "not ready; no safe native parcel identity was returned",
+    "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source CRS", "source layer/service identifier"],
+    "attributesRequested": "none; no owner, address, contact, titleholder, tax/account or personal fields requested"
+  },
+  "blocker": "Official portals were either unreachable by bounded direct GET or exposed only an application shell. No city-scoped anonymous parcel geometry and native ID were verified.",
+  "remainingUncertainty": "A public geometry service or downloadable city-survey extract may exist behind the current Gujarat portal applications; timeout and shell results do not establish citywide absence.",
+  "nextStep": "Retry the official Gujarat portals during service availability and follow their current public JavaScript/configuration to a bounded geometry-plus-safe-ID request around the WUP point; validate CRS, parcel semantics and geographic coverage before adapter qualification.",
+  "resultCategory": "official_local_registry_custodian_no_verified_open_geometry",
+  "runtimeEligible": false,
+  "identityPolicy": "Do not synthesize a parcel identity or retain geometry without a stable native source identity."
+}

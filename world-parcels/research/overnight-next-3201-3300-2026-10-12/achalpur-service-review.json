@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-9415-achalpur.json",
+  "reviewType": "serial-service-review",
+  "checkedAt": "2026-10-12",
+  "cityCode": 9415,
+  "queueRank": 3254,
+  "decision": "hold",
+  "registryFound": true,
+  "summary": "Hold. Achalpur has an evidenced local land-record office and Maharashtra first-party Bhu Naksha/e-Maps service lead, but no anonymous native parcel identity plus full polygon was retrieved. No GeoJSON sample is retained.",
+  "queryAndRequestOutcome": "English and Marathi discovery queries were executed and recorded in the paired city packet. The official Amravati page was fetched successfully. The state service pages were identified by first-party discovery; direct service access timed out or exposed only lookup/service UI. No login, credential, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe-field request was used.",
+  "scopeLimits": [
+    "A local Achalpur land-record custodian is evidenced, but citywide parcel coverage is not.",
+    "The MRSAC Achalpur PDF is a village-boundary overview, not parcel-level geometry.",
+    "Zero exact-point evidence was not treated as citywide absence; the WUP point was not shifted.",
+    "No source adapter or runtime admission is implied by packet completion."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "Current viewer JavaScript/configuration and any anonymous Bhu Naksha feature endpoint remain uninspected because the state service was unavailable within the bounded request. Future work should inspect only public configuration/routes and retain no unsafe attributes.",
+  "reviewedFiles": [
+    "city-9415-achalpur.json",
+    "https://amravati.gov.in/en/document/deputy-superintendent-land-records-office-achalpur/",
+    "https://bhumiabhilekh.maharashtra.gov.in/Services",
+    "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+    "https://mrsac.gov.in/writereaddata/MRSAC/map/15653346185d4d1c5ab0751TH_AMT_Achalpur.pdf"
+  ]
+}

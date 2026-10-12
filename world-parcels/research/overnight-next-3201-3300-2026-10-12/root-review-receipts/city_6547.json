@@ -1,0 +1,24 @@
+{
+  "taskId": "city:6547",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6547-siverek.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/siverek-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6547-siverek-sample.geojson",
+    "tmp/valhalla-parcel-research/siverek-point-v3.json",
+    "tmp/valhalla-parcel-research/siverek-admin-parcel.json"
+  ],
+  "checkedAt": "2026-10-12T06:59:03Z",
+  "findings": {
+    "identity": "WUP 2025 City_Code 6547, rank 3250, Siverek, Türkiye, point [37.7526327445751,39.3211098848551], 185837 persons; original archive hash matches cohort provenance.",
+    "searches": "Packet records English and Turkish queries, outcomes, and actual first-party URLs; separate search execution logs were not retained.",
+    "custody": "National TKGM public parcel response is evidenced; distinct Siverek local custody remains unresolved, so registryFound stays null.",
+    "geometry": "One full Polygon with only safe id Camikebir-236/3 matches cached exact-point and administrative first-party responses. Sample polygon is valid in metric GEOS; this is bounded discovery only.",
+    "admission": "Held: no independently evidenced fresh live-adapter ID read protocol, forced paging, 13 bounded cells, complete metric qualification, source binding, or headed Details-panel verification."
+  }
+}

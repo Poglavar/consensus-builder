@@ -1,0 +1,36 @@
+{
+  "taskId": "city:8870",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8870-gwoza.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/gwoza-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T17:39:54Z",
+  "identity": {
+    "cityCode": 8870,
+    "queueRank": 2679,
+    "country": "Nigeria",
+    "point": [
+      11.0843637172758,
+      13.6943416208767
+    ],
+    "populationPersons": 220641
+  },
+  "bilingualSearchLanguages": [
+    "English",
+    "Hausa (local/regional discovery language)"
+  ],
+  "retainedFullPolygonCount": 0,
+  "reviewReason": "BOGIS first-party site supports state land-administration custodianship, but no anonymous Gwoza parcel feature response or native ID is evidenced. Unavailable routes are not citywide absence.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging and complete manifests",
+    "13 aligned bounded cells",
+    "independent metric GEOS validity, duplicates and overlap checks",
+    "full-parcel proposal source binding",
+    "headed Details-panel verification"
+  ],
+  "runtimeAdmission": false
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11974",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-11974-fenghua-district.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/fenghua-district-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:03:37Z",
+  "reason": "WUP rank 2439, China, exact point and 240478 persons match the immutable roster. English and Chinese query text, outcomes, and URLs are recorded. Inspected first-party land-market response caches contain encoded promotion/listing entries rather than a verified cadastral ID plus polygon. The official parcel-plan example is not a machine-readable parcel layer. Registry custody remains unresolved (null), not absent. No retained polygon or independently qualified adapter; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are missing."
+}

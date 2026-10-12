@@ -1,0 +1,138 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Baraut, India; bounded public-service limitations are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 8478,
+  "queueRank": 2752,
+  "name": "Baraut",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [29.0948108151882, 77.2644039307663],
+  "population2025": 214706,
+  "population2025k": 214.706,
+  "populationUnit": "persons",
+  "aliases": ["baraut"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Baraut Uttar Pradesh official cadastral map parcel land records GIS Baghpat",
+        "result": "First-party results identified the Government of Uttar Pradesh Bhulekh/Bhunaksha services, the UP cadastral-map digitization dashboard, and the Baghpat district administration land-record directory. The official dashboard identifies Baraut tehsil in district 139 and reports 171 revenue villages and 282 mapsheets, all linked and georeferenced.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=139",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=139&tehsilCode=00735",
+          "https://upbhunaksha.gov.in/home/",
+          "https://bagpat.nic.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "बारौत उत्तर प्रदेश आधिकारिक भू नक्शा खसरा नक्शा बागपत",
+        "result": "Hindi-language first-party results identified the UP Board of Revenue/Bhulekh land-record and village-map routes and the official Bhunaksha viewer. The dashboard returned Baraut tehsil village records, including Baraut-named revenue-village partitions; no owner or unsafe record fields were requested.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/bhulekh/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=139&tehsilCode=00735"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=139&tehsilCode=00735",
+      "observation": "Government of Uttar Pradesh public dashboard identifies district Bagpat, tehsil Baraut, 171 revenue villages, 282 mapsheets, and reports all 282 linked/georeferenced. It is service-coverage evidence, not itself parcel geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "observation": "Current public Bhunaksha viewer was inspected. Its server configuration exposed anonymous level-value, map-extent, plot-by-number, and plot-at-XY routes under https://upbhunaksha.gov.in/bhunakshaserver."
+    },
+    {
+      "url": "https://bagpat.nic.in/",
+      "observation": "Official Baghpat district administration site documents land-record services and is a district custodian directory; it does not itself expose a Baraut parcel polygon response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript/configuration loaded anonymously. It disclosed base URL, level labels, CRS-bearing extent response, and plot lookup methods. No login, credentials, CAPTCHA bypass, or private token was used."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": "level=1&codes=; level=2&codes=139; level=3&codes=139,00735",
+      "outcome": "Returned district 139 Bagpat, tehsil 00735 Baraut, and 171 village options. Baraut-named partitions with public map data included village code 119310 (बडौत पटटी मीरापुर अ) and 219661 (बडौत पटटी मेहर बाह), among others."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": "gisLevels=139,00735,119310",
+      "outcome": "Returned extent xmin=136170.61263903743, ymin=3225088.195873985, xmax=138276.1843615725, ymax=3226633.0649177814, CRS=EPSG:32644, gisCode=13900735119310. This is village-map extent evidence, not a city boundary or exact WUP-point hit."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": "giscode=13900735119310; plotno=1, 2, 10",
+      "outcome": "Returned safe native opaque IDs and plot numbers with bounding boxes for plots 1, 2, and 10. The response did not contain full polygon geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": "giscode=13900735119310; x=137905; y=3226615",
+      "outcome": "Returned the same safe native plot identity/bounding box as plot 1. The coordinates were map-service coordinates within the returned EPSG:32644 extent, not a substituted WUP coordinate."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotInfo",
+      "method": "POST",
+      "httpStatus": 200,
+      "request": "{\"gisCode\":\"13900735119310\",\"plotNo\":\"1\"} (also 2 and 10)",
+      "outcome": "Returned Hindi message: no plot information available for the supplied village and plot number. No geometry or unsafe attributes were retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot",
+      "method": "GET",
+      "httpStatus": 401,
+      "request": "bhucode=13900735119310 with public opaque plot IDs",
+      "outcome": "Returned Missing or invalid Authorization header. No authorization was attempted."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A first-party Uttar Pradesh public cadastral-map viewer returned Baraut-tehsil village metadata, a CRS/extent response, and safe native plot identities through anonymous public endpoints. This establishes a public state cadastral map service applicable to the local Baraut tehsil, but not a city-boundary registry integration.",
+  "registryEvidenceUrls": [
+    "https://upbhunaksha.gov.in/home/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=139&tehsilCode=00735"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Uttar Pradesh Bhunaksha public viewer",
+  "sourceIds": ["13900735119310:1", "13900735119310:2", "13900735119310:10"],
+  "verifiedParcelResponse": {
+    "safeIdsObserved": ["vd00dY2ESYyUnP9oBf4b3g", "pPI6MgAGTFaZJrcy-MPcxQ", "mQpYcbrPQvmWl8CHJ6PjPg"],
+    "nativeIdField": "id",
+    "nativePlotField": "kide",
+    "geometry": "bounding boxes only; no full polygon retained"
+  },
+  "resultCategory": "primary_source_investigated_public_service_reached_no_full_city_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh public cadastral-map service for Bagpat district, Baraut tehsil, and selected revenue village.",
+    "verifiedOpenScope": "Baraut tehsil metadata and one Baraut-named revenue-village map extent with safe plot identities/bounding boxes.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/object ID", "native plot number", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "asia",
+  "remainingUncertainty": "The public viewer clearly serves Baraut-tehsil cadastral maps, but the selected anonymous plot routes exposed only bounding boxes or required authorization for the alternate geometry endpoint. The exact WUP point was preserved and was not shifted to force a hit; no exact-point miss, extent limitation, authorization wall, or unavailable plot-info message is treated as citywide absence. A serial reviewer must independently qualify any adapter or geometry extraction.",
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

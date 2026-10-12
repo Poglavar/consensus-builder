@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-1750-mostaganem.json",
+  "cityCode": 1750,
+  "queueRank": 2485,
+  "name": "Mostaganem",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "pointLatLon": [35.9289660060987, 0.092761752960048],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "localCustodianAssessment": "The Wilaya Direction du cadastre / Direction du cadastre et de la conservation foncière is evidenced for Mostaganem in public government and local institutional records. National ASGA/DGDN references are general national or regional services and were not treated as a Mostaganem parcel API.",
+  "routes": [
+    {"method": "GET", "url": "https://bndg.asga.dz/bndg/CARTO50NV_P/Default_BNDG.aspx", "httpStatus": null, "outcome": "Anonymous TLS-verified curl timed out after 8 seconds; no current viewer configuration or parcel layer response."},
+    {"method": "GET", "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "httpStatus": null, "outcome": "Anonymous TLS-verified curl timed out after 8 seconds; no parcel schema, CRS, native identity, or geometry."},
+    {"method": "GET", "url": "https://a.dgdn.dz/", "httpStatus": null, "outcome": "Anonymous TLS-verified curl timed out after 8 seconds; no public parcel endpoint identified."},
+    {"method": "GET", "url": "https://wilaya-mostaganem.dz/ar/accueil/", "httpStatus": null, "outcome": "TLS certificate expired; verification failure was not bypassed. General portal content was not used as parcel evidence."},
+    {"method": "SEARCH/GET", "url": "https://www.apn.dz/documents/JOD/9_legislature/jod_9leg_283.pdf", "httpStatus": 200, "outcome": "Government publication evidences local cadastral-survey administration and unresolved/completing survey coverage in Mostaganem Wilaya; no safe parcel geometry/API."},
+    {"method": "SEARCH/GET", "url": "https://www.univ-mosta.dz/wp-content/uploads/2025/07/logement-LPA.pdf", "httpStatus": 200, "outcome": "University-hosted administrative record names the Wilaya cadastral and land-registration directorate; no parcel geometry/API."}
+  ],
+  "schemaAndCrs": {"viewerConfig": null, "parcelApi": null, "geometryCrs": null, "nativeIdentity": null, "sourceFieldMapping": null, "boundedAnonymousResponse": false},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity", "polygon geometry", "source service URL", "source CRS / coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous parcel geometry or city-bounded public vector response was verified; independent serial review is required before any adapter could be considered."
+  },
+  "scopeLimits": [
+    "Exact WUP point and latitude/longitude order were preserved; no coordinate was shifted.",
+    "No exact-point hit or miss, timeout, certificate failure, or unusable UI was treated as citywide absence.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe full parcel polygon and stable native identity were obtained.",
+    "Native field names, schema mapping, composite-key provenance, CRS, coverage, update cadence, licensing, and current viewer configuration remain unverified.",
+    "Packet completion records research only; it is not source integration, admission, or runtime qualification."
+  ],
+  "uncertainty": "Local custodian evidence is strong enough for registryFound=true, but no public anonymous parcel feature service was qualified. The lack of geometry is an access/discovery limitation, not proof of cadastral absence."
+}

@@ -1,0 +1,19 @@
+{
+  "taskId": "city:3536",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-3536-stockton.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/stockton-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/stockton-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/stockton/service.json",
+    "tmp/valhalla-parcel-research/stockton/exact.geojson"
+  ],
+  "checkedAt": "2026-10-09T16:27:22.006099+00:00",
+  "reviewFindings": {
+    "identity": "WUP 2025 source and immutable queue agree: Stockton, United States of America, rank 1419, point [37.9838255374783,-121.30363247299], 398470 persons.",
+    "searches": "Packet records two executed English searches, including the local-language query; no second language is evidenced.",
+    "sourceEvidence": "Original cached ArcGIS layer metadata identifies polygon Parcels, APN_CHR text identity, EPSG:3857 source and EPSG:4326 GeoJSON support. Original exact-point GeoJSON has one APN_CHR 11512305 polygon; retained sample geometry is identical and contains only id. Metric EPSG:32610 GEOS geometry is valid and about 582.92 m².",
+    "holdReason": "No independently qualified live adapter/source binding, fresh paged native-ID reads, forced paging, 13 bounded cells, metric overlap cohort checks, or headed details-panel verification. One point hit is not citywide coverage."
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9526-zhaodong.json",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "researchAttempt": 1,
+  "purpose": "Review official Zhaodong cadastral/registration custodian and public government-service channels for safe anonymous parcel geometry and stable parcel identity.",
+  "assessment": "Zhaodong Natural Resources Bureau is an evidenced local registry/cadastral custodian, and the official Suihua government directory lists a Zhaodong Real Estate Registration Center. The official material reviewed is organizational/procedural and does not expose a safe anonymous parcel-vector response, native parcel identity, CRS, or geometry.",
+  "registryAssessment": "The official municipal bureau page assigns unified real-estate registration, cadastral investigation, real-estate surveying, registration-information platform management, and public geographic-information responsibilities to the local bureau. The Suihua government page lists the Zhaodong Real Estate Registration Center with a local service address and telephone. This establishes local registry presence, not open parcel-vector access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hljzhaodong.gov.cn/zd/c100144/202308/c12_a181f98dc7884971b60a9958617b7233.shtml",
+      "operator": "Zhaodong Municipal Natural Resources Bureau / Zhaodong municipal government",
+      "scope": "Official bureau organization page describing unified registration, cadastral investigation, real-estate surveying, registration-information management, and geographic-information public services."
+    },
+    {
+      "url": "https://www.suihua.gov.cn/sh/zfbz/202406/c12_185978.shtml",
+      "operator": "Suihua municipal government / Suihua Real Estate Registration Center",
+      "scope": "Official directory of county/city real-estate registration centers, including the Zhaodong center."
+    },
+    {
+      "url": "https://www.hljzhaodong.gov.cn/zd/c41/202112/c12_3e549877589f46209c083f65cf8a06ce.shtml",
+      "operator": "Zhaodong Municipal Natural Resources Bureau / Zhaodong municipal government",
+      "scope": "Official information-disclosure guide describing public disclosure channels, application boundaries, and privacy/protected-information limits."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.hljzhaodong.gov.cn/zd/c100144/202308/c12_a181f98dc7884971b60a9958617b7233.shtml",
+      "method": "GET; anonymous curl with TLS verification",
+      "httpStatus": 200,
+      "result": "Official bureau HTML retrieved (44,975 bytes). Script/configuration inspection found no map viewer, parcel API, feature schema, CRS, native parcel ID, or geometry endpoint."
+    },
+    {
+      "url": "https://www.suihua.gov.cn/sh/zfbz/202406/c12_185978.shtml",
+      "method": "GET; anonymous curl with TLS verification",
+      "httpStatus": 200,
+      "result": "Official Suihua HTML retrieved (13,097 bytes). It lists the Zhaodong Real Estate Registration Center and service location; no parcel geometry or public vector endpoint."
+    },
+    {
+      "url": "https://www.hljzhaodong.gov.cn/zd/c41/202112/c12_3e549877589f46209c083f65cf8a06ce.shtml",
+      "method": "GET via official search/open",
+      "httpStatus": 200,
+      "result": "Official information-disclosure guide confirms the municipal government website as the bureau's principal public-information channel and describes privacy/protected-information limits; no map/API endpoint."
+    },
+    {
+      "url": "https://www.hljzhaodong.gov.cn/robots.txt",
+      "method": "GET; anonymous curl with TLS verification",
+      "httpStatus": 404,
+      "result": "No robots file; no endpoint inferred."
+    },
+    {
+      "url": "https://www.hljzhaodong.gov.cn/sitemap.xml",
+      "method": "GET; anonymous curl with TLS verification",
+      "httpStatus": 404,
+      "result": "No sitemap file; no endpoint inferred."
+    },
+    {
+      "url": "https://www.hljzhaodong.gov.cn/zd/c100352/",
+      "method": "GET; anonymous curl with TLS verification",
+      "httpStatus": 403,
+      "result": "The registration-announcement section denied the anonymous request; no retry bypass, login, credentials, CAPTCHA/Cloudflare bypass, or TLS exception attempted."
+    }
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No exact-point parcel feature query completed because no public parcel endpoint or viewer configuration was exposed by the official sources inspected.",
+    "requestEvidence": [
+      {"url": "https://www.hljzhaodong.gov.cn/zd/c100144/202308/c12_a181f98dc7884971b60a9958617b7233.shtml", "method": "GET", "httpStatus": 200, "result": "Official custodian page; no geometry."},
+      {"url": "https://www.suihua.gov.cn/sh/zfbz/202406/c12_185978.shtml", "method": "GET", "httpStatus": 200, "result": "Official registration-center listing; no geometry."},
+      {"url": "https://www.hljzhaodong.gov.cn/zd/c100352/", "method": "GET", "httpStatus": 403, "result": "Registration-announcement section inaccessible anonymously; not evidence of cadastral absence."}
+    ]
+  },
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Zhaodong local custodian pages, information-disclosure guide, and Suihua's official registration-center directory.",
+    "verifiedOpenScope": "Registry custodian and service-center existence verified; parcel geometry, native identity, CRS, and open citywide coverage unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "adapterReady": false,
+  "technicalBlocker": "The official material exposes organizational and service-center information but no public anonymous parcel-vector viewer/API. The 403 registration-announcement response and absent robots/sitemap are access/route outcomes, not evidence that cadastral data is absent.",
+  "remainingUncertainty": "The current local registration system may have a public or authenticated map/API route not linked from the reviewed official pages. No login or unsafe data request was made, and no certificate exception was used.",
+  "nextStep": "Serial reviewer may independently inspect only a public anonymous map/API network response and qualify safe native ID plus geometry if returned; preserve held runtime state.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

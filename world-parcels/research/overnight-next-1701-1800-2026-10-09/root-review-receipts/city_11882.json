@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11882",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11882-shangyu-district.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/shangyu-district-service-review.json",
+    "tmp/valhalla-parcel-research/11882/zj-platform.html"
+  ],
+  "reason": "WUP 11882 / rank 1749 / China / [30.0119380700636,120.859416767948] / 328545 persons matches the immutable queue. English and Chinese search queries and outcomes are recorded. Official Shangyu government material identifies the local natural-resources and registration custodian; the saved Zhejiang public GIS portal is generic and has no parcel feature response. The official PDF fetch was 403 and a linked catalog request timed out, neither proving citywide absence. No full polygon or safe native ID is retained, and all independent adapter, paging, 13-cell, metric GEOS, source-binding and headed Details gates are absent.",
+  "firstPartyUrls": [
+    "https://www.shangyu.gov.cn/module/download/downfile.jsp?classid=0&filename=0985bd497037427bbeb4477412064103.pdf",
+    "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+  ],
+  "checkedAt": "2026-10-10T14:18:09Z"
+}

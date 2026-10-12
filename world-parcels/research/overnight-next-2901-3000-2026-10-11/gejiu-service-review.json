@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-8906-gejiu.json",
+  "cityCode": 8906,
+  "queueRank": 2928,
+  "name": "Gejiu",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Chinese first-party discovery found the official Gejiu Natural Resources Bureau and its disclosure/procedure pages. The bureau is a local cadastral/registration custodian, but no public anonymous parcel viewer, service configuration, schema, CRS, native ID, or safe ID-plus-geometry response was exposed. No sample GeoJSON was created.",
+  "attemptedRoutes": [
+    {"url": "https://www.hhgj.gov.cn/info/12091/269911.htm", "method": "GET", "outcome": "official Gejiu bureau duties page retrieved"},
+    {"url": "https://www.hhgj.gov.cn/info/11971/270361.htm", "method": "GET", "outcome": "official local information-disclosure guide retrieved; it describes real-estate registration information and the formal request channel"},
+    {"url": "https://www.hhgj.gov.cn/", "method": "GET", "outcome": "official city government homepage retrieved and inspected for current GIS/cadastral routes"},
+    {"url": "https://zwfw.yn.gov.cn/portal/#/home?regnCode=532501000000&flag=false", "method": "GET", "outcome": "official Yunnan government-service portal route identified from the city site; no anonymous parcel geometry service was identified"}
+  ],
+  "scopeLimits": [
+    "The official local custodian and procedure are evidenced, but geometry access is not public or was not discoverable from the inspected routes.",
+    "No exact WUP-point parcel query was performed because no public parcel endpoint was identified; the exact point [23.3536020032069, 103.153296865863] was preserved.",
+    "No retained GeoJSON sample exists; there is no geometry evidence to qualify for admission.",
+    "The result does not establish citywide absence, service nonexistence, or lack of cadastral coverage."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": null,
+    "alsoObserved": [],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "No parcel response was observed, so no native identity or composite-key interpretation was made."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "A local public government custodian/procedure is evidenced, but the public geometry route remains unresolved. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used. This packet is not source integration or admission."
+}

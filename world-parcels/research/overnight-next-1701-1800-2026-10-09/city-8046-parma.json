@@ -1,0 +1,111 @@
+{
+  "cityCode": 8046,
+  "queueRank": 1780,
+  "name": "Parma",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [41.446594957922, -81.7617220593044],
+  "population2025": 322420,
+  "population2025k": 322.42,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Parma Ohio official GIS parcel map cadastral property viewer Cuyahoga County",
+        "result": "First-party discovery identified Cuyahoga County MyPlace, the county public parcel viewer, and Cuyahoga County GIS parcel REST services. Official Parma materials also link or reproduce parcel maps with parcel identifiers. No anonymous geometry response was obtained in the bounded request because the county GIS host timed out from this environment.",
+        "actualResultUrls": [
+          "https://myplace.cuyahogacounty.gov/null",
+          "https://gis.cuyahogacounty.gov/server/rest/services/MyPlace/MyPLACE_Consolidated/MapServer",
+          "https://gis.cuyahogacounty.gov/server/rest/services/CCFO/Parcel_Fabric_Taxparcels/FeatureServer",
+          "https://www.cityofparma-oh.gov/AgendaCenter/ViewFile/Item/266?fileID=1467"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Parma Ohio official parcel map property GIS Cuyahoga County",
+        "result": "The United States local/native language is English. The separate English-language discovery route returned the same first-party Cuyahoga County MyPlace parcel viewer and county GIS REST catalog; no local-language alternative applies.",
+        "actualResultUrls": [
+          "https://myplace.cuyahogacounty.gov/null",
+          "https://cuyahogacounty.gov/information-technology",
+          "https://gis.cuyahogacounty.gov/server/rest/services/MyPlace/MyPLACE_Consolidated/MapServer"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Cuyahoga County is the local county GIS/property-data custodian serving Parma; the official MyPlace viewer and county GIS REST catalog expose parcel services. This is local registry/cadastre evidence, not proof that an anonymous parcel geometry query succeeded.",
+  "officialSources": [
+    {
+      "url": "https://myplace.cuyahogacounty.gov/null",
+      "observation": "Official public MyPlace viewer identifies parcel search by city, parcel and address and states that parcel/property data are public-record compilations; no credentials were used."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/MyPlace/MyPLACE_Consolidated/MapServer",
+      "observation": "Official county ArcGIS catalog identifies the MyPlace consolidated map and an All Parcels group with Point Parcels and Air Parcels sublayers."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/CCFO/Parcel_Fabric_Taxparcels/FeatureServer",
+      "observation": "Official county FeatureServer catalog identifies Parcel Fabric Taxparcels, supports public query, and reports State Plane Ohio North feet spatial reference metadata."
+    },
+    {
+      "url": "https://www.cityofparma-oh.gov/AgendaCenter/ViewFile/Item/266?fileID=1467",
+      "observation": "Official City of Parma-hosted material reproduces the Cuyahoga County MyPlace map and visibly shows parcel boundaries and parcel IDs, including 45436015; it is corroborating map evidence, not retained geometry."
+    },
+    {
+      "url": "https://cuyahogacounty.gov/information-technology",
+      "observation": "Official county IT page directs users to county GIS services and identifies the county GIS contact/custodian context."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://myplace.cuyahogacounty.gov/null",
+      "method": "GET",
+      "outcome": "Timed out after 30 seconds from this environment; no login, credential, private token, CAPTCHA or Cloudflare bypass attempted."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/MyPlace/MyPLACE_Consolidated/MapServer",
+      "method": "GET with f=pjson",
+      "outcome": "Direct curl timed out after 10 seconds per request. Search-indexed first-party metadata was available and records the parcel service catalog, but the live response was not retrieved locally."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/MyPlace/MyPLACE_Consolidated/MapServer/21/query?where=1%3D1%26outFields=PARCELPIN%26returnGeometry=true%26geometry=-81.7717%2C41.4366%2C-81.7517%2C41.4566%26geometryType=esriGeometryEnvelope%26inSR=4326%26spatialRel=esriSpatialRelIntersects%26outSR=4326%26f=geojson",
+      "method": "GET bounded envelope around the exact WUP point",
+      "outcome": "Attempted through the public REST route with only the safe native parcel identity field and geometry; request was inaccessible/timeout. No exact-point hit or miss inference was made."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/CCFO/Parcel_Fabric_Taxparcels/FeatureServer",
+      "method": "GET with f=pjson",
+      "outcome": "Search-indexed official metadata was available, reporting a public queryable parcel-fabric service and EPSG:3734/State Plane Ohio North feet; direct local request timed out."
+    }
+  ],
+  "source": {
+    "service": "Cuyahoga County MyPlace / GIS REST parcel services",
+    "serviceType": "official county ArcGIS map/feature services",
+    "nativeIdField": "PARCELPIN",
+    "nativeFieldMapping": {
+      "PARCELPIN": "stable county parcel-pin identity; only this field was requested for a potential sample",
+      "geometry": "full parcel polygon geometry if returned by a bounded public query"
+    },
+    "compositeKeyProvenance": null,
+    "schemaEvidence": "Indexed first-party REST metadata lists PARCELPIN on the Point Parcels layer and polygon parcel layers in the MyPlace parcel service family; live schema fetch was blocked by timeout.",
+    "crsEvidence": "First-party metadata reports EPSG:3857 for Point Parcels and EPSG:3734/State Plane Ohio North feet for Parcel Fabric Taxparcels; parcel polygon response CRS was not verified live."
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Cuyahoga County public MyPlace parcel viewer and county GIS parcel services covering Parma, Ohio.",
+    "verifiedOpenScope": "Official local parcel viewer/service catalog and indexed schema metadata; no live bounded parcel geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order; no coordinate shift. A timeout, inaccessible viewer or unavailable bounded response is not evidence of citywide cadastral absence. No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained. Packet completion is not source integration or runtime admission."
+}

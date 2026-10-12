@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8637",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-8637-xiaoyi.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/xiaoyi-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:16:13Z",
+  "finding": "Xiaoyi, China; rank 3111; 193034 persons; point [37.1410785743391,111.782555328381]. English and Simplified Chinese searches recorded. Official Xiaoyi bureau duties substantiate local record custody, but the PDF host failed verified TLS access and no public parcel endpoint or native ID/full polygon was obtained.",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No fresh native-ID full-polygon reads, forced paging, thirteen bounded cells, independent metric GEOS validity/overlap checks, source binding, or headed Details verification. No source integration or runtime admission.",
+  "absenceInference": "None; unavailable viewers, access failures, and zero extents do not establish citywide parcel absence."
+}

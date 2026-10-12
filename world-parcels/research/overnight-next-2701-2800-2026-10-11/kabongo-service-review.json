@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-5837-kabongo.json",
+  "cityCode": 5837,
+  "queueRank": 2736,
+  "city": "Kabongo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "reviewStatus": "held",
+  "reviewOutcome": "The packet is complete as bounded discovery evidence, but no Kabongo parcel ID-plus-geometry response was verified; runtime qualification remains held.",
+  "queryAndRequestOutcomes": "Separate English and French discovery queries were executed. First-party Ministry, public-service procedure, BIC viewer, and CAID administrative-map routes were fetched anonymously. The Ministry and public-service pages expose jurisdiction/procedure material only; BIC currently states parcel service availability for Nord-Kivu and Sud-Kivu; CAID provides administrative rather than cadastral mapping. No safe parcel geometry, schema, CRS, or stable native parcel identity was obtained.",
+  "cityOrLocalCustodian": "The DRC Ministry of Land Affairs is evidenced as a national custodian and formal procedure owner. No Kabongo-local registry/cadastre custodian or city-specific public map/API was evidenced, so registryFound remains null.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": null,
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "No citywide completeness claim.",
+    "No exact-point or map-extent absence inference.",
+    "WUP point remains exactly [-7.40588290777805, 25.6344124292261] in latitude/longitude order.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+    "No parcel owner, address, titleholder, personal, tax/account, certificate, or contact fields were requested or retained.",
+    "No registry, catalog, runtime configuration, queue, identity ledger, or global report was changed."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "A local office workflow or undiscovered public endpoint may exist. This attempt did not establish open parcel coverage for Kabongo; the result is not evidence of cadastral absence.",
+  "integrationDisposition": "Research packet only; no source integration or admission."
+}

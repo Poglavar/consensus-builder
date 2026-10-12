@@ -1,0 +1,108 @@
+{
+  "cityCode": 11864,
+  "queueRank": 1494,
+  "name": "Dongyang",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [29.2735557320591, 120.217831576073],
+  "population2025": 380793,
+  "population2025k": 380.793,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dongyang Zhejiang China official cadastral parcel map GIS natural resources bureau public service",
+        "result": "Search found Dongyang's official municipal government pages, including Natural Resources and Planning Bureau notices and a Real Estate Registration Center notice, and Zhejiang's official geographic-information public-service platform. No public anonymous parcel feature service was identified.",
+        "actualResultUrls": [
+          "https://www.dongyang.gov.cn/art/2024/10/8/art_1229162472_59692027.html",
+          "https://www.dongyang.gov.cn/art/2025/8/18/art_1229162472_59824309.html",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "东阳市 不动产登记 地籍图 查询 自然资源和规划局 官方 地图 服务",
+        "result": "Search found first-party Dongyang Natural Resources and Planning Bureau real-estate registration and land-planning notices, including an official first-registration announcement and an official lost-certificate announcement naming the Real Estate Registration Center. The official Zhejiang GIS platform was also identified, but no anonymous cadastral geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.dongyang.gov.cn/art/2024/10/8/art_1229162472_59692027.html",
+          "https://www.dongyang.gov.cn/art/2025/8/18/art_1229162472_59824309.html",
+          "https://www.dongyang.gov.cn/art/2025/4/17/art_1229311451_19752.html",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.dongyang.gov.cn/",
+        "method": "GET",
+        "httpStatus": 403,
+        "result": "TLS-verified request reached the official Dongyang government host but returned 403; search-indexed first-party pages were used as evidence. No bypass or alternate credentials were attempted."
+      },
+      {
+        "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "Current official Zhejiang GIS landing HTML fetched. It links public platform JavaScript including area/configuration code, but the landing page did not publish a parcel layer or parcel endpoint."
+      },
+      {
+        "url": "https://ditu.zjzwfw.gov.cn/platform-main/config/getSiteList.do?areaCode=330783",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "Returned JSON {status:OK, data:null}; no Dongyang-specific public map/service configuration was returned."
+      },
+      {
+        "url": "https://ditu.zjzwfw.gov.cn/ime-server/rest/xzqh_zj/division/search?withgeometry=false&withparents=true&fullname=浙江省金华市东阳市",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "Returned JSON code 401 / 未授权; this was an administrative lookup route, not a parcel response, and no authorization was attempted."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.dongyang.gov.cn/art/2024/10/8/art_1229162472_59692027.html",
+    "https://www.dongyang.gov.cn/art/2025/8/18/art_1229162472_59824309.html",
+    "https://www.dongyang.gov.cn/art/2025/4/17/art_1229311451_19752.html"
+  ],
+  "registryBasis": "First-party Dongyang government pages are published under the municipal Natural Resources and Planning Bureau, include a real-estate first-registration announcement, and identify the Real Estate Registration Center in a real-estate certificate notice. This evidences a local registry custodian, but not open parcel geometry.",
+  "source": {
+    "sourceId": "CN-11864-DONGYANG-ZJ-GIS-REVIEW",
+    "name": "Dongyang Natural Resources and Planning Bureau / Real Estate Registration Center and Zhejiang official GIS platform review",
+    "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+    "operator": "东阳市自然资源和规划局 / 东阳市不动产登记中心; 浙江省地理信息公共服务平台",
+    "serviceType": "Official local registry custodian and provincial public GIS platform reviewed; anonymous parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Dongyang municipal Natural Resources and Planning Bureau and Real Estate Registration Center administer local natural-resource and real-estate registration matters; Zhejiang's platform advertises public geographic-information services.",
+    "verifiedOpenScope": "Official local custody and the provincial GIS landing application were verified, but no public parcel layer, endpoint, schema, CRS, native parcel identity, or safe ID-plus-geometry response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official Dongyang homepage returned HTTP 403 to a normal TLS-verified GET. Zhejiang's public GIS landing page was reachable, but its inspected public configuration route returned no Dongyang site data and its administrative division route returned 401. No login, credentials, private token, CAPTCHA bypass, TLS weakening, or unsafe fields were used. These access outcomes are not evidence of parcel absence.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "A browser-mediated, authenticated, or separately published Dongyang cadastral viewer may exist. The current anonymous endpoint structure, parcel schema/CRS, stable native parcel identity, and exact-point coverage remain unknown; no exact-point absence inference is made.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify a documented first-party anonymous parcel service only after independently verifying schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [29.2735557320591, 120.217831576073],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

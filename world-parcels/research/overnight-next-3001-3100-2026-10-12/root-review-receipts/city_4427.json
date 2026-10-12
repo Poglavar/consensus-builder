@@ -1,0 +1,36 @@
+{
+  "taskId": "city:4427",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:43:00Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4427-m-sila.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/m-sila-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 4427,
+    "rank": 3008,
+    "country": "Algeria",
+    "point": [
+      35.7156073065278,
+      4.53352118201364
+    ],
+    "populationPersons": 198779
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://www.msilawilaya.dz/%D8%A7%D9%84%D8%A3%D8%A8%D9%88%D8%A7%D8%A8-%D8%A7%D9%84%D9%85%D9%81%D8%AA%D9%88%D8%AD%D8%A9-%D8%B9%D9%84%D9%89-%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D9%85%D8%B3%D8%AD-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6/"
+  ],
+  "reason": "Official Wilaya HTML and cached HTTP 200 response identify its cadastre and land-conservation directorate and digital services. Portal timeout and dzds.dz 403 yielded no safe parcel ID plus geometry response. Unavailable access is not citywide absence; no runtime, catalog, or report admission was made."
+}

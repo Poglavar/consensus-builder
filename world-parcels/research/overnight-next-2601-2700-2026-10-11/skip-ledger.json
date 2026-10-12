@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 2608,
+      "cityCode": 338,
+      "name": "Suva",
+      "country": "Fiji",
+      "iso2": "FJ",
+      "pop2025k": 225.882,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-suva.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2617,
+      "cityCode": 10407,
+      "name": "Maharajganj",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 225.197,
+      "plausibility": "Low",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/overnight-cities-2026-10-08/city-10789-maharajganj.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2660,
+      "cityCode": 4760,
+      "name": "Cannes",
+      "country": "France",
+      "iso2": "FR",
+      "pop2025k": 221.928,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/4760/city-4760-provider-4760.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/4760/provider-4760-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2675,
+      "cityCode": 3294,
+      "name": "Rustenburg",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "pop2025k": 220.723,
+      "plausibility": "Low",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3294/city-3294-provider-3294.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3294/provider-3294-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

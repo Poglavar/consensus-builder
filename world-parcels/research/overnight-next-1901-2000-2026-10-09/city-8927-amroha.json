@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 8927,
+  "queueRank": 1904,
+  "name": "Amroha",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [28.9021754286982, 78.4693030621757],
+  "population2025": 301108,
+  "population2025k": 301.108,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Amroha Uttar Pradesh official cadastral map parcel GIS land records",
+        "result": "Found the official District Amroha land-records page, the official UP Bhulekh cadastral-map digitization dashboard, and the official UP Bhu-Naksha public viewer.",
+        "actualResultUrls": [
+          "https://amroha.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=137",
+          "https://upbhunaksha.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "अमरोहा उत्तर प्रदेश आधिकारिक भू नक्शा खतौनी भूमि अभिलेख",
+        "result": "Found the official Hindi District Amroha land-records page and the official UP Bhulekh/Bhu-Naksha routes; no separate city-maintained cadastral service was identified.",
+        "actualResultUrls": [
+          "https://amroha.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://amroha.nic.in/service/land-records/",
+      "operator": "District Amroha, Government of Uttar Pradesh",
+      "evidence": "Official district page directs users to UP Bhulekh for land records; this is local district custodian evidence, but it does not expose a parcel API itself."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=137",
+      "operator": "Revenue Council, Uttar Pradesh / UP Bhulekh",
+      "evidence": "Official dashboard reports Amroha tehsil with 271 linked villages and 293 linked mapsheets in the displayed digitization report."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "operator": "Government of Uttar Pradesh Bhu-Naksha",
+      "evidence": "Official public cadastral viewer is reachable and presents District, Tehsil, Village and Plot No. controls."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://amroha.nic.in/service/land-records/",
+      "method": "GET via first-party discovery",
+      "status": 200,
+      "summary": "Official district land-records page retrieved; it links onward to upbhulekh.gov.in."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=137",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official Amroha digitization report retrieved. It is an administrative progress report, not a parcel geometry response."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Current JavaScript/configuration retrieved. The application declares public service bases https://upbhulekh.gov.in/PublicBhuApi/api and https://upbhulekh.gov.in/PublicBhuApi/bhunaksha; no private token or login was used."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Current public Bhu-Naksha application retrieved. Its JavaScript declares https://upbhunaksha.gov.in/bhunakshaserver as the service base."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous viewer metadata request succeeded and returned the level labels District, Tehsil, Village."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/mapLevelCount",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous viewer metadata request succeeded and returned 0 for map-level count; this was not interpreted as absence of cadastral coverage."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Anonymous request timed out; no retry with credentials, CAPTCHA bypass, or TLS exception was attempted."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST form level=1&codes=",
+      "status": "timeout_or_no_response",
+      "summary": "Anonymous level-value request did not return a usable response within the bounded attempt; no parcel query was attempted."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": null,
+    "crs": "Not obtained; no parcel geometry response was retained.",
+    "geometryType": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh public land-records and Bhu-Naksha systems, with Amroha district/tehsil administrative coverage evidenced by the official dashboard.",
+    "verifiedOpenScope": "Official Amroha district land-records route and Amroha tehsil digitization status were verified; parcel-level city geometry and native IDs were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point parcel query was completed; this is not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel ID if independently obtained", "geometry if independently obtained"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "tax/account", "legal description", "mutation details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_registry_and_viewer_verified_no_parcel_response",
+  "remainingUncertainty": "The public viewer's current route was confirmed, but anonymous level-value/map calls did not yield a bounded parcel ID plus geometry response. The report does not establish citywide parcel availability or absence, and it does not claim a city-specific custodian beyond the district government's referral.",
+  "nextStep": "Serial reviewer should independently qualify a current public Amroha village selection and safe parcel geometry/ID response before any adapter admission."
+}

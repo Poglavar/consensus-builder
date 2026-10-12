@@ -1,0 +1,88 @@
+{
+  "cityRecord": "city-8351-tonk.json",
+  "cityCode": 8351,
+  "queueRank": 2645,
+  "attempt": 1,
+  "serviceReview": {
+    "discovery": [
+      {
+        "route": "https://apnakhata.rajasthan.gov.in/",
+        "type": "official Rajasthan land-record custodian portal",
+        "outcome": "Discovered in English and Hindi searches as the official Rajasthan land-record entry point. Direct anonymous fetch timed out during this attempt; no credentials or private fields were requested."
+      },
+      {
+        "route": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+        "type": "official Rajasthan cadastral map viewer",
+        "outcome": "Discovered as the official BhuNaksha viewer. Direct anonymous HTTPS requests to both the www and bare host timed out; no viewer JavaScript/configuration or parcel response could be inspected."
+      },
+      {
+        "route": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+        "type": "official Rajasthan Urban GIS viewer",
+        "outcome": "HTTP 200 page obtained and current JavaScript/configuration inspected. The page describes Khasra search and disclaims legal use; the configuration exposes a JDA/Settlement_JDA ArcGIS layer, which is Jaipur Development Authority scoped rather than evidence of Tonk coverage."
+      },
+      {
+        "route": "https://gis.rajasthan.gov.in/index.htm",
+        "type": "official state GIS gateway",
+        "outcome": "Discovered as Rajdharaa state GIS infrastructure context. No Tonk-specific parcel endpoint was established from the gateway."
+      },
+      {
+        "route": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+        "type": "official ArcGIS REST layer referenced by current Urban GIS configuration",
+        "outcome": "Anonymous schema request timed out after 8 seconds. The layer name and URL were read from the official current JavaScript configuration; no schema, CRS, fields or geometry were retained."
+      }
+    ],
+    "viewerAndApiInspection": {
+      "configurationSource": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js",
+      "observedService": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0",
+      "layer": {
+        "id": 0,
+        "name": "JDA Settlement Khasra (configuration label: KHASARA)",
+        "geometryType": "not inspected",
+        "serviceCrs": "not inspected",
+        "fieldsInspected": []
+      },
+      "exactPointRequest": {
+        "method": "GET",
+        "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0/query",
+        "parameters": {
+          "where": "1=1",
+          "geometry": "WGS84 point 75.7919094040786,26.1676680338341",
+          "geometryType": "esriGeometryPoint",
+          "spatialRel": "esriSpatialRelIntersects",
+          "outFields": "*",
+          "returnGeometry": true,
+          "outSR": "4326",
+          "f": "geojson"
+        },
+        "outcome": "Timed out after 8 seconds; no zero-hit or positive-hit conclusion is made."
+      },
+      "boundedRequest": {
+        "method": "GET",
+        "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0/query",
+        "parameters": {
+          "where": "1=1",
+          "geometry": "WGS84 envelope 75.78,26.15 to 75.81,26.18",
+          "geometryType": "esriGeometryEnvelope",
+          "spatialRel": "esriSpatialRelIntersects",
+          "outFields": "*",
+          "returnGeometry": true,
+          "outSR": "4326",
+          "resultRecordCount": 3,
+          "f": "geojson"
+        },
+        "outcome": "Timed out after 8 seconds; no parcel features or native identities were retained. This route is also JDA-scoped and therefore not sufficient evidence of Tonk citywide coverage."
+      }
+    },
+    "safeFieldAllowlist": ["native parcel ID if independently verified", "geometry"],
+    "retainedSamples": 0,
+    "scopeLimits": [
+      "The official state portals evidence a Rajasthan land-record/cadastral custodian, but no Tonk-specific public parcel API response was obtained.",
+      "The accessible Urban GIS route is configured for JDA/Jaipur settlement data; it must not be generalized to Tonk.",
+      "BhuNaksha and Apna Khata direct routes timed out. Timeout, unavailable UI and lack of an exact-point hit are not evidence of citywide parcel absence.",
+      "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, owner, address, contact, titleholder, personal, tax or account fields were requested.",
+      "No sample GeoJSON is retained because no safe native parcel identity and unchanged geometry were actually obtained."
+    ],
+    "uncertainty": "Rajasthan may expose Tonk cadastral maps through the BhuNaksha viewer or a route not recoverable during this bounded anonymous attempt. A later researcher should follow the viewer's live JavaScript/configuration when the host is reachable and independently verify Tonk district/tehsil/village scope before retaining any geometry."
+  },
+  "runtimeReadiness": "held"
+}

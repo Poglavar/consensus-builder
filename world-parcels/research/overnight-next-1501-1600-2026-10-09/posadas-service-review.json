@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4570-posadas.json",
+  "purpose": "Document first-party discovery, current public viewer/service configuration, bounded anonymous requests, safe field handling, and scope limits.",
+  "assessment": "Official provincial Catastro Misiones and municipal IDE Posadas evidence establish cadastral custody/public geospatial publication. The IDE Posadas GeoServer WFS returned three anonymous parcel MultiPolygons from geonode:mae_29_publico in EPSG:4326 near the exact WUP point.",
+  "registryAssessment": "Dirección General de Catastro de la Provincia de Misiones is the provincial cadastral custodian with an official viewer and contact route in Posadas. Municipalidad de Posadas operates IDE Posadas and publishes its own geospatial layers/services. These are distinct custodians; neither observation proves citywide completeness.",
+  "officialPrimarySources": [
+    {"url": "https://catastro.misiones.gov.ar/", "observation": "Official Dirección General de Catastro site describes the cadastral GIS and self-query of cadastral objects."},
+    {"url": "https://www.catastro.misiones.gov.ar/contactus", "observation": "Official contact page identifies the Posadas office and a cadastral viewer lookup by nomenclatura/partida."},
+    {"url": "https://www.ide.posadas.gob.ar/", "observation": "Official municipal IDE Posadas portal describes the city geospatial infrastructure and Planning Cadastre catalog."},
+    {"url": "https://www.ide.posadas.gob.ar/services/?limit=5", "observation": "Official IDE service catalog lists GeoServer/WMS remote services including cadastral-related infrastructure."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://www.mapa.catastro.misiones.gov.ar/mapaCatastro/",
+    "municipalGeoportalUrl": "https://www.ide.posadas.gob.ar/",
+    "observedServiceUrl": "https://www.ide.posadas.gob.ar/geoserver/ows",
+    "observedVendor": "GeoServer WFS",
+    "observedLayer": "geonode:mae_29_publico",
+    "observedLayerDescription": "Public cadastral/parcel layer returned by the official IDE Posadas WFS; layer title in capabilities is mae_29_publico.",
+    "schemaAndCrs": "DescribeFeatureType identifies fid:int, geometry:gml:MultiPolygonPropertyType, AdMapKey:long, and IDGIS:string; capabilities and response identify EPSG:4326.",
+    "nativeFieldNames": ["fid", "geometry", "AdMapKey", "IDGIS"],
+    "canonicalIdentityField": "IDGIS",
+    "safeFieldAllowlist": ["stable native parcel identifier (IDGIS)", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.mapa.catastro.misiones.gov.ar/mapaCatastro/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; current JavaScript bundle loaded. A guessed assets/config/config.json returned HTTP 404, so no credentials or private route was pursued."},
+    {"url": "https://www.ide.posadas.gob.ar/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 XML capabilities; EPSG:4326 cadastral candidates observed: geonode:maestro_publico, geonode:mae_260, geonode:mae_29_publico, geonode:maestro_310, geonode:maestro_320."},
+    {"url": "https://www.ide.posadas.gob.ar/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=geonode:mae_29_publico", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 XML schema; safe fields and MultiPolygon geometry type identified."},
+    {"url": "https://www.ide.posadas.gob.ar/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:mae_29_publico&outputFormat=application/json&srsName=EPSG:4326&maxFeatures=3&bbox=-55.9115,-27.4022,-55.9102,-27.4012,EPSG:4326", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 GeoJSON; three complete MultiPolygon features returned with IDGIS values 0459009022700080003, 0459009022700080007, and 0459009022700080010. Bbox is a bounded sample around, not a shifted replacement for, the exact WUP point."},
+    {"url": "https://www.ide.posadas.gob.ar/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=geonode:maestro_publico", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 XML schema; a second public cadastral layer also exposes IDGIS and MultiPolygon geometry."},
+    {"url": "https://www.ide.posadas.gob.ar/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:maestro_publico&outputFormat=application/json&srsName=EPSG:4326&maxFeatures=3&bbox=-55.9115,-27.4022,-55.9102,-27.4012,EPSG:4326", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 GeoJSON; bounded response returned complete MultiPolygons with IDGIS and additional source attributes. Raw source attributes were not retained."}
+  ],
+  "geometryDecision": "Three full polygons retained in posadas-parcel-samples.geojson, each with exactly one canonical native identity property named id and no raw source attribute set.",
+  "geometryEvidence": {"sampleFile": "posadas-parcel-samples.geojson", "featureCount": 3, "query": "WFS GetFeature on geonode:mae_29_publico with maxFeatures=3, EPSG:4326, and bounded bbox around the exact WUP point."},
+  "coverageAssessment": {"claimedScope": "Provincial Catastro Misiones and municipal IDE Posadas public cadastral/geospatial services.", "verifiedOpenScope": "Anonymous bounded parcel response from the municipal IDE WFS.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The sample does not establish citywide completeness, update cadence, legal/licensing status, exact point containment, or that all parcel variants are represented by one layer. A successful bounded response is positive service evidence only; it is not an adapter qualification.",
+  "runtimeAssessment": {"status": "held", "reason": "Independent serial review is still required to qualify the layer, identity semantics, coverage, and production adapter behavior."}
+}

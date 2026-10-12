@@ -1,0 +1,19 @@
+{
+  "taskId": "city:5059",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-5059-hu.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/hu-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/hu-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/5059/coCau-layer.json",
+    "tmp/valhalla-parcel-research/5059/count.json",
+    "tmp/valhalla-parcel-research/5059/query.geojson",
+    "tmp/valhalla-parcel-research/5059/exact-point.json",
+    "tmp/valhalla-parcel-research/5059/item-data.json"
+  ],
+  "checkedAt": "2026-10-09T15:41:48Z",
+  "reason": "WUP code 5059, rank 1384, Viet Nam point and 408692 persons match the immutable queue and 2025 source. English and Vietnamese searches and official links are recorded in the paired files. The cached first-party layer has 314 features, polygon geometry and OID fid; its three saved full polygons exactly match the original safe-field GeoJSON, are GEOS-valid in metric CRS and have no positive pairwise overlap. The layer is planning/subdivision, not established cadastral registry geometry. Exact WUP point returned zero features, which does not establish citywide absence. Fresh cadastral native-ID reads, forced paging, 13 bounded cells, full admission checks, source binding and headed Details verification are absent. Keep geometry discovery distinct from cadastral admission and retain registry custody as unresolved."
+}

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 10086,
+  "queueRank": 2550,
+  "cityId": "wup2025:10086",
+  "name": "Zhoucun",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.8044877044369, 117.842212879658],
+  "population2025": 230557,
+  "population2025k": 230.557,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Zibo Natural Resources and Planning Bureau pages identify the bureau as responsible for natural-resources confirmation, cadastral investigation, unified real-estate registration, and related information services, and state that its public ‘以图查房’ map property-search system supports map positioning plus real-estate registration information, cadastral-map, and house-unit-diagram queries. An official Zhoucun District government gazette also identifies the district natural-resources bureau in real-estate registration procedures. This evidences a local/district custodian and public-service route, but not anonymous parcel geometry access.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhoucun China cadastral parcel map official natural resources public map API",
+        "result": "Search returned the official Zibo Natural Resources and Planning Bureau, the national geospatial-resource catalog, and the official Shandong geospatial public-service API page. The Zibo result documents a public map-property-search service, but no anonymous parcel geometry endpoint or current API configuration was exposed in search results.",
+        "actualResultUrls": [
+          "https://gtj.zibo.gov.cn/",
+          "https://www.webmap.cn/main.do?method=index1",
+          "https://sdmap.gov.cn/mapAPI.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "周村区 淄博市 自然资源和规划局 不动产登记 地籍图 官方",
+        "result": "Search returned the official Zibo bureau pages describing the ‘以图查房’ map-property-search service and bureau responsibilities, plus the official Zhoucun District government gazette listing the district natural-resources bureau in real-estate-registration procedures. No anonymous parcel feature service or geometry response was found.",
+        "actualResultUrls": [
+          "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcd2a40661f2aebb98a8/",
+          "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_n_1605682654.0316/",
+          "https://www.zhoucun.gov.cn/gongkai/site_zhoucunqurenminzhengfubangongshi/channel_c_5f9f6cd293955786fb9cdd4f_n_1605682049.4876/doc_60b72f4d1efdd1a4bfdf872d_c0ed97178ca750b6f20e369c5b0cfa32.pdf"
+        ]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcd2a40661f2aebb98a8/",
+      "operator": "Zibo Natural Resources and Planning Bureau",
+      "scope": "Municipal natural-resources and real-estate-registration information service covering Zhoucun District",
+      "observation": "Official annual-report material says the bureau added a ‘以图查房’ system with map positioning, real-estate registration information, cadastral-map and house-unit-diagram queries/downloads. No service URL, public schema, or anonymous parcel response was exposed in the fetched/searchable page content."
+    },
+    {
+      "url": "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_n_1605682654.0316/",
+      "operator": "Zibo Natural Resources and Planning Bureau",
+      "scope": "Municipal statutory and institutional responsibilities",
+      "observation": "Official responsibilities identify real-estate registration, cadastral investigation, natural-resource confirmation, and related information-system duties; the page specifically lists supervision of Zhoucun District."
+    },
+    {
+      "url": "https://www.zhoucun.gov.cn/gongkai/site_zhoucunqurenminzhengfubangongshi/channel_c_5f9f6cd293955786fb9cdd4f_n_1605682049.4876/doc_60b72f4d1efdd1a4bfdf872d_c0ed97178ca750b6f20e369c5b0cfa32.pdf",
+      "operator": "Zhoucun District People’s Government",
+      "scope": "District government service procedure/gazette",
+      "observation": "Official gazette identifies the district natural-resources bureau in real-estate-registration procedures. It is custodian/procedure evidence, not a parcel geometry feed."
+    },
+    {
+      "url": "https://sdmap.gov.cn/mapAPI.html",
+      "operator": "Shandong geospatial information public-service platform",
+      "scope": "Provincial public map and feature services",
+      "observation": "Official page describes public map, WMS, geocoding and feature-map service categories, but no Zhoucun cadastral layer or parcel endpoint was identified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gtj.zibo.gov.cn/",
+      "method": "GET",
+      "outcome": "The ordinary curl request timed out during DNS resolution after 20 seconds; no bypass or TLS exception used. Search/open evidence confirms the official host, but the live home-page HTML was not retrieved by this attempt.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "url": "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcd2a40661f2aebb98a8/",
+      "method": "GET/search-index open",
+      "outcome": "Official page content was available through public indexing/open retrieval. It documented the map-property-search capability but did not expose a current anonymous viewer URL, JavaScript configuration, schema, CRS, or parcel geometry response.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "url": "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_n_1605682654.0316/",
+      "method": "GET/search-index open",
+      "outcome": "Official responsibility page retrieved through public indexing/open retrieval; no parcel endpoint or geometry returned.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "url": "https://sdmap.gov.cn/mapAPI.html",
+      "method": "GET/search-index open",
+      "outcome": "Official provincial API overview identified public map/WMS/feature-service categories; no cadastral layer or Zhoucun parcel endpoint was exposed.",
+      "safeRequest": true,
+      "geometryReturned": false
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Local/district custodian and public real-estate/cadastral map-service capability only; no citywide cadastral coverage verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "exactPointResult": "No successful exact-point or bbox parcel query was executed; therefore no exact-point hit or miss is inferred. The WUP point was retained exactly."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry", "source CRS", "geometry type", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal data"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous first-party parcel geometry endpoint, schema, CRS, or safe native parcel-ID response was exposed or successfully reached in this attempt.",
+  "remainingUncertainty": "The documented ‘以图查房’ service may be linked from a dynamic municipal page or require a separate public bootstrap route. A login-gated or browser-only service may also exist. These limitations are not evidence of citywide parcel absence.",
+  "nextStep": "On a later attempt, inspect the official bureau page’s current public JavaScript/configuration if reachable, follow only ordinary anonymous routes, and request a bounded geometry-plus-stable-native-ID response with CRS metadata and no unsafe attributes.",
+  "completion": "complete research packet; held from runtime admission"
+}

@@ -93,15 +93,21 @@ describe('globe geographic coverage UI contract', () => {
             { cc: 'A', tier: 'live', coverage: 'partial', rings: [ring] },
             { cc: 'B', tier: 'source', coverage: 'full', rings: [ring] },
             { cc: 'C', tier: 'live', coverage: 'none', rings: [ring] },
-            { cc: 'D', tier: 'source', coverage: 'unknown', rings: [ring] }
+            { cc: 'D', tier: 'source', coverage: 'unknown', rings: [ring] },
+            { cc: 'E', tier: 'source', coverage: 'mostly', rings: [ring] }
         ], regions: [] }, 64, 32);
 
         expect(h.paintedLand).toEqual([
             h.context.coverageColors.partial,
             h.context.coverageColors.full,
             h.context.coverageColors.none,
-            h.context.coverageColors.unknown
+            h.context.coverageColors.unknown,
+            h.context.coverageColors.mostly
         ]);
+        // Every level has its own colour; `mostly` is a lighter green than `full`.
+        expect(new Set(WorldCoverage.COVERAGE_LEVELS.map(level => h.context.coverageColors[level])).size).toBe(WorldCoverage.COVERAGE_LEVELS.length);
+        const lightness = hex => [1, 3, 5].reduce((sum, i) => sum + parseInt(hex.slice(i, i + 2), 16), 0);
+        expect(lightness(h.context.coverageColors.mostly)).toBeGreaterThan(lightness(h.context.coverageColors.full));
         expect(h.context.coverageColors.partial).not.toBe(h.context.tierColors.live);
         expect(h.context.coverageColors.full).not.toBe(h.context.tierColors.source);
     });
@@ -135,7 +141,7 @@ describe('globe geographic coverage UI contract', () => {
         const dictionaries = Object.fromEntries(LANGS.map(lang => [
             lang, JSON.parse(readFileSync(new URL(`i18n/${lang}.json`, FRONTEND), 'utf8'))
         ]));
-        for (const lang of LANGS) for (const level of ['full', 'partial', 'none', 'unknown']) {
+        for (const lang of LANGS) for (const level of WorldCoverage.COVERAGE_LEVELS) {
             expect(lookup(dictionaries[lang], `world.coverage.${level}.short`), `${lang} ${level} badge`)
                 .toEqual(expect.any(String));
             expect(lookup(dictionaries[lang], `world.coverage.${level}.text`), `${lang} ${level} description`)
@@ -145,7 +151,9 @@ describe('globe geographic coverage UI contract', () => {
             expect(lookup(dictionaries[lang], `world.regionCoverage.${level}.text`), `${lang} ${level} region description`)
                 .toEqual(expect.any(String));
         }
-        for (const lang of LANGS) expect(lookup(dictionaries[lang], 'world.legend.full'), `${lang} legend`).toEqual(expect.any(String));
+        for (const lang of LANGS) for (const key of ['full', 'mostly']) {
+            expect(lookup(dictionaries[lang], `world.legend.${key}`), `${lang} legend ${key}`).toEqual(expect.any(String));
+        }
         // The region texts must not reuse the country wording.
         expect(lookup(dictionaries.en, 'world.regionCoverage.full.short')).not.toBe(lookup(dictionaries.en, 'world.coverage.full.short'));
     });

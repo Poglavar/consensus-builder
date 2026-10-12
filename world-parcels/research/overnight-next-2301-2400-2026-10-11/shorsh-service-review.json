@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-3134-shorsh.json",
+  "cityCode": 3134,
+  "queueRank": 2376,
+  "name": "Shorsh",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "wupPointLatLon": [35.5212304814792, 44.8365219719098],
+  "population2025": 245565,
+  "status": "complete",
+  "reviewOutcome": "held",
+  "registryFound": null,
+  "summary": "Official Iraqi registry and property-map procedures were evidenced, but no anonymous Shorsh/Kirkuk parcel geometry or safe native parcel identity was retrieved. No sample GeoJSON retained.",
+  "queryOutcomes": "English and Arabic/Kurdish discovery queries are recorded in the city record with actual result URLs. Search results led to Iraq Ministry of Justice, Iraq Geographic Portal, Ur Portal, and Kurdistan government procedure pages; none exposed a qualifying public Shorsh/Kirkuk parcel layer.",
+  "requestOutcomes": "The ministry page and Iraq Geographic Portal returned HTTP 200 informational pages. The Ur service URL returned HTTP 418 to the direct request and the Kurdistan service page returned HTTP 403; indexed official descriptions were used only to document service scope. No login, credentials, CAPTCHA bypass, private token, or owner-specific request was used.",
+  "attemptedRoutes": [
+    "Ministry of Justice official real-estate registration notice",
+    "Iraq Geographic Portal service page",
+    "Ur Portal deed/property-map service description",
+    "Kurdistan government property-boundary procedure"
+  ],
+  "scopeLimits": [
+    "No citywide parcel coverage established",
+    "No exact-point hit or miss treated as citywide evidence",
+    "No geometry, native parcel ID, CRS response, or bounded parcel feature response available",
+    "Kirkuk-local registry office was not specifically evidenced by a public map/procedure page",
+    "Runtime readiness remains held pending independent serial qualification"
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if publicly returned", "geometry", "source CRS", "service/layer identity", "request status/count"],
+  "uncertainty": "Official procedures may support property maps for individual owners or local offices, but the available evidence does not establish anonymous machine-readable parcel access for Shorsh. No parcel sample is therefore retained.",
+  "completion": {
+    "packetComplete": true,
+    "sampleGeojsonWritten": false,
+    "runtimeReadiness": "held",
+    "noRegistryIntegrationClaimed": true
+  }
+}

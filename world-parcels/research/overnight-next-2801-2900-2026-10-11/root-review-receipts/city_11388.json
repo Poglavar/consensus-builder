@@ -1,0 +1,24 @@
+{
+  "taskId": "city:11388",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11388-jurong.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/jurong-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T21:28:48.762739Z",
+  "reason": "Official Jurong bureau custody is corroborated. No anonymous Jurong parcel-vector response, native parcel ID, full polygon, or independent adapter/UI qualification is evidenced. Unknown public coverage remains unresolved.",
+  "firstPartyUrlChecked": "https://www.jurong.gov.cn/jrzrzrghj/nsjg/jrxxgkpt_tt.shtml",
+  "identityVerifiedAgainstWup2025Archive": true,
+  "bilingualSearchesRecorded": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

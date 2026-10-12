@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4993-t-y-ninh.json",
+  "cityCode": 4993,
+  "purpose": "Document first-party discovery, local custodian evidence, current access outcome, and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The first-party Tây Ninh land-environment portal exposes an official land-use planning map page for Thành phố Tây Ninh and names the provincial Land Registration Office as the map/data custodian. Direct retrieval from this environment failed during DNS resolution, and no public parcel API, current JavaScript configuration, schema/CRS, safe native ID, or geometry-only response could be inspected. The planning map should not be treated as an admitted cadastral parcel layer.",
+  "registryAssessment": "Local/public-service evidence is present: a provincial official map page specifically for the city and a named provincial Land Registration Office/CSDL-TTLT contact procedure. This supports registryFound=true under the packet rule, while leaving public vector access and cadastral completeness unverified.",
+  "safeFieldAllowlist": ["safe parcel identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Tay Ninh Vietnam official cadastral parcel map land registry GIS",
+      "outcome": "First-party provincial land-use map page and official legal portal found; no public parcel API or safe geometry endpoint found.",
+      "actualResultUrls": ["https://sonnmt.tayninh.gov.vn/about/BAN-DO-QUY-HOACH-SU-DUNG-DAT-DEN-2030-THANH-PHO-TAY-NINH.html", "https://sonnmt.tayninh.gov.vn/laws/", "https://vbpl.vn/tayninh/Pages/vbpq-toanvan.aspx?ItemID=141654"]
+    },
+    {
+      "language": "Vietnamese",
+      "query": "Tây Ninh bản đồ địa chính thửa đất cổng thông tin chính thức",
+      "outcome": "First-party city land-use map page found; it directs map/data requests to Văn phòng Đăng ký Đất đai tỉnh Tây Ninh, Phòng CSDL-TTLT. No public parcel feature service was exposed.",
+      "actualResultUrls": ["https://sonnmt.tayninh.gov.vn/about/BAN-DO-QUY-HOACH-SU-DUNG-DAT-DEN-2030-THANH-PHO-TAY-NINH.html", "https://thanhpho.tayninh.gov.vn/vi/news/cai-cach-hanh-chinh/thu-tuc-hanh-chinh-phai-thuc-hien-so-hoa-7731.html?download=1&id=2", "https://vbpl.vn/tayninh/Pages/vbpq-print.aspx?ItemID=32475"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://sonnmt.tayninh.gov.vn/about/BAN-DO-QUY-HOACH-SU-DUNG-DAT-DEN-2030-THANH-PHO-TAY-NINH.html",
+      "method": "GET/search-index review",
+      "httpStatus": null,
+      "result": "Search-indexed first-party result reviewed; direct curl from this environment failed with DNS resolution error. No viewer JavaScript/configuration or API route could be inspected."
+    },
+    {
+      "url": "https://sonnmt.tayninh.gov.vn/laws/",
+      "method": "GET/search-index review",
+      "httpStatus": null,
+      "result": "Official portal discovered in first-party search and legal/procedural context reviewed; direct page retrieval was not available from this environment."
+    },
+    {
+      "url": "https://vbpl.vn/tayninh/Pages/vbpq-print.aspx?ItemID=32475",
+      "method": "GET/search-index review",
+      "httpStatus": null,
+      "result": "Official legal-text result reviewed for safe public land-data scope; no parcel geometry request made and no unsafe fields requested."
+    }
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not completed because no anonymous parcel endpoint or viewer API was reachable. Zero exact-point hit must not be interpreted as absence."
+  },
+  "remainingUncertainty": "The WUP point's parcel inclusion, native safe parcel identifier, CRS, current viewer/API configuration, and citywide coverage remain unverified. The official page may require a direct institutional access procedure or may be temporarily unavailable.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

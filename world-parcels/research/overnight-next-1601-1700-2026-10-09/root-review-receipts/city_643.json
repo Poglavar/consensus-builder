@@ -1,0 +1,13 @@
+{
+  "taskId": "city:643",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/provenance.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-643-portmore.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/portmore-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/portmore-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T11:54:05.912375Z",
+  "reviewFindings": "WUP code 643, rank 1645, Jamaica, point and 347722 persons match the immutable queue and official 2025 source. Official NLA layer 16 returned the three retained OBJECTID_1 values in a fresh exact-ID query; retained polygons are topologically equal to live full polygons and retain only id. The French discovery variant is not Jamaica's local language. Forced paging, 13 cells, metric GEOS checks, source binding and headed Details verification are not evidenced. No admission."
+}

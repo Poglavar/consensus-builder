@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-6554-pengzhou.json",
+  "cityCode": 6554,
+  "queueRank": 2901,
+  "name": "Pengzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "English and Chinese discovery were performed separately. Official Sichuan/MNR context and the Pengzhou government host were checked. Direct Pengzhou GET returned HTTP 412 anti-automation; no anonymous parcel service configuration, schema, CRS, native ID, or geometry response was verified.",
+  "attemptedRoutes": [
+    {"url": "https://www.pengzhou.gov.cn/", "method": "GET", "outcome": "412 Precondition Failed"},
+    {"url": "https://dnr.sc.gov.cn/", "method": "GET", "outcome": "official provincial natural-resources source; no parcel route exposed in bounded discovery"},
+    {"url": "https://rerc.com.cn/", "method": "GET", "outcome": "official national registration-center source; web retrieval returned 502"}
+  ],
+  "scopeLimits": [
+    "No exact-point parcel hit or miss was treated as citywide evidence.",
+    "No map extent was used to infer absence.",
+    "The provincial evidence is general infrastructure context and does not prove public Pengzhou polygon coverage.",
+    "No retained GeoJSON sample was created because no safe full native polygon was observed."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "registryFound": null,
+  "uncertainty": "A local custodian is institutionally evidenced, but the city-specific public registry/map service remains unverified. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe fields were used."
+}

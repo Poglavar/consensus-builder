@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-1489-ni.json",
+  "cityCode": 1489,
+  "queueRank": 2999,
+  "name": "Niš",
+  "country": "Serbia",
+  "countryCode": "RS",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "packetStatus": "complete",
+  "reviewStatus": "complete_research_held",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "queryAndRequestSummary": "Separate English and Serbian first-party discovery queries were recorded in the city record. The official City of Niš GIS Smart Portal and Nis_NEP ArcGIS layer were inspected. Layer metadata confirmed polygon geometry, EPSG:3857, and native identifier candidates, but bounded anonymous feature and exact-point requests did not produce usable geometry. No sample GeoJSON was retained.",
+  "attemptedRoutes": "See city record sourceReview.attempts; all executed routes and outcomes are recorded there.",
+  "serviceScope": {
+    "localCustodian": "City of Niš GIS Smart Portal / official gis.ni.rs municipal GIS route, with Nis_NEP hosted ArcGIS MapServer layer.",
+    "nationalCustodian": "Republic Geodetic Authority (RGZ), evidenced by official Serbian public-access and cadastral-office pages; treated as general/national agency context rather than a successful parcel geometry endpoint.",
+    "coverage": "Observed service metadata and a layer extent demonstrate a configured GIS layer, not complete or current citywide cadastral coverage."
+  },
+  "retainedArtifacts": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe native parcel ID plus unchanged full geometry was returned by the bounded anonymous requests."
+  },
+  "nativeFieldMapping": {
+    "canonicalIdentityCandidate": "objectid",
+    "alsoObserved": ["gis_id", "deoparcele_id", "brparcele"],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "The layer schema exposes multiple source identifiers, but no feature row was returned, so no composite identity was inferred or synthesized."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "bounded response metadata"],
+  "scopeLimits": [
+    "Exact point was preserved; the ArcGIS query returned an error rather than a meaningful point hit/miss.",
+    "No citywide absence conclusion is drawn from failed anonymous queries.",
+    "The large layer schema contains unsafe fields; none were requested for retained artifacts.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+  ],
+  "completionSummary": "complete; first-party municipal GIS and national cadastral custodian evidence recorded; anonymous parcel geometry route documented but unusable in this attempt; no sample retained; runtime held"
+}

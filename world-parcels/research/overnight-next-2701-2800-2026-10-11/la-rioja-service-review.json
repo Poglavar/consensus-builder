@@ -1,0 +1,62 @@
+{
+  "cityRecord": "city-783-la-rioja.json",
+  "cityCode": 783,
+  "queueRank": 2727,
+  "city": "La Rioja",
+  "country": "Argentina",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "executedAttempts": [
+    {
+      "route": "Official provincial Catastro landing page",
+      "url": "https://catastro.larioja.gob.ar/home.php",
+      "outcome": "Success. Identified Dirección General de Catastro, its provincial cadastral role, public map link, and contact/address. The page states that the map is for locating parcels and obtaining cadastral nomenclature."
+    },
+    {
+      "route": "Official IDErioja geovisor",
+      "url": "https://www.iderioja.larioja.org/geovisor/index_fs.php",
+      "outcome": "HTTP response reached Cloudflare challenge; no challenge bypass attempted. Search result and official OGC directory still established the public geospatial context."
+    },
+    {
+      "route": "Official IDErioja OGC directory",
+      "url": "https://iderioja.larioja.org/servicios/servicios-ogc",
+      "outcome": "Success. Public OGC services were listed, but no cadastral parcel WFS was listed there; this route was not treated as the parcel source."
+    },
+    {
+      "route": "Catastro public map viewer configuration",
+      "url": "http://www.catastroweb.com.ar:8080/sistema/mapa_catastro.html",
+      "outcome": "Success. Current JavaScript configured GeoServer http://catastroweb.com.ar:8888/geoserver/catastro, layer catastro:app_catastro_parcelageometria, WMS parcel styles, and WFS GetFeature searches."
+    },
+    {
+      "route": "GeoServer DescribeFeatureType",
+      "url": "http://catastroweb.com.ar:8888/geoserver/catastro/wfs?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=catastro:app_catastro_parcelageometria&outputFormat=application/json",
+      "outcome": "Success. Schema exposed nomenclatura, department/circumscription/section/block/parcel fields, type/status, geometry, and additional source fields. Only id and geometry were retained."
+    },
+    {
+      "route": "Bounded anonymous city-scale WFS query",
+      "url": "http://catastroweb.com.ar:8888/geoserver/catastro/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=catastro:app_catastro_parcelageometria&outputFormat=application/json&srsName=EPSG:4326&bbox=-66.87,-29.43,-66.84,-29.40,EPSG:4326&maxFeatures=3",
+      "outcome": "Success. Returned 3 GeoJSON parcel features with MultiPolygon geometries and native feature ids, confirming usable anonymous parcel geometry within the La Rioja city-area bounding box."
+    },
+    {
+      "route": "Bounded anonymous exact-point vicinity WFS query",
+      "url": "http://catastroweb.com.ar:8888/geoserver/catastro/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=catastro:app_catastro_parcelageometria&outputFormat=application/json&srsName=EPSG:4326&bbox=-66.8565569367,-29.4179850949,-66.8561569367,-29.4175850949,EPSG:4326&maxFeatures=3",
+      "outcome": "Success. Returned 3 nearby features; retained one active urban parcel geometry with native id app_catastro_parcelageometria.66593. The exact WUP point was not altered."
+    }
+  ],
+  "scopeLimits": [
+    "The bounded query is evidence of a public service and nearby/city-area parcel coverage, not a complete provincial or municipal parcel census.",
+    "The service's viewer excludes HISTORICO/HISTÓRICO/EXPEDIENTE records in its display filter; this packet does not infer absence of excluded records.",
+    "No owner, address, contact, titleholder, tax/account, or other unsafe fields were requested or retained.",
+    "The IDErioja geovisor challenge was recorded as a usability limitation; no CAPTCHA/Cloudflare bypass or login was attempted.",
+    "The public GeoServer endpoint is HTTP as configured by the official viewer; no TLS verification was disabled and no certificate exception was used."
+  ],
+  "uncertainty": [
+    "The GeoServer feature id is treated as the service-native parcel identity because it was returned in the official viewer's GeoJSON response; the underlying database primary-key definition was not separately exposed.",
+    "The retained sample uses only the native id and unchanged geometry; native attribute mappings and response evidence are documented here and in the city record, not in GeoJSON properties.",
+    "Packet completion records source qualification evidence only; runtime integration remains held."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "retainedArtifacts": ["la-rioja-safe-sample.geojson"],
+  "runtimeReadiness": "held"
+}

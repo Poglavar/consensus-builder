@@ -1,0 +1,39 @@
+{
+  "cityCode": 3450,
+  "queueRank": 2389,
+  "name": "Kousseri",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "point": [12.0834289382594, 15.0183797136464],
+  "population2025": 244247,
+  "population2025k": 244.247,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kousseri Cameroon cadastral parcel map official land registry GIS",
+        "result": "First-party discovery found the official MINDCAF national land/cadastre ministry and an official MINHDU Kousseri urban-land-use study. The sources establish cadastral administration and Kousseri planning documents, but no anonymous Kousseri parcel viewer or feature API was identified.",
+        "actualResultUrls": [
+          "https://www.mindcaf.gov.cm/en/organisation/",
+          "https://www.mindcaf.gov.cm/en/docs/",
+          "https://www.minhdu.gov.cm/minhduetude/public/minhduetude/viewdoc/region/extreme-nord/96",
+          "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home"
+        ]
+      },
+      {
+        "language": "French (native/local)",
+        "query": "Kousseri Cameroun cadastre parcelle carte cadastrale registre foncier officiel",
+        "result": "La recherche de première partie a trouvé le MINDCAF officiel, qui décrit la tenue des plans cadastraux et des services déconcentrés, ainsi que la fiche officielle du POS de Kousseri publiée par le MINHDU. Aucun service public anonyme fournissant des parcelles avec identifiant et géométrie n'a été exposé.",
+        "actualResultUrls": [
+          "https://www.mindcaf.gov.cm/fr/",
+          "https://www.mindcaf.gov.cm/fr/docs/",
+          "https://www.minhdu.gov.cm/minhduetude/public/minhduetude/viewdoc/region/extreme-nord/96",
+          "https://www.minhdu.gov.cm/contact/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null
+}

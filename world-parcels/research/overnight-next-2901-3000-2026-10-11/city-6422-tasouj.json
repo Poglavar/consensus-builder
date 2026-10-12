@@ -1,0 +1,69 @@
+{
+  "cityCode": 6422,
+  "queueRank": 2969,
+  "city": "Tasouj",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [29.2658597861276, 52.7122747721464],
+  "population2025": 201100,
+  "population2025k": 201.1,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tasouj Iran cadastral parcel map official GIS land registry; Tasuj municipality land registry map; Iran cadastral portal",
+        "result": "First-party discovery identified Iran's national land-management portal and the State Organization for Registration of Deeds and Properties domain, but no Tasouj-local public parcel viewer, downloadable parcel layer, or anonymous ID-plus-geometry endpoint.",
+        "actualResultUrls": ["https://zamin.gov.ir/", "https://ssaa.ir/", "https://iraneland.ir/"]
+      },
+      {
+        "language": "native/local",
+        "query": "تسوج نقشه کاداستر رسمی؛ تسوج اداره ثبت اسناد و املاک؛ سامانه املاک و کاداستر تسوج",
+        "result": "First-party-oriented Persian discovery found national land-management/cadastre references, but no official Tasouj or Shabestar parcel viewer, public schema, CRS, or safe anonymous parcel geometry response. Search results also included general legal/procedural prose, which was not treated as local registry evidence.",
+        "actualResultUrls": ["https://zamin.gov.ir/", "https://ssaa.ir/", "https://iraneland.ir/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": "Potential national custodians evidenced: Iran State Organization for Registration of Deeds and Properties and the national land-management portal; no Tasouj-local open registry endpoint was verified.",
+  "registryEvidence": {
+    "nationalPortalUrl": "https://zamin.gov.ir/",
+    "registrationOrganizationUrl": "https://ssaa.ir/",
+    "landManagementRelatedUrl": "https://iraneland.ir/",
+    "localEvidence": null
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://zamin.gov.ir/", "outcome": "HTTP 200; current public Persian land-management portal loaded; no parcel geometry was present in the HTML.", "safeFieldsRequested": []},
+    {"method": "GET", "url": "https://zamin.gov.ir/assets/index-iQP9ylQv.js", "outcome": "HTTP 200; current JavaScript/configuration inspected. Same-origin /api/ application routes and public content/authentication logic were visible, but no anonymous parcel layer, feature schema, CRS, or safe ID-plus-geometry route was identified.", "safeFieldsRequested": []},
+    {"method": "HEAD", "url": "https://ssaa.ir/", "outcome": "Connection timed out after bounded request; no inference about coverage or absence was made.", "safeFieldsRequested": []},
+    {"method": "HEAD", "url": "https://sabtemelk.ir/", "outcome": "DNS resolution failed in the research environment; no inference about coverage or absence was made.", "safeFieldsRequested": []},
+    {"method": "HEAD", "url": "https://iraneland.ir/", "outcome": "Connection reset during TLS request; no inference about coverage or absence was made.", "safeFieldsRequested": []},
+    {"method": "GET", "url": "https://nezamat.ir/post-44174/", "outcome": "Search result and readable legal text describe the national land-management window and inter-agency map exchange obligations, but this is general national/procedural evidence, not a Tasouj parcel service; no geometry requested.", "safeFieldsRequested": []}
+  ],
+  "sourceAssessment": {
+    "nationalCustodianEvidence": "The public Zamin portal and official-domain discovery identify national land-management/registration custody; the inspected public configuration did not expose an anonymous cadastral feature service.",
+    "localCustodianEvidence": null,
+    "openParcelEndpointVerified": false,
+    "schemaVerified": false,
+    "crsVerified": false,
+    "boundedAnonymousIdGeometryResponse": false
+  },
+  "safeFieldAllowlist": ["native parcel identifier", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe native parcel identity and full polygon response was verified from a public endpoint."},
+  "scopeLimits": [
+    "The exact WUP point [29.2658597861276, 52.7122747721464] was preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, DNS failure, connection reset, login wall, or unusable UI was not treated as citywide parcel absence.",
+    "National agency or legal/procedural evidence does not establish citywide Tasouj parcel coverage or a local registry endpoint.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, synthetic row identity, or GeoJSON sample was retained.",
+    "Packet completion is research completion only; it is not source integration/admission and serial reviewer qualification remains required."
+  ],
+  "uncertainty": "Tasouj-local custodian, public parcel coverage, stable native identity, feature schema, CRS, geometry API behavior, and citywide completeness remain unverified.",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

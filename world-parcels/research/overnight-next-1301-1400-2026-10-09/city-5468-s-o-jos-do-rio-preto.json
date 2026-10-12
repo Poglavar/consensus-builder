@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityId": "wup2025:5468",
+  "cityCode": 5468,
+  "wupCityCode": 5468,
+  "queueRank": 1358,
+  "rank": 1358,
+  "name": "São José do Rio Preto",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso2": "BR",
+  "iso3": "BRA",
+  "point": [-20.7978477139893, -49.3860523836787],
+  "centerLatLon": [-20.7978477139893, -49.3860523836787],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 414406,
+  "population2025k": 414.406,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "aliases": ["sao jose do rio preto"],
+  "status": "complete",
+  "resultCategory": "official_municipal_gis_quadra_only_no_parcel_geometry_retained",
+  "registryFound": true,
+  "registryBasis": "The São Paulo service catalog identifies the Prefeitura de São José do Rio Preto / Serviço Municipal da Fazenda as custodian of the public Mapa Digital service. The municipal SIG is public and returned a quadra (city block) feature, but no parcel-layer evidence was established.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The verified public layer is Quadras, not individual parcels; the bounded response cannot establish parcel availability, citywide completeness, or adapter suitability.",
+  "source": {
+    "sourceId": "sjrp-sig-mapa-digital",
+    "name": "Mapa Digital de São José do Rio Preto / SIG RIOPRETO",
+    "url": "https://sig.riopreto.sp.gov.br/portal/apps/webappviewer/index.html?id=a2d1e2a003dd450b8af235748758904b",
+    "operator": "Prefeitura de São José do Rio Preto; Serviço Municipal da Fazenda / municipal SIG",
+    "serviceType": "Public ArcGIS Web Mapping Application and REST MapServer",
+    "layer": "Planejamento/Bairros_e_Quadras/MapServer/2",
+    "geometryType": "esriGeometryPolygon (Quadras; blocks, not parcels)",
+    "nativeIdField": "OBJECTID (also OBJECTID_1; source-specific fields retained only in metadata)",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "nativeCrs": "EPSG:31982 (SIRGAS 2000 / UTM zone 22S)",
+    "geometryStatus": "verified_for_quadra_only",
+    "sampleCount": 0,
+    "fieldMapping": {
+      "OBJECTID": "safe native block identity observed in response; not retained as parcel identity",
+      "OBJECTID_1": "alternate source object identity observed in response",
+      "geometry": "quadra polygon returned by ArcGIS REST; not retained as parcel sample",
+      "GEOCODIGO": "source block geocode observed in bounded response; not retained"
+    },
+    "compositeKeyProvenance": "No parcel composite key established; source block fields included SETOR, ZONA, QUADRA, CODZONA, CODQUADRA and GEOCODIGO."
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "requestReturned": 1,
+    "responseFormat": "GeoJSON",
+    "responseTimestamp": "2026-10-09T15:05:30Z",
+    "qualification": "One quadra polygon intersected the exact WUP point; it is not an individual parcel and was not retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal digital map covering municipal navigation, neighborhoods, streets and quadras.",
+    "verifiedOpenScope": "Anonymous ArcGIS REST layer metadata and one bounded geometry query for Quadras; no parcel feature layer verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "São José do Rio Preto official cadastral parcel map geoportal cadastro imobiliário mapa",
+        "result": "Found the official São Paulo service-catalog entry for the municipal Mapa Digital, the municipal ArcGIS SIG, and official municipal references to cadastro imobiliário and geoprocessamento. The public map description advertises neighborhoods, streets and registered addresses, not an open parcel layer.",
+        "actualResultUrls": [
+          "https://servicos.sp.gov.br/fcarta/65EDA651-6615-44DE-845E-968C744294CB",
+          "https://sig.riopreto.sp.gov.br/portal/apps/webappviewer/index.html?id=a2d1e2a003dd450b8af235748758904b",
+          "https://www.riopreto.sp.gov.br/"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "São José do Rio Preto cadastro imobiliário mapa lotes geoprocessamento prefeitura",
+        "result": "Found the official municipal Mapa Digital service and the official municipal Fazenda service describing Cadastro Imobiliário (IPTU) and measures/confrontations requests. Those property-information procedures require cadastral/documentary context; no anonymous parcel download was evidenced.",
+        "actualResultUrls": [
+          "https://servicos.sp.gov.br/fcarta/65EDA651-6615-44DE-845E-968C744294CB",
+          "https://servicos.sp.gov.br/fcarta/1EB6CE0B-1A09-4309-A677-76FF0809C313",
+          "https://sig.riopreto.sp.gov.br/portal/apps/webappviewer/index.html?id=a2d1e2a003dd450b8af235748758904b"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://sig.riopreto.sp.gov.br/portal/apps/sites/#/sigriopreto",
+        "operator": "Prefeitura de São José do Rio Preto",
+        "scope": "Official municipal SIG site; ArcGIS item data links to the public Mapa Digital application."
+      },
+      {
+        "url": "https://servicos.sp.gov.br/fcarta/65EDA651-6615-44DE-845E-968C744294CB",
+        "operator": "Prefeitura de São José do Rio Preto - Serviço Municipal da Fazenda / São Paulo service portal",
+        "scope": "Official service listing for Mapa de São José do Rio Preto."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sig.riopreto.sp.gov.br/portal/sharing/rest/content/items/a2d1e2a003dd450b8af235748758904b/data?f=json",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official Web Mapping Application configuration exposed the Planejamento/Bairros_e_Quadras/MapServer/1 and /2 layers; the map is configured in EPSG:3857 while the source layer is EPSG:31982."
+      },
+      {
+        "url": "https://sig.riopreto.sp.gov.br/server/rest/services/Planejamento/Bairros_e_Quadras/MapServer/2?f=json",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Layer metadata verified Quadras, polygon geometry, EPSG:31982, and safe schema fields including OBJECTID, SETOR, ZONA, QUADRA, CODQUADRA and GEOCODIGO."
+      },
+      {
+        "url": "https://sig.riopreto.sp.gov.br/server/rest/services/Planejamento/Bairros_e_Quadras/MapServer/2/query?where=1%3D1&outFields=OBJECTID_1%2COBJECTID%2CSETOR%2CZONA%2CQUADRA%2CCODZONA%2CCODQUADRA%2CGEOCODIGO&returnGeometry=true&geometry=-49.3860523836787%2C-20.7978477139893&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson",
+        "method": "GET; anonymous bounded exact-point query",
+        "httpStatus": 200,
+        "contentType": "application/geo+json",
+        "assessment": "Returned one Quadras polygon intersecting the immutable WUP point. This is block geometry, not parcel geometry; no sample retained."
+      },
+      {
+        "url": "https://sig.riopreto.sp.gov.br/server/rest/services",
+        "method": "GET; anonymous",
+        "httpStatus": 301,
+        "contentType": "text/html",
+        "assessment": "REST service-directory request redirected; no service inventory was inferred from the redirect."
+      }
+    ],
+    "scopeLimits": [
+      "Exact-point quadra intersection is not evidence that an individual parcel layer exists or is absent.",
+      "The map application description and bounded layer inspection do not establish citywide parcel coverage.",
+      "No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained.",
+      "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+    ]
+  }
+}

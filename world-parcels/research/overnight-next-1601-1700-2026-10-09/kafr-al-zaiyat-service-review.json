@@ -1,0 +1,75 @@
+{
+  "cityRecord": "city-2182-kafr-al-zaiyat.json",
+  "cityCode": 2182,
+  "queueRank": 1615,
+  "city": "Kafr Al-Zaiyat",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "runtimeReadiness": "held",
+  "researchScope": "Bounded anonymous first-party discovery and public-page inspection for a cadastral/parcel source covering the WUP city point. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe owner/address/title fields were used or requested.",
+  "queries": [
+    {
+      "language": "English",
+      "query": "Kafr El Zayat Egypt cadastral parcel map official GIS",
+      "outcome": "ESA official site found. Its digital-map page documents a request-and-purchase workflow for a specified location, scale, layers, format, and projection. It did not expose a public parcel viewer/API in the fetched HTML.",
+      "urls": ["https://www.esa.gov.eg/", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]
+    },
+    {
+      "language": "Arabic",
+      "query": "كفر الزيات السجل العيني خريطة عقارية مساحية موقع حكومي",
+      "outcome": "ESA official pages and the Egyptian public-services listing were found. The ESA page remained procedural/service prose; the public-services page was not usable for anonymous parcel data. No Kafr Al-Zaiyat parcel endpoint was established.",
+      "urls": ["https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8_%D8%A8%D9%8A%D8%A7%D9%86_%D9%85%D8%B3%D8%A7%D8%AD%D9%8A_%D8%B9%D9%86_%D9%82%D8%B7%D8%B9%D8%A9_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6"]
+    }
+  ],
+  "attemptedRoutes": [
+    {
+      "route": "https://www.esa.gov.eg/",
+      "method": "GET",
+      "outcome": "HTTP page fetched; confirms ESA history and cadastral/topographic mapping remit, but no parcel feature service or schema."
+    },
+    {
+      "route": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "outcome": "HTTP page fetched; describes digital map ordering by location, scale, layers, format, and projection. No anonymous map/API request, field schema, CRS response, or parcel geometry was exposed."
+    },
+    {
+      "route": "https://www.esa.gov.eg/testmap.aspx",
+      "method": "GET",
+      "outcome": "HTTP page fetched; static Egypt image-map/directories page, not a cadastral parcel viewer or feature API."
+    },
+    {
+      "route": "https://www.esa.gov.eg/egypt_maps.aspx",
+      "method": "GET",
+      "outcome": "HTTP page fetched; links to national map PDFs and general maps, not city parcel data."
+    },
+    {
+      "route": "https://psm.gov.eg/Services/233?serviceName=-طلب بيان مساحي عن قطعة الأرض",
+      "method": "GET",
+      "outcome": "Search result identified the government service, but direct page fetch returned 502; no anonymous parcel data or API was obtained."
+    }
+  ],
+  "custodianAssessment": {
+    "nationalAgency": "Egyptian Survey Authority (ESA), first-party source evidenced at https://www.esa.gov.eg/",
+    "localCustodian": null,
+    "reason": "No Kafr Al-Zaiyat municipal/governorate registry or public local parcel service was evidenced. ESA is recorded as a national survey/cadastral custodian only, not as a city-specific integration."
+  },
+  "safeFieldAllowlist": ["id"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometry": {
+    "retained": false,
+    "reason": "No bounded native parcel geometry response was available from a public source; no sample GeoJSON written.",
+    "crs": null
+  },
+  "scopeLimits": [
+    "The exact WUP point [30.8159685817581, 30.8047565224488] was preserved and not used to force a hit.",
+    "No exact-point hit, map extent miss, timeout, unavailable UI, or 502 result is treated as citywide absence.",
+    "ESA's documented digital-map process may require an offline/paid request; that is not an anonymous machine-readable parcel source.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe data was requested or retained."
+  ],
+  "uncertainty": "High: an official cadastral custodian is evidenced, but public parcel-service access, schema, CRS, stable native identity, and geometry remain unverified.",
+  "serialReviewerDisposition": "hold",
+  "completion": "Research packet complete for attempt 1 of 3; runtime qualification remains held pending independent serial review of a real adapter/source."
+}

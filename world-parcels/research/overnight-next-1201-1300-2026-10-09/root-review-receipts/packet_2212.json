@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:2212",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2212-kota-bharu.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/kota-bharu-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_2212.json"
+  ],
+  "checkedAt": "2026-10-09T11:53:51Z",
+  "reason": "Official local/state land-office custody is evidenced. The inspected MBSP cadastral service is scoped to Pulau Pinang/Seberang Perai, and its exact-point request timed out. It cannot establish Kota Bharu geometry or absence.",
+  "identityCheck": "Exact code, rank, country, point, and population persons match the SHA-256 verified immutable WUP roster, pending queue, and integration ledger.",
+  "researchCheck": "Paired packet and service review record separate English and local-language searches. Zero full sample polygons and no safe native parcel ID response are retained.",
+  "admissionCheck": "Fresh native-ID reads, forced paging, thirteen bounded cells, independent metric GEOS checks, source binding, and headed Details-panel verification are missing. Runtime/catalog/report state remains unchanged."
+}

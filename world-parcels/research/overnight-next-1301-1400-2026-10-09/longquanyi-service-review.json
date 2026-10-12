@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7062-longquanyi.json",
+  "cohort": "overnight-next-1301-1400",
+  "purpose": "Review official Longquanyi cadastral/registration custodian and Chengdu public map channels for safe anonymous parcel geometry and stable parcel identity.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Longquanyi's official planning/natural-resources custodian is evidenced, as is Chengdu's public geospatial platform, but no anonymous parcel vector response, native identity, or geometry was qualified.",
+  "registryAssessment": "The official Longquanyi district government entry point identifies the local planning and natural-resources bureau; the official Sichuan GIS project page documents Longquanyi district geospatial database and 1:500 surveying work. This establishes local custodial/geospatial evidence, not open parcel-vector access.",
+  "officialPrimarySources": [
+    {"url": "https://www.longquanyi.gov.cn/lqyqzfmhwz_gb/c123736/bm_qgtj.shtml", "operator": "Longquanyi District Planning and Natural Resources Bureau", "scope": "Official local bureau entry point."},
+    {"url": "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx", "operator": "Chengdu public geospatial information service platform", "scope": "Official Chengdu public map-service resource page."},
+    {"url": "https://www.scagis.org.cn/scagisweb/Notice/Detail/GYXGC/KTN2024061200000108675633", "operator": "Sichuan Geographic Information Industry Association / Chengdu Economic and Technological Development Institute", "scope": "Official project description for Longquanyi 1:500 digital mapping and district geospatial database."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Longquanyi Chengdu China official cadastral parcel map service natural resources bureau", "result": "Official Longquanyi custodian, Chengdu Tianditu service page, and Longquanyi geospatial project page found; no safe anonymous polygon verified.", "actualResultUrls": ["https://www.longquanyi.gov.cn/lqyqzfmhwz_gb/c123736/bm_qgtj.shtml", "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx", "https://scagis.org.cn/scagisweb/Notice/Detail/GYXGC/KTN2024061200000108675633"]},
+    {"language": "Chinese", "query": "龙泉驿区 不动产登记 地籍图 查询 官方 自然资源局 成都 天地图", "result": "检索到官方自然资源局入口、成都公共地理信息服务平台及龙泉驿区测绘地理信息项目；未验证安全匿名地籍要素响应。", "actualResultUrls": ["https://www.longquanyi.gov.cn/lqyqzfmhwz_gb/c123736/bm_qgtj.shtml", "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx", "https://www.scagis.org.cn/scagisweb/Notice/Detail/GYXGC/KTN2024061200000108675633"]}
+  ],
+  "attempts": [
+    "Performed separate English and Chinese first-party discovery searches.",
+    "Reviewed the official Longquanyi planning/natural-resources bureau entry point.",
+    "Reviewed the official Chengdu Tianditu service-resources page and attempted one bounded anonymous GET; the local capture had no usable response body.",
+    "Reviewed the official Longquanyi 1:500 digital mapping/geospatial database project description.",
+    "No parcel feature endpoint, schema, safe native ID, CRS, or full polygon was obtained; no sample GeoJSON was retained.",
+    "Did not log in, use credentials/private tokens, defeat CAPTCHA/Cloudflare, request owner/address/titleholder/tax data, or retain source attribute sets.",
+    "Did not shift the exact WUP point and did not infer citywide absence from the failed/empty map-service response."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No exact-point parcel feature query completed; no usable public service response was obtained.", "requestEvidence": [{"url": "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx", "method": "GET", "httpStatus": null, "result": "Bounded anonymous fetch produced no usable local response body."}]},
+  "coverageAssessment": {"claimedScope": "Official Longquanyi custodian, Chengdu public map-service page, and official district mapping project reviewed.", "verifiedOpenScope": "Registry/geospatial custodian evidence and public platform existence verified; parcel geometry and native identity unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "nextStep": "Serial reviewer may re-check the current Chengdu viewer's actual JavaScript/network flow and qualify only safe ID+geometry if returned; preserve held runtime state.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned; the empty or unusable public fetch is not evidence of cadastral absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11216",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11216-shaoguan.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/shaoguan-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:26:07.723806Z",
+  "reason": "First-party Renhua guide supports Shaoguan registration-service custody but describes a house-search flow requiring unified identity authentication. No anonymous safe native parcel ID or full polygon, independent adapter qualification or headed Details proof. Protected access and timeouts do not establish citywide absence.",
+  "firstPartyPagesChecked": [
+    "https://www.sgrh.gov.cn/sgrhzrzyj/gkmlpt/content/2/2635/post_2635356.html"
+  ],
+  "admissionGates": "No verified full parcel geometry or native ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details-panel verification are not evidenced."
+}

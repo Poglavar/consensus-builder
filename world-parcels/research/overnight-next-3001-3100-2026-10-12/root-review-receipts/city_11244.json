@@ -1,0 +1,42 @@
+{
+  "taskId": "city:11244",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:05:52Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-11244-dawang.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/dawang-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 11244,
+    "rank": 3064,
+    "country": "China",
+    "point": [
+      23.2853853691007,
+      112.807902743604
+    ],
+    "populationPersons": 195693
+  },
+  "checks": {
+    "queueIdentityAgainstWup2025": true,
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": true,
+  "firstPartySourceUrls": [
+    "https://ysqgk.gd.gov.cn/758018/selecttype?jump=false",
+    "https://ysqgk.gd.gov.cn/758411/choice",
+    "https://www.gdzwfw.gov.cn/portal/index?region=441200"
+  ],
+  "reason": "Official Zhaoqing natural-resources and Dawang government-information pages plus the regional registration-service entry substantiate institutional custody. They yielded no anonymous safe native-ID plus full-polygon response, schema, or CRS.",
+  "absenceConclusion": null,
+  "runtimeAdmission": false
+}

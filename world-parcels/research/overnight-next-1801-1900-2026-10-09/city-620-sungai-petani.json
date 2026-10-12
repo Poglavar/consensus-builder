@@ -1,0 +1,103 @@
+{
+  "cityCode": 620,
+  "queueRank": 1852,
+  "name": "Sungai Petani",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "iso3": "MYS",
+  "point": [5.64241915779604, 100.508074182137],
+  "population2025": 310566,
+  "population2025k": 310.566,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sungai Petani Malaysia official cadastral parcel map GIS land office Kedah",
+        "result": "First-party results identified the Kuala Muda District and Land Office in Sungai Petani and an MBSP ArcGIS cadastral FeatureServer. The service description says it contains JUPEM-maintained national digital cadastral survey lots, based on GDM2000; live layer/query requests timed out from this environment.",
+        "actualResultUrls": [
+          "https://www.kedah.gov.my/index.php/pejabat-daerah-tanah-kuala-muda/",
+          "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer"
+        ]
+      },
+      {
+        "language": "Malay",
+        "query": "Sungai Petani peta kadaster lot tanah portal rasmi",
+        "result": "Malay-language first-party results identified JUPEM Kedah eKadaster and the national JUPEM eBiz digital cadastral-lot product. eKadaster is login/agency restricted; eBiz indicates cadastral products are purchased and does not provide an anonymous parcel feature response.",
+        "actualResultUrls": [
+          "https://ekadaster.kdh.jupem.gov.my/Account/Login",
+          "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T",
+          "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A local government land custodian is evidenced by the official Pejabat Daerah dan Tanah Kuala Muda page at 08000 Sungai Petani. The MBSP public GIS service is a local municipal map service whose cadastral description identifies JUPEM-maintained digital cadastral lots; it is a service route, not proof that all city parcels are anonymously queryable.",
+  "registryEvidenceUrls": [
+    "https://www.kedah.gov.my/index.php/pejabat-daerah-tanah-kuala-muda/",
+    "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+    "https://ikit.kedah.gov.my/pegawai-daerah/"
+  ],
+  "requests": [
+    {
+      "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "ArcGIS REST service directory was discovered and publicly readable through first-party search/open evidence. It lists Lot Sementara, Lot Kadaster 2018, and Lot Kadaster 2009 layers, supports JSON queries, and states the cadastral data are based on GDM2000."
+    },
+    {
+      "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3?f=pjson",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Direct anonymous metadata request attempted with TLS verification; connection timed out after 8 seconds. No layer schema, native identity field, or CRS response was captured locally."
+    },
+    {
+      "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3/query",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Bounded anonymous point-radius query was attempted around the exact WUP point with geometry=true, outFields=*, inSR=4326, outSR=4326, distance=250 metres, and resultRecordCount=3. The host timed out before a response; this is not evidence of parcel absence."
+    },
+    {
+      "url": "https://ekadaster.kdh.jupem.gov.my/Account/Login",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Official JUPEM Kedah eKadaster login route discovered. No login, registration, credentials, or protected query was attempted."
+    },
+    {
+      "url": "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official JUPEM eBiz interactive product page was readable. It presents digital cadastral lots as a product/purchase workflow and displays a login boundary; no anonymous feature schema or parcel geometry response was retained."
+    }
+  ],
+  "source": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned and verified",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The MBSP service describes JUPEM-maintained national digital cadastral survey lots for Peninsular Malaysia and Federal Territories; local administrative evidence covers Kuala Muda/Sungai Petani.",
+    "verifiedOpenScope": "Service directory and layer names were evidenced, but the live layer schema and bounded geometry response were not obtained due to timeout.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real adapter and verification of the live service schema, CRS, safe native parcel identity, and bounded geometry response. This packet is not source integration/admission.",
+  "resultCategory": "local_registry_and_public_service_evidenced_geometry_unverified",
+  "remainingUncertainty": "The public service appears to be a relevant cadastral route, but the exact layer fields, CRS details, query availability, parcel identity semantics, and citywide Sungai Petani coverage remain unverified from this environment. No exact-point hit or timeout was treated as citywide absence."
+}

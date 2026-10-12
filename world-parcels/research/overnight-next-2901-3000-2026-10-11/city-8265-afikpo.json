@@ -1,0 +1,43 @@
+{
+  "cityCode": 8265,
+  "queueRank": 2971,
+  "name": "Afikpo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [5.88241950419596, 7.94495489106671],
+  "population2025": 201084,
+  "population2025k": 201.084,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Afikpo Nigeria official cadastral parcel map land registry Ebonyi GIS",
+        "result": "First-party discovery identified Ebonyi State Government's Lands and Survey ministry page and the Ebonyi State Ministry of Lands and Survey portal (Ebonyi Lands Online). The portal advertises property search, beacon lookup, land registration, land allocation, and public C-of-O data. No safe anonymous parcel ID-plus-geometry response for Afikpo was exposed.",
+        "actualResultUrls": [
+          "https://ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+          "https://eblands.online/",
+          "https://eblands.online/property.php",
+          "https://eblands.online/beacon.php",
+          "https://eblands.online/data_list.php?search=Afikpo",
+          "https://osgof.gov.ng/"
+        ]
+      },
+      {
+        "language": "Igbo (local)",
+        "query": "Afikpo Ehugbo ala ndebanye map Ebonyi Ministry Lands Survey",
+        "result": "The local-name search returned the same first-party Ebonyi Lands and Survey custodian and official state ministry route; no Igbo-language cadastral viewer, public parcel layer, schema, CRS, or anonymous geometry endpoint was found. This is not evidence of citywide parcel absence.",
+        "actualResultUrls": [
+          "https://ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+          "https://eblands.online/",
+          "https://eblands.online/property.php",
+          "https://eblands.online/beacon.php"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A local/state custodian is evidenced by the official Ebonyi State Ministry of Lands and Survey page and its public Ebonyi Lands Online portal. This is source discovery only: no safe anonymous native parcel identity, schema, CRS, or polygon was available. It is not source integration, runtime admission, or evidence of citywide parcel absence.",
+  "runtimeReadiness": "held"
+}

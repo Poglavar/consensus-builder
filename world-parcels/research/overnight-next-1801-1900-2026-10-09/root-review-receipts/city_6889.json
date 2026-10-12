@@ -1,0 +1,25 @@
+{
+  "taskId": "city:6889",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6889-tapachula.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/tapachula-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/valhalla-parcel-research/tapachula/parcelas.json",
+    "tmp/valhalla-parcel-research/tapachula/ran_zonaparcelafeb2025.json",
+    "tmp/valhalla-parcel-research/tapachula/wms.xml"
+  ],
+  "checkedAt": "2026-10-10T17:18:41.930671Z",
+  "reason": "Tapachula, Mexico; WUP 2025 city 6889, rank 1871, point [14.89697903262,-92.268743483956], 307334 persons. English and Spanish executed searches are recorded. Indexed first-party municipal Treasury content names its Catastro directorate; direct municipal request timed out. Original Chiapas WFS cache shows a bounded parcelas response with zero features and a distinct RAN polygon outside the target cell and point. Zero in one cell and a timeout do not establish citywide absence. No retained city sample or qualified native-ID parcel response.",
+  "searchLanguagesVerified": [
+    "English",
+    "Spanish"
+  ],
+  "sourceUrlsReviewed": [
+    "https://tesoreria.tapachula.gob.mx/Impuestos/BuscaCuenta/1",
+    "https://mapas.siese.chiapas.gob.mx/geoserver/POSTGISSER/ows"
+  ],
+  "retainedFullPolygons": 0,
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicates/overlap and operation checks, source binding, or headed Details-panel verification. No runtime admission."
+}

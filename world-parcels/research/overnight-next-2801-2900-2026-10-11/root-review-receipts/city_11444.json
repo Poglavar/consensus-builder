@@ -1,0 +1,29 @@
+{
+  "taskId": "city:11444",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11444-getian.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/getian-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T205539-4d20e942/stdout.jsonl",
+    "tmp/valhalla-parcel-research/11444/jtjs-identify.json",
+    "tmp/valhalla-parcel-research/11444/djzq-identify.json",
+    "tmp/valhalla-parcel-research/11444/gytd-identify.json",
+    "tmp/valhalla-parcel-research/11444/JTJS-layer0.json",
+    "tmp/valhalla-parcel-research/11444/DJZQ-layer0.json"
+  ],
+  "checkedAt": "2026-10-11T20:59:22Z",
+  "reason": "Queue identity and executed English/Chinese searches checked. Original first-party Identify cache has four point records with ZDDM candidates, two cadastral-subdistrict polygons (the packet says one), and no parcel polygon. The cached point response includes address and title-like attributes returned by the unfiltered Identify operation; this violates the safe-field retention rule and cannot be treated as a safe parcel sample. Registry custody remains null. No independent adapter qualification is evidenced.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

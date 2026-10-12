@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11746",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-11746-lanxi.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/lanxi-service-review.json",
+    "tmp/valhalla-parcel-research/11746/common-config.js",
+    "tmp/valhalla-parcel-research/11746/map2d.js"
+  ],
+  "checkedAt": "2026-10-11T11:32:37Z",
+  "reason": "Immutable WUP rank 2415, code 11746, China, point [29.2197881381243,119.467490166732], and 242478 persons match both queue artifacts. English and Chinese searches with result URLs are recorded. The Jinhua official catalog names the Lanxi Natural Resources and Planning Bureau, but its entry is an active-disclosure directory rather than parcel geometry. The inspected Zhejiang map configuration is a general map service and establishes no Lanxi parcel layer, native ID, or polygon. No sample is retained. Keep local cadastral registry custody unresolved (null), with no citywide absence claim. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are unevidenced.",
+  "firstPartySourcesChecked": [
+    "https://open.data.jinhua.gov.cn/jdop_front/detail/data_preview.do?iid=11086"
+  ]
+}

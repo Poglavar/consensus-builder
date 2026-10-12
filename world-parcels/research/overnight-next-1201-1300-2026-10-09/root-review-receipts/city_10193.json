@@ -1,0 +1,18 @@
+{
+  "taskId": "city:10193",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10193-nagercoil.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/nagercoil-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:33:53Z",
+  "reason": "The official Kanniyakumari district service page establishes local land-record custody and a route to Tamil Nadu services. State portal access timed out in this review and no anonymous native-ID polygon was obtained.",
+  "identityCheck": "Exact code, rank, country, point and population persons match the immutable hashed WUP queue; English and native/local searches are recorded in both paired files.",
+  "polygonCheck": "Zero full polygons retained in paired files; no safe native parcel ID or city-specific full polygon verified.",
+  "qualificationGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding and headed Details-panel check are not independently evidenced.",
+  "firstParty": "Kanniyakumari Land Records Aregister/Chitta page HTTP 200, with Survey & Settlement service link and Nagercoil collectorate; Tamil Nadu e-Services direct request timed out."
+}

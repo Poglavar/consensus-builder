@@ -1,0 +1,30 @@
+{
+  "taskId": "city:4521",
+  "cacheFiles": {
+    "tmp/valhalla-parcel-research/4521/MapSearch.js": "c88ae469c72578f316a2033a3e69f807d8759cb17445b33761293bd297b351f4",
+    "tmp/valhalla-parcel-research/4521/districts.json": "3d3a099c8dbfb94b3b80aa79b1c235d82a53aa799ec0f7e6a7da65fa06ce2e78",
+    "tmp/valhalla-parcel-research/4521/surveys-gaibandha.json": "60b031921e1f9c13a446d346bab19acdfd9227fdecf61007d526eed190053351",
+    "tmp/valhalla-parcel-research/4521/thanas.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "firstPartyUrl": "https://settlement.gov.bd/Map/MapSearch",
+  "observation": {
+    "district": {
+      "unitcod": "080400000",
+      "comcod": "4186",
+      "unitnam": "গাইবান্ধা"
+    },
+    "surveys": [
+      {
+        "rsnum": "201901",
+        "rsname": "আরএস (বিআরএস)",
+        "rsstatus": "চলমান"
+      }
+    ],
+    "thanaResponse": [],
+    "viewerRoutesObserved": [
+      "/Khatian/GetThanaListBySurveyMap",
+      "/Khatian/GetSheetJsonBySurvey"
+    ]
+  },
+  "limits": "Empty thana response does not establish Mollar Char parcel absence; no parcel feature, native parcel ID, CRS, or polygon response is cached."
+}

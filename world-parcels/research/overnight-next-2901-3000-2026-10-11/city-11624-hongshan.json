@@ -1,0 +1,102 @@
+{
+  "cityCode": 11624,
+  "queueRank": 2949,
+  "name": "Hongshan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [31.5114337350271, 120.448968911821],
+  "population2025": 202016,
+  "population2025k": 202.016,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hongshan Wuxi China official cadastral parcel map land registration natural resources GIS",
+        "result": "First-party Wuxi government results identified the Wuxi Natural Resources and Planning Bureau cadastral-survey procedure and the Wuxi cadastral-map query service. The documented public service is a query/download portal, but its current viewer/API and anonymous geometry response were not reachable in the bounded request attempt.",
+        "actualResultUrls": [
+          "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+          "https://zrzy.wuxi.gov.cn/doc/2024/07/01/4341229.shtml",
+          "https://m.wx.bendibao.com/news/57132.shtm"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "无锡 鸿山 地籍图 查询 不动产登记 自然资源规划局 官方",
+        "result": "Official Chinese Wuxi material states that the city publicly provides cadastral parcel maps through the Wuxi cadastral-map query system and lists 鸿山管理所 in the Xinwu service-window directory. No current public viewer configuration, service schema/CRS, or safe anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+          "https://zrzy.wuxi.gov.cn/doc/2024/11/08/3441807.shtml",
+          "https://zrzy.wuxi.gov.cn/doc/2024/07/01/4341229.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "separate first-party English and Chinese discovery, official-page inspection, and bounded anonymous direct retrieval of the documented cadastral viewer",
+  "sourceReview": "Local custodian evidence is present: Wuxi Natural Resources and Planning Bureau manages cadastral-survey成果, and the official service-window directory lists 鸿山管理所 under Xinwu. The official procedure says the city cadastral-map system can expose cadastral zones, parcel maps, and query/download results. This is custodian/service evidence, not a qualified parcel API integration.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Wuxi procedure states that the cadastral-map system publicly displays cadastral zones, subzones, and parcel maps and supports locating/querying/downloading parcel information. It does not expose the current viewer JavaScript or API route in the page text."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://zrzy.wuxi.gov.cn/doc/2024/11/08/3441807.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Wuxi service-window directory lists 鸿山管理所 under 新吴 and provides a local registration-service contact entry. No parcel geometry was present."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://zrzy.wuxi.gov.cn/doc/2024/07/01/4341229.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Wuxi FAQ confirms online cadastral-map queries through the Jiangsu government service site, 灵锡, and the Wuxi registration service. It describes cadastral database concepts and query access, not an anonymous feature endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "http://61.177.139.228:38080/Apps/wxdj/index.html#/",
+      "httpStatus": 0,
+      "outcome": "The documented public Wuxi cadastral viewer host timed out after 20 seconds before returning HTTP. No login, CAPTCHA, TLS exception, or bypass was attempted. The timeout is not evidence of citywide parcel absence."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Not exposed; documented viewer host timed out before HTML/JavaScript retrieval.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response obtained.",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [31.5114337350271, 120.448968911821] preserved; no coordinate shift or parcel-hit inference.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No bounded anonymous feature response was obtained because the documented viewer timed out. No exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local cadastral custodian and documented public service are evidenced, but no current anonymous parcel response with a stable native ID, schema/CRS, and unchanged polygon was independently qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved and not shifted.",
+    "A viewer timeout is not evidence of citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, service CRS, current viewer configuration, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet does not integrate or admit a runtime source."
+  ],
+  "uncertainty": "Wuxi first-party material establishes a local cadastral/registration service and specifically lists the Hongshan (鸿山) Xinwu management office, but current public service reachability and machine-readable parcel geometry remain unverified. Runtime/admission remains held."
+}

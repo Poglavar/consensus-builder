@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-6707-shenmu.json",
+  "cityCode": 6707,
+  "queueRank": 2477,
+  "name": "Shenmu",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [38.83164073715, 110.494899998938],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://www.ccgp-shaanxi.gov.cn/freecms/site/shaanxi/ggxx/info/2023/8a69c14b8bd21397018bd744eb690d61.html","httpStatus":200,"outcome":"Official Shaanxi government procurement page names 神木市不动产登记服务中心 and gives its public service-center context. This is local custodian evidence, not parcel geometry."},
+    {"method":"GET","url":"https://www.ccgp-shaanxi.gov.cn/gpx-bid-file/610821/gpx-bidcore/2024/9/30/8a69c44e9218572b0192427772793ac7.pdf?accessCode=6e20bc418b2d3bb1cf14b3d4e779547c","httpStatus":200,"outcome":"Official procurement PDF identifies the Shenmu rural real-estate registration cadastral-survey platform data-integration/database project. It evidences a local cadastral/registration project, not an anonymous public parcel endpoint or downloadable safe geometry."},
+    {"method":"GET","url":"https://shaanxi.tianditu.gov.cn/","httpStatus":200,"outcome":"Official Shaanxi public GIS portal loaded; it provides general public map infrastructure."},
+    {"method":"GET","url":"https://shaanxi.tianditu.gov.cn/portalJx/","httpStatus":200,"outcome":"Current JavaScript viewer shell loaded. The bundle was inspected for service routes."},
+    {"method":"GET","url":"https://shaanxi.tianditu.gov.cn/portalJx/js/app.70bd2bb4.js","httpStatus":200,"outcome":"Current app bundle exposed general POI, geocoding, routing, geometry, and Tianditu service URLs; no cadastral, parcel, 地籍, 宗地, or 不动产 parcel route was present in the inspected bundle."},
+    {"method":"GET","url":"https://shaanxi.tianditu.gov.cn/portal/resource","httpStatus":200,"outcome":"Official resource page loaded through the portal shell; indexed public resources are general map/feature services and no Shenmu-specific parcel layer or safe parcel feature route was evidenced."},
+    {"method":"GET","url":"https://www.shenmu.gov.cn/","httpStatus":0,"outcome":"DNS resolution failed for the guessed www host. No retry with credentials, bypass, or alternate private route was attempted; this is not evidence of citywide absence."},
+    {"method":"GET","url":"https://zrzyj.yl.gov.cn/","httpStatus":0,"outcome":"DNS resolution failed for the guessed Yulin natural-resources host. This is not evidence of missing registry coverage."},
+    {"method":"GET","url":"https://www.tianditu.gov.cn/","httpStatus":418,"outcome":"National Tianditu landing page returned HTTP 418 to the bounded request. No login, credential, private token, CAPTCHA/Cloudflare defeat, or workaround was attempted."},
+    {"method":"GET","url":"https://www.sxsm.gov.cn/zfxxgk/fdzdgknr/zfwj/szf/202507/P020250701568522441275.pdf","httpStatus":200,"outcome":"Official Shenmu government PDF was reachable and confirms Shenmu public-government context; it was not a parcel service or parcel geometry source."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://shaanxi.tianditu.gov.cn/portalJx/ and current /portalJx/js/app.70bd2bb4.js",
+    "apiBase": "General Tianditu/Shaanxi portal routes found in the public bundle; no cadastral/parcel API base identified.",
+    "geometryCrs": "Not exposed by a parcel response. WUP point was preserved in latitude/longitude order and was not shifted or used to force a parcel hit.",
+    "nativeIdentity": "No safe native parcel identity was returned. No synthetic identity was created and no GeoJSON sample was retained.",
+    "sourceFieldMapping": {"localCustodian":"official procurement record names Shenmu real-estate registration service center","parcelId":"not obtained","geometry":"not obtained","crs":"not obtained"},
+    "boundedAnonymousResponse": {"requestScope":"two first-party discovery searches, official procurement pages/PDF, official Shaanxi GIS portal shell/resource page, current app-bundle route inspection, and bounded direct GETs","featureCount":0,"geometryRetained":false}
+  },
+  "localCustodianAssessment": "The official Shaanxi procurement records are local-custodian evidence for 神木市不动产登记服务中心 and a Shenmu rural cadastral-survey/database project. The reachable map infrastructure is the Shaanxi provincial public GIS platform; general provincial map services were not treated as a Shenmu parcel data release.",
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently returned by a public route", "bounded public response metadata", "source service URL", "source CRS/coordinate order when declared", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness":"held", "reason":"Local registry custodian and cadastral database project are evidenced, but no anonymous parcel schema, stable identity, CRS, or geometry was obtained from the inspected public GIS routes. Adapter qualification remains a separate serial review."},
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude order were preserved.",
+    "No coordinate was shifted to force a parcel hit; no parcel query was available on the tested public routes.",
+    "DNS failure, HTTP 418, map-shell success, and absence of a bundle route are service-access/route limits, not evidence of citywide parcel absence.",
+    "No full parcel polygon is retained and no sample GeoJSON is created.",
+    "Official procurement records establish local custodian/project context but not public parcel coverage, licensing, schema, or geometry.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.",
+    "Raw current app bundle and request evidence remain under ignored tmp/valhalla-parcel-research/6707/."
+  ],
+  "uncertainty": "A local Shenmu registration custodian and cadastral data-integration project are evidenced, and the official Shaanxi public GIS portal is reachable. However, its current anonymous viewer bundle exposes no parcel route, no safe parcel identity/schema/CRS, and no geometry response. Parcel coverage, update cadence, licensing, and runtime adapter behavior remain unverified."
+}

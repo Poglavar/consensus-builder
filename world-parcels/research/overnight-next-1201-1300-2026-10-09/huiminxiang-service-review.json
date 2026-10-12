@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9004-huiminxiang.json",
+  "purpose": "Document first-party Huiminxiang/Fuling registry context and bounded anonymous parcel-service access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Chongqing and Fuling material evidence the local Natural Resources and Planning Bureau / Real Estate Registration Center custody and explain cadastral-map query services. No safe anonymous parcel-vector response, schema, CRS, or stable native parcel ID was verified.",
+  "registryAssessment": "Local registry/procedure is evidenced through official Fuling and Chongqing sources; this is institutional custody evidence, not admission of a public parcel source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "nativeFieldMapping": {
+    "observedSources": [],
+    "note": "No parcel response was obtained, so no native parcel field mapping or composite-key provenance exists. Official pages were used only for custodian and procedure evidence."
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html",
+      "observation": "Official Fuling bureau subunit page identifies the Fuling District Real Estate Registration Center and its land, housing, and forest-land registration duties, including management of registration-information access."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+      "observation": "Official Chongqing guidance describes online registration-information and cadastral-map query entry points through the government service platform; it does not expose a parcel-vector API in the inspected public page."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html",
+      "observation": "Official notice describes visual cadastral-map queries through the government platform with authorization/identity conditions; it is not an anonymous bulk parcel source."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/wap_1.html",
+      "observation": "Official Q&A describes legal query categories and authorization/identity boundaries for registration information and cadastral maps; no identity-gated record was accessed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Huiminxiang Chongqing China official cadastral parcel map land registry public map API",
+      "result": "Local Fuling registration custody and municipal cadastral-map procedure guidance found; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html", "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "惠民乡 重庆 不动产登记 地籍图 宗地图 官方 地图 查询",
+      "result": "Official Chinese-language Fuling and Chongqing sources found; local custody and identity/authorization-bound cadastral-map workflow evidenced, but no anonymous parcel geometry route verified.",
+      "resultUrls": ["https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html", "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html", "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/wap_1.html"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [29.6215990570234, 107.202257668659] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Retrieved official Fuling subunit page. It identifies the local registration center and responsibilities; no parcel geometry or parcel schema exposed."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Retrieved official Chongqing one-stop guidance. It links to the government service platform and describes cadastral-map query access; no public parcel-vector endpoint exposed in page HTML."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "web result available",
+      "result": "Official notice reviewed. Visual cadastral-map query is described with authorization/identity conditions; no anonymous geometry response was requested."
+    },
+    {
+      "url": "http://zwfw.cq.gov.cn/icity/public/index",
+      "method": "GET; anonymous; TLS verification enabled; 20-second timeout",
+      "httpStatus": "timeout",
+      "result": "Government service landing-page request timed out before a response; no retry with credentials or bypass was attempted. This is an unavailable route, not evidence of parcel absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Chongqing and Fuling pages, independent English and Simplified-Chinese discovery, current first-party HTML retrieval, and bounded anonymous government-platform request.",
+    "verifiedOpenScope": "Local registry/procedure custody only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separately published municipal, district, or provincial cadastral/map service may exist, but it was not identified from the current first-party pages. No exact-point query or citywide parcel completeness conclusion was made."
+}

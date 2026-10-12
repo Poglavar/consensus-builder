@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 5059,
+  "queueRank": 1384,
+  "cityId": "wup2025:5059",
+  "name": "Huế",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso2": "VN",
+  "iso3": "VNM",
+  "point": [16.4679885698981, 107.585287192002],
+  "centerLatLon": [16.4679885698981, 107.585287192002],
+  "pointBasis": "Exact WUP queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 408692,
+  "population2025k": 408.692,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "capital": false,
+  "aliases": ["hue"],
+  "status": "complete",
+  "metadataReviewFile": "hu-service-review.json",
+  "registryFound": null,
+  "registryAssessment": "Official Huế administrative pages evidence local land-information procedures and a public GIS custodian, but the anonymously accessible polygon layer is a planning/subdivision layer (coCauPhanLo_update), not an evidenced cadastral registry feed. Registry remains null.",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hue Vietnam official cadastral parcel map GIS land registration natural resources public map",
+        "result": "Found the official Huế GIS map viewer, Huế land-data service procedure, and official map/land-information pages. The current viewer exposed an anonymous ArcGIS FeatureServer polygon layer for planned subdivision, not a cadastral parcel service.",
+        "actualResultUrls": ["https://gishue.hue.gov.vn/portal/apps/mapviewer/index.html?layers=3494c725fdb344b2bcb08a81d1c2363d", "https://tthc.hue.gov.vn/Content/Thutuc/chitiet.aspx?iThuTuc=24622", "https://quyhoach.hue.gov.vn/tong-hop-quy-hoach"]
+      },
+      {
+        "language": "native/local",
+        "script": "Vietnamese",
+        "query": "Huế bản đồ địa chính thửa đất GIS đăng ký đất đai Sở Tài nguyên và Môi trường chính thức",
+        "result": "Kết quả chính thức xác nhận cổng GIS Huế và thủ tục cung cấp dữ liệu đất đai; lớp công khai truy cập ẩn danh được xác định là lớp quy hoạch/phân lô, chưa chứng minh là cơ sở dữ liệu địa chính.",
+        "actualResultUrls": ["https://gishue.hue.gov.vn/portal/apps/mapviewer/index.html?layers=3494c725fdb344b2bcb08a81d1c2363d", "https://tthc.hue.gov.vn/Content/Thutuc/chitiet.aspx?iThuTuc=24622", "https://quyhoach.hue.gov.vn/ban-do/0019-7d1c-b2ae-91f6-39c9"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://gishue.hue.gov.vn/portal/apps/mapviewer/index.html?layers=3494c725fdb344b2bcb08a81d1c2363d", "operator": "Huế GIS public map host", "scope": "Current public ArcGIS map viewer; its server directory exposes Hosted/coCauPhanLo_update."},
+    {"url": "https://tthc.hue.gov.vn/Content/Thutuc/chitiet.aspx?iThuTuc=24622", "operator": "Huế public administrative-procedure portal", "scope": "Official procedure for requesting land information/data; owner information is restricted unless legally authorized."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0", "operator": "Huế GIS ArcGIS FeatureServer", "scope": "Public polygon layer named coCauPhanLo_update; planning/subdivision context, not cadastral registry proof."}
+  ],
+  "requests": [
+    {"url": "https://gishue.hue.gov.vn/server/rest/services?f=pjson", "method": "GET; anonymous curl", "httpStatus": 200, "result": "ArcGIS Server directory listed Hosted services."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer?f=pjson", "method": "GET; anonymous curl", "httpStatus": 200, "result": "FeatureServer metadata: polygon layer, 314 records, service CRS EPSG:3857, query capability, native objectIdField fid; fields include mahoso, dientich, kyhieuloda, solo and planning/building attributes."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0/query", "method": "GET; where=1=1; outFields=fid; resultRecordCount=3; returnGeometry=true; outSR=4326; f=geojson", "httpStatus": 200, "result": "Returned three polygon features with safe native OID identities fid 1, 2, 3; retained as hu-parcel-samples.geojson."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0/query", "method": "GET; exact WUP point intersects query; geometry=[107.585287192002,16.4679885698981] EPSG:4326; outFields=fid; returnGeometry=false", "httpStatus": 200, "result": "Returned zero features. This exact-point miss is not treated as evidence of citywide absence."}
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "source": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0",
+  "sourceIds": ["fid:1", "fid:2", "fid:3"],
+  "verifiedParcelResponse": {"geometryType": "esriGeometryPolygon", "sourceCrs": "EPSG:3857", "responseCrs": "EPSG:4326", "nativeIdField": "fid", "sampleCount": 3, "sampleFile": "hu-parcel-samples.geojson"},
+  "coverageAssessment": {"claimedScope": "Huế public GIS hosted planning/subdivision layer", "verifiedOpenScope": "314 polygon features in the named layer; layer extent is local and service metadata does not establish citywide cadastral coverage", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "safeFieldAllowlist": ["stable native object ID fid", "geometry", "source CRS", "public service metadata", "HTTP status/content type"],
+  "runtimeReadiness": "held_serial_review_required",
+  "runtimeEligible": false,
+  "resultCategory": "official_public_planning_subdivision_geometry_found_cadastral_registry_unverified",
+  "remainingUncertainty": "The public layer is not proven to be cadastral, its stable business identity fields were not retained, exact WUP point has no hit, and citywide open cadastral coverage remains unverified.",
+  "nextStep": "Serial reviewer may independently determine whether a first-party Huế cadastral adapter exists; runtime must remain held unless independently qualified."
+}

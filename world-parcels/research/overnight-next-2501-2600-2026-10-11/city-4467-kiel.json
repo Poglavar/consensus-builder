@@ -1,0 +1,91 @@
+{
+  "cityCode": 4467,
+  "queueRank": 2524,
+  "name": "Kiel",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso3": "DEU",
+  "point": [54.3232437231361, 10.1370059839948],
+  "population2025": 232651,
+  "population2025k": 232.651,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kiel official cadastral parcel map GIS land registry Germany",
+        "result": "First-party discovery found the City of Kiel Digital Stadtgrundkarte page, which states that the map includes ALKIS parcel information, and the city-hosted ArcGIS parcel layer metadata.",
+        "actualResultUrls": [
+          "https://kiel.de/de/kiel_zukunft/_karten_geodaten/stadtgrundkarte.php",
+          "https://www.kiel.de/de/kiel_zukunft/karten_und_geodaten.php",
+          "https://ims.kiel.de/geodatenextern/rest/services/Stadtplan/LHKielWmsWfs/MapServer/196"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Kiel amtliche Liegenschaftskarte Flurstücke Geoportal Grundstücke",
+        "result": "First-party discovery found the City of Kiel Liegenschaftskarte and Liegenschaftskataster service pages, the Digital Stadtgrundkarte, and public city parcel-layer metadata. The pages identify LVermGeo Schleswig-Holstein as cadastral custodian and Kiel as the municipal map publisher/service host.",
+        "actualResultUrls": [
+          "https://www.kiel.de/de/politik_verwaltung/service/_leistung.php?id=8962684",
+          "https://www.kiel.de/de/politik_verwaltung/service/_leistung.php?id=8963180",
+          "https://ims.kiel.de/geodatenextern/rest/services/Bewertung/BRW_Grundsteuer/MapServer/11"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Landeshauptstadt Kiel, Amt für Bauordnung, Vermessung und Geoinformation; the municipal Stadtgrundkarte page and city-hosted ArcGIS service expose parcel-map access.",
+    "nationalOrStateContext": "Landesamt für Vermessung und Geoinformationen Schleswig-Holstein (LVermGeo SH) is identified by the City of Kiel as the cadastral authority/custodian for ALKIS and official cadastral extracts.",
+    "registryBasis": "The official municipal page, current map link, and city-hosted ArcGIS layer metadata were fetched anonymously. Parcel feature-layer metadata exposes polygon geometry, stable native fields, supported GeoJSON query format, and spatial reference WKID 4647 (shown by the service as display CRS 102362). Feature queries themselves returned HTTP 400 and no geometry was retained.",
+    "registryFoundReason": "A local municipal cadastral map/service is evidenced and its parcel layer schema is public; this is not a claim that a working bounded feature response or citywide adapter has been qualified."
+  },
+  "schemaAndCrs": {
+    "serviceUrl": "https://ims.kiel.de/geodatenextern/rest/services/Stadtplan/LHKielWmsWfs/MapServer/196",
+    "endpoint": "ArcGIS REST FeatureServer-compatible MapServer layer 196, Flurstuecke eigen",
+    "responseType": "ArcGIS JSON/GeoJSON are listed as supported query formats in layer metadata; no successful feature response was obtained.",
+    "geometryType": "Polygon",
+    "geometryCrs": "WKID 4647 (ETRS89 / UTM zone 32N); service metadata displays spatial reference 102362. No reprojection or coordinate shift was applied.",
+    "nativeIdentity": "FLSTKENNZ is the stated native Flurstückskennzeichen field; OBJECTID is the ArcGIS object identifier. Neither was retained because no safe feature response was returned.",
+    "sourceFieldMapping": {
+      "FLSTKENNZ": "native parcel identity (Flurstückskennzeichen)",
+      "OBJECTID": "ArcGIS object identifier",
+      "SHAPE": "native parcel polygon geometry"
+    },
+    "compositeKeyProvenance": "No composite key used or inferred.",
+    "schemaEvidence": "Layer metadata listed OBJECTID, GEMARKNAME, GEMEINDE, FLUR, BESCHRIFT, FLSTKENNZ, FLAECHE_ALB, EIGEN, and SHAPE; only identity and geometry would be eligible for a retained sample."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not completed: the exact preserved WUP point [54.3232437231361, 10.1370059839948] was not shifted, and anonymous point/envelope feature queries returned HTTP 400 before a containment result could be obtained.",
+    "nativeIdField": "FLSTKENNZ (schema evidence only)",
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kiel municipal parcel layer exposed by the official city-hosted ArcGIS service.",
+    "verifiedOpenScope": "Official page and layer metadata only; no bounded parcel feature response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source service URL", "declared CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude ordering were preserved; no coordinate shift was used to force a hit.",
+    "A zero or failed exact-point query is not evidence of citywide absence.",
+    "No raw source-specific attribute set, geometry, or synthetic identity is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used."
+  ],
+  "uncertainty": "The official Kiel municipal cadastral map and current parcel-layer schema are verified. The public ArcGIS feature query path was not operational for this attempt, so parcel geometry, exact-point containment, response CRS payload, and citywide coverage remain unverified; runtime remains held."
+}

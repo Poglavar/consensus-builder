@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4136",
+  "cityCode": 4136,
+  "wupCityCode": 4136,
+  "name": "Bengkulu",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso2": "ID",
+  "iso3": "IDN",
+  "rank": 1501,
+  "queueRank": 1501,
+  "point": [-3.81317716559477, 102.294390415551],
+  "centerLatLon": [-3.81317716559477, 102.294390415551],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 378066,
+  "population2025k": 378.066,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official ATR/BPN Kota Bengkulu site identifies Kantor Pertanahan Kota Bengkulu as the city land office. This establishes local registry custody; it does not establish anonymous public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://kot-bengkulu.atrbpn.go.id/berita/kantah-kota-bengkulu-ikuti-pembahasan-verifikasi-usulan-lp2b-pada-lahan-baku-sawah",
+    "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "https://jdih.atrbpn.go.id/uploads/1021/Petunjuk%20Teknis%20Nomor%205%20Tahun%202021%20tentang%20Juknis%20Layanan%20Informasi%20Pertanahan%20dan%20Ruang%20Secara%20Elektronik.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "BHUMI's current JavaScript identifies a public `umum:Persil` Geoserver layer and `/expapi/getPersil` path, but no anonymous ID-plus-complete-polygon response was verified. Direct GET of the advertised relative service returned HTTP 404; the public proxy attempt returned HTTP 400 and no parcel response. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Kantor Pertanahan Kota Bengkulu is the city-specific land office; BHUMI is the national ATR/BPN public spatial viewer.",
+    "verifiedOpenScope": "No anonymous full parcel polygon response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bengkulu official cadastral parcel map viewer land registry ATR BPN Bengkulu",
+        "scope": "Identify city-specific registry custody and a safe public parcel geometry route.",
+        "result": "Search located the official BHUMI ATR/BPN map documentation, the national electronic land-information guidance, and the official ATR/BPN Kota Bengkulu site. The current BHUMI viewer was then inspected for service configuration; no anonymous geometry response was verified.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://kot-bengkulu.atrbpn.go.id/berita/kantah-kota-bengkulu-ikuti-pembahasan-verifikasi-usulan-lp2b-pada-lahan-baku-sawah",
+          "https://jdih.atrbpn.go.id/uploads/1021/Petunjuk%20Teknis%20Nomor%205%20Tahun%202021%20tentang%20Juknis%20Layanan%20Informasi%20Pertanahan%20dan%20Ruang%20Secara%20Elektronik.pdf"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Indonesian",
+        "query": "situs resmi peta bidang tanah Bengkulu ATR BPN Indonesia",
+        "scope": "Independent local-language search for local registry custody and public cadastral geometry.",
+        "result": "Search located the official Kantor Pertanahan Kota Bengkulu site and BHUMI documentation. The official material supports local custody and national public map availability, but does not provide a verified anonymous complete-polygon response for the WUP point.",
+        "actualResultUrls": [
+          "https://kot-bengkulu.atrbpn.go.id/berita/kantah-kota-bengkulu-ikuti-pembahasan-verifikasi-usulan-lp2b-pada-lahan-baku-sawah",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://bhumi.atrbpn.go.id/bantuan/peta"
+        ],
+        "executionMethod": "Separate Indonesian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted and no point-hit or citywide absence inference was made. BHUMI layer coverage, CRS details, anonymous query body, and safe native parcel identity fields remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify the BHUMI route or another first-party Indonesian cadastral adapter; do not enable runtime from this packet alone."
+}

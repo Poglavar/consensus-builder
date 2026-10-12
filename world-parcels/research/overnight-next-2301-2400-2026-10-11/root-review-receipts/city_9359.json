@@ -1,0 +1,17 @@
+{
+  "taskId": "city:9359",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-9359-gadag-betageri.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/gadag-betageri-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:27:48Z",
+  "reason": "Official Gadag district Bhoomi page links Karnataka land-record service, but recorded service requests timed out. No parcel geometry, native ID, schema or CRS was obtained. No adapter qualification gates were run; timeout is not citywide absence.",
+  "firstPartyPageChecked": "https://gadag.nic.in/bhoomi/",
+  "identityCheck": "Packet matches ranked WUP 2025 roster and pending queue for city code, rank, country, exact point, and 2025 population in persons.",
+  "searchCheck": "English and local-language executed query text, outcomes and URLs are recorded in both paired files.",
+  "sampleCheck": "No retained parcel polygon or unsafe ID attributes; sample count zero.",
+  "admissionCheck": "No independent live adapter proof of fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, full-parcel source binding, or headed Details-panel verification. Runtime/catalog/report state unchanged."
+}

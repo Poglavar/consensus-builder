@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-5228-maghagha.json",
+  "cohort": "overnight-next-2501-2600-2026-10-11",
+  "cityCode": 5228,
+  "queueRank": 2600,
+  "country": "Egypt",
+  "countryCode": "EG",
+  "pointLatLon": [28.6537798703346, 30.8316334000459],
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "queryAndRequestOutcome": "Separate English and Arabic first-party discovery found the Egyptian Survey Authority's national survey/cadastral mandate and digital-map request workflow. ESA pages, its current ASP.NET form/configuration, the national eGIS ArcGIS catalog, and the Maghagha tax-office page were inspected. No anonymous Maghagha parcel layer, native parcel identity, parcel schema/CRS, or full parcel polygon was obtained.",
+  "officialPrimarySources": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "operator": "Egyptian Survey Authority", "scope": "Official national survey and ownership-map/cadastral-register mandate."},
+    {"url": "https://www.esa.gov.eg/services.aspx", "operator": "Egyptian Survey Authority", "scope": "Official survey/map services index."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "operator": "Egyptian Survey Authority", "scope": "Official digital-map request and purchase procedure."},
+    {"url": "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson", "operator": "Egyptian government IDSC eGIS", "scope": "National public GIS service catalog inspected as a general government GIS source."},
+    {"url": "https://eta.gov.eg/ar/node/1089", "operator": "Egyptian Tax Authority", "scope": "Official Maghagha office coverage page; not treated as parcel geometry custody."}
+  ],
+  "schemaAndCrs": {"viewerConfig": "No current public Maghagha parcel viewer/API configuration retrieved.", "geometryType": null, "geometryCrs": null, "nativeIdentity": null, "nativeFieldsObserved": [], "sourceFieldMapping": null, "compositeKeyProvenance": null, "boundedAnonymousResponse": {"featureCount": 0, "result": "No verified public parcel endpoint; no parcel request formed."}},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "full polygon geometry", "source URL", "source CRS / requested output CRS", "retrieval date", "administrative codes"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift was made.", "A national authority/procedure is not proof of Maghagha-local open geometry access.", "The tax-office result is not cadastral registry evidence.", "No failed/absent candidate request was interpreted as citywide absence.", "No source-specific raw attributes or unsafe fields were retained."],
+  "uncertainty": "The national custodian and a formal digital-map access path are evidenced, but public parcel delivery, native IDs, CRS, local coverage and completeness remain unresolved. Runtime readiness is held pending independent serial qualification.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

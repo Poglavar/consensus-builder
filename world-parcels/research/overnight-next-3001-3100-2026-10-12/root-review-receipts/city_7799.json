@@ -1,0 +1,27 @@
+{
+  "taskId": "city:7799",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-7799-komsomolsk-on-amur.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/komsomolsk-on-amur-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T01:49:09Z",
+  "city": "Komsomolsk-on-Amur",
+  "queueRank": 3050,
+  "identityCheck": "Packet matches immutable pending queue and ranked WUP roster for city code, rank, country, 2025 point, and 196243 persons; original WUP 2025 row was also read against the source checksum in provenance.json.",
+  "searchCheck": "Executed English and Russian query strings and actual result URLs are recorded in the packet.",
+  "polygonCheck": "Zero retained full polygons and zero retained parcel attributes; no usable native-ID-plus-geometry response.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "The public NSPD and Rosreestr routes timed out in bounded anonymous requests. No source parcel ID, polygon, schema, CRS, or live adapter response was obtained; timeout is not evidence of citywide absence.",
+  "scopeLimit": "Research completion does not admit a city. No runtime, catalog, or coverage/report state was changed; unresolved access or point results are not citywide parcel absence."
+}

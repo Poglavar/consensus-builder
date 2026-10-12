@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:6730",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6730-batman.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/batman-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/batman-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/batman-attempt3/api.json",
+    "tmp/valhalla-parcel-research/batman-attempt3/api.headers",
+    "tmp/valhalla-parcel-research/runs/20261009T104040-74007fa4/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T12:01:39.203743Z",
+  "reason": "Queue identity and English/Turkish executed searches checked. Original TKGM response contains one full polygon at the unchanged WUP point; saved geometry is exact and properties retain only safe composite ID. One point does not establish citywide coverage. Fresh native-ID reads, paging, 13 cells, metric GEOS/overlap, source binding and headed Details gates are unverified."
+}

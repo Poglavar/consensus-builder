@@ -1,0 +1,101 @@
+{
+  "cityCode": 3875,
+  "queueRank": 1807,
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [1.67010993042853, 101.445321964373],
+  "population2025": 317280,
+  "population2025k": 317.28,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dumai Indonesia official cadastral parcel map GIS ATR BPN Dumai",
+        "result": "Found the official Kantor Pertanahan Kota Dumai site and official ATR/BPN BHUMI/ATLAS portal; no openly indexed anonymous parcel download was found.",
+        "actualResultUrls": [
+          "https://kot-dumai.atrbpn.go.id/",
+          "https://atlas.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Dumai peta bidang tanah GIS resmi pemerintah",
+        "result": "Found the official Dumai land/spatial-planning department and Dumai integrated open-data portal, plus the official ATR/BPN BHUMI portal; direct municipal requests were Cloudflare challenged.",
+        "actualResultUrls": [
+          "https://dispertaru.dumaikota.go.id/",
+          "https://sidatin.dumaikota.go.id/",
+          "https://bhumi.atrbpn.go.id/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Kantor Pertanahan Kota Dumai, ATR/BPN",
+    "url": "https://kot-dumai.atrbpn.go.id/",
+    "basis": "First-party local office site identifies the Dumai land office and land-service functions; this establishes local cadastral custody, not open parcel geometry access."
+  },
+  "sourceDiscovery": {
+    "officialViewer": "BHUMI ATR/BPN",
+    "viewerUrl": "https://bhumi.atrbpn.go.id/peta",
+    "clientObservedLayer": "umum:Persil",
+    "clientObservedService": "/bhumigs/umum",
+    "vendor": "Geoserver",
+    "description": "Registered land parcels classified by right type, registration status and use; the viewer description says displayed information can include right type, NIB and area.",
+    "schemaCrs": "unverified",
+    "publicGeometry": false
+  },
+  "attempts": [
+    {
+      "route": "https://bhumi.atrbpn.go.id/peta",
+      "method": "GET",
+      "outcome": "200; current JavaScript/configuration inspected. Parcel layer configuration was observed, but no geometry response was returned by the page itself."
+    },
+    {
+      "route": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "404 BHUMI application page; no WMS capabilities or schema."
+    },
+    {
+      "route": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "404 BHUMI application page; no WFS capabilities or schema."
+    },
+    {
+      "route": "https://bhumi.atrbpn.go.id/expapi/getPersil",
+      "method": "POST",
+      "outcome": "Not attempted: current client requires an authentication token/login flow; no login, credentials or private token was used."
+    },
+    {
+      "route": "https://kot-dumai.atrbpn.go.id/",
+      "method": "GET",
+      "outcome": "200; local ATR/BPN office site reachable. No parcel feature service exposed in the retrieved landing page."
+    },
+    {
+      "route": "https://dispertaru.dumaikota.go.id/",
+      "method": "GET",
+      "outcome": "403 Cloudflare challenge; not bypassed."
+    },
+    {
+      "route": "https://sidatin.dumaikota.go.id/",
+      "method": "GET",
+      "outcome": "403 Cloudflare challenge; not bypassed."
+    }
+  ],
+  "geometry": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "coverage": {
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "verifiedOpenScope": "Local cadastral custody and official viewer configuration only; no anonymous parcel geometry scope verified."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official viewer's current authenticated retrieval contract, schema, CRS, stable native parcel identity and citywide coverage remain unresolved. The exact WUP point was preserved and not shifted; no exact-point hit/miss inference was made. A timeout, 404 route, Cloudflare challenge, login wall or unusable public route is not evidence of citywide cadastral absence. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+  "retainedSample": null
+}

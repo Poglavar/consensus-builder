@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 5305,
+  "queueRank": 1610,
+  "name": "Anápolis",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "point": [-16.3250430006323, -48.9520198956505],
+  "population2025": 354576,
+  "population2025k": 354.576,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anápolis Brazil official cadastral parcel map GIS municipal lots property registry",
+        "result": "First-party search found the Prefeitura de Anápolis Geomais municipal geospatial portal, the municipal licensing/planning page linking Geomais, and an official notice describing online cadastral property records. The portal is JavaScript-only and no public parcel feature endpoint or bounded geometry response was exposed.",
+        "actualResultUrls": [
+          "https://geo.anapolis.go.gov.br/",
+          "https://www.anapolis.go.gov.br/diretoria-de-licenciamento-e-habitacao/",
+          "https://www.anapolis.go.gov.br/prefeitura-passa-a-disponibilizar-ficha-cadastral-do-imovel-online/"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Anápolis cadastro imobiliário mapa cadastral lotes geoprocessamento Prefeitura portal Geomais",
+        "result": "A busca em português encontrou o portal municipal Geomais, the Prefeitura page for Foto Aérea/mapoteca services, and the municipal notice for Ficha Cadastral do Imóvel. These establish municipal cadastral/map custody and described services, but no anonymous parcel ID-plus-geometry API was verified.",
+        "actualResultUrls": [
+          "https://geo.anapolis.go.gov.br/",
+          "https://www.anapolis.go.gov.br/servico/foto-aerea/",
+          "https://www.anapolis.go.gov.br/prefeitura-passa-a-disponibilizar-ficha-cadastral-do-imovel-online/",
+          "https://portaldocidadao.anapolis.go.gov.br/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryAssessment": "Local municipal registry/map custody is evidenced by Prefeitura de Anápolis services and the municipal Geomais portal. The official notice says the Ficha Cadastral do Imóvel is available through the Portal da Receita/Portal do Cidadão with login; the Foto Aérea service is handled by the municipal planning/mapoteca directorate and refers to official municipal maps. This is local registry/map evidence, not proof of open vector-service reuse.",
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "sourceId": "anapolis-prefeitura-geomais",
+    "name": "Geomais municipal geospatial portal",
+    "operator": "Prefeitura Municipal de Anápolis",
+    "scope": "Municipal geospatial/cadastral information portal; public landing page identifies access to municipal information but presents login fields and requires JavaScript.",
+    "endpoint": "https://geo.anapolis.go.gov.br/",
+    "method": "GET",
+    "responseFormat": "HTML shell; JavaScript application not retrieved",
+    "crs": null,
+    "reuseStatus": "viewer/service endpoint, schema and anonymous parcel access not verified"
+  },
+  "officialSources": [
+    {
+      "url": "https://geo.anapolis.go.gov.br/",
+      "observation": "Official municipal Geomais landing page. Public search result identifies the portal as a municipal information map application; fetched page requires JavaScript and displays access/login controls. No service configuration or parcel response was exposed."
+    },
+    {
+      "url": "https://www.anapolis.go.gov.br/servico/foto-aerea/",
+      "observation": "Official municipal service page for aerial photos and approved subdivision maps; it says the mapoteca/municipal planning directorate provides official maps and requires an immovable-property location marked on a map. It is a procedure/service page, not an open parcel API."
+    },
+    {
+      "url": "https://www.anapolis.go.gov.br/prefeitura-passa-a-disponibilizar-ficha-cadastral-do-imovel-online/",
+      "observation": "Official municipal notice says the property cadastral sheet is available through the Portal da Receita and Portal do Cidadão after login. No geometry endpoint or safe public parcel identifier is published."
+    },
+    {
+      "url": "https://www.anapolis.go.gov.br/diretoria-de-licenciamento-e-habitacao/",
+      "observation": "Official municipal directorate page lists access to Geomais and municipal subdivision/land-use services; page fetch timed out during direct request, so search-result evidence was retained only as a portal pointer."
+    },
+    {
+      "url": "https://portaldocidadao.anapolis.go.gov.br/",
+      "observation": "Official municipal citizen portal; public landing page states exclusive services require login. No anonymous parcel geometry response was obtained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geo.anapolis.go.gov.br/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Direct HTTPS request timed out after 20 seconds. The web-indexed landing page was JavaScript-only and showed login/access controls; no login or retry with credentials was attempted. This is not evidence of absence."
+    },
+    {
+      "url": "https://www.anapolis.go.gov.br/servico/foto-aerea/",
+      "method": "GET via first-party indexed page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official service description reviewed; mapoteca/official maps and subdivision-map issuance documented, but no public parcel API or geometry response."
+    },
+    {
+      "url": "https://www.anapolis.go.gov.br/prefeitura-passa-a-disponibilizar-ficha-cadastral-do-imovel-online/",
+      "method": "GET via first-party indexed page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official notice reviewed; cadastral property sheet is behind Portal da Receita/Portal do Cidadão login. No login attempted and no unsafe property fields requested."
+    },
+    {
+      "url": "https://portaldocidadao.anapolis.go.gov.br/",
+      "method": "GET via first-party indexed page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official citizen portal landing page reviewed; exclusive services require login. No credentials used."
+    },
+    {
+      "url": "https://www.anapolis.go.gov.br/diretoria-de-licenciamento-e-habitacao/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Direct request timed out after 20 seconds; first-party search result still identified the page and its Geomais link. Not evidence of absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral/map services and Geomais portal for Anápolis, according to official Prefeitura pages.",
+    "verifiedOpenScope": "Local municipal map/cadastral custody and described property-map services verified, but no open parcel geometry service, schema, CRS or city-bounded response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current Geomais JavaScript bundles, service configuration, access policy, parcel layer name, native ID field, CRS, and exact WUP-point coverage remain unverified. No exact-point hit/miss was obtained; timeout/login wall/unusable UI is not citywide absence evidence.",
+  "nextStep": "Serial reviewer should independently inspect the current Geomais application in a public browser session or locate an officially published anonymous geometry service, then test a bounded geometry-only request with a stable native parcel ID if available.",
+  "runtimeReadiness": "held; no adapter qualification or source admission performed"
+}

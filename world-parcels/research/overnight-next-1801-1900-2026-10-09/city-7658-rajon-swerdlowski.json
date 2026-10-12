@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7658",
+  "cityCode": 7658,
+  "wupCityCode": 7658,
+  "name": "Rajon Swerdlowski",
+  "canonicalLocalName": "Свердловский район, Красноярск",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "rank": 1892,
+  "queueRank": 1892,
+  "point": [55.9958699455398, 92.9473333765348],
+  "centerLatLon": [55.9958699455398, 92.9473333765348],
+  "pointBasis": "Exact WUP2025 point in latitude/longitude order; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 302890,
+  "population2025k": 302.89,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1801-1900-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "First-party Krasnoyarsk city administration pages identify the Sverdlovskiy district and publish information from the Rosreestr Krasnoyarsk Krai office about cadastral registration services. A city administration legal-portal cadastral-plan PDF documents Rosreestr Krasnoyarsk Krai as customer for comprehensive cadastral work in Krasnoyarsk and cites EGRN cadastral-territory-plan material. This evidences local/regional custody and procedure, not citywide anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.admkrsk.ru/sites/eng/districts/Pages/sverdlovskiy.aspx?accessability=off",
+    "https://www.admkrsk.ru/citytoday/property/Pages/Rosreestr.aspx",
+    "https://pravo-admkrsk.ru/default/Постановление%20администрации%20города%20№%20514%20от%2015.06.2026/9.%2024%2050%200300145.pdf",
+    "https://nspd.gov.ru/map"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "Bounded anonymous HTTPS requests to the current NSPD public-map route and Rosreestr timed out. No HTML, JavaScript/configuration, API route, layer schema, CRS, or safe parcel-ID-plus-complete-polygon response was retrieved. No TLS verification exception, login, CAPTCHA bypass, credentials, or unsafe property data was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Sverdlovskiy district is a district of Krasnoyarsk; city and regional first-party sources evidence cadastral custody/procedures, and Rosreestr identifies NSPD as the current public-map channel.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rajon Swerdlowski Krasnoyarsk official cadastral map parcel Rosreestr public map NSPD",
+        "scope": "Identify the local district authority, first-party cadastral custodian/procedure, and current public parcel-map route.",
+        "result": "Search identified the official Krasnoyarsk administration Sverdlovskiy district page, the administration's Rosreestr Krasnoyarsk Krai information page, an official city cadastral-plan PDF, and the NSPD route. Non-first-party map mirrors were not used.",
+        "actualResultUrls": [
+          "https://www.admkrsk.ru/sites/eng/districts/Pages/sverdlovskiy.aspx?accessability=off",
+          "https://www.admkrsk.ru/citytoday/property/Pages/Rosreestr.aspx",
+          "https://pravo-admkrsk.ru/default/Постановление%20администрации%20города%20№%20514%20от%2015.06.2026/9.%2024%2050%200300145.pdf",
+          "https://nspd.gov.ru/map"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Свердловский район Красноярск официальный кадастровая карта земельные участки Росреестр НСПД",
+        "scope": "Independent Russian-language discovery of local cadastral custody and public parcel geometry.",
+        "result": "Russian-language search identified the official Krasnoyarsk administration Rosreestr information page and official city cadastral-plan material documenting Krasnoyarsk Krai Rosreestr custody and EGRN/cadastral-quarter work. The current public-map destination was identified as NSPD, but no safe anonymous geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.admkrsk.ru/citytoday/property/Pages/Rosreestr.aspx",
+          "https://pravo-admkrsk.ru/default/Постановление%20администрации%20города%20№%20514%20от%2015.06.2026/9.%2024%2050%200300145.pdf",
+          "https://nspd.gov.ru/map"
+        ],
+        "executionMethod": "Separate Russian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact NSPD viewer configuration, parcel layer, native identity, schema, CRS, anonymous query shape, parcel coverage, and citywide completeness remain unverified. The exact WUP point was preserved; no point-hit, map-extent miss, or timeout was treated as evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently qualify the NSPD/Rosreestr route; do not enable runtime from this packet alone."
+}

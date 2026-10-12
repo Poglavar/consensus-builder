@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3848",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3848-ogbomosho.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ogbomosho-service-review.json",
+    "tmp/valhalla-parcel-research/ogbomosho-oyo-property-headers.txt",
+    "tmp/valhalla-parcel-research/ogbomosho-oyo-property.html"
+  ],
+  "checkedAt": "2026-10-09T12:12:21Z",
+  "identity": "Rank 1248, code 3848, Nigeria/NG/NGA, point [8.12637049117599,4.23682772844258], 445090 persons match immutable roster and queue.",
+  "searchAndSourceReview": "English and Yoruba-labeled searches with result URLs are recorded, though the Yoruba query is predominantly English and native-language execution is weakly evidenced. First-party OyoGISS describes property/building location points and Oyo property search describes registry records; neither supplies parcel polygons. Cached databank response is 403 Processing, an access limitation rather than citywide absence.",
+  "admissionReview": "Zero full polygons retained, so safe ID attributes cannot be demonstrated. No fresh native-ID feature read, forced pagination, 13 bounded cells, independent metric GEOS validity/duplicate/overlap/operation checks, source binding, or headed Details-panel verification is evidenced. No integration or runtime admission. Unresolved geometry access is not a finding of citywide absence."
+}

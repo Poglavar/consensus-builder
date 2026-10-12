@@ -1,0 +1,121 @@
+{
+  "cityCode": 11685,
+  "queueRank": 3268,
+  "name": "Kendrapara",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [20.5022163392696, 86.4195813750697],
+  "population2025": 184412,
+  "population2025k": 184.412,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kendrapara Odisha official cadastral parcel map land records GIS",
+        "result": "First-party results identified Odisha Bhulekh, the official BhuNaksha parcel-map viewer, the Odisha Revenue and Disaster Management Bhulekh page, ORSAC Odisha 4K GEO cadastral portal, and the official Kendrapara district Tahasil and Revenue pages. The district pages evidence Kendrapara Tahasil and revenue administration but do not publish an open parcel API.",
+        "actualResultUrls": [
+          "https://bhulekh.ori.nic.in/frmmapview.aspx",
+          "https://app1bhunakshaodisha.nic.in/bhunaksha/",
+          "https://revenue.odisha.gov.in/en/bhulekh",
+          "https://odisha4kgeo.in/",
+          "https://kendrapara.odisha.gov.in/en/about-district/administrative-setup/tahasil-list",
+          "https://kendrapara.odisha.gov.in/en/departments/revenue-and-disaster-management"
+        ]
+      },
+      {
+        "language": "Odia (local)",
+        "query": "କେନ୍ଦ୍ରାପଡ଼ା ଭୂଲେଖ ଜମି ମାନଚିତ୍ର ସରକାରୀ",
+        "result": "Official Odia results identified the Odia Kendrapara Tahasil list and the Odisha Bhulekh/BhuNaksha public map and land-record services. No public Kendrapara parcel geometry response was found in the anonymous bounded checks.",
+        "actualResultUrls": [
+          "https://kendrapara.odisha.gov.in/about-district/administrative-setup/tahasil-list",
+          "https://bhulekh.ori.nic.in/frmmapview.aspx",
+          "https://app1bhunakshaodisha.nic.in/bhunaksha/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Revenue and Disaster Management Department, Government of Odisha; Kendrapara District administration and Kendrapara Tahasil",
+    "locality": "Kendrapara Tahasil, Kendrapara District, Odisha, India",
+    "evidenceUrls": [
+      "https://kendrapara.odisha.gov.in/en/about-district/administrative-setup/tahasil-list",
+      "https://kendrapara.odisha.gov.in/en/departments/revenue-and-disaster-management",
+      "https://bhulekh.ori.nic.in/frmmapview.aspx"
+    ],
+    "scopeNote": "The official district pages identify nine Tahasils including Kendrapara and describe district e-governance for land revenue, e-mutation/LRMS, and Tahasil public information. Bhulekh is the state public land-record/map custodian. This evidences a local registry/cadastral custodian, not open citywide geometry access."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Odisha BhuNaksha / Bhulekh; ORSAC Odisha 4K GEO",
+    "nativeIdField": "plot number / plot unique ID (portal terminology); no stable parcel ID response retained",
+    "crs": "Not exposed in a parcel feature response; BhuNaksha viewer uses its server map CRS and WMS routes",
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": "BhuNaksha plot number or plot unique ID, only if returned by a future qualified response",
+      "safeGeometry": "parcel polygon geometry, only if returned by a future qualified response",
+      "documentedSafeFields": ["plot number", "plot unique ID", "geometry", "public service metadata", "source CRS"]
+    },
+    "compositeKeyProvenance": "None retained; the anonymous route did not return a Kendrapara parcel record.",
+    "attemptedRoutes": [
+      {
+        "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/",
+        "method": "GET",
+        "outcome": "HTTP 200; public viewer HTML and JavaScript configuration loaded. Viewer exposed WMS, rest/Levels/count, rest/Levels/ListsAfterLevel, rest/MapInfo/getVVVVExtentGeoref, rest/MapInfo/getPlotAtXY, and ScalarDatahandler routes.",
+        "schemaCrs": "No parcel feature schema or CRS was returned by the initial page. The viewer's map is server-rendered WMS."
+      },
+      {
+        "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Administration/ActiveStateList",
+        "method": "POST",
+        "parameters": {"none": "state list request"},
+        "outcome": "HTTP 200; returned Odisha state code 21."
+      },
+      {
+        "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Levels/count",
+        "method": "POST",
+        "parameters": {"state": "21"},
+        "outcome": "HTTP 200; returned five levels."
+      },
+      {
+        "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/village_selector.jsp",
+        "method": "POST",
+        "parameters": {"state": "21"},
+        "outcome": "HTTP 200; returned a partial/default Odisha selector containing only a subset of districts, with no Kendrapara entry. This is a map-extent/configuration miss, not evidence of citywide absence."
+      },
+      {
+        "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Levels/ListsAfterLevel",
+        "method": "POST",
+        "parameters": {"state": "21", "level": "0", "codes": ",", "hasmap": "true"},
+        "outcome": "HTTP 200; returned the same partial/default level lists and no Kendrapara parcel or geometry."
+      },
+      {
+        "url": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+        "method": "GET",
+        "outcome": "HTTP 200; official map-view form loaded and requires District, Tahasil, Village, RI Circle, and Plot No. No anonymous citywide geometry endpoint was exposed by the page inspection."
+      },
+      {
+        "url": "https://odisha4kgeo.in/",
+        "method": "GET",
+        "outcome": "HTTP 200; official ORSAC portal describes statewide georeferenced cadastral maps and land-use data, but public anonymous parcel geometry/API access was not exposed in the bounded inspection."
+      }
+    ],
+    "note": "The exact WUP point [20.5022163392696, 86.4195813750697] was preserved and never shifted. It was not used as an absence test because no usable Kendrapara map extent or parcel service response was available. No raw source attribute set or geometry was retained."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The public BhuNaksha deployment currently returned a partial/default district selector that omitted Kendrapara; this may reflect service configuration or coverage, not lack of cadastral data.",
+    "Bhulekh requires locality and plot-level inputs and did not expose a citywide feature response in the bounded request.",
+    "ORSAC describes statewide cadastral coverage, but no anonymous machine-readable parcel geometry route was qualified.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Packet completion records research only and is not source integration or admission."
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "cityCode": 7882,
+  "queueRank": 1425,
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-22.5187917359021, -44.1273388396056],
+  "population2025": 398107,
+  "population2025k": 398.107,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Volta Redonda Brazil official cadastral parcel map land registry GIS",
+        "result": "Found the official Prefeitura/PortalVR geoprocessing pages and the official municipal virtual map. The map configuration exposes a municipal Lotes layer, and a bounded anonymous point query returned one safe native parcel ID and a geometry extent. No full polygon was retained because the public response did not provide a safe GeoJSON geometry payload.",
+        "actualResultUrls": [
+          "https://www.voltaredonda.rj.gov.br/",
+          "https://www2.voltaredonda.rj.gov.br/geoprocessamento/",
+          "http://geo.epdvr.com.br/mapavirtual/map.phtml"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Volta Redonda mapa cadastral oficial cadastro imobiliário geoprocessamento lotes prefeitura",
+        "result": "Found the official PortalVR Mapa Virtual, which documents Lotes and municipal geoprocessing, and the municipal service catalog entry for cadastral property data. The public map exposed the Lotes layer and returned a bounded safe-ID query response; no full polygon was retained.",
+        "actualResultUrls": [
+          "https://www2.voltaredonda.rj.gov.br/geo/index.php",
+          "https://www2.voltaredonda.rj.gov.br/geoprocessamento/",
+          "https://servicos.voltaredonda.rj.gov.br/cartaServicos/114/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Prefeitura Municipal de Volta Redonda, through PortalVR/IPPU municipal geoprocessing and the municipal Mapa Virtual.",
+    "localOffice": "The municipal service catalog identifies Secretaria Municipal de Fazenda, Departamento de Impostos Imobiliários, for cadastral property data; the municipal geoprocessing pages identify the public map service.",
+    "sourceScope": "Municipal geoprocessing map with an official Lotes layer; the service review records the bounded anonymous query scope and limitations.",
+    "geometryAccess": "Anonymous public p.mapper service returned a safe parcel ID and a geometry extent at the exact WUP point. No credentials, private tokens, CAPTCHA bypass, unsafe owner/address fields, or TLS weakening were used."
+  },
+  "geometry": {
+    "verified": true,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Performed without moving the WUP point. The point was transformed only for the service request to approximate UTM zone 23S coordinates (589747.98, 7509486.47); the bounded map query returned one Lotes feature with native ID 240 and a service geometry extent.",
+    "crs": "Service coordinates are metre-based UTM-like coordinates; the public configuration did not explicitly publish an EPSG code. The service review records the observed extent and CRS uncertainty."
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real anonymous municipal parcel service and safe native ID were verified, but no independently qualified adapter has been reviewed and no full parcel polygon was retained. This packet records source discovery and bounded evidence only; it does not imply source integration or admission.",
+    "adapterAdmission": false
+  }
+}

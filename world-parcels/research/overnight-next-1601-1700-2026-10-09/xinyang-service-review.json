@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-10152-xinyang.json",
+  "cityCode": 10152,
+  "queueRank": 1632,
+  "city": "Xinyang",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Xinyang sources establish a local registration custodian and a cadastral-map publicity entry, but the anonymous map route redirected to a malformed login wall and no public parcel ID plus geometry response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries are recorded in city-10152-xinyang.json, with actual first-party URLs. They identified the city government notice, natural-resources bureau registration guidance and official property-registration portal.",
+  "requestOutcomes": "The city notice, bureau guidance and registration portal returned over public GET. The portal exposed a CadastralMap route; its anonymous GET returned HTTP 302 to a malformed login URL. No credentials, private tokens, CAPTCHA bypass, unsafe fields or TLS-disable action was used.",
+  "scopeLimits": [
+    "Exact WUP point [32.1273754888133, 114.078662959171] was preserved; no exact-point hit/miss inference was made.",
+    "No Xinyang city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Official registration custody and a named map-publicity service are not treated as proof of an open vector parcel API.",
+    "A login wall, malformed redirect or inaccessible viewer is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "GET https://www.xysbdcdjzx.cn/YWBL/CadastralMap returned HTTP 302 to a malformed login URL."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Xinyang municipal property-registration services and cadastral-map publicity.",
+    "verifiedOpenScope": "Institutional custody and a named service only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API route, access controls, layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

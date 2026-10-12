@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7241",
+  "cityCode": 7241,
+  "wupCityCode": 7241,
+  "name": "Al-Manshah",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso2": "EG",
+  "iso3": "EGY",
+  "rank": 1542,
+  "queueRank": 1542,
+  "point": [26.4435318582286, 31.7709117627],
+  "centerLatLon": [26.4435318582286, 31.7709117627],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 370283,
+  "population2025k": 370.283,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Egyptian General Survey Authority (ESA) publishes national survey/map services and a digital-map procedure. The official Sohag governorate page independently identifies مركز ومدينة المنشاة (Al-Manshah markaz/city). A separate Al-Manshah local cadastral office or city-specific public parcel endpoint was not evidenced.",
+  "registryEvidenceUrls": [
+    "https://www.esa.gov.eg/services.aspx",
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+    "https://www.sohag.gov.eg/gov2/division/local%20unites%20display.aspx?ID=26"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No public anonymous parcel ID-plus-geometry response or documented parcel layer schema was verified. ESA pages expose service/procedure information, not a safely queryable parcel feature service in the bounded attempts recorded here. Only safe parcel identity and complete geometry would be eligible for retention; owner, address, contact, titleholder, tax/account, and personal/legal fields were not requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_no_public_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "ESA national survey and digital-map services; Sohag governorate administrative source identifies Al-Manshah.",
+    "verifiedOpenScope": "No anonymous parcel feature response, native identity field, or CRS verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "serviceEvidence": {
+    "serviceUrl": null,
+    "layer": null,
+    "layerName": null,
+    "geometryType": null,
+    "sourceCrs": null,
+    "nativeIdentityField": null,
+    "safeRequestedFields": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "boundedFeatureCount": 0,
+    "representativeNativeIds": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:gov.eg Al Manshah Sohag cadastral parcel map cadastre official",
+        "scope": "Identify an official Egyptian cadastral custodian and a public parcel geometry route for Al-Manshah.",
+        "result": "Found official ESA service and digital-map pages. They document survey/map services and a digital-map purchase procedure, but no public parcel feature API was exposed. The official Sohag page identifies Al-Manshah administratively.",
+        "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://www.sohag.gov.eg/gov2/division/local%20unites%20display.aspx?ID=26"],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Arabic",
+        "query": "مصر خريطة كادستر رسمية سوهاج المنشاة الهيئة المصرية العامة للمساحة",
+        "scope": "Independent Arabic-language discovery of the Egyptian survey/cadastral authority and any public Al-Manshah parcel map/API.",
+        "result": "Found the official Arabic ESA service and digital-map pages and the official Arabic Sohag administrative page. No anonymous parcel layer, schema, CRS, or ID-plus-geometry endpoint was found in the reviewed first-party results.",
+        "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://www.sohag.gov.eg/gov2/division/local%20unites%20display.aspx?ID=26"],
+        "executionMethod": "Separate Arabic-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The public ESA service pages do not establish a city-specific open parcel layer, current parcel availability at the exact WUP point, native identity semantics, CRS, or citywide completeness. A direct normal-TLS curl retrieval of the ESA services page timed out after 20 seconds; this is not evidence of no cadastral records. The exact WUP point was preserved and not shifted.",
+  "nextStep": "Serial reviewer may independently investigate whether ESA or a Sohag/Al-Manshah office exposes a current anonymous parcel service. Do not enable runtime from this packet alone."
+}

@@ -1,0 +1,37 @@
+{
+  "taskId": "city:9062",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-9062-huairou.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/huairou-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:01:16.136385Z",
+  "reason": "The first-party Huairou service page identifies a local real-estate registration center. Beijing registration material describes authenticated query procedures, and the worker platform request timed out. No anonymous safe native-ID parcel polygon response, source schema, or CRS was verified; timeout is not parcel absence.",
+  "sourceUrlsReviewed": [
+    "https://www.bjhr.gov.cn/zt/hrqzwfwtyyy/index.html",
+    "https://ghzrzyw.beijing.gov.cn/cs/"
+  ],
+  "identity": {
+    "cityCode": 9062,
+    "queueRank": 1858,
+    "name": "Huairou",
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      40.3141864459695,
+      116.638644918272
+    ],
+    "populationPersons": 309856,
+    "verifiedAgainst": "cohort ranked-population.json and pending-queue.json"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Simplified Chinese"
+  ],
+  "registryFound": true,
+  "retainedFullPolygons": 0,
+  "admissionGates": "No independently qualified live adapter. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not evidenced."
+}

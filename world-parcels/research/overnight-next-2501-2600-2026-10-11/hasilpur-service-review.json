@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-7893-hasilpur.json",
+  "cityCode": 7893,
+  "queueRank": 2544,
+  "name": "Hasilpur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "pointLatLon": [29.6964595310386, 72.5463089975111],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://lis.pulse.gop.pk/", "httpStatus": 200, "outcome": "Official PULSE viewer HTML retrieved over TLS; current JavaScript identified the public /api/gis/token route and ArcGIS service configuration."},
+    {"method": "GET", "url": "https://lis.pulse.gop.pk/api/gis/token", "httpStatus": 200, "outcome": "Public map-session token returned by the viewer's own route; used only for the public ArcGIS map service and not retained in packet artifacts."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson&token=<public-map-session-token>", "httpStatus": 200, "outcome": "Service metadata returned Punjab district layers including Bahawalpur; initial tokenless request returned ArcGIS 499 Token Required."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/2?f=pjson&token=<public-map-session-token>", "httpStatus": 200, "outcome": "Bahawalpur Feature Layer metadata returned polygon geometry, source WKID 102100/latestWkid 3857, maxRecordCount 2000, GeoJSON support, and fields including unique OBJECTID."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/2/query", "httpStatus": 200, "outcome": "Bounded anonymous exact-point query with inSR=4326, spatialRelIntersects, safe outFields OBJECTID/Khasra_ID/Khewat_ID/Label, returnGeometry=true, outSR=4326, resultRecordCount=3, and f=geojson returned one polygon with OBJECTID 857666."},
+    {"method": "GET", "url": "https://bahawalpur.punjab.gov.pk/administration_bahawalpur", "httpStatus": "web-search result available", "outcome": "Official Bahawalpur district administration land-revenue/land-record administration context; general custodian evidence, not a parcel feature endpoint."},
+    {"method": "GET", "url": "https://lgcd.punjab.gov.pk/district-bahwalpur", "httpStatus": "web-search result available", "outcome": "Official Punjab local-government page identifies Tehsil Council Hasilpur; local administrative context, not a parcel feature endpoint."},
+    {"method": "GET", "url": "https://pmu-lgcdd.gop.pk/bahawalpur/", "httpStatus": "web-search result available", "outcome": "Official Punjab PMU page lists Hasilpur land-use classification and map resources; planning/map context, not a parcel feature endpoint."},
+    {"method": "GET", "url": "https://www.punjab-zameen.gov.pk/", "httpStatus": "web-search result available", "outcome": "Official Punjab Land Records Authority service identity and land-record custodian evidence; no ownership or unsafe record fields requested."}
+  ],
+  "schemaAndCrs": {"geometryType": "Polygon", "geometryCrs": "Source WKID 102100/latestWkid 3857; requested output WKID 4326", "nativeFieldMapping": {"OBJECTID": "stable native OID retained as id", "Khasra_ID": "observed but not retained", "Khewat_ID": "observed but not retained", "Label": "observed but not retained"}, "compositeKeyProvenance": "None; OBJECTID is the service-declared unique OID.", "rawAttributesRetained": false, "inspection": "Direct service metadata and bounded safe-field exact-point response were inspected. One native-ID polygon was retained in the sample GeoJSON."},
+  "sampleGeoJSON": "hasilpur-parcel-sample.geojson",
+  "safeFieldAllowlist": ["stable native OBJECTID", "full parcel polygon geometry", "source service URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "A real first-party parcel response is evidenced, but one exact-point polygon does not prove citywide coverage or qualify a runtime adapter; independent serial review remains required."},
+  "scopeLimits": ["No citywide extent or completeness claim is made.", "The exact WUP coordinate was used unchanged; a hit is not extrapolated to all of Hasilpur.", "Only one polygon is retained and no raw source attribute set is retained.", "No credentials, private tokens, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The PULSE viewer's public configuration and Bahawalpur cadastral layer are current and inspectable. Hasilpur-specific city boundary coverage and stable adapter contract beyond OBJECTID/geometry remain unresolved."
+}

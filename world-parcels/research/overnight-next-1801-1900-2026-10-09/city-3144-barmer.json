@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 3144,
+  "queueRank": 1887,
+  "cityId": "queue:1887",
+  "name": "Barmer",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [25.749284940586, 71.4031816873674],
+  "centerLatLon": [25.749284940586, 71.4031816873674],
+  "population2025": 304268,
+  "population2025k": 304.268,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Barmer Rajasthan official cadastral parcel map Bhu Naksha Rajdharaa",
+        "result": "First-party discovery identified Rajasthan Government Bhu-Naksha, the Rajasthan Urban GIS Portal, the Rajasthan cadastral-map digitization program, and the official Barmer district portal. The Urban GIS page exposes Khasra search and map/info actions, but no anonymous parcel ID-plus-geometry response was exposed in bounded inspection.",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+          "https://barmer.rajasthan.gov.in/"
+        ]
+      },
+      {
+        "language": "native/local (Hindi)",
+        "query": "बाड़मेर राजस्थान आधिकारिक भू नक्शा खसरा मानचित्र सरकारी",
+        "result": "First-party Hindi discovery identified Rajasthan Revenue Board/Apna Khata, the Rajasthan Government cadastral-map digitization pages, Bhu-Naksha, and the Barmer district government portal. The official Apna Khata page links भू नक्शा and describes Rajasthan land-record services; no safe anonymous parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://barmer.rajasthan.gov.in/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Hindi first-party discovery, followed by bounded TLS-verified GET/page inspection. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement was used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "observation": "Official Rajasthan Urban GIS Portal. The rendered page exposes Khasra Search, View On Map, View Khasra Info, district/tehsil/village selectors, and states that khasra and village boundaries come from the Settlement Department, Rajasthan. It is a public viewing portal, but the bounded page did not expose a safe parcel feature schema, CRS, or geometry response for Barmer."
+    },
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "observation": "Official Rajasthan Bhu-Naksha cadastral-mapping entry. Discovery describes plot info and map layers and attributes data to the respective State Government and Department of Land Resources; the page was unavailable during the bounded fetch, so no live service configuration or parcel response was harvested."
+    },
+    {
+      "url": "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx",
+      "observation": "Official Rajasthan Revenue Board Apna Khata page. It identifies the state revenue custodian, links भू नक्शा, and documents public land-record access and its non-certified informational limitation; it does not itself expose a safe parcel geometry response."
+    },
+    {
+      "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+      "observation": "Official Rajasthan Board of Revenue cadastral-map digitization page, evidencing state cadastral-map program custody but not a queryable Barmer parcel API."
+    },
+    {
+      "url": "https://barmer.rajasthan.gov.in/",
+      "observation": "Official Barmer district portal was identified as a local government entry point; no parcel viewer or geometry service was exposed in the bounded discovery result."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": null,
+      "assessment": "TLS-verified web inspection returned 502 Bad Gateway; no retry with verification disabled and no API/configuration was harvested."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Rendered public portal page confirmed Khasra and map/info controls and Settlement Department boundary provenance. No bounded anonymous ID-plus-geometry response, schema, CRS, or Barmer-specific selection result was obtained."
+    },
+    {
+      "url": "https://gis.rajasthan.gov.in/dlcinfo/?areaType=Urban",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official E-Mapping page loaded and exposed district/SR/village/locality and selected-khasra controls. It is a DLC information viewer; no parcel geometry or safe ID response was obtained, and no owner/rate/account fields were requested."
+    },
+    {
+      "url": "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Revenue Board page loaded and exposed district/tehsil/village and भू नक्शा links. No parcel geometry request was made because the page is a general land-record entry and the safe anonymous map endpoint was not established."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/115",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official Government of India map-digitization status route timed out during bounded inspection. This is general national program evidence, not local Barmer registry custody, and no retry or geometry request was made."
+    },
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "method": "GET (direct curl, 20-second bound)",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Direct request timed out after 20 seconds; this does not establish absence or map coverage."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan state cadastral/land-record and public GIS services, with Barmer district government entry point.",
+    "verifiedOpenScope": "State-level public portal custody and UI evidence only; Barmer-specific anonymous parcel geometry, schema, CRS, stable native parcel identity, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel ID/khasra identity if independently exposed", "full polygon or multipolygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed because no safe anonymous parcel feature endpoint was established; exact point was preserved and never shifted.",
+    "requestEvidence": "tmp/valhalla-parcel-research/3144/"
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "remainingUncertainty": "The live Bhu-Naksha viewer/API configuration, access controls, source layer schema, CRS, stable native parcel identity, geometry quality, update currency, and Barmer citywide coverage remain unresolved. A timeout, 502, or absent exact-point response would not prove citywide absence. Packet completion records source research only and is not source integration/admission."
+}

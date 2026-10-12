@@ -1,0 +1,23 @@
+{
+  "cityRecord": "city-10923-sahebganj.json",
+  "cityCode": 10923,
+  "queueRank": 2662,
+  "name": "Sahebganj",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "held",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "attempt": 1,
+  "pointLatLon": [26.2485599267954, 84.9467454606709],
+  "checkedAt": "2026-10-11",
+  "assessment": "The official Bihar BhuNaksha cadastral viewer is evidenced for the Muzaffarpur/Sahebganj administrative chain and returned anonymous safe plot identifiers for bounded point requests. No parcel polygon was returned, so no GeoJSON sample or adapter admission is warranted.",
+  "requestOutcomes": "See city-10923-sahebganj.json requestsAndEndpointChecks for every executed request and status.",
+  "schemaAndCrs": "The viewer returned EPSG:32645 in getVVVVExtentGeoref responses. The current JavaScript indicates WMS image rendering plus REST point lookup; no safe parcel feature geometry/schema response was obtained.",
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source URL", "observed coordinate order", "CRS", "source layer/theme", "feature count"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "scopeLimits": ["No parcel polygon retained.", "No citywide completeness asserted.", "Ambiguous overlapping map extents and a zero/204 candidate are not evidence of citywide absence.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception used.", "Research packet is not source integration or runtime admission."],
+  "uncertainty": "The anonymous viewer route may require a more specific mauza/map-instance/geometry workflow to expose polygon data. Returned opaque IDs are recorded in ignored scratch evidence only and are not promoted to a retained sample without geometry and stable identity qualification.",
+  "completionSummary": "Research attempts accurately recorded; packet complete as a held research record."
+}

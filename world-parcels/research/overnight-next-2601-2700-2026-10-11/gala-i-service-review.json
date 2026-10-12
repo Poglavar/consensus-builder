@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-2691-gala-i.json",
+  "cityCode": 2691,
+  "queueRank": 2620,
+  "name": "Galați",
+  "country": "Romania",
+  "countryCode": "RO",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "summary": "Official ANCPI parcel-service metadata and OCPI Galați local custodianship/program evidence were found. Live schema and bounded geometry requests failed due to DNS/502 access problems, so no parcel sample or citywide claim is made.",
+  "queryOutcomes": [
+    {"language":"English","query":"Galati Romania cadastral map parcel Geoportal official cadastru ANCPI","outcome":"Official ANCPI viewer, CP/CP_View parcel service metadata, and Galați cadastral-program record found."},
+    {"language":"Romanian","query":"Galati Romania harta cadastrala parcele geoportal oficial ANCPI OCPI Galati","outcome":"Official ANCPI viewer and OCPI Galați sector-status records found; no public city-specific downloadable parcel dataset verified."}
+  ],
+  "requestOutcomes": [
+    {"request":"GET CP/CP_View/MapServer/1?f=pjson","outcome":"Shell DNS failure; indexed service metadata reports parcel layer, GeoJSON query support and EPSG:4258."},
+    {"request":"GET bounded exact-point GeoJSON query at [45.4366810761243,28.0227927514628]","outcome":"Shell DNS failure and web fetch 502/not accessible; no feature response. Not evidence of absence."},
+    {"request":"GET ANCPI imobile viewer","outcome":"Official viewer description found; no authentication or unsafe field access attempted."},
+    {"request":"GET OCPI Galați PNCCF sector-status PDF","outcome":"Official local custodian and Galați UAT sector work/status evidenced."}
+  ],
+  "scopeLimits":["Exact WUP point preserved; no coordinate shift or exact-point inference.","No geometry or native ID was obtained; no sample file written.","Program/status PDFs evidence custodianship and work status, not parcel completeness.","No credentials, private tokens, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS exception used.","Packet completion is not source integration/admission."],
+  "safeFieldAllowlist":["stable native parcel identity","geometry","source layer/year","source CRS if declared","retrieval timestamp"],
+  "nativeFieldMapping": {"not_available":"No live feature response was obtained; field mapping and composite-key provenance remain unknown."},
+  "uncertainty":"Live availability, exact schema, identity stability, coverage of Galați municipality, and CRS/axis behavior remain unverified. Search-index metadata is not a substitute for a live bounded response.",
+  "serialReviewRecommendation":"Hold. Retry the public ANCPI endpoint and independently qualify schema, IDs, geometry, coverage, and adapter admissibility."
+}

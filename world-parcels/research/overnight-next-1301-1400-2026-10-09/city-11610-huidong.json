@@ -1,0 +1,82 @@
+{
+  "cityCode": 11610,
+  "queueRank": 1305,
+  "name": "Huidong",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [22.9867611901251, 114.710849277287],
+  "population2025": 428137,
+  "population2025k": 428.137,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huidong China official cadastral map parcel service 惠东 县 不动产 登记 地图 官方",
+        "result": "Found official Huizhou Natural Resources Bureau pages identifying Huidong Natural Resources Bureau, unified real-estate registration, land-rights registration, cadastral surveying, and the Guangdong Tianditu public map service. No safe anonymous parcel polygon was verified.",
+        "actualResultUrls": ["https://land.huizhou.gov.cn/xqdt/content/post_5723293.html", "https://guangdong.tianditu.gov.cn/map/index.html", "https://guangdong.tianditu.gov.cn/ggdt/index.html"]
+      },
+      {
+        "language": "Chinese",
+        "query": "惠东县 不动产登记 地图 查询 官方 自然资源局",
+        "result": "检索到惠东县自然资源局关于统一确权登记、房地一体登记发证和不动产测绘的官方说明，以及广东省地理信息公共服务平台；未验证安全匿名地籍要素响应。",
+        "actualResultUrls": ["https://land.huizhou.gov.cn/xqdt/content/post_5723293.html", "https://land.huizhou.gov.cn/xqdt/content/post_4732295.html", "https://guangdong.tianditu.gov.cn/map/index.html"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "HUIDONG-NATURAL-RESOURCES-TIANDITU-GUANGDONG",
+    "name": "Huidong Natural Resources Bureau / Guangdong Tianditu public geographic information service",
+    "url": "https://guangdong.tianditu.gov.cn/map/index.html",
+    "operator": "Huidong Natural Resources Bureau under Huizhou Natural Resources Bureau; Guangdong Natural Resources public map platform",
+    "serviceType": "Official local registration/cadastral custodian evidence and public map viewer; anonymous parcel vector response not verified",
+    "layer": "Guangdong public map viewer; no parcel layer response safely qualified",
+    "nativeIdField": null,
+    "nativeIdEvidence": "The current viewer JavaScript exposes generic configuration, WFS configuration, and layer-classification routes, but the bounded anonymous probes returned HTTP 404 and no parcel schema or native identity.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Local official pages establish Huidong's registry and cadastral-surveying custodian. The public Guangdong map service is general geospatial infrastructure; this research did not establish an open parcel-vector endpoint."
+  },
+  "requests": [
+    {"url": "https://land.huizhou.gov.cn/xqdt/content/post_5723293.html", "method": "GET; anonymous", "httpStatus": 200, "result": "Official Huidong Natural Resources Bureau page retrieved; documents unified real-estate registration, land-rights registration, integrated rural property registration, and cadastral surveying."},
+    {"url": "https://land.huizhou.gov.cn/xqdt/content/post_4732295.html", "method": "GET; anonymous", "httpStatus": 200, "result": "Official local service page retrieved; documents Guangdong government service and Yue Shengshi online registration/query channels, but does not expose anonymous parcel geometry."},
+    {"url": "https://guangdong.tianditu.gov.cn/map/index.html", "method": "GET; anonymous", "httpStatus": 200, "result": "Current Guangdong public map viewer HTML retrieved; viewer exposes search, layers, vector temporal controls, and public map functions."},
+    {"url": "https://guangdong.tianditu.gov.cn/map/js/map.min.js", "method": "GET; anonymous", "httpStatus": 200, "result": "Current viewer JavaScript retrieved. It declares generic-config, WFS-config, layer-classification, and generic WFS/service routes; no parcel schema or safe feature response was returned."},
+    {"url": "https://guangdong.tianditu.gov.cn/map/sysconf/findAll.do", "method": "GET; anonymous", "httpStatus": 404, "result": "Declared relative configuration route probed as a GET; server returned 404. Viewer source indicates POST through its application-path helper, but no credentials or private token was used."},
+    {"url": "https://guangdong.tianditu.gov.cn/map/wfsConfig/queryEntityByType.do?wfsconfig.serviceType=1", "method": "GET; anonymous", "httpStatus": 404, "result": "Declared relative WFS configuration route probed as a GET; server returned 404. No service URL, schema, ID, or geometry was retained."},
+    {"url": "https://guangdong.tianditu.gov.cn/map/layerClassify/findAllLayers.do", "method": "GET; anonymous", "httpStatus": 404, "result": "Declared relative layer-classification route probed as a GET; server returned 404. This is a route/method failure, not evidence of cadastral absence."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Huidong/​Huizhou Natural Resources Bureau pages and current Guangdong Tianditu public map viewer/configuration were reviewed.",
+    "verifiedOpenScope": "Local registry custodian and public map viewer existence verified; no anonymous parcel feature schema, native ID, or polygon response verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "The viewer's declared relative configuration routes returned HTTP 404 when probed anonymously as GET requests; the viewer's JavaScript indicates POST handling, but no safe parcel endpoint or response was established.",
+  "remainingUncertainty": "The exact unchanged WUP point may lie within cadastral coverage. No exact-point query was completed, and route/method failures plus absence of a polygon response are not evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently inspect the current Guangdong viewer network flow and qualify only safe native ID plus geometry if an anonymous parcel response is actually returned; keep runtime readiness held.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [22.9867611901251, 114.710849277287],
+  "publicParcelGeometryFound": false,
+  "sourceIds": ["HUIDONG-NATURAL-RESOURCES-BUREAU", "GUANGDONG-TIANDITU-PUBLIC-MAP"],
+  "registryEvidenceUrls": ["https://land.huizhou.gov.cn/xqdt/content/post_5723293.html", "https://land.huizhou.gov.cn/xqdt/content/post_4732295.html", "https://guangdong.tianditu.gov.cn/map/index.html"],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "cohort": "overnight-next-1301-1400",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11610,
+  "cityId": "wup2025:11610"
+}

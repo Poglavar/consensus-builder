@@ -1,0 +1,19 @@
+{
+  "cityRecord": "city-4453-kochi.json",
+  "cityCode": 4453,
+  "queueRank": 2703,
+  "city": "Kochi",
+  "country": "Japan",
+  "countryCode": "JP",
+  "reviewStatus": "held",
+  "reviewOutcome": "Local cadastral procedure is evidenced, but no qualifying public parcel-polygon service or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "English and Japanese first-party discovery was performed and recorded in the city record. Kochi City cadastral-survey, cadastral-result, parcel-reference-map, and FY2026 public-GIS budget pages were inspected. A discovered ArcGIS 地番図 service responded anonymously, but metadata showed a point layer and an extent around 140°E rather than Kochi; its bounded Kochi query returned zero features. This was rejected as a Kochi parcel source.",
+  "cityOrLocalCustodian": "Kochi City Cadastral Survey Division and Asset Tax Division are evidenced as local custodians/procedure owners by first-party pages. The inspected ArcGIS service is not attributed to Kochi City and is not accepted.",
+  "safeFieldAllowlist": ["FID", "stable native parcel/object ID when independently verified", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "The rejected ArcGIS candidate advertises EPSG:3857 service/layer metadata and EPSG:4326 output capability, but its geometry type is point rather than polygon. Kochi City source pages did not expose a current public parcel schema or CRS.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "No public city-bounded parcel geometry was verified. The absence of a hit in the rejected candidate is not evidence of citywide absence; the exact WUP point was preserved without shifting it.",
+  "integrationDisposition": "Research packet only; not source integration or admission. No registry/catalog/runtime files were changed."
+}

@@ -1,0 +1,85 @@
+{
+  "cityCode": 5855,
+  "queueRank": 3273,
+  "name": "Recanto das Emas",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "capital": false,
+  "point": [-15.912555703767, -48.0696353880458],
+  "population2025": 184279,
+  "population2025k": 184.279,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Recanto das Emas Brazil official cadastral parcel map GIS land registry Distrito Federal SEDUH IDE-DF",
+        "result": "First-party discovery found SEDUH's official Geoportal page and the IDE-DF public ArcGIS REST service. The service exposes the Cadastro Territorial registered-lot layer and identifies Recanto das Emas in the regional-administration layer.",
+        "actualResultUrls": [
+          "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/123"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil, local)",
+        "query": "Recanto das Emas cadastro predial mapa de lotes parcelas Geoportal oficial Brasília Distrito Federal",
+        "result": "Portuguese first-party discovery found the public SEDUH GeoPortal, the official Parcelamentos do Solo consultation portal listing RA-XV - Recanto das Emas, and the IDE-DF public service. The service's RA-XV filter returned bounded registered-lot geometry.",
+        "actualResultUrls": [
+          "https://parcelamentosdosolo.seduh.df.gov.br/consulta",
+          "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Secretaria de Estado de Desenvolvimento Urbano e Habitação do Distrito Federal (SEDUH), through the IDE-DF public Cadastro Territorial service and SEDUH Geoportal.",
+    "localScope": "The public service's registered-lot layer contains pu_ra=15 records, and the official regional-administration layer identifies code 15 as RECANTO DAS EMAS. This is local Distrito Federal cadastral/map evidence, not merely national-agency prose.",
+    "sourceService": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10"
+  },
+  "parcelDiscovery": {
+    "geometryFound": true,
+    "sampleFiles": ["city-5855-recanto-das-emas-sample.geojson"],
+    "source": "IDE-DF Publico/CADASTRO_TERRITORIAL MapServer layer 10, Lotes Registrados",
+    "nativeIdField": "objectid",
+    "crs": "EPSG:31983 source; sample returned by server with outSR=4326",
+    "boundedResponse": "where=pu_ra=15, outFields=objectid, returnGeometry=true, resultRecordCount=3, orderByFields=objectid ASC, outSR=4326",
+    "fieldMapping": {
+      "nativeIdentity": "objectid (ArcGIS OID; retained as GeoJSON properties.id string)",
+      "safeGeometry": "shape polygon",
+      "otherDocumentedFields": ["pu_ra"],
+      "compositeKeyProvenance": null
+    },
+    "note": "The exact WUP point query returned zero registered-lot features and the identified-occupation query also returned zero. These are point-level misses only; the RA-XV bounded query established local coverage and supplied three retained polygons. No coordinate was shifted."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/", "outcome": "HTTP 200 via first-party discovery; SEDUH states the GeoPortal is public and provides cartographic information and exact lot location."},
+    {"method": "GET", "url": "https://parcelamentosdosolo.seduh.df.gov.br/consulta", "outcome": "HTTP 200 via first-party discovery; official portal lists RA-XV - Recanto das Emas."},
+    {"method": "GET", "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer?f=pjson", "outcome": "HTTP 200; service metadata identifies SEDUH Cadastro Territorial, layers including Lotes Registrados and Ocupações Identificadas, supported JSON/GeoJSON queries, and EPSG:31983."},
+    {"method": "GET", "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10?f=pjson", "outcome": "HTTP 200; layer metadata identifies polygon geometry, native objectid OID, pu_ra, and shape. Unsafe owner/address/titleholder/tax/account fields were not requested."},
+    {"method": "GET", "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10/query exact point", "outcome": "HTTP 200 GeoJSON with zero features for the exact WUP point in EPSG:4326; treated only as an exact-point miss."},
+    {"method": "GET", "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/11/query exact point", "outcome": "HTTP 200 GeoJSON with zero features for identified occupations at the exact WUP point; treated only as an exact-point miss."},
+    {"method": "GET", "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/123/query exact point", "outcome": "HTTP 200 JSON; point fell in administrative region objectid 97, ra_cira 15, ra_nome RECANTO DAS EMAS."},
+    {"method": "GET", "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10/query where pu_ra=15", "outcome": "HTTP 200 GeoJSON; bounded response returned three full polygons with native objectids 2, 3, and 4 and exceededTransferLimit=true, indicating additional records exist; only three were retained."}
+  ],
+  "schemaAndCrs": {"parcelSchema": "ArcGIS Feature Layer, polygon geometry", "nativeIdField": "objectid", "geometryCrs": "EPSG:31983 source; server output EPSG:4326", "fieldMapping": {"objectid": "stable native ArcGIS OID", "shape": "safe parcel polygon"}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "Lotes Registrados is an official Distrito Federal cadastral/urban-lot map layer and may not equal the complete legal cadastral fabric or title registry dataset.",
+    "The exact WUP point fell outside a returned registered-lot polygon; the point was not moved and the miss was not generalized.",
+    "The sample is limited to three records from a bounded pu_ra=15 query; it is not citywide completeness evidence.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.",
+    "Independent serial review is required before adapter or runtime qualification."
+  ],
+  "admissionDecision": "held",
+  "geometrySamples": ["city-5855-recanto-das-emas-sample.geojson"]
+}

@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-5299-c-chi.json",
+  "cityCode": 5299,
+  "queueRank": 3066,
+  "city": "Củ Chi",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Vietnamese first-party discovery identified the HCMC DONRE Geoportal's Củ Chi land-use-status catalog record and the national land-inventory application. Direct catalog access timed out; the national application exposed only public region metadata while configuration/search endpoints were login-required or unavailable. No anonymous safe parcel ID-plus-geometry response was qualified and no sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, status outcomes, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-5299-c-chi.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Ho Chi Minh City DONRE Geoportal",
+      "scope": "Local/provincial government geospatial catalog with a specifically indexed Củ Chi land-use-status dataset; parcel-vector access was not qualified.",
+      "evidence": "https://geoportal-stnmt.tphcm.gov.vn/geonetwork/srv/search?topicCat=hienTrangSuDungDat"
+    },
+    {
+      "name": "Department of Land Administration, Viet Nam",
+      "scope": "National land-inventory/statistics application; public region metadata was accessible, but parcel search/configuration required login or was unavailable.",
+      "evidence": "https://maps.gdla.gov.vn/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "Timeout, login-required, and not-found outcomes are access/qualification results, not evidence of parcel absence.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The catalog's current OGC service configuration could not be inspected because the direct request timed out.",
+    "The national application's public shell does not establish open cadastral parcel access.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

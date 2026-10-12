@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7428-bharuch.json",
+  "cityCode": 7428,
+  "purpose": "Document first-party discovery, current public land-record routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Bharuch district and Gujarat Revenue Department pages confirm the land-record/cadastral administrative context and link public record services. The bounded anonymous route review did not yield parcel-like polygon records with safe native IDs. AnyRoR and E-Milkat requests timed out from this environment; no login, CAPTCHA, credential, unsafe field, or TLS verification bypass was used. A timeout is not evidence of citywide absence.",
+  "registryAssessment": "Bharuch local cadastral custody is evidenced by the official district SLR page naming DILR Bharuch and City Survey offices, while the district Land Records page describes Gujarat cadastral survey and E-Dhara records. Because no actual public parcel geometry response was verified, registryFound remains null and runtime qualification is held.",
+  "safeFieldAllowlist": [
+    "safe parcel or survey identifier only if publicly exposed and non-personal",
+    "geometry",
+    "CRS",
+    "non-personal layer/schema metadata"
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Bharuch India official cadastral map land parcels GIS Gujarat government",
+      "outcome": "Official Bharuch district Land Records and SLR pages plus Gujarat Revenue Department services found; no public safe parcel-vector response identified.",
+      "actualResultUrls": ["https://bharuch.nic.in/service/land-records/", "https://bharuch.nic.in/slr/", "https://revenuedepartment.gujarat.gov.in/iora-service", "https://mapservice.gov.in/"]
+    },
+    {
+      "language": "Gujarati",
+      "query": "ભરૂચ ગુજરાત સત્તાવાર જમીન નકશો કેડાસ્ટ્રલ પાર્સલ સરકારી",
+      "outcome": "Official Gujarati Bharuch portal and Gujarat Revenue Department links confirmed local land-record offices/services; no public safe parcel-vector response identified.",
+      "actualResultUrls": ["https://bharuch.nic.in/gu/", "https://bharuch.nic.in/service/land-records/", "https://revenuedepartment.gujarat.gov.in/iora-service"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://bharuch.nic.in/service/land-records/", "method": "GET", "httpStatus": 200, "result": "Official page loaded; describes cadastral survey basis and E-Dhara/VF6/VF7/VF8A records and links AnyRoR. No parcel-vector endpoint exposed."},
+    {"url": "https://bharuch.nic.in/slr/", "method": "GET", "httpStatus": 200, "result": "Official SLR page loaded; names DILR Bharuch, City Survey Officer Bharuch, and City Survey Superintendent Office Ankleshwar."},
+    {"url": "https://bharuch.nic.in/gu/", "method": "GET", "httpStatus": 200, "result": "Official Gujarati district portal loaded; navigation confirms land-record and city-survey offices."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/iora-service", "method": "GET", "httpStatus": 200, "result": "Official Gujarat Revenue Department service index loaded; links AnyRoR rural records, E-Milkat property cards, and IORA applications."},
+    {"url": "https://anyror.gujarat.gov.in/", "method": "GET/HEAD", "httpStatus": "timeout", "result": "Browser-like User-Agent, Accept, Accept-Language, and cookie jar used; no response within 8 seconds. No retry with unsafe or bypassing methods."},
+    {"url": "https://e-milkat.gujarat.gov.in/", "method": "GET/HEAD", "httpStatus": "timeout", "result": "Browser-like User-Agent, Accept, and Accept-Language used; DNS/connection did not complete within 8 seconds. No property lookup attempted."},
+    {"url": "https://landrecords.gujarat.gov.in/", "method": "GET/HEAD", "httpStatus": "timeout", "result": "Browser-like User-Agent, Accept, and Accept-Language used; request did not complete within 8 seconds."},
+    {"url": "https://stategisportal.nic.in/stategisportal/", "method": "GET/HEAD", "httpStatus": "TLS verification failure", "result": "Certificate chain was not trusted by the available client; no TLS exception was authorized and no service/schema/geometry was inferred."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not completed because no anonymous parcel feature endpoint returned a bounded geometry response. Exact WUP point [21.7116033025565, 72.9969026348176] was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Gujarat state land-record/cadastral administration with Bharuch district land-record and city-survey offices.",
+    "verifiedOpenScope": "Official service and custodian context only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current JavaScript/configuration, parcel service endpoint, native ID field, CRS, exact-point parcel inclusion, and citywide open coverage remain unknown. Timeouts, map extent misses, or TLS failures do not establish absence.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-9153-buldhana.json",
+  "cityCode": 9153,
+  "queueRank": 2887,
+  "name": "Buldhana",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [20.5268094127954, 76.1826064412948],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": "See city record attemptsRecorded; Buldhana district and Maharashtra Land Records first-party routes were found, while the Mahabhunakasha viewer/API could not be anonymously qualified within bounded requests.",
+  "schemaAndCrs": "No parcel schema, CRS, native identity, or geometry response was obtained.",
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No safe parcel ID plus unchanged polygon was returned."},
+  "scopeLimits": ["Exact WUP point was preserved.", "Timeout/redirect loop/unusable UI is not evidence of citywide absence.", "No geometry was retained.", "Packet completion is not source integration/admission."],
+  "uncertainty": "Official local/state cadastral custodianship is evidenced, but anonymous feature access and coverage remain unverified."
+}

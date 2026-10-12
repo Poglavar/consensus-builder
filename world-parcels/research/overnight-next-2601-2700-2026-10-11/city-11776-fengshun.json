@@ -1,0 +1,50 @@
+{
+  "cityCode": 11776,
+  "queueRank": 2671,
+  "name": "Fengshun",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [23.7609384160715, 116.170235707535],
+  "population2025": 220851,
+  "population2025k": 220.851,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fengshun China official cadastral parcel map GIS land registry Natural Resources Bureau",
+        "result": "Discovery identified the official Fengshun County government portal and its Natural Resources Bureau. Official registration announcements were found, but no public Fengshun parcel viewer or anonymous parcel ID-plus-geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/index.html",
+          "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/gtzhl/content/mpost_2738896.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "丰顺县 自然资源局 地籍图 不动产登记 电子地图 官方",
+        "result": "官方检索结果确认丰顺县自然资源局负责统一确权登记、权籍调查、不动产测绘及成果应用，并发现不动产登记公告及附图；未发现可匿名访问、返回安全宗地标识与完整几何的公开地图或接口。",
+        "actualResultUrls": [
+          "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/index.html",
+          "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/gtzhl/content/mpost_2738896.html",
+          "https://www.fengshun.gov.cn/attachment/0/197/197474/2684552.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "The official Fengshun County government portal identifies the Fengshun County Natural Resources Bureau (丰顺县自然资源局) and states that it organizes and guides unified natural-resource and real-estate registration, cadastral/right-enquiry work, real-estate surveying, and results use.",
+    "urls": [
+      "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/index.html",
+      "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/lxfs/index.html"
+    ]
+  },
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": []
+}

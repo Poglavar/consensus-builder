@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8617-jiangyang.json",
+  "purpose": "Document first-party Jiangyang/Luzhou registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Luzhou government-service material evidences the municipal natural-resources and real-estate-registration custodians relevant to Jiangyang. An official Luzhou information response describes online registration-information access as identity/facial-authenticated. No safe anonymous cadastral parcel-vector response was verified.",
+  "registryAssessment": "Local registry/procedure evidenced through official Luzhou government material; this is institutional custody evidence, not admission of a public parcel source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf",
+      "observation": "Official Luzhou government-service document lists natural-resources and real-estate-registration administrative services, including registration procedures; it does not expose a parcel geometry payload."
+    },
+    {
+      "url": "https://wen.lzep.cn/talk/403.html",
+      "observation": "Official Luzhou information response states that owners can query their own registration information online through Tianfu Tongban with login and facial recognition. This route was not accessed because it is identity-gated and record-specific."
+    },
+    {
+      "url": "https://www.sc.gov.cn/10462/zfwjts/2024/5/29/c647d4d899654659a9788d882eec018d/files/%E5%B7%9D%E5%BA%9C%E5%87%BD139%E5%8F%B7%E5%85%AC%E5%BC%80%E7%89%88.pdf",
+      "observation": "Official Sichuan provincial approval identifies Jiangyang District as a covered district in Luzhou's territorial-spatial planning; it is planning context, not cadastral geometry evidence."
+    },
+    {
+      "url": "https://www.luzhou.gov.cn/",
+      "observation": "Anonymous direct GET attempted; response was HTTP 418 from CloudWAF, so current site JavaScript/configuration could not be inspected."
+    },
+    {
+      "url": "https://www.jiangyang.gov.cn/",
+      "observation": "Anonymous direct GET attempted; response was HTTP 418 from CloudWAF, so current site JavaScript/configuration could not be inspected."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jiangyang Luzhou China official cadastral parcel map GIS natural resources bureau land registration",
+      "result": "Official Luzhou government-service and Sichuan government sources were found; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf", "https://www.sc.gov.cn/10462/zfwjts/2024/5/29/c647d4d899654659a9788d882eec018d/files/%E5%B7%9D%E5%BA%9C%E5%87%BD139%E5%8F%B7%E5%85%AC%E5%BC%80%E7%89%88.pdf"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "泸州市 江阳区 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+      "result": "Official Luzhou sources evidenced registration custody and identity-gated online access; no verified anonymous cadastral geometry route.",
+      "resultUrls": ["https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf", "https://wen.lzep.cn/talk/403.html"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [28.9293929790689, 105.441729966685] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://www.luzhou.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "result": "CloudWAF response; no official HTML, JavaScript configuration, or service route could be inspected."
+    },
+    {
+      "url": "https://www.jiangyang.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "result": "CloudWAF response; no official HTML, JavaScript configuration, or service route could be inspected."
+    },
+    {
+      "url": "https://wen.lzep.cn/talk/403.html",
+      "method": "GET via first-party indexed result",
+      "httpStatus": "web result available",
+      "result": "Read official response describing identity/facial-authenticated personal registration-information access; no request was made to that route."
+    },
+    {
+      "url": "https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf",
+      "method": "GET via first-party indexed result",
+      "httpStatus": "web result available",
+      "result": "Read official government-service document naming registration custodians and procedures; no geometry endpoint or parcel payload exposed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Luzhou government-service/information sources relevant to Jiangyang plus anonymous direct requests to municipal and district sites.",
+    "verifiedOpenScope": "Local registry/procedure custody only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "An authenticated or separately published municipal/provincial cadastral or map service may exist, but it was not accessed or verified. Exact-point hit testing and citywide parcel completeness are unknown."
+}

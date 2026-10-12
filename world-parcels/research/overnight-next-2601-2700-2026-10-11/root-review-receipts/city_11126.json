@@ -1,0 +1,38 @@
+{
+  "taskId": "city:11126",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-11126-yunfu.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/yunfu-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T18:08:49Z",
+  "city": "Yunfu",
+  "rank": 2700,
+  "country": "China",
+  "point": [
+    22.9329430199513,
+    112.037362109571
+  ],
+  "populationPersons": 219227,
+  "registryFound": true,
+  "bilingualSearchesReviewed": true,
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "qualificationGatesMissing": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ],
+  "reason": "Yunfu Natural Resources official notice was independently fetched with HTTP 200 and confirms its map-based registered-property inquiry under municipal jurisdiction with identity verification. Its official registration channel also returned HTTP 200. This grounds institutional custody only; no anonymous native parcel ID-plus-polygon response was retained.",
+  "firstPartyUrlsRechecked": [
+    "https://www.yunfu.gov.cn/zrzy/zwgk/tzgg/content/post_1703962.html",
+    "https://www.yunfu.gov.cn/zrzy/bdcdj/"
+  ]
+}

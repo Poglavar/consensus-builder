@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-9320-renqiu.json",
+  "cityCode": 9320,
+  "queueRank": 1958,
+  "city": "Renqiu",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "outcome": "complete_no_verified_parcel_source",
+  "registryFound": null,
+  "runtimeReadiness": "held",
+  "point": [38.6983882145447, 116.078144505163],
+  "queryOutcomes": [
+    {"language": "English", "query": "Renqiu China official cadastral parcel map GIS natural resources land registry", "outcome": "Official national registration portal and official Renqiu land-transfer lead found; no public Renqiu parcel geometry service verified."},
+    {"language": "Chinese (Simplified)", "query": "任丘市 自然资源和规划局 地籍图 不动产登记 地图", "outcome": "Official Renqiu government portal and land-trading notices naming the local bureau found; no cadastral viewer/API, schema, CRS, or anonymous parcel response verified."}
+  ],
+  "requestOutcomes": [
+    {"url": "http://www.renqiu.gov.cn/", "method": "GET", "outcome": "301 redirect to HTTPS, followed successfully; official page exposes Natural Resources navigation, no parcel response."},
+    {"url": "https://www.renqiu.gov.cn/renqiu/mlrqzrzy/newslist_meili_dy.shtml", "method": "GET", "outcome": "HTTP 200 official Natural Resources page; general content only, no parcel service."},
+    {"url": "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260703/5609164.html", "method": "GET", "outcome": "Official land-transfer notice identifies Renqiu Natural Resources and Planning Bureau land-trading custodian; no full parcel geometry."},
+    {"url": "https://rerc.com.cn/", "method": "GET", "outcome": "Official national registration portal accessible; no Renqiu ID-plus-geometry response obtained."}
+  ],
+  "scopeLimits": [
+    "No exact-point hit or miss, map extent miss, timeout, login wall, or unusable UI was used as a citywide absence conclusion.",
+    "No parcel geometry, native parcel identifier, source schema, CRS, or bounded feature response was verified; no sample GeoJSON was written.",
+    "The official Renqiu government portal and land-transfer notices evidence a local natural-resources/land custodian, but not an open cadastral registry/map endpoint; registryFound remains null.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "The packet is complete as a research record only; it is not source integration/admission."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "uncertainty": "A separate provincial/local registration application or access-controlled map service may exist. The bounded anonymous attempt did not prove absence or citywide coverage.",
+  "evidenceUrls": ["https://www.renqiu.gov.cn/", "https://www.renqiu.gov.cn/renqiu/mlrqzrzy/newslist_meili_dy.shtml", "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260703/5609164.html", "https://rerc.com.cn/"],
+  "qualification": {"verifiedSample": false, "nativeIdReadiness": "not_applicable_no_verified_parcel_response", "runtimeEligible": false}
+}

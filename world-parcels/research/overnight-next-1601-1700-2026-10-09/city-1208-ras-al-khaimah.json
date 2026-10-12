@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 1208,
+  "queueRank": 1656,
+  "name": "Ras Al Khaimah",
+  "country": "United Arab Emirates",
+  "countryCode": "AE",
+  "iso3": "ARE",
+  "locId": 784,
+  "point": [25.7741398774474, 55.9604795103617],
+  "population2025": 345621,
+  "population2025k": 345.621,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ras Al Khaimah official GIS cadastral parcel map land department map API",
+        "result": "First-party discovery identified Ras Al Khaimah Municipality's GIS Center, the official RAK Addressing map, and an official GIS/Parcel Fabric press release. The public map's current JavaScript exposes an ArcGIS ParcelLocator geocoder and official map services, but no bounded anonymous parcel geometry response was retrieved.",
+        "actualResultUrls": [
+          "https://mun.rak.ae/home/open-data/rules-regulations/geographic-information-system/",
+          "https://maps.rak.ae/Addressing/Map",
+          "https://www.rakmediaoffice.ae/en/media-center/press-releases/ras-al-khaimah-is-the-first-city-in-the-middle-east-to-implement-parcel-fabric-technology-for-managing-spatial-data/"
+        ]
+      },
+      {
+        "language": "Arabic (United Arab Emirates)",
+        "query": "رأس الخيمة خريطة GIS الأراضي مسح عقاري قطع الأراضي الموقع الرسمي",
+        "result": "النتائج الرسمية حددت مركز نظم المعلومات الجغرافية في بلدية رأس الخيمة ومنصة العنونة وخدمات الأراضي. دليل الاستخدام العربي يوضح وجود أرقام قطع داخل واجهة عقاراتي، لكن لم يتم الحصول على استجابة عامة مجهولة تحتوي على هندسة قطع آمنة.",
+        "actualResultUrls": [
+          "https://mun.rak.ae/Documents/GIS/%D9%82%D8%A7%D9%86%D9%88%D9%86%20%D9%85%D8%B1%D9%83%D8%B2%20%D9%86%D8%B8%D9%85%20%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A.pdf",
+          "https://maps.rak.ae/Addressing/static/media/manual_Ar.da0dac72.pdf",
+          "https://www.rak.ae/wps/portal/rak/media-center/rak-addressing"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://mun.rak.ae/home/open-data/rules-regulations/geographic-information-system/", "observation": "Official Municipality page identifies the Ras Al Khaimah GIS Center and its legal mandate; it is custodian evidence, not an open parcel layer."},
+    {"url": "https://maps.rak.ae/Addressing/Map", "observation": "Official public RAK Addressing map loaded. Current JavaScript configuration exposed https://gis.rak.ae/server/rest/services/RakLocator/ParcelLocator/GeocodeServer and official basemap services."},
+    {"url": "https://www.rakmediaoffice.ae/en/media-center/press-releases/ras-al-khaimah-is-the-first-city-in-the-middle-east-to-implement-parcel-fabric-technology-for-managing-spatial-data/", "observation": "Official press release says RAK Municipality and the GIS Center use Parcel Fabric to manage land-plot spatial information; no downloadable public parcel endpoint is supplied."},
+    {"url": "https://maps.rak.ae/Addressing/static/media/manual_Ar.da0dac72.pdf", "observation": "Official Arabic manual documents the public addressing/property UI and examples of parcel numbers; it does not establish anonymous geometry access or citywide coverage."}
+  ],
+  "requests": [
+    {"url": "https://maps.rak.ae/Addressing/Map", "method": "GET", "httpStatus": 200, "outcome": "Public HTML shell loaded; current JavaScript bundle was downloaded and inspected."},
+    {"url": "https://maps.rak.ae/Addressing/static/js/main.44360e15.js", "method": "GET", "httpStatus": 200, "outcome": "Current configuration exposed official ArcGIS locator/map URLs and safe parcelId presentation fields. No private token was used."},
+    {"url": "https://gis.rak.ae/server/rest/services/RakLocator/ParcelLocator/GeocodeServer?f=pjson", "method": "GET", "httpStatus": 0, "outcome": "TLS-valid ordinary public GET timed out after 20 seconds; no schema, CRS or feature response was retrieved."},
+    {"url": "https://gis.rak.ae/server/rest/services/RakLocatorMap/AddressBaseMapEnglish/MapServer?f=pjson", "method": "GET", "httpStatus": 0, "outcome": "Follow-up official map-service metadata request was attempted but did not return within the bounded request window; no geometry or field schema was retained."}
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Ras Al Khaimah Municipality GIS Center and public Addressing map are local emirate custodial/map evidence. Public anonymous parcel geometry and citywide coverage were not verified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "Ras Al Khaimah Municipality GIS Center / RAK Addressing map",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {"claimedScope": "Ras Al Khaimah emirate addressing/GIS platform", "verifiedOpenScope": "Official map shell and service configuration only; no parcel response", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The municipality evidently maintains cadastral/parcel-fabric data, but the reviewed anonymous route did not yield schema, CRS, stable native parcel identity or safe polygon geometry. The exact WUP point was preserved and not used to infer presence or absence. No login, credentials, private token, CAPTCHA bypass, unsafe-field request or TLS-disable action was used."
+}

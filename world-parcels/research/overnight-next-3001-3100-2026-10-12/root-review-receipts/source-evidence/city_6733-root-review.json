@@ -1,0 +1,35 @@
+{
+  "taskId": "city:6733",
+  "wupSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "wup2025Row": {
+    "City_Code": "6733",
+    "City_Name": "معزآباد جابری",
+    "Location": "Iran (Islamic Republic of)",
+    "ISO2_Code": "IR",
+    "ISO3_Code": "IRN",
+    "Year": "2025",
+    "PWCent_Latitude": "29.4807594351725",
+    "PWCent_Longitude": "53.3677015696929",
+    "Pop": "196.363"
+  },
+  "cacheChecks": [
+    {
+      "path": "tmp/valhalla-parcel-research/6733/zamin.html",
+      "sha256": "7747a4f177c007a54aab74ac59054c9d2d337efa2f91ad292f20f96c7df96e12",
+      "observedStrings": [
+        "سامانه پنجره واحد زمین"
+      ]
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/6733/ito-main.js",
+      "sha256": "a2bb614499e935334b8a7f771f131c22295c81a3647bdb6a213f0b5f12a807c9",
+      "observedStrings": [
+        "getMapForm",
+        "getPref",
+        "getPolygons",
+        "getGnafPC"
+      ]
+    }
+  ],
+  "interpretation": "The cached official portal shell identifies the land single-window app and its viewer bundle contains map routes, but neither cache supplies local cadastral registry evidence, map collection/layer configuration, native-ID polygon response, or CRS. The worker reports bounded configuration timeouts; no response cache independently proves those timeouts. National land-service context alone does not prove local parcel coverage. The packet registryFound true is treated only as national gateway custody context, not a verified local registry or admission."
+}

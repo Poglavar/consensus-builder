@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8035",
+  "decision": "held",
+  "checkedAt": "2026-10-12T05:22:20Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8035-nankana-sahib.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/nankana-sahib-service-review.json"
+  ],
+  "reason": "WUP code 8035, rank 3202, country, point, and 188474 persons match the immutable roster. English and Urdu searches are recorded. PLRA and the Nankana Sahib Arazi Record Center support local record custody, but the packet contains no anonymous native-ID full polygon; the registry route timed out or presented login and CAPTCHA. Fresh exact-ID reads, forced paging, thirteen bounded cells, metric geometry checks, source binding, and headed Details verification are not evidenced. The timeout and login wall are not citywide absence findings."
+}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8762-titi.json",
+  "purpose": "Document first-party Gombe/Titi registry context and bounded anonymous cadastral-service review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official GOGIS material evidences a Gombe State land-administration GIS custodian with land titling, property registration and mapping functions. Public pages were informational/procedural and did not expose an anonymous parcel-vector response, schema/CRS, or safe native parcel identity.",
+  "registryAssessment": "Local/state registry and land-service custody is evidenced through official GOGIS material; this is custody/procedure evidence, not source admission, geometry verification, or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://abdulbellotongo.wixsite.com/gombe-geographic-i-2",
+      "observation": "Official GOGIS site identifies the Gombe State GIS and describes land titling, property registration, mapping, data management and map production; no public parcel payload exposed."
+    },
+    {
+      "url": "https://abdulbellotongo.wixsite.com/gombe-geographic-i-2/services-5-1",
+      "observation": "Official GOGIS Map Shop/procedure page was reachable; no anonymous parcel service, schema, CRS, or geometry response exposed."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "observation": "Official federal OSGOF page describes nationwide cadastral/legal-survey and cadastral-GIS responsibilities, but does not expose Titi/Gombe parcel geometry."
+    },
+    {
+      "url": "https://lands.fmhud.gov.ng/billing-portal",
+      "observation": "Official federal CLRMS billing portal describes land-service payment workflows; no anonymous geometry route and no payment/identity lookup attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nigeria official cadastral parcel map GIS land registry Titi Gombe Bauchi",
+      "result": "Found official GOGIS and federal cadastral/land-service pages; no public Titi/Gombe parcel geometry endpoint verified.",
+      "resultUrls": ["https://abdulbellotongo.wixsite.com/gombe-geographic-i-2", "https://osgof.gov.ng/cadastral-legal-surveys/", "https://lands.fmhud.gov.ng/billing-portal"]
+    },
+    {
+      "language": "Hausa",
+      "query": "Najeriya taswirar kadastan rajistar fili Titi Gombe",
+      "result": "No separate first-party public parcel viewer or geometry API was located; official GOGIS was retained as the local/state custodian evidence.",
+      "resultUrls": ["https://abdulbellotongo.wixsite.com/gombe-geographic-i-2", "https://www.gombestate.gov.ng/"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [10.3076082095501, 11.2454887349368] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://abdulbellotongo.wixsite.com/gombe-geographic-i-2",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "result": "GOGIS institutional page; no public cadastral map/API route or parcel feature payload found."
+    },
+    {
+      "url": "https://abdulbellotongo.wixsite.com/gombe-geographic-i-2/services-5-1",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "result": "GOGIS Map Shop/procedure page; no public geometry service, schema/CRS, or safe parcel ID response found."
+    },
+    {
+      "url": "https://www.gombestate.gov.ng/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "result": "Official state site reachable; no parcel service route identified in bounded review."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "result": "General federal cadastral/legal-survey custodian material; no city-specific geometry."
+    },
+    {
+      "url": "https://lands.fmhud.gov.ng/billing-portal",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "Federal billing portal only; no parcel geometry route. No payment or identity-gated request attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official GOGIS, Gombe State, OSGOF and FMHUD public pages plus bounded anonymous HTML/configuration inspection.",
+    "verifiedOpenScope": "Local/state land-service custody and general federal cadastral responsibility only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A non-indexed, offline, authenticated, or payment-gated GOGIS/LGA workflow may exist. Anonymous accessibility, parcel coverage, schema/CRS, and safe native identity remain unknown.",
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "No independently verified public parcel geometry or safe native parcel identity.",
+    "adapterQualified": false
+  }
+}

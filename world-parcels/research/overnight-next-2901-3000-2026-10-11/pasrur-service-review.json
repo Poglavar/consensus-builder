@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-8287-pasrur.json",
+  "cityCode": 8287,
+  "queueRank": 2964,
+  "name": "Pasrur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Urdu first-party discovery identified the local Pasrur Revenue Department/Arazi Record Center and the PLRA service network. The official Ask for Taqseem viewer and public OpenAPI configuration were inspected. Administrative lookup requests reached Sialkot district, Pasrur tehsil, and the Pasrur mauza, but advertised geometry routes returned HTML and the bounded mauza khewat request returned HTTP 500. No safe native parcel ID plus geometry was obtained.",
+  "attemptedRoutes": [
+    {"url": "https://sialkot.punjab.gov.pk/Revenue_Department_Pasrur", "method": "GET", "outcome": "official local custodian page retrieved"},
+    {"url": "https://www.punjab-zameen.gov.pk/", "method": "GET", "outcome": "official PLRA service portal retrieved"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/ParcelMap.html", "method": "GET", "outcome": "official viewer HTML and current JavaScript route inspected"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/swagger/v1/swagger.json", "method": "GET", "outcome": "HTTP 200 OpenAPI schema inspected; only administrative lookup routes were documented"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/Districts", "method": "GET", "outcome": "HTTP 200; Sialkot district ID 32 observed"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/Tehsils/32", "method": "GET", "outcome": "HTTP 200; Pasrur tehsil ID 107 observed"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/Mauzas/107", "method": "GET", "outcome": "HTTP 200; Pasrur mauza ID 66330 observed"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/GetDistinctKhewatsByMauzaId/66330", "method": "GET", "outcome": "HTTP 500; no parcel response"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/api/MapData/GetAdminBoundariesGeoJson", "method": "GET", "outcome": "HTTP 200 text/html viewer shell, not GeoJSON"},
+    {"url": "https://askfortaqseem.pulse.gop.pk/api/MapData/GetParcelGeoJson?parcelId=1", "method": "GET", "outcome": "HTTP 200 text/html viewer shell, not GeoJSON; numeric test value not retained as identity"}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [32.2667760116104, 74.6604630849047] was preserved and not shifted; no exact-point parcel query was executed.",
+    "Administrative district/tehsil/mauza lookup success does not establish parcel geometry, citywide coverage, legal survey status, or currentness.",
+    "No retained GeoJSON sample was created; unchanged response evidence is under ignored tmp/valhalla-parcel-research/8287/.",
+    "HTML fallback and HTTP 500 are service/request failures or limitations, not evidence of citywide parcel absence."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": null,
+    "alsoObserved": [],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "No native parcel identity was returned. Administrative IDs 32, 107, and 66330 were used only to traverse official lookup routes and were not treated as parcel identities."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "A local first-party Pasrur revenue/cadastre custodian and public PLRA service network are evidenced. Public administrative lookup routes are reachable, but the inspected geometry routes did not return GeoJSON and the mauza khewat route failed with HTTP 500. The packet is not admitted and makes no claim of parcel absence or complete source coverage. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+}

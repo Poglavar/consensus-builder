@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:2496",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2496-ramadi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ramadi-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_2496.json",
+    "tmp/valhalla-parcel-research/ramadi/moj-contact.html",
+    "tmp/valhalla-parcel-research/ramadi/services.html"
+  ],
+  "checkedAt": "2026-10-09T13:20:32Z",
+  "reason": "Ramadi code 2496, rank 1240, Iraq/IQ, immutable WUP point [33.4266566041522,43.2980396021696] and 449183 persons match the roster. English and Arabic executed searches are recorded. Original Ministry of Justice directory names Anbar real-estate registration, and the Ministry report cited in the packet discusses registration in Ramadi; registryFound=true is custody evidence only. The original IGP service page describes state-land and registration-office layers, with no safe native parcel ID or full polygon response. No citywide absence is inferred.",
+  "qualificationCheck": "No independent evidence of fresh exact native-ID reads, forced paging, 13 aligned bounded cells, metric GEOS validity/duplicates/overlap and operation checks, full-parcel source binding, or headed pointer/Details-panel verification. Research completion does not mean integration or admission; leave held and unenabled."
+}

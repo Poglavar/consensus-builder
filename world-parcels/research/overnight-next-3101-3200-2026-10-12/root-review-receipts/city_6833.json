@@ -1,0 +1,29 @@
+{
+  "taskId": "city:6833",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-6833-nyunzu.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/nyunzu-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:41:02Z",
+  "queueIdentity": {
+    "rank": 3127,
+    "cityCode": 6833,
+    "name": "Nyunzu",
+    "country": "Democratic Republic of the Congo",
+    "point": [
+      -5.95615123421833,
+      28.0132693399048
+    ],
+    "populationPersons": 192205
+  },
+  "finding": "English and French searches are recorded with result URLs. The saved official directory lists Tanganyika jurisdictions but no Nyunzu entry; national request-based registry consultation does not establish local open geometry. Local custody remains unresolved, not absent.",
+  "firstPartyCacheInspected": "tmp/valhalla-parcel-research/6833/circonscriptions.html",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS full-polygon validity/overlap/operation checks, source binding, or headed Details-panel verification. No runtime/catalog/report admission.",
+  "absenceInference": "None; a login wall, timeout, unavailable viewer, or point/extent miss is not citywide absence."
+}

@@ -1,0 +1,97 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 6710,
+  "queueRank": 2918,
+  "name": "Moore",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "locId": 840,
+  "capital": false,
+  "point": [35.3838650484031, -97.5334069530313],
+  "population2025": 204392,
+  "population2025k": 204.392,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Moore Oklahoma official parcel map GIS cadastral Cleveland County assessor parcel viewer",
+        "result": "First-party results identified the City of Moore GIS Parcel Viewer, the City GIS ArcGIS parcel service, and Cleveland County Assessor GIS documentation. The city viewer links to a public Experience Builder application; the parcel service is described as Moore parcel data from the Cleveland County Assessor's Office.",
+        "actualResultUrls": [
+          "https://www.cityofmoore.com/city-services/gis-parcel-viewer",
+          "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer",
+          "https://ok-clevelandcounty.civicplus.com/351/Geographic-Information-Systems-GIS"
+        ]
+      },
+      {
+        "language": "English (local-language check; United States local language is English)",
+        "query": "Moore Oklahoma mapa oficial parcelas GIS catastro Cleveland County",
+        "result": "The local-language-equivalent discovery used English because English is the United States local administrative language. It independently returned the same first-party City of Moore GIS Parcel Viewer and official ArcGIS parcel service; no separate non-English local cadastral service was evidenced.",
+        "actualResultUrls": [
+          "https://www.cityofmoore.com/city-services/gis-parcel-viewer",
+          "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "City of Moore GIS publishes the public parcel viewer and Hosted/Parcels service; the service description identifies parcel data from the Cleveland County Assessor's Office. Cleveland County Assessor GIS documentation describes its maintained parcel layer and parcel identification function.",
+    "locality": "Moore, Cleveland County, Oklahoma, United States",
+    "evidenceUrls": [
+      "https://www.cityofmoore.com/city-services/gis-parcel-viewer",
+      "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer",
+      "https://ok-clevelandcounty.civicplus.com/351/Geographic-Information-Systems-GIS"
+    ],
+    "scopeNote": "A local public parcel service and local assessor custodian are evidenced. The observed service extent is bounded to the published Moore parcel layer; it is not treated as proof of complete citywide coverage for the WUP point."
+  },
+  "parcelDiscovery": {
+    "geometryFound": true,
+    "sampleFiles": [],
+    "source": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0",
+    "nativeIdField": "parcelid",
+    "nativeIdentityObserved": "parcelid values were returned for three bounded polygon features; objectid is the service OID and was also observed in schema.",
+    "crs": "Service layer native CRS is EPSG:2912 / NAD_1983_HARN_StatePlane_Oklahoma_South_FIPS_3502_Feet; bounded GeoJSON response was requested with outSR=4326 and returned longitude/latitude coordinates.",
+    "boundedResponse": {
+      "requestScope": "Official ArcGIS FeatureServer layer, where=1=1, resultRecordCount=3, outFields=parcelid, returnGeometry=true, outSR=4326",
+      "count": 3,
+      "nativeLayer": "TaxParcels (layer 0)",
+      "geometryType": "Polygon",
+      "nativeIdentitiesObserved": ["SDC2   10 3W  36093", "MC2    10 3W  36038", "MC2    10 3W  36004"],
+      "note": "Only safe native parcel identity and geometry were requested. No raw source attribute set was retained. The response indicated exceededTransferLimit because the service has more records beyond the bounded sample."
+    },
+    "exactPointQuery": {
+      "point": [35.3838650484031, -97.5334069530313],
+      "resultCount": 0,
+      "note": "The exact WUP point produced zero intersecting parcel features in this service query. The coordinate was not shifted, and this is not evidence of citywide parcel absence."
+    },
+    "note": "Parcel geometry and stable native parcel IDs were observed from the official public service. No sample GeoJSON is retained in the cohort because the bounded evidence remains in ignored scratch storage and retention was not necessary for this research packet."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.cityofmoore.com/city-services/gis-parcel-viewer", "outcome": "HTTP retrieval successful; official City of Moore page links to the public GIS parcel viewer."},
+    {"method": "GET", "url": "https://gis.cityofmoore.com/portal/apps/experiencebuilder/experience/?id=a028670273474c9587fd9d71314a81f0", "outcome": "Public Experience Builder viewer URL identified from the official city page; no login or credentials used."},
+    {"method": "GET", "url": "https://gis.cityofmoore.com/portal/sharing/rest/content/items/a028670273474c9587fd9d71314a81f0?f=pjson", "outcome": "HTTP 200; public item metadata identified the current viewer as Public Parcel Viewer."},
+    {"method": "GET", "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer?f=pjson", "outcome": "HTTP 200; service metadata exposed TaxParcels polygon layer 0."},
+    {"method": "GET", "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson", "outcome": "HTTP 200; schema inspected. Safe native identity fields include objectid and parcelid; many other source fields exist but were not requested or retained."},
+    {"method": "GET", "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=parcelid&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3", "outcome": "HTTP 200; three bounded polygon features returned with parcelid and geometry only; response exceeded the transfer limit and was not treated as complete coverage."},
+    {"method": "GET", "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0/query?geometry=-97.5334069530313%2C35.3838650484031&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid&returnGeometry=true&outSR=4326&f=pjson", "outcome": "HTTP 200; zero features for the exact WUP point. Recorded as an exact-point miss only."},
+    {"method": "GET", "url": "https://ok-clevelandcounty.civicplus.com/351/Geographic-Information-Systems-GIS", "outcome": "HTTP retrieval successful; official county assessor GIS page documents a maintained parcel layer and parcel identification context."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity (parcelid or objectid)", "full native parcel geometry when parcel source is proven", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point is north of the returned service extent and produced zero intersecting features; no coordinate adjustment was made.",
+    "The bounded sample proves public parcel geometry availability, not complete citywide coverage, freshness, legal boundary authority, or suitability for runtime admission.",
+    "The service schema contains unsafe owner, address, tax, account, sale, and other fields; none were requested, retained, or used for identity.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe request was used.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-10110-xiangcheng.json",
+  "cityCode": 10110,
+  "queueRank": 2914,
+  "city": "Xiangcheng",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [33.4189013587646, 114.912081163728],
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "resultCategory": "official_registry_geometry_unverified",
+  "summary": "Official local registry/cadastral custody is evidenced, but no safe anonymous source-native parcel geometry or stable native parcel identity was verified. No sample GeoJSON is retained.",
+  "discovery": {
+    "english": {
+      "query": "Xiangcheng Zhoukou China official natural resources cadastral map parcel land registry GIS",
+      "outcome": "Found Xiangcheng and Zhoukou official natural-resources pages plus the Henan Tianditu Zhoukou portal; no public parcel feature response was verified.",
+      "urls": [
+        "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+        "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html",
+        "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/index.html",
+        "https://henan.tianditu.gov.cn/zhoukou/"
+      ]
+    },
+    "native": {
+      "language": "Chinese (Simplified)",
+      "query": "项城市 自然资源和规划局 不动产登记 地籍图 宗地 地图 官方",
+      "outcome": "确认项城市自然资源和规划局及不动产登记中心职责和机构关系；未发现匿名宗地几何、字段模式、坐标系或稳定原生宗地标识。",
+      "urls": [
+        "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+        "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html",
+        "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/zfxxgkpt/bmzbptlj/zfbm/szrzyhghj/articlec32b14a0d1cb404fb93ad61e3e7359c7.html",
+        "https://henan.tianditu.gov.cn/zhoukou/contact.html?type=1"
+      ]
+    }
+  },
+  "attemptedRoutes": [
+    {"url": "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/index.html", "method": "GET", "outcome": "200 HTML; official bureau page and links, no parcel endpoint or payload."},
+    {"url": "https://henan.tianditu.gov.cn/zhoukou/", "method": "GET", "outcome": "200 HTML; general map/thematic/service resources and JS shell, no parcel layer or feature response."},
+    {"url": "https://henan.tianditu.gov.cn/zhoukou/contact.html?type=1", "method": "GET", "outcome": "200 HTML; general Tianditu API/resources, no cadastral resource."},
+    {"url": "https://henan.tianditu.gov.cn/zhoukou/map/", "method": "GET", "outcome": "404; guessed route only, no absence inference."},
+    {"url": "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html", "method": "GET", "outcome": "TLS certificate-chain verification failure; no exception used."},
+    {"url": "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html", "method": "GET", "outcome": "TLS certificate-chain verification failure; no exception used."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier if explicitly exposed", "geometry", "geometry type", "source CRS/output CRS", "non-sensitive layer/schema metadata"],
+  "unsafeFieldsNotRequested": ["owner", "titleholder", "address", "contact", "certificate", "property account", "tax", "personal", "applicant", "rights details"],
+  "geometry": {"verified": false, "sampleFile": null, "sampleCount": 0, "fullNativeGeometryRetained": false},
+  "coverageLimits": {
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "exactPointTestedAgainstVerifiedParcelEndpoint": false,
+    "note": "A zero exact-point hit, map extent miss, TLS failure, 404, or absent public layer is not evidence of citywide absence. The WUP point was preserved exactly."
+  },
+  "runtimeReadiness": "held_pending_independent_public_geometry_qualification",
+  "adapterReady": false,
+  "integrationState": "not_integrated",
+  "uncertainty": "A separately published or authenticated service may exist, but no safe anonymous public geometry route was verified. Serial review must independently qualify any future adapter and native identity.",
+  "cohort": "overnight-next-2901-3000",
+  "cohortState": "research_complete_pending_root_review"
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-5387-mar-lia.json",
+  "cityCode": 5387,
+  "queueRank": 2860,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Prefeitura Municipal de Marília; cadastro imobiliário / Portal do Cidadão",
+  "publicMapLead": "https://www3.marilia.sp.gov.br/portalcidadaotb/imobiliario/pesquisarImovel/listaImoveis/",
+  "queryOutcomes": "Separate English and Portuguese discovery queries were performed. Both identified first-party municipal cadastral/property services. The current public application bundle identified the municipal property-search API routes, but search did not expose a parcel JSON/geometry response.",
+  "requestOutcomes": "The official municipal portal and application shell were reachable. The inspected property-search API route rejected GET with 405 and an empty JSON POST with HTTP 400 reCAPTCHA inválido. A bounded ID lookup returned HTTP 400 with a generic CPF/CNPJ-related message. No login, CAPTCHA bypass, credentials, private token, or unsafe fields were used.",
+  "schemaAndCrs": null,
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [-22.2094603202146, -49.9492865728094] was preserved and not moved.",
+    "No exact-point lookup, map-extent miss, timeout, login/reCAPTCHA wall, or unusable UI was treated as evidence of citywide absence.",
+    "The municipal cadastral/property registry and custodian are evidenced, but no public parcel response, native ID, schema, CRS, or geometry was verified.",
+    "The planning-service references to lots and parcel-unification procedures are procedural evidence, not a parcel-level downloadable dataset; no geometry was retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "No sample GeoJSON is included because no safe native parcel identity and full polygon were observed.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "A municipal registry/service and public API route were verified, but anonymous parcel ID+geometry access was blocked by reCAPTCHA/required parameters during this attempt; research is complete but source admission is not justified."
+  },
+  "uncertainty": "Current public application routes are known, but the response schema, CRS, native parcel identity, geometry availability, and citywide coverage remain unverified."
+}

@@ -1,0 +1,38 @@
+{
+  "taskId": "city:2486",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:47:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-2486-borj-al-burullous.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/borj-al-burullous-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 2486,
+    "rank": 3011,
+    "country": "Egypt",
+    "point": [
+      31.5671036020924,
+      31.0550484742231
+    ],
+    "populationPersons": 198645
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://www.esa.gov.eg/main2.aspx",
+    "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/legend"
+  ],
+  "reason": "ESA first-party page describes survey, property and cadastral services. The local ArcGIS route is administrative and its direct parcel schema/query were unavailable. No safe native parcel ID or polygon response was retained. Timeouts do not establish citywide absence."
+}

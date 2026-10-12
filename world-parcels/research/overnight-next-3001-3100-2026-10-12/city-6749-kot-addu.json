@@ -1,0 +1,84 @@
+{
+  "cityCode": 6749,
+  "queueRank": 3072,
+  "name": "Kot Addu",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso2": "PK",
+  "iso3": "PAK",
+  "point": [30.4674951563177, 70.9680706614739],
+  "population2025": 195384,
+  "population2025k": 195.384,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakistan official cadastral parcel map GIS Kot Addu Muzaffargarh land records map",
+        "result": "First-party discovery identified the Punjab Land Records Authority public land map and the PULSE land-system map. The official PLRA viewer exposes a Punjab cadastral ArcGIS service with a named Kot Addu polygon layer.",
+        "actualResultUrls": ["https://punjab-zameen.gov.pk/", "https://lis.pulse.gop.pk/", "https://d2d.pulse.gop.pk/map-qc.html", "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer"]
+      },
+      {
+        "language": "Urdu (local/native)",
+        "query": "پاکستان کوٹ ادو کاداستر نقشہ پارسل زمین ریکارڈ سرکاری",
+        "result": "Urdu discovery did not expose a separate local Kot Addu registry endpoint. The first-party Punjab PLRA/PULSE map services were independently reachable and provide the evidenced cadastral layer.",
+        "actualResultUrls": ["https://punjab-zameen.gov.pk/", "https://lis.pulse.gop.pk/", "https://d2d.pulse.gop.pk/map-qc.html"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Punjab Land Records Authority (PLRA), Government of Punjab, with PULSE map services",
+    "scope": "Punjab-wide land-record and cadastral-map services; the public map service has a dedicated Kot Addu polygon layer. This does not establish legal title or complete citywide coverage.",
+    "evidence": "https://punjab-zameen.gov.pk/"
+  },
+  "localCustodianContext": {
+    "name": "Municipal Committee Kot Addu / PULSE local mapping context",
+    "scope": "The municipal base-map publication identifies parcel boundaries and was prepared by the Municipal Committee Kot Addu GIS Officer; it is cartographic context, not a qualified parcel API.",
+    "evidence": "https://mckotaddu.lgpunjab.org.pk/wp-content/uploads/2023/12/Base-Map_MC-Kot-Addu-_2023-24.pdf"
+  },
+  "service": {
+    "name": "PLRA Punjab Cadastral Maps ArcGIS Feature Layer — Kot Addu",
+    "viewerUrl": "https://lis.pulse.gop.pk/",
+    "baseUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/16",
+    "viewerConfiguration": "The current PLRA viewer JavaScript names the Punjab_Cdastral_Maps service and the Kot Addu layer (layer 16). Anonymous service metadata describes a polygon Feature Layer supporting JSON/GeoJSON/PBF queries.",
+    "schemaAndCrs": {
+      "parcelSchema": "Feature Layer 16, geometryType esriGeometryPolygon",
+      "nativeIdFields": ["OBJECTID"],
+      "geometryField": "Shape",
+      "geometryCrs": "EPSG:3857 (source; samples requested as EPSG:4326 GeoJSON)",
+      "fieldMapping": {"id": "OBJECTID", "geometry": "Shape"},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://lis.pulse.gop.pk/", "status": 200, "outcome": "Public PLRA/PULSE viewer loaded. Its current JavaScript exposed the PLRA ArcGIS service, Kot Addu layer, and public token route; login is required for complete parcel details in the UI, and no login was attempted."},
+    {"method": "GET", "url": "https://lis.pulse.gop.pk/api/gis/token", "status": 200, "outcome": "Anonymous public viewer token endpoint returned a short-lived service token; it was used only for bounded public map metadata/query requests and is not retained."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson", "status": 200, "outcome": "Without the viewer token the service returned ArcGIS 499 Token Required; no bypass was attempted."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/16?f=pjson", "status": 200, "outcome": "With the anonymous public viewer token, layer metadata verified Kot Addu, polygon geometry, native OBJECTID, Shape geometry, EPSG:3857, maxRecordCount 2000, and GeoJSON support."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/16/query?where=1%3D1&geometry=7899829.488616332%2C3563484.644488115%2C7900429.488616332%2C3564084.644488115&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outFields=OBJECTID&outSR=4326&f=geojson", "status": 200, "outcome": "Exact-point-centered 600 m web-mercator envelope returned zero features. This is an exact bounded probe only and is not evidence of citywide absence."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/16/query?where=1%3D1&geometry=7894250%2C3558500%2C7906000%2C3570500&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&returnGeometry=false&outFields=OBJECTID&f=json", "status": 200, "outcome": "Wider local probe returned native OBJECTIDs, confirming bounded local layer availability without requesting unsafe fields."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/16/query?objectIds=2374997%2C2374333%2C1952299&returnGeometry=true&outFields=OBJECTID&outSR=4326&f=geojson", "status": 200, "outcome": "Independent bounded native-ID geometry read returned three complete polygons retained in kot-addu-parcel-samples.geojson with only canonical id properties."},
+    {"method": "GET", "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDivisionsList", "status": 401, "outcome": "PULSE data hierarchy endpoint required authentication; no credentials or bypass was attempted."},
+    {"method": "GET", "url": "https://d2d.pulse.gop.pk/api/parcel/DownloadShapefile?mauzaId=<not-requested>", "status": "not requested", "outcome": "The viewer exposes a download route, but no Mauza was selected and no download or ownership data was requested."}
+  ],
+  "geometrySamples": [{"file": "kot-addu-parcel-samples.geojson", "count": 3, "nativeIdField": "OBJECTID", "ids": ["1952299", "2374333", "2374997"], "crs": "EPSG:4326 GeoJSON output"}],
+  "safeFieldAllowlist": ["stable native parcel identifier OBJECTID", "full parcel polygon geometry", "source/service metadata", "geometry CRS", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point [30.4674951563177, 70.9680706614739] was preserved in latitude/longitude order and was not shifted.",
+    "The exact-point-centered 600 m query returned zero features; the wider local query returned features and is the relevant bounded availability evidence.",
+    "The layer is a public cadastral-map representation; it does not establish legal title, ownership, address, contact, tax, account, or citywide completeness.",
+    "Native source fields other than OBJECTID were not requested or retained; no unsafe fields were requested.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The public viewer reports login for complete parcel details and its hierarchy/download endpoints require authentication; only the anonymous public map layer was qualified.",
+    "The wider local probe demonstrates nearby Kot Addu layer records but does not prove every urban or district parcel is covered.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held",
+  "sampleFile": "kot-addu-parcel-samples.geojson"
+}

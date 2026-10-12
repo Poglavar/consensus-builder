@@ -1,0 +1,99 @@
+{
+  "cityCode": 6736,
+  "queueRank": 3291,
+  "name": "Afamolla",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "locId": 50,
+  "capital": false,
+  "point": [23.250983802674, 90.5218955497612],
+  "population2025": 183242,
+  "population2025k": 183.242,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bangladesh official cadastral parcel map GIS land records DLRS Afamolla",
+        "result": "First-party discovery identified the Department of Land Records and Surveys (DLRS) official Khatian/Map pages, the Online Land Records and Survey Management map search, and the official DLRS Map Portal. Search results also located an official Shariatpur district record-room page and an official Bhedarganj/union land-office reference, placing the WUP point in the Shariatpur/Bhedarganj administrative context.",
+        "actualResultUrls": [
+          "https://dlrs.gov.bd/pages/internal-eservices/%E0%A6%96%E0%A6%A4%E0%A6%BF%E0%A7%9F%E0%A6%BE%E0%A6%A8-%E0%A6%93-%E0%A6%AE%E0%A7%8D%E0%A6%AF%E0%A6%BE%E0%A6%AA-%E0%A6%96%E0%A7%81%E0%A6%9C%E0%A7%81%E0%A6%A8-e893ce-6922d960dbfbab28ce04bfc6",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.settlement.gov.bd/",
+          "https://shariatpur.gov.bd/pages/dcoffice-section",
+          "https://charkumariaup.shariatpur.gov.bd/pages/field-office"
+        ]
+      },
+      {
+        "language": "Bangla (local)",
+        "query": "আফামোল্লা বাংলাদেশ ভূমি রেকর্ড খতিয়ান মৌজা মানচিত্র ভেদরগঞ্জ শরীয়তপুর",
+        "result": "Bangla first-party discovery identified the official DLRS Bangla Khatian/Map service, Shariatpur district record-room information, Bhedarganj official pages, and a union land-office page describing cadastral khatian/CS records. No official Bangla result exposed an Afamolla parcel identifier or downloadable polygon.",
+        "actualResultUrls": [
+          "https://dlrs.gov.bd/pages/internal-eservices/%E0%A6%96%E0%A6%A4%E0%A6%BF%E0%A7%9F%E0%A6%BE%E0%A6%A8-%E0%A6%93-%E0%A6%AE%E0%A7%8D%E0%A6%AF%E0%A6%BE%E0%A6%AA-%E0%A6%96%E0%A7%81%E0%A6%9C%E0%A7%81%E0%A6%A8-e893ce-6922d960dbfbab28ce04bfc6",
+          "https://shariatpur.gov.bd/pages/dcoffice-section",
+          "https://bhedarganj.shariatpur.gov.bd/pages/static-pages/6995d1cf35ce18e1c07aa34a",
+          "https://charkumariaup.shariatpur.gov.bd/pages/field-office"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Department of Land Records and Surveys (DLRS), Bangladesh; local administrative record context is Shariatpur District / Bhedarganj Upazila, with union land offices and the district record room referenced by official government pages.",
+    "scopeNote": "The official DLRS/Settlement services evidence a national cadastral map and khatian procedure and the official Shariatpur pages evidence local record-room and land-office custodians. This does not establish open citywide parcel geometry completeness or that Afamolla has a published digital mouza layer.",
+    "evidenceUrls": [
+      "https://settlement.gov.bd/Map/MapSearch",
+      "https://map.settlement.gov.bd/",
+      "https://shariatpur.gov.bd/pages/dcoffice-section",
+      "https://charkumariaup.shariatpur.gov.bd/pages/field-office"
+    ]
+  },
+  "officialSources": [
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "observation": "Current official map-search viewer loaded Leaflet and current MapSearch.js; the script exposes division, district, survey, upazila, mouza, sheet and parcel routes, plus vector-tile parcel endpoints."},
+    {"url": "https://map.settlement.gov.bd/", "observation": "Current official DLRS Map Portal loaded a public search/purchase interface and current JavaScript API configuration."},
+    {"url": "https://dlrs.gov.bd/pages/static-pages/6922dff4933eb65569e24ceb", "observation": "DLRS official prose describes online survey map/khatian publication; no parcel geometry was taken from prose."}
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Official Settlement.gov.bd MapSearch and DLRS Map Portal",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "documentedViewerParcelField": "Dag_No (in current MapSearch vector-tile click handling)",
+      "documentedServiceKeys": ["rsnum", "comcod", "unitcod"],
+      "note": "No parcel feature response was obtained, so no native identity, CRS, geometry, or raw attribute set is retained. Dag_No is only a viewer-code observation, not an observed Afamolla identity."
+    }
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://settlement.gov.bd/Map/MapSearch", "outcome": "200; current official HTML retrieved with no-cache headers, Leaflet/vector-grid assets, and /js/MapSearch.js."},
+    {"method": "GET", "url": "https://settlement.gov.bd/js/MapSearch.js", "outcome": "200; current JavaScript inspected. It documents POST selection routes, /tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf, and the corresponding /meta route, but no valid Afamolla selection was available to call."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Map/GetDivisionList", "outcome": "200; returned official division metadata including Dhaka division code 010000000."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise", "outcome": "200; Dhaka division metadata included Shariatpur district code 011100000 and compcode 4191."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "outcome": "200 with empty array for Shariatpur district code 011100000 and compcode 4191; no survey identifier was returned, so downstream upazila/mouza/parcel routes could not be safely qualified."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/", "outcome": "200; current official DLRS Map Portal loaded and its JavaScript/configuration exposed public location/search endpoints."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/locations/divisions", "outcome": "200; returned official division names."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/search-mouzas?search=Afamolla&page=1&limit=21", "outcome": "200; data=[] and total=0."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/search-mouzas?search=%E0%A6%86%E0%A6%AB%E0%A6%BE%E0%A6%AE%E0%A7%8B%E0%A6%B2%E0%A7%8D%E0%A6%B2%E0%A6%BE&page=1&limit=21", "outcome": "200; data=[] and total=0 for the Bangla spelling attempted."},
+    {"method": "GET", "url": "https://land.gov.bd/", "outcome": "403 Cloudflare challenge; no challenge bypass attempted."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS/Settlement official map, khatian, and mouza-map services; local context Shariatpur District and Bhedarganj Upazila.",
+    "verifiedOpenScope": "Official service existence and current route/schema behavior were verified. No Afamolla parcel feature, native parcel ID, CRS, or polygon was verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned and source-proven", "full parcel polygon geometry", "source CRS", "public administrative/service metadata", "retrieval date"],
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "admissionDecision": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "Afamolla is a WUP place label and the exact WUP point was preserved; no coordinate was shifted to seek a hit.",
+    "The empty Shariatpur survey response and zero Afamolla mouza search are service-result limits, not evidence of citywide parcel absence.",
+    "The official viewer documents parcel tile routes and a Dag_No display field, but no anonymous Afamolla parcel response was available to qualify its native identity or geometry.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained. This packet is research evidence only, not source integration or admission."
+  ]
+}

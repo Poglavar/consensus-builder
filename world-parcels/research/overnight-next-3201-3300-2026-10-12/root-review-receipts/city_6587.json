@@ -1,0 +1,18 @@
+{
+  "taskId": "city:6587",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6587-kersana.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/kersana-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:41:10Z",
+  "findings": {
+    "identity": "Immutable WUP roster and pending queue agree with packet: rank 3215, Kersana, Indonesia, City_Code 6587, exact point [-6.92417852269045, 108.871398854356], 187802 persons.",
+    "searches": "Packet records executed English and local-language queries with result text and URLs; original search traces are not retained in the paired evidence.",
+    "custody": "The Brebes government first-party report identifies the Brebes Land Office in a Kersana land-redistribution proceeding, supporting registryFound true for local institutional custody. This does not establish citywide public geometry. Cached BHUMI client JavaScript names umum:Persil and routes getPersil with an authorization token; no anonymous full polygon or native ID was obtained.",
+    "geometry": "No retained sample polygons. No city-specific anonymous full-polygon response with a safe native ID was independently evidenced.",
+    "admission": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Held; no runtime, catalog, registry or report admission."
+  }
+}

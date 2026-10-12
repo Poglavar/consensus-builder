@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "attempt": 1,
+  "cityRecord": "city-2945-ab-ch.json",
+  "cityCode": 2945,
+  "queueRank": 1254,
+  "city": "Abéché",
+  "country": "Chad",
+  "countryCode": "TD",
+  "wupPoint": [13.825454472527, 20.8296055719745],
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "serviceScope": {
+    "localRegistryOrCustodian": null,
+    "generalAgencyEvidence": [
+      {
+        "name": "Agence Nationale des Titres Sécurisés (ANATS)",
+        "url": "https://www.anats.td/",
+        "evidence": "Official site lists an ANATS center in Abéché, but the public map is a center locator and the stated mission concerns secure official documents; parcel-data custodianship was not established."
+      },
+      {
+        "name": "e-Tchad land-title service reference",
+        "url": "https://e-tchad.com/",
+        "evidence": "Search-indexed official-service description references a land-title request workflow; live fetch failed DNS, and no parcel map/API was verified."
+      }
+    ]
+  },
+  "queriesAndRequests": "See city-2945-ab-ch.json freshResearch. English and French discovery were performed separately; ANATS root and JavaScript were fetched, the /map route was inspected as a general center map, and e-Tchad was attempted but unavailable by DNS.",
+  "requestOutcomes": [
+    "ANATS root: HTTP 200; public React app loaded.",
+    "ANATS /map: public service-center map route, no parcel ID/geometry/CRS response identified.",
+    "e-Tchad: DNS resolution failure; no conclusion about service availability.",
+    "Journal officiel: publication portal only; no parcel response."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "parcel geometry", "source CRS", "source field names in metadata only"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "personal data", "private credentials"],
+  "sampleGeojson": null,
+  "uncertainty": [
+    "No exact-point hit was attempted because no public parcel endpoint was identified.",
+    "No map extent miss, timeout, login wall, or DNS failure is evidence of citywide absence.",
+    "Historical references to Abéché lots/parcels do not establish a current open service or geometry source."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "reviewNote": "Packet records executed discovery and request attempts only. It is not source integration or adapter admission."
+}

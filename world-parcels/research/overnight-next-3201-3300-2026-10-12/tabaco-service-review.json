@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-4676-tabaco.json",
+  "cityCode": 4676,
+  "queueRank": 3242,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "summary": "Official Philippine Geoportal and Tabaco City sources were reached and inspected. The Lot Plotter lookup endpoints returned HTTP 401 anonymously and no safe parcel ID plus polygon response was qualified.",
+  "custodian": "City Government of Tabaco (City Assessor/CPDO) is the evidenced local custodian reference; Philippine Geoportal, LMB/DENR, and LRA are national sources. No open local parcel service was verified.",
+  "requests": "English and Filipino discovery, official portal GETs, current Lot Plotter HTML/JavaScript inspection, bounded endpoint checks, and official Tabaco/LMB references are recorded in the city record. No credentials, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS disable was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point and population 186310 persons are preserved.", "No exact-point hit, unavailable/authenticated route, or UI miss is treated as citywide absence.", "No raw source-specific attributes were retained.", "Completion is not source integration/admission."],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": ["Native parcel IDs, CRS, polygons, and coverage remain unverified.", "No sample GeoJSON was written."]
+}

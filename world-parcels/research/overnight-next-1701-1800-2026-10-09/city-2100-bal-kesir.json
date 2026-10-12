@@ -1,0 +1,143 @@
+{
+  "cityCode": 2100,
+  "queueRank": 1753,
+  "city": "Balıkesir",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "point": [39.6482845461937, 27.8923654435003],
+  "population2025": 328080,
+  "population2025k": 328.08,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Balıkesir Turkey official cadastral parcel map geoportal cadastral service",
+        "result": "First-party discovery identified the official national TKGM Parsel Sorgu service, the TKGM Balıkesir Kadastro Müdürlüğü page, and the official HGM GeoPortal. The official parcel viewer shell was reachable, but no anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.tkgm.gov.tr/bursa-bm/bagli-mudurlukler/balikesir-kadastro-mudurlugu",
+          "https://geoportal.harita.gov.tr/"
+        ]
+      },
+      {
+        "language": "Turkish",
+        "query": "Balıkesir resmi parsel sorgu kadastro harita belediyesi",
+        "result": "Türkçe first-party discovery identified TKGM Parsel Sorgu as the official public parcel-location service and the Balıkesir Kadastro Müdürlüğü as the local cadastral office. Official map/search routes were inspected without login; no safe anonymous parcel ID plus polygon response was obtained.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.tkgm.gov.tr/bursa-bm/bagli-mudurlukler/balikesir-kadastro-mudurlugu",
+          "https://parselsorgu.tkgm.gov.tr/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Tapu ve Kadastro Genel Müdürlüğü (TKGM), Balıkesir Kadastro Müdürlüğü; the official TKGM parcel viewer is the public national service.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://www.tkgm.gov.tr/bursa-bm/bagli-mudurlukler/balikesir-kadastro-mudurlugu",
+    "nationalServiceUrl": "https://parselsorgu.tkgm.gov.tr/",
+    "evidence": "TKGM's official organizational page lists Balıkesir Kadastro Müdürlüğü under the Bursa Regional Directorate, and TKGM's official service page identifies Parsel Sorgu as the parcel-location service."
+  },
+  "sourceReview": {
+    "service": "TKGM Parsel Sorgu / MEGSİS public parcel viewer",
+    "baseUrls": [
+      "https://parselsorgu.tkgm.gov.tr/",
+      "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/",
+      "https://www.tkgm.gov.tr/bursa-bm/bagli-mudurlukler/balikesir-kadastro-mudurlugu"
+    ],
+    "officialAssetsInspected": [
+      "TKGM Parsel Sorgu HTML shell and current main.js",
+      "Current viewer constants/configuration",
+      "TKGM Balıkesir Kadastro Müdürlüğü page",
+      "TKGM official Parsel Sorgu service page"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "Not exposed by an anonymous parcel feature response; the viewer configuration did not provide a retained feature CRS.",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if feature-level stability is independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate-reference metadata",
+      "public service, layer and coverage metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "outcome": "200/readable HTML shell; current app loads RequireJS and main.js?v=76.3. No login was required for the shell, and no parcel query was submitted through an authenticated flow."
+    },
+    {
+      "method": "GET",
+      "url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3",
+      "outcome": "200/current JavaScript; configuration points to the public service host https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/."
+    },
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/",
+      "outcome": "404 HTML route-not-found response; base URL alone does not expose an API document."
+    },
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/swagger/index.html",
+      "outcome": "404 HTML route-not-found response; no API documentation was exposed at this guessed public route."
+    },
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/Province",
+      "outcome": "404 JSON route-not-found response; no parcel or administrative schema returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/AdministrativeQuery/GetProvinceList",
+      "outcome": "404 JSON route-not-found response; no parcel or administrative schema returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.harita.gov.tr/",
+      "outcome": "Official HGM GeoPortal page was discoverable and readable, but it is a general national map portal; no Balıkesir cadastral parcel feature response was verified."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tkgm.gov.tr/bursa-bm/bagli-mudurlukler/balikesir-kadastro-mudurlugu",
+      "outcome": "Official local-custodian page identified Balıkesir Kadastro Müdürlüğü; no parcel geometry endpoint was exposed by the page."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://parselsorgu.tkgm.gov.tr/",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed against a verified public parcel feature route; exact WUP point [39.6482845461937, 27.8923654435003] was preserved in latitude/longitude order and not shifted.",
+    "requestEvidence": [
+      "official viewer shell reachable",
+      "current configuration identified public MEGSİS API host",
+      "tested public API/documentation guesses returned 404",
+      "no safe feature-level native identity, schema or polygon returned"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "TKGM national parcel-location service, with Balıkesir Kadastro Müdürlüğü as local cadastral custodian.",
+    "verifiedOpenScope": "Official service identity and local custodian only; anonymous parcel layer, schema, geometry and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [39.6482845461937, 27.8923654435003] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, unusable UI, or route-not-found response is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, registration, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, native field mapping, composite key, or GeoJSON sample was retained because no anonymous feature geometry and stable native identity were verified.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official national cadastral service and Balıkesir local custodian are evidenced. Anonymous feature access, native identity, parcel schema, CRS, geometry extraction, currentness and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

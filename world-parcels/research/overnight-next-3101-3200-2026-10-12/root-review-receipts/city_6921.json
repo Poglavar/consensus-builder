@@ -1,0 +1,27 @@
+{
+  "taskId": "city:6921",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-6921-balne-rio-cambori.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/balne-rio-cambori-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:53:25Z",
+  "queueIdentity": {
+    "rank": 3135,
+    "cityCode": 6921,
+    "country": "Brazil",
+    "point": [
+      -27.0024489130727,
+      -48.642018526167
+    ],
+    "populationPersons": 191601
+  },
+  "finding": "The official municipal GeoMais notice and cached current viewer JavaScript establish a local cadastral service. Anonymous configuration returned token-required responses; route-shape MVT probes yielded no parcel feature. No safe native ID, full polygon, source CRS, or adapter qualification was obtained. The access wall and failed route probes do not establish citywide absence.",
+  "registryFound": true,
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS full-polygon validity/duplicate/overlap/operation checks, source binding, or headed Details-panel verification. Runtime, catalog and report admission remain held.",
+  "absenceInference": "None; public access limitations and bounded failures are not citywide absence."
+}

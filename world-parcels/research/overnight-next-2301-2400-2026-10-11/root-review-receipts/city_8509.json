@@ -1,0 +1,18 @@
+{
+  "taskId": "city:8509",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-8509-xinzhou.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/xinzhou-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:00:03Z",
+  "reason": "First-party Chinese government material identifies the Xinzhou real-estate registration center, supporting institutional record custody. The Webmap.cn route was blocked by CloudWAF and the Shanxi Tianditu route timed out; neither is evidence of citywide parcel absence. No public native-ID polygon response was obtained.",
+  "registryCustody": true,
+  "identityCheck": "The SHA-256-verified WUP 2025 source row, ranked roster, queue, packet and paired review agree on code 8509, rank 2345, CN, point [38.4275227479888,112.726402940663], and population 249044 persons.",
+  "searchCheck": "Executed English and Chinese searches with result URLs are recorded in the packet; the paired review records the first-party routes and access failures.",
+  "sampleCheck": "No feature response, safe native parcel ID, or full polygon was retained. The three-polygon cap is met without treating the access failures as zero coverage.",
+  "admissionCheck": "No independent live adapter qualification with fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. Runtime and catalog admission remain held."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11351",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11351-khagaria.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/khagaria-service-review.json",
+    "tmp/valhalla-parcel-research/11351/rootop2.html",
+    "tmp/valhalla-parcel-research/11351/rootop4.html"
+  ],
+  "checkedAt": "2026-10-10T09:04:58.291750Z",
+  "reason": "Queue identity and English/Hindi search records checked. Original Bihar selector caches show Khagaria administrative options, but no resolved WUP mauza/sheet, native parcel ID, or full polygon response; adapter and headed gates are absent."
+}

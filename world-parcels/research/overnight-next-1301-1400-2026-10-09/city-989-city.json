@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 989,
+  "queueRank": 1370,
+  "cityId": "wup2025:989",
+  "name": "塔什科瑞克乡",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [43.9288592045439, 81.3166262556781],
+  "centerLatLon": [43.9288592045439, 81.3166262556781],
+  "pointBasis": "Exact WUP queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 411163,
+  "population2025k": 411.163,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "capital": false,
+  "aliases": ["塔什科瑞克乡", "Tashikerike Township", "Tashkourike Township"],
+  "status": "complete",
+  "metadataReviewFile": "city-service-review.json",
+  "registryFound": null,
+  "registryAssessment": "The first-party Xinjiang geographic information public-service portal identifies an official regional natural-resources/geographic-information custodian and links a public online map, but the executed attempt did not evidence a local cadastral registry, parcel viewer, or anonymous safe parcel procedure for this township. Registry status is therefore null.",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tashkourike Township Yining China official cadastral map parcel GIS natural resources",
+        "result": "Search located the official Xinjiang geographic information public-service portal and its public online map, plus place-name references. The current first-party map configuration was inspected; no public cadastral parcel layer, safe native parcel ID, or ID-plus-geometry response was found.",
+        "actualResultUrls": ["https://xinjiang.tianditu.gov.cn/portal/", "https://xinjiang.tianditu.gov.cn/map/"]
+      },
+      {
+        "language": "native/local",
+        "script": "Simplified Chinese",
+        "query": "伊宁市 塔什科瑞克乡 地籍图 宗地 不动产登记 地图 自然资源 官方",
+        "result": "检索找到新疆维吾尔自治区地理信息公共服务平台及其在线地图入口；检查当前 portal/map JavaScript 与配置后，未发现可匿名取得的地籍宗地图层、稳定宗地编号或编号加几何响应。公开检索结果确认塔什科瑞克乡属于伊宁市，但不提供宗地数据。",
+        "actualResultUrls": ["https://xinjiang.tianditu.gov.cn/portal/", "https://xinjiang.tianditu.gov.cn/map/", "https://map.baidu.com/mobile/webapp/search/search/qt%3Ds%26wd%3D%E6%96%B0%E7%96%86%E4%BC%8A%E7%8A%B2%E5%B7%9E%E4%BC%8A%E5%AE%81%E5%B8%82%E5%A1%94%E4%BB%80%E7%A7%91%E7%91%9E%E5%85%8B%E4%B9%A1%E5%A1%94%E4%BB%80%E5%BA%93%E5%8B%92%E5%85%8B%E6%9D%91/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://xinjiang.tianditu.gov.cn/portal/",
+      "operator": "Xinjiang Uygur Autonomous Region geographic information public-service platform",
+      "scope": "First-party public portal; current HTML links the public online map and platform service configuration. No cadastral parcel schema or geometry response was exposed in the bounded inspection."
+    },
+    {
+      "url": "https://xinjiang.tianditu.gov.cn/map/",
+      "operator": "Xinjiang Tianditu public online map",
+      "scope": "First-party Cesium map application. Current configuration exposes public basemap/tile and Tianditu search/geocoder routes; no cadastral parcel layer or anonymous ID-plus-geometry route was identified."
+    }
+  ],
+  "requests": [
+    {"url": "https://xinjiang.tianditu.gov.cn/portal/", "method": "GET; anonymous curl", "httpStatus": 200, "contentType": "text/html", "result": "Portal HTML retrieved; linked static configuration and JavaScript were inspected."},
+    {"url": "https://xinjiang.tianditu.gov.cn/portal/static/config.js", "method": "GET; anonymous curl", "httpStatus": 200, "contentType": "application/javascript", "result": "Configuration retrieved; public online map link and public Tianditu/search configuration identified; no cadastral parcel route found."},
+    {"url": "https://xinjiang.tianditu.gov.cn/map/", "method": "GET; anonymous curl", "httpStatus": 200, "contentType": "text/html", "result": "Online map HTML retrieved; Cesium application entrypoint identified."},
+    {"url": "https://xinjiang.tianditu.gov.cn/map/static/config.js", "method": "GET; anonymous curl", "httpStatus": 200, "contentType": "application/javascript", "result": "Current map configuration retrieved and inspected for parcel/cadastral service endpoints, layer names, schema, and CRS; none were found."},
+    {"url": "https://xinjiang.tianditu.gov.cn/map/index.js", "method": "GET; anonymous curl", "httpStatus": 200, "contentType": "application/javascript", "result": "Current bundled map JavaScript retrieved and bounded-search-inspected; no public cadastral parcel layer or safe ID-plus-geometry request was evidenced."},
+    {"url": "https://xinjiang.tianditu.gov.cn/map/", "method": "Public map route/config follow-up", "httpStatus": 200, "contentType": "text/html", "result": "No parcel request was issued because the official current configuration did not expose a cadastral layer or documented safe feature endpoint; no login, token, CAPTCHA, or TLS bypass was attempted."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Xinjiang regional first-party geographic-information portal and its public online map, with place-name discovery for Yining/Tashkourike Township.",
+    "verifiedOpenScope": "Public portal HTML, current JavaScript/configuration, and linked online map only; no anonymous cadastral parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "geometry", "source CRS", "public service metadata", "HTTP status/content type"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "runtimeEligible": false,
+  "resultCategory": "official_regional_authority_evidenced_geometry_unverified",
+  "remainingUncertainty": "A local Yining/伊宁市 natural-resources or real-estate-registration service may exist outside the discovered public map configuration. This attempt did not log in or request owner, address, titleholder, tax, contact, or other unsafe data. The lack of an exact-point hit or parcel endpoint is not evidence of citywide cadastral absence.",
+  "nextStep": "Serial reviewer may independently inspect a current anonymous local cadastral or real-estate map service and qualify only a bounded safe native-ID-plus-geometry response if publicly returned."
+}

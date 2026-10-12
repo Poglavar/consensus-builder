@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-4041-borujerd.json",
+  "cityCode": 4041,
+  "queueRank": 2944,
+  "city": "Borujerd",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "attempt": 1,
+  "reviewStatus": "complete_research_only",
+  "registryFound": null,
+  "queryAndRequestOutcome": "Separate English and Persian first-party discovery was completed. National cadastre/property-registration routes and a Borujerd registration-office reference were identified, but no anonymous public parcel vector response with a qualified native ID, schema, CRS, and geometry was verified. No GeoJSON sample was written.",
+  "routesAttempted": [
+    {"route": "National Registration Organization property/cadastre portal", "request": "GET https://my.ssaa.ir/portal", "outcome": "Connection timeout; no public viewer/API inspected."},
+    {"route": "MIMT cadastre map route", "request": "GET https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0", "outcome": "Connection timeout; general route and not verified as Borujerd land-registry parcel service."},
+    {"route": "Borujerd municipality site", "request": "GET https://www.borujerd.ir/", "outcome": "DNS resolution timeout."},
+    {"route": "Borujerd county registration office reference", "request": "Search result URL recorded in city JSON", "outcome": "Location reference only; not a first-party parcel dataset or service."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point was preserved and not shifted.",
+    "Timeouts, DNS failure, and unavailable UI were not treated as citywide absence.",
+    "No unsafe property or personal fields were requested or retained.",
+    "No source integration, credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used.",
+    "Runtime remains held pending independent serial review."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous public parcel vector response with qualified native identity, geometry, schema, CRS, and city relevance was obtained."
+  },
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry against current official Iranian registration/cadastre and Borujerd municipal routes."
+}

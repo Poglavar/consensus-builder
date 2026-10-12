@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-6304-dujiangyan.json",
+  "purpose": "Document first-party Dujiangyan registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Dujiangyan government-service material evidences the municipal Planning and Natural Resources Bureau as a relevant surveying/natural-resources custodian. No safe anonymous cadastral parcel-vector response was verified. The exact WUP point was preserved without hit testing.",
+  "registryAssessment": "Local registry/custodian context evidenced; this is not source integration or runtime admission.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dujiangyan China official cadastral parcel map GIS natural resources land registration",
+      "result": "Official Dujiangyan and Chengdu/national context found; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://cdsdjys.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=ee11c23c9bd44d789b57db3c827d1aaf.pdf", "https://www.chengdu.gov.cn/data/oportal/index", "https://www.cgs.gov.cn/ywdt/ddyw/202504/t20250423_820380.html"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "都江堰 官方 地籍图 宗地图 不动产登记 自然资源 GIS",
+      "result": "Official results evidenced local natural-resources custody and general registration-map access context; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://cdsdjys.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=ee11c23c9bd44d789b57db3c827d1aaf.pdf", "https://www.rerc.com.cn/", "https://zygh.xa.gov.cn/ztzl/yhyshj/bsrk/bdcdj/bszn/djtcxbszn/1774698618606374913.html"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://www.djy.gov.cn/", "method": "GET anonymous TLS-verified", "httpStatus": 412, "result": "Precondition response; viewer/configuration unavailable."},
+    {"url": "https://cdsdjys.sczwfw.gov.cn/", "method": "GET anonymous TLS-verified", "httpStatus": "timeout", "result": "No response body; no credentials or retry used."},
+    {"url": "https://www.chengdu.gov.cn/data/oportal/index", "method": "GET anonymous TLS-verified", "httpStatus": "not completed after bounded timeout", "result": "No parcel request issued."}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral endpoint; [30.9954940087978, 103.642378061023] remains unchanged.",
+    "requestEvidence": []
+  },
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "coverageAssessment": {
+    "claimedScope": "Official Dujiangyan/Chengdu sources and national registration/geographic-platform context.",
+    "verifiedOpenScope": "Custodian context only; parcel geometry unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_quality_review",
+  "status": "complete",
+  "remainingUncertainty": "A protected or separately published cadastral service may exist. Login walls, HTTP 412, timeout, map extent miss, or zero exact-point hits would not prove citywide absence; none were used as such."
+}

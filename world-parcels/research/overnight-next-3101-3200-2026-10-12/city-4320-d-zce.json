@@ -1,0 +1,61 @@
+{
+  "cityCode": 4320,
+  "queueRank": 3188,
+  "city": "Düzce",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "point": [40.8426878836539, 31.1585892461472],
+  "population2025": 188805,
+  "population2025k": 188.805,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Duzce official cadastral parcel map TKGM parsel sorgu Duzce belediyesi GIS",
+        "result": "First-party discovery found the official Düzce municipal Kent Rehberi and TKGM Parsel Sorgu. The municipal viewer page exposes a public Geoserver WFS-backed parcel layer named duzce:tkgm_parsel.",
+        "actualResultUrls": ["https://harita.duzce.bel.tr/Map", "https://parselsorguv2.tkgm.gov.tr/", "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"]
+      },
+      {
+        "language": "Turkish",
+        "query": "Düzce resmi kadastro parsel sorgu harita TKGM",
+        "result": "Resmî arama sonuçları Düzce Belediyesi Kent Rehberi, TKGM Parsel Sorgu ve Düzce Kadastro Müdürlüğü kayıtlarını gösterdi. Belediye haritasının yapılandırması tkgm_parsel katmanını ve Geoserver WFS servisini ortaya koydu.",
+        "actualResultUrls": ["https://harita.duzce.bel.tr/Map", "https://www.tkgm.gov.tr/ankara-bm/bagli-mudurlukler/duzce-kadastro-mudurlugu", "https://parselsorguv2.tkgm.gov.tr/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Tapu ve Kadastro Genel Müdürlüğü (TKGM), with Düzce Kadastro Müdürlüğü as the evidenced local cadastral custodian; the Düzce municipal Kent Rehberi publishes a public map consuming a TKGM parcel layer.",
+  "registryEvidence": {
+    "localEvidenceUrls": ["https://harita.duzce.bel.tr/Map", "https://www.tkgm.gov.tr/ankara-bm/bagli-mudurlukler/duzce-kadastro-mudurlugu"],
+    "nationalEvidenceUrls": ["https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"],
+    "interpretation": "A local first-party municipal map and local TKGM cadastral office are evidenced; the public layer is explicitly named tkgm_parsel. This establishes a source lead and bounded geometry evidence, not runtime adapter admission."
+  },
+  "sourceReview": {
+    "service": "Düzce Belediyesi Kent Rehberi Geoserver WFS",
+    "baseUrl": "http://haritaserver.duzce.bel.tr/geoserver/wfs",
+    "layer": "duzce:tkgm_parsel",
+    "officialViewer": "https://harita.duzce.bel.tr/Map",
+    "nativeFieldMapping": {"stableIdentity": "WFS feature id tkgm_parsel.<objectid>; source attribute objectid was observed", "geometry": "geometry", "geometryName": "geometry"},
+    "compositeKeyProvenance": "No composite key used; retained identity is the server-provided WFS feature id, with the native objectid component as corroborating source identity.",
+    "crs": "EPSG:4326 (WFS GetCapabilities DefaultCRS)",
+    "serviceExtent": "Capabilities extent approximately 30.99906349,40.67976761 to 31.36568260,41.00937653 (longitude, latitude), encompassing the Düzce municipal area and WUP point.",
+    "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://harita.duzce.bel.tr/Map", "outcome": "HTTP 200; official viewer HTML inspected. JavaScript/configuration calls add WMS layer duzce:tkgm_parsel against https://haritaserver.duzce.bel.tr/geoserver/wms and identifies the municipal public map."},
+    {"method": "GET", "url": "https://haritaserver.duzce.bel.tr/geoserver/wfs?service=WFS&request=GetCapabilities", "outcome": "TLS certificate verification failed; request stopped. No verification bypass was used."},
+    {"method": "GET", "url": "http://haritaserver.duzce.bel.tr/geoserver/wfs?service=WFS&request=GetCapabilities", "outcome": "HTTP 200; WFS capabilities returned. Layer duzce:tkgm_parsel was listed with DefaultCRS EPSG:4326 and an extent covering the WUP point."},
+    {"method": "GET", "url": "http://haritaserver.duzce.bel.tr/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=duzce%3Atkgm_parsel&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=31.157%2C40.842%2C31.160%2C40.845%2CEPSG%3A4326&maxFeatures=3", "outcome": "HTTP 200; bounded GeoJSON response returned three Polygon features with server IDs tkgm_parsel.187033757, tkgm_parsel.186400291, and tkgm_parsel.187033791. Only stable IDs and unchanged polygon geometry were retained in the sample; source attributes were not retained."},
+    {"method": "GET", "url": "https://www.tkgm.gov.tr/ankara-bm/bagli-mudurlukler/duzce-kadastro-mudurlugu", "outcome": "HTTP 200 via first-party discovery; Düzce Kadastro Müdürlüğü is listed. Office contact details were not requested or retained."}
+  ],
+  "geometryDecision": {"verified": true, "sourceId": "duzce:tkgm_parsel", "sampleCount": 3, "sampleFile": "d-zce-tkgm-parsel-sample.geojson", "nativeId": "tkgm_parsel.187033757; tkgm_parsel.186400291; tkgm_parsel.187033791", "nativeIdField": "WFS feature id / objectid", "exactWupPointTest": "The bounded bbox surrounds the exact immutable WUP point; returned polygons are nearby. No coordinate shift was made and no claim is made that the exact point lies inside a returned polygon."},
+  "coverageAssessment": {"claimedScope": "Düzce municipal Kent Rehberi parcel layer backed by TKGM cadastral data", "verifiedOpenScope": "Anonymous WFS capabilities and bounded polygon response for the layer", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "scopeLimits": ["The three-feature bbox response is not a citywide completeness test.", "HTTP was used because the service's HTTPS certificate failed normal TLS verification; TLS verification was never disabled.", "No owner, address, titleholder, contact, tax/account, personal, or unsafe fields were requested or retained.", "The retained sample has exactly one canonical native identity property per feature and no raw source attribute set.", "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."],
+  "runtimeReadiness": "held_serial_review_required",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public layer and three safe parcel geometries are verified, but citywide completeness, update cadence, municipal boundary semantics, and production suitability remain unresolved. HTTPS transport should be rechecked by a later reviewer after certificate correction."
+}

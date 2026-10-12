@@ -1,0 +1,162 @@
+{
+  "reviewScope": "Tarsus bounded first-party cache spot check; not full adapter qualification",
+  "sourceUrlBase": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/",
+  "officialViewerUrl": "https://parselsorgu.tkgm.gov.tr/",
+  "projectionForSampleMetrics": "EPSG:32636",
+  "responses": [
+    {
+      "cachePath": "tmp/valhalla-parcel-research/tarsus/pt-36.9180-34.8810.json",
+      "sha256": "6b2d28b615e8277560c1ed4165fd47d4fd0bab6ebc790f1d3049f14287b35ece",
+      "requestPointLatLon": [
+        36.918,
+        34.881
+      ],
+      "responseType": "Feature",
+      "district": "Tarsus",
+      "province": "Mersin",
+      "nativeId": [
+        128498,
+        "26",
+        "18"
+      ],
+      "geometryType": "Polygon",
+      "geometrySha256": "c46f66c3d6675a9ca50e035b2af0f6c3c98fd68596d087c1b6b03aa6298820cb",
+      "sampleGeometryValid": true,
+      "sampleAreaSquareMetersUtm36N": 502.79
+    },
+    {
+      "cachePath": "tmp/valhalla-parcel-research/tarsus/pt-36.9200-34.8850.json",
+      "sha256": "1fbcaf14d77f8b4055d888b9a6811ccf3bcb50f997b427c30381cbfe7a86785b",
+      "requestPointLatLon": [
+        36.92,
+        34.885
+      ],
+      "responseType": "Feature",
+      "district": "Tarsus",
+      "province": "Mersin",
+      "nativeId": [
+        128369,
+        "814",
+        "2"
+      ],
+      "geometryType": "Polygon",
+      "geometrySha256": "3ebe8db37523e17e754a92f278579ddb7b259d125b995f11fcd399769225add0",
+      "sampleGeometryValid": true,
+      "sampleAreaSquareMetersUtm36N": 45951.36
+    },
+    {
+      "cachePath": "tmp/valhalla-parcel-research/tarsus/pt-36.9220-34.8860.json",
+      "sha256": "1fbcaf14d77f8b4055d888b9a6811ccf3bcb50f997b427c30381cbfe7a86785b",
+      "requestPointLatLon": [
+        36.922,
+        34.886
+      ],
+      "responseType": "Feature",
+      "district": "Tarsus",
+      "province": "Mersin",
+      "nativeId": [
+        128369,
+        "814",
+        "2"
+      ],
+      "geometryType": "Polygon",
+      "geometrySha256": "3ebe8db37523e17e754a92f278579ddb7b259d125b995f11fcd399769225add0",
+      "sampleGeometryValid": true,
+      "sampleAreaSquareMetersUtm36N": 45951.36
+    },
+    {
+      "cachePath": "tmp/valhalla-parcel-research/tarsus/pt-36.9230-34.8870.json",
+      "sha256": "beea9145b801876321f88c11d69f350f635b9d0ea75079d009a59c29df99ee87",
+      "requestPointLatLon": [
+        36.923,
+        34.887
+      ],
+      "responseType": "point-miss",
+      "messageCategory": "parcel not found"
+    },
+    {
+      "cachePath": "tmp/valhalla-parcel-research/tarsus/pt-36.9250-34.8900.json",
+      "sha256": "0f3a5caa6018db1c51912951d5be3a031c970b6bf4586b865a8eaacce03a301a",
+      "requestPointLatLon": [
+        36.925,
+        34.89
+      ],
+      "responseType": "Feature",
+      "district": "Tarsus",
+      "province": "Mersin",
+      "nativeId": [
+        128372,
+        "3120",
+        "3"
+      ],
+      "geometryType": "Polygon",
+      "geometrySha256": "5212e6b7e6413a7911f0cdd946bd283a03d00a29a7fcf4cf480a11be1caaec8b",
+      "sampleGeometryValid": true,
+      "sampleAreaSquareMetersUtm36N": 13080.23
+    }
+  ],
+  "distinctNativeParcelCount": 3,
+  "uniqueParcelPairOverlaps": [
+    {
+      "nativeIds": [
+        [
+          "128498",
+          "26",
+          "18"
+        ],
+        [
+          "128369",
+          "814",
+          "2"
+        ]
+      ],
+      "intersectionSquareMetersUtm36N": 0.0
+    },
+    {
+      "nativeIds": [
+        [
+          "128498",
+          "26",
+          "18"
+        ],
+        [
+          "128372",
+          "3120",
+          "3"
+        ]
+      ],
+      "intersectionSquareMetersUtm36N": 0.0
+    },
+    {
+      "nativeIds": [
+        [
+          "128369",
+          "814",
+          "2"
+        ],
+        [
+          "128372",
+          "3120",
+          "3"
+        ]
+      ],
+      "intersectionSquareMetersUtm36N": 0.0
+    }
+  ],
+  "qualificationGaps": [
+    "fresh exact native-ID reads",
+    "forced paging and stable complete manifest",
+    "13 aligned bounded cells",
+    "metric operations across full qualification scope",
+    "runtime source binding",
+    "headed pointer and Details panel"
+  ],
+  "exactWupPointResponse": {
+    "cachePath": "tmp/valhalla-parcel-research/tarsus/coord.json",
+    "sha256": "56361f12e23aef3c8a84ab236b38fec082811c9d4438c5b833a854664b9127fd",
+    "headersCachePath": "tmp/valhalla-parcel-research/tarsus/coord.headers",
+    "headersSha256": "c4beb63d1839e5bfde17efff71f183964da71f1d43eea52ecdf6c4aabbce4e6b",
+    "httpStatus": 404,
+    "result": "parcel not found at exact WUP point only"
+  }
+}

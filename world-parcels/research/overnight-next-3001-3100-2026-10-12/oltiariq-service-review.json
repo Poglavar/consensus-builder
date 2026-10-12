@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-4480-oltiariq.json",
+  "cityCode": 4480,
+  "queueRank": 3031,
+  "city": "Oltiariq",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Uzbek first-party discovery identified the Cadastre Agency's National Geoinformation Portal and an Oltiariq district cadastral-office context. The portal advertises coordinate and cadastral-number search and Esri-backed mapping, but direct portal and related ArcGIS REST requests timed out; the State Urban Cadastre host returned 403. No anonymous safe parcel ID-plus-geometry response was qualified and no sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, response outcomes, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-4480-oltiariq.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Cadastre Agency of the Republic of Uzbekistan / National Geoinformation Portal",
+      "scope": "National cadastral and real-estate-rights information custodian; official Digital Government material describes the portal's open real-estate-register information service.",
+      "evidence": "https://dgov.uz/en/solution/detail/52/"
+    },
+    {
+      "name": "Oltiariq district cadastral office",
+      "scope": "Local cadastral office evidenced in official regional cadastral-office information; no local parcel service was qualified.",
+      "evidence": "https://kadastr.uz/ru/news/news-01-14-10-2023"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "Portal timeout, REST timeout, and 403 outcomes are access/qualification results, not evidence of parcel absence.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "A current portal client configuration or authenticated workflow may expose further services, but no credentials or login were used.",
+    "The relationship between the indexed ArcGIS REST catalog and current portal availability could not be verified because both live requests timed out.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

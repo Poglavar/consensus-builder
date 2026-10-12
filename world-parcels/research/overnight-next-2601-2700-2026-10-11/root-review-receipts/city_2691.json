@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2691",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-2691-gala-i.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/gala-i-service-review.json"
+  ],
+  "reason": "WUP 2025 source archive and immutable queue agree on code 2691, rank 2620, Romania, point [45.4366810761243,28.0227927514628], and 225126 persons. English and Romanian searches are recorded. Official OCPI Galați cadastral-sector document supports local custodianship, but the claimed ANCPI ArcGIS layer could not be read live: shell DNS failed and the web fetch returned 502. No native-ID feature, polygon, or sample was obtained. DNS/502 failure is not citywide absence. All live adapter, pagination, 13-cell, metric GEOS, binding, and headed Details admission gates remain unproved. Hold without runtime admission.",
+  "custodyFinding": "true: official OCPI Galați cadastral-sector status document supports local registry custody; public parcel service details are unresolved",
+  "retainedFullPolygons": 0,
+  "checkedAt": "2026-10-11T16:17:38Z",
+  "runtimeAdmitted": false
+}

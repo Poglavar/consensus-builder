@@ -1,0 +1,19 @@
+{
+  "taskId": "city:114",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-114-kigoma.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/kigoma-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:39:42Z",
+  "reason": "Official e-Ardhi WFS advertises spatial_units and its ID/geometry schema, but the exact-point response contained zero features and the nearby query timed out. The bbox spans roughly 2 km, contrary to the packet’s 20 m description. Neither response establishes citywide absence.",
+  "firstPartyArtifactsInspected": [
+    "tmp/valhalla-parcel-research/kigoma-114/wfs-capabilities.xml",
+    "tmp/valhalla-parcel-research/kigoma-114/spatial_units.xsd",
+    "tmp/valhalla-parcel-research/kigoma-114/spatial_units-point.json",
+    "tmp/valhalla-parcel-research/kigoma-114/spatial_units-bbox-request.txt"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime admission."
+}

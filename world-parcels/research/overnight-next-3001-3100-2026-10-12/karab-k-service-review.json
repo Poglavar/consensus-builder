@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-4729-karab-k.json",
+  "cityCode": 4729,
+  "queueRank": 3030,
+  "city": "Karabük",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Turkish first-party discovery identified TKGM Parsel Sorgu and the local Karabük Kadastro Müdürlüğü. The current v2 viewer returned 502 through the research fetcher and direct shell access failed DNS resolution; no anonymous schema, CRS, native parcel identity, or ID-plus-geometry response was qualified. No GeoJSON sample is retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, request outcomes, scope limits, safe field allowlist, and uncertainty are recorded in city-4729-karab-k.json. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [{"name": "TKGM / Karabük Kadastro Müdürlüğü", "scope": "National cadastral custodian with a named local Karabük cadastral office", "evidence": "https://tkgm.gov.tr/kastamonu-bm/bagli-mudurlukler"}],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["WUP point [41.2077426674526, 32.6360667110778] and population 197470 persons are preserved.", "Viewer access failures are not evidence of citywide parcel absence.", "No anonymous ID-plus-geometry response or runtime adapter qualification was obtained.", "Packet completion is not source integration/admission."],
+  "uncertainty": ["Viewer availability or route may differ from the failed fetch path.", "Official service documentation does not establish complete downloadable citywide vector coverage."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 3447,
+  "queueRank": 1241,
+  "cityRecord": "city-3447-mannheim.json",
+  "name": "Mannheim",
+  "country": "Germany",
+  "countryCode": "DE",
+  "reviewedAt": "2026-10-09",
+  "attempt": 2,
+  "status": "complete_research_runtime_held",
+  "registryFound": true,
+  "sourceReview": {
+    "localCustodian": "Stadt Mannheim, Fachbereich Geoinformation und Stadtplanung",
+    "localRegistryEvidence": "Official Mannheim Geobasisdaten and Geoportal pages identify the Liegenschaftskataster/ALKIS and the municipal Flurstücke layer; the current viewer configuration names alkis_flurstuecke and uses the municipal mapserver.",
+    "generalAgencyDistinction": "The Mannheim pages are local custodian evidence. General German/Baden-Württemberg cadastral references were not treated as a local parcel endpoint unless directly tied to the Mannheim viewer.",
+    "viewer": "https://www.gis-mannheim.de/mannheim/index.php?lang=de",
+    "layer": "alkis_flurstuecke",
+    "service": "https://www.gis-mannheim.de/mannheim/mod_mapserver/map.php",
+    "viewerCrs": "EPSG:25832",
+    "point": [49.485482134892, 8.47482558079509]
+  },
+  "discovery": {
+    "englishQuery": "Mannheim official cadastral parcel map Liegenschaftskarte Flurstücke GIS WFS",
+    "nativeQuery": "Mannheim offizielles Geoportal Flurstücke Liegenschaftskarte WFS Kataster",
+    "outcome": "Both searches found first-party Mannheim pages and the public Geoportal; the native-language search additionally surfaced the official OGC services page and viewer’s Flurstücksuche.",
+    "urls": [
+      "https://www.mannheim.de/de/stadt-gestalten/verwaltung/aemter-fachbereiche-eigenbetriebe/geoinformation-und-stadtplanung/geobasisdaten",
+      "https://www.mannheim.de/de/stadtkarten",
+      "https://www.gis-mannheim.de/mannheim/index.php?lang=de",
+      "https://www.gis-mannheim.de/mannheim/mod_ogc/index.php"
+    ]
+  },
+  "requestOutcomes": [
+    {"route": "viewer HTML/config", "method": "GET", "httpStatus": 200, "outcome": "Loaded and inspected; public layer/config found."},
+    {"route": "municipal WMS GetMap, 500 m bbox, EPSG:25832", "method": "GET", "httpStatus": 200, "outcome": "PNG returned for alkis_flurstuecke; visualization only, no vector ID/geometry retained."},
+    {"route": "municipal WMS GetFeatureInfo, count 3", "method": "GET", "httpStatus": 200, "outcome": "HTML 'not all parameters!' response; unusable."},
+    {"route": "viewer ajax/query.php at exact WUP point", "method": "GET", "httpStatus": 200, "outcome": "Normal HTML response with exact coordinate echo and no result; exact-point miss only."},
+    {"route": "municipal OGC services landing page", "method": "GET", "httpStatus": 200, "outcome": "Documentation loaded; no parcel vector response obtained from that page."}
+  ],
+  "scopeLimits": [
+    "The map image proves a reachable municipal parcel visualization, not an admitted parcel adapter.",
+    "A zero exact-point query result is not evidence of citywide absence.",
+    "No citywide completeness, licensing terms, or stable native vector identity was proven.",
+    "No owner, address, titleholder, contact, tax, account, or other unsafe fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["native parcel identity if returned", "parcel polygon geometry"],
+  "nativeFieldMapping": "No returned vector feature, so no native field names or composite identity were retained; internal synthetic IDs were not used.",
+  "retainedGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "uncertainty": "The public service may support an application-specific query path or only map rendering for anonymous users. Further qualification must follow the viewer’s own request flow and remain bounded.",
+  "completionSummary": {"researchComplete": true, "verifiedParcelPolygon": false, "registryFound": true, "runtimeHeld": true, "geojsonSampleCount": 0}
+}

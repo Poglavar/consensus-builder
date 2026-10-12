@@ -1,0 +1,25 @@
+{
+  "taskId": "city:5323",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-5323-belkuchi.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/belkuchi-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/identity-5323-official-geography-response.json"
+  ],
+  "checkedAt": "2026-10-09T15:24:25.937214Z",
+  "reason": "The original first-party hierarchy cache reaches Sirajganj/BDS, then the bounded upazila response is empty. No Belkuchi native parcel ID or polygon is evidenced; the empty result is not citywide absence. The earlier WUP5431 Belkuchi record is a distinct point, as the existing root identity overlay documents.",
+  "searchCheck": "English and Bengali query strings and outcomes are recorded in both paired files.",
+  "identityCheck": "Exact WUP city code, rank, country, point, and 2025 population persons match both immutable roster and pending queue.",
+  "geometryCheck": "Zero full polygons retained in the paired files; no safe native parcel ID plus full source polygon demonstrated.",
+  "missingAdmissionGates": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed details-panel verification"
+  ]
+}

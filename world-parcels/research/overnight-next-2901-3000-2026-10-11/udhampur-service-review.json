@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-3960-udhampur.json",
+  "cityCode": 3960,
+  "queueRank": 2917,
+  "city": "Udhampur",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and Hindi discovery evidenced the J&K local land-record custodian and the Udhampur district scope. The current JKLR SPA was inspected, but all anonymous land-record routes returned HTTP 401; no parcel geometry or safe native parcel identity was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries and HTTP routes, statuses, endpoint configuration findings, and limits are recorded in city-3960-udhampur.json.",
+  "custodians": [
+    {"name": "Jammu and Kashmir Revenue Department / JKLR", "scope": "Local/UT land records and LRIS service.", "evidence": "https://d14fnjoywemmi.cloudfront.net/jklr/"},
+    {"name": "District Udhampur administration", "scope": "District revenue-service entry points.", "evidence": "https://udhampur.nic.in/"},
+    {"name": "DILRMP", "scope": "National cadastral digitization status only.", "evidence": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/642"}
+  ],
+  "schemaAndCrs": {"parcelSchema": "Not qualified anonymously", "nativeIdFields": ["districtId", "tehsilId", "villageId", "khewatId", "khataId", "khasra_no"], "geometryCrs": null, "fieldMapping": "No raw source attributes retained", "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["canonical native parcel identifier", "geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": ["No credentials, login, CAPTCHA bypass, unsafe landholder fields, or private tokens were used.", "The exact WUP point was preserved; no coordinate shifting was performed.", "No anonymous parcel response was available, so there is no geometry sample.", "HTTP 401, login protection, and TLS verification failure do not establish citywide absence."],
+  "uncertainty": ["No independently qualified public parcel adapter.", "No CRS or public feature schema was returned.", "No citywide completeness evidence."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["Registry evidence is not runtime admission.", "District status statistics are not parcel geometry coverage."]
+}

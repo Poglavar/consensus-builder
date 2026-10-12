@@ -1,0 +1,19 @@
+{
+  "taskId": "city:8692",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-8692-hechuan.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/hechuan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:47:49.591467Z",
+  "reason": "Hechuan bureau function page confirms cadastral investigation, real-estate surveying and the district registration center. No safe public native-ID plus polygon response or adapter qualification exists.",
+  "firstPartyCheck": {
+    "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/fdzdgknr/jgzn/?lm=%E8%B4%9F%E8%B4%A3%E4%BA%BA%E4%BF%A1%E6%81%AF",
+    "httpStatus": 200,
+    "title": "机构职能_重庆市合川区规划和自然资源局",
+    "observedInstitutionalTerms": "权籍调查; 重庆市合川区不动产登记事务中心"
+  },
+  "admissionGates": "No parcel geometry response or native identity; fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed details check unproven."
+}

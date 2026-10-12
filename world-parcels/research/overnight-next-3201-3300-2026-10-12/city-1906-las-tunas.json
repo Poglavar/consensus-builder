@@ -1,0 +1,114 @@
+{
+  "cityCode": 1906,
+  "queueRank": 3216,
+  "name": "Las Tunas",
+  "country": "Cuba",
+  "countryCode": "CU",
+  "iso3": "CUB",
+  "locId": 192,
+  "capital": false,
+  "point": [20.963482726959, -76.9522877970183],
+  "population2025": 187705,
+  "population2025k": 187.705,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Las Tunas Cuba official cadastral parcel map GIS catastro land registry",
+        "result": "First-party discovery did not identify an accessible Las Tunas parcel viewer or anonymous parcel API. Search surfaced the official Provincial Government site as a possible local lead, and a national Cuba cadastre presentation, but neither yielded a usable public parcel service in this attempt. A non-first-party Mapcarta result identifies a Registro de la Propiedad office in Las Tunas; this is not sufficient local registry-service evidence.",
+        "actualResultUrls": [
+          "https://www.lastunas.gob.cu/",
+          "https://www.cuba.travel/destinos/las-tunas/informacion-turistica",
+          "https://mapcarta.com/es/W692990082",
+          "https://www.cepal.org/sites/default/files/presentations/catastro-nacional-inotu-cuba2024.pdf"
+        ]
+      },
+      {
+        "language": "Spanish (Cuba, local)",
+        "query": "Las Tunas Cuba sitio oficial catastro mapa parcelario registro de la propiedad",
+        "result": "Spanish-language discovery found the official Provincial Government domain as a local-government lead, but no indexed cadastral map, parcel layer, or public geometry endpoint. The search also returned a non-first-party map listing for Registro de la Propiedad in Las Tunas and general Cuban cadastre material; neither provides an anonymous city parcel response.",
+        "actualResultUrls": [
+          "https://www.lastunas.gob.cu/",
+          "https://lastunas.gob.cu/",
+          "https://mapcarta.com/es/W692990082",
+          "https://www.cepal.org/sites/default/files/presentations/catastro-nacional-inotu-cuba2024.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": null,
+    "scopeNote": "No first-party local registry, cadastre, map, or public procedure was successfully evidenced. The Mapcarta Registro de la Propiedad POI is a third-party map listing and was not treated as registry-service proof. National/general cadastre prose was not treated as Las Tunas local-custodian evidence."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": [],
+      "compositeKeyProvenance": null
+    },
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted or used as a citywide absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.lastunas.gob.cu/",
+      "outcome": "Timed out after 20 seconds from this workspace; no HTML, viewer configuration, API route, schema, CRS, ID, or geometry was obtained. No retry escalation, login, or credentialed access was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://lastunas.gob.cu/",
+      "outcome": "Timed out after 8 seconds; no response body obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://inotu.gob.cu/",
+      "outcome": "TLS certificate hostname mismatch; request was not accepted and TLS verification was not disabled. No source-specific certificate exception was authorized or used."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.inotu.gob.cu/",
+      "outcome": "Timed out after 8 seconds; no response body obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapcarta.com/es/W692990082",
+      "outcome": "HTTP 200 third-party map page; it describes a Registro de la Propiedad POI in Las Tunas but exposes no cadastral parcel layer/API and is not first-party registry evidence. No geometry or unsafe property data was requested or retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier if publicly exposed and source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The official provincial site and possible national cadastre routes were unavailable or unusable from this workspace; this is not evidence of citywide cadastral absence.",
+    "No official viewer JavaScript/configuration, service URL, schema, CRS, native parcel identity, or anonymous bounded geometry response was observed.",
+    "No parcel polygon is retained because no safe source geometry and stable native identity were verified.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ],
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

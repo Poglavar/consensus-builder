@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11570",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-11570-pretoria.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pretoria-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/root-identity-10612-11570-first-party-evidence.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-12T08:10:00Z",
+  "reason": "WUP11570 rank 3289 is the verified UN China row named Pretoria at the unchanged Jiangsu point with 183301 persons, distinct from the prior South African Pretoria investigation. English/Chinese location-led searches are recorded. Cached Jiangsu/Yixing route redirects to government login; no native parcel ID/full polygon, sample, or independent adapter qualification exists. The anomalous place name and local source scope remain unresolved, so Yixing custody cannot establish a binding to this WUP settlement or citywide absence. Hold runtime admission."
+}

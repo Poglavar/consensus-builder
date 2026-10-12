@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 5101,
+  "wupCityCode": 5101,
+  "cityId": "wup2025:5101",
+  "name": "Ile Oluji",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "queueRank": 2624,
+  "rank": 2624,
+  "point": [7.21327029939233, 4.87358681690888],
+  "centerLatLon": [7.21327029939233, 4.87358681690888],
+  "population2025": 224781,
+  "population2025k": 224.781,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ile Oluji Nigeria cadastral parcel map official land registry Ondo GIS",
+        "result": "Located the official Ondo State Ministry of Lands & Housing LandsApp, the Ondo State Government land-registration procedure PDF, and an Ondo State land-registry portal. The local state custodian and land/survey services are evidenced, but no open Ile Oluji parcel geometry service was found.",
+        "actualResultUrls": [
+          "https://www.odsglandministry.org/",
+          "https://odsglandministry.org/LandServices/Services",
+          "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+          "https://www.ondolandportal.org/"
+        ]
+      },
+      {
+        "language": "Yoruba",
+        "query": "Ile Oluji ilẹ kadasita maapu iforukọsilẹ ilẹ osise",
+        "result": "No Ile Oluji-specific first-party cadastral viewer or open parcel response was found. Search results did surface the Ondo State official land/survey service portal and general Nigerian cadastral/legal-survey information; no additional local-language parcel endpoint was qualified.",
+        "actualResultUrls": [
+          "https://www.odsglandministry.org/",
+          "https://odsglandministry.org/LandServices/Services",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      }
+    ]
+  },
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "held",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Ondo State Ministry of Lands & Housing land and survey services, state land-registration procedure, and the associated public property-map portal.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_and_service_catalogue_no_verified_open_geometry",
+  "registryBasis": "The official Ondo State Ministry of Lands & Housing LandsApp identifies the state land/survey custodian and publishes land-existence/search, survey, title, and related services. This establishes local registry/procedure context only; it does not admit an open parcel source.",
+  "registryEvidenceUrls": [
+    "https://www.odsglandministry.org/",
+    "https://odsglandministry.org/LandServices/Services",
+    "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf"
+  ]
+}

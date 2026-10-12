@@ -1,0 +1,18 @@
+{
+  "taskId": "city:8917",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8917-islampur.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/islampur-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T07:16:06Z",
+  "findings": {
+    "identity": "Original WUP 2025 archive SHA-256 matched handoff; source row, ranked roster, queue and packet agree: rank 3261, Islampur, India, exact point [17.0542146548791, 74.2646018541214], 184756 persons.",
+    "searches": "Packet records executed English and Marathi queries, outcomes and first-party URLs.",
+    "custody": "Maharashtra Bhumi Abhilekh first-party Sangli contact page lists the Walwa land-record office at Ishwarpur/Islampur, and state pages identify Mahabhunakasha map services. This supports local custody, not a public parcel response.",
+    "geometry": "No original first-party parcel feature/cache artifact, native parcel ID, full polygon, or safe sample exists. The Mahabhunakasha viewer timed out before current API/schema/CRS inspection.",
+    "admission": "Independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap and operation checks, source binding, and headed Details-panel verification are unevidenced. Remain held; no runtime, catalog, registry or report admission."
+  }
+}

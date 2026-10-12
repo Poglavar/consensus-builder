@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-7804-togechane.json",
+  "cityCode": 7804,
+  "queueRank": 2711,
+  "city": "Togechane",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "reviewStatus": "held",
+  "reviewOutcome": "Official Ethiopian cadastral discovery reached the public Addis e-Land viewer and its GeoServer WFS, but the deployment is AA-ADS scoped; the bounded Togechane-area request returned zero features and no local registry or retained parcel geometry was verified.",
+  "queryAndRequestOutcomes": "Separate English and Amharic discovery was completed. The current viewer HTML/configuration exposed an EPSG:4326 WFS layer ncrprs_cadaster:v_1_registered_parcel with safe native identity uniqueparcelid. A bounded request around the exact WUP point returned totalFeatures=0; a separate Addis control request returned an ID-plus-MultiPolygon response, proving service operation but not Togechane coverage.",
+  "cityOrLocalCustodian": "No Togechane-local custodian was evidenced. Addis Ababa City Administration Landholding Registration and Information Agency is evidenced only for Addis; Ethiopian Ministry material is general national agency prose and was not treated as local source evidence.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": {"service": "OGC WFS 1.0.0 / GeoServer", "layer": "ncrprs_cadaster:v_1_registered_parcel", "crs": "EPSG:4326", "nativeIdentity": "uniqueparcelid"},
+  "sampleGeojson": null,
+  "scopeLimits": ["No citywide completeness claim.", "No exact-point or map-extent absence inference.", "WUP point remains exactly [9.59627390824979, 43.3325356584054] in latitude/longitude order.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.", "No registry/catalog/runtime configuration was changed."],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "A local Somali Region/Dire Dawa or other custodian source may exist outside this Addis-only deployment; further research is required before any source qualification.",
+  "integrationDisposition": "Research packet only; no source integration or admission."
+}

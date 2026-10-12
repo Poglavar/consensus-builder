@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 2664,
+  "queueRank": 1685,
+  "name": "Montería",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "iso3": "COL",
+  "locId": 170,
+  "point": [8.74837101551563, -75.8807072805695],
+  "population2025": 339380,
+  "population2025k": 339.38,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Montería Colombia official cadastral parcel map GIS parcelas catastro IGAC Alcaldía de Montería",
+        "result": "First-party discovery found the official IGAC Dato Fundamental Catastro ArcGIS service, the official Colombia en Mapas cadastral-query guidance, and the official Montería municipal page describing the municipality's cadastral-manager role. The IGAC service metadata exposed polygon cadastral layers, but a bounded anonymous geometry query did not complete within the request window.",
+        "actualResultUrls": [
+          "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer",
+          "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html",
+          "https://www.monteria.gov.co/publicaciones/4362/monteria-asume-nuevas-funciones-en-su-rol-como-gestor-catastral/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Montería Colombia catastro oficial mapa predial SIG Alcaldía Montería IGAC",
+        "result": "La búsqueda en fuentes de primera parte encontró el servicio oficial Dato Fundamental Catastro del IGAC, la guía oficial de consulta catastral de Colombia en Mapas y la evidencia oficial de que Montería fue habilitada como gestora catastral. No se obtuvo una respuesta anónima acotada con geometría dentro del tiempo de solicitud.",
+        "actualResultUrls": [
+          "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/info/iteminfo",
+          "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html",
+          "https://www.monteria.gov.co/publicaciones/4362/monteria-asume-nuevas-funciones-en-su-rol-como-gestor-catastral/",
+          "https://www.monteria.gov.co/documentos/1021/resoluciones-2026/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer",
+      "observation": "Official IGAC ArcGIS MapServer metadata was retrieved successfully. It exposes R_CONSTRUCCION, R_TERRENO, U_CONSTRUCCION, U_MANZANA and U_TERRENO polygon layers; layer spatial reference is EPSG:4686. The service describes cadastral parcels and is a national service, not proof of citywide Montería coverage by itself."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4",
+      "observation": "Official U_TERRENO layer metadata was retrieved. Safe candidate native fields include CODIGO, GLOBALID_S and the service OID; no owner, address, contact, titleholder or tax fields were requested."
+    },
+    {
+      "url": "https://www.monteria.gov.co/publicaciones/4362/monteria-asume-nuevas-funciones-en-su-rol-como-gestor-catastral/",
+      "observation": "Official Montería publication states that the municipality was habilitated by IGAC as a gestor catastral under Resolution 1040 of 2023. This establishes the local cadastral custodian, not a verified open parcel adapter."
+    },
+    {
+      "url": "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html",
+      "observation": "Official Colombia en Mapas guidance documents cadastral lookup by map click, address, parcel number or coordinates and JSON polygon download."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Retrieved service JSON and confirmed five polygon layers."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/0..4?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Retrieved each layer schema. U_TERRENO and U_MANZANA are polygon layers; EPSG:4686 was confirmed. Native field names included CODIGO and GLOBALID_S."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "method": "GET",
+      "httpStatus": 400,
+      "outcome": "An initial point query including resultRecordCount returned the service error 'Pagination is not supported'. No geometry was retained."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "A corrected exact-point query at [8.74837101551563, -75.8807072805695] and a small envelope query both exceeded the bounded 30-second request window without a response. This is a timeout/access limitation, not evidence of an exact-point or citywide parcel miss."
+    },
+    {
+      "url": "https://www.monteria.gov.co/publicaciones/4362/monteria-asume-nuevas-funciones-en-su-rol-como-gestor-catastral/",
+      "method": "GET/search inspection",
+      "httpStatus": 403,
+      "outcome": "Independent web retrieval was blocked by the municipal site, but first-party indexed result text was available and recorded as institutional evidence. No bypass, login or private route was attempted."
+    },
+    {
+      "url": "https://www.monteria.gov.co/documentos/1021/resoluciones-2026/",
+      "method": "GET/search inspection",
+      "httpStatus": 403,
+      "outcome": "Municipal resolution index was blocked by the municipal site. Search evidence identified a 2026 resolution adopting the homologated predial identification code; no document or parcel geometry was requested."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Montería municipal publication identifies the municipality as an IGAC-enabled gestor catastral. The IGAC service is a national public map service; it is recorded separately from the local custodian and does not establish a qualified local runtime adapter.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "IGAC Dato Fundamental Catastro MapServer, U_TERRENO/U_MANZANA layers (schema verified; bounded geometry response not verified)",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "nativeIdentityPolicy": "No parcel feature was retained. If later qualified, use exactly one stable native identity such as CODIGO or GLOBALID_S in GeoJSON properties and document the field mapping here; never use an internal row number.",
+  "nativeFieldMapping": {
+    "candidateStableIdentity": ["CODIGO", "GLOBALID_S"],
+    "serviceObjectIdentifier": "FID",
+    "geometryField": "Shape",
+    "note": "Candidate fields are from official layer metadata; stability and city-specific coverage require independent serial qualification."
+  },
+  "crs": "EPSG:4686 (MAGNA-SIRGAS geographic), verified from layer metadata",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "coverageAssessment": {
+    "claimedScope": "Official IGAC national cadastral service, with local Montería cadastral-manager evidence.",
+    "verifiedOpenScope": "Service schema and CRS verified; no bounded Montería parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [8.74837101551563, -75.8807072805695] was preserved; no coordinate shift or point-hit inference was made.",
+    "No city boundary or complete Montería coverage was established for the national service.",
+    "No parcel geometry or raw source-specific attribute set was retained.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion records research attempts only and is not source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "excludedFields": ["owner or titleholder names", "addresses and contact data", "tax/account/registration details beyond a safe native parcel ID", "credentials and private tokens"],
+  "uncertainty": "A public national cadastral schema is evidenced, and local cadastral custody is evidenced, but anonymous bounded query behavior, Montería coverage, stable identity semantics and polygon retrieval remain unverified because the query route timed out. A future reviewer should independently retry within a suitable service budget and qualify coverage before adapter use.",
+  "retainedSample": null
+}

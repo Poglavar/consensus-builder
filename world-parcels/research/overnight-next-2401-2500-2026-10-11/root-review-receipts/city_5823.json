@@ -1,0 +1,25 @@
+{
+  "taskId": "city:5823",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-5823-palanpur.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/palanpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T12:35:59.020915Z",
+  "reason": "English and Gujarati search records are present. Official Banaskantha Land Department supports district land custody. Its Suchak app describes parcel boundaries but account registration and no anonymous vector response or independent adapter qualification are evidenced.",
+  "registryFound": true,
+  "firstPartyUrlsChecked": [
+    "https://banaskantha.nic.in/land-department/",
+    "https://banaskantha.nic.in/banaskantha-suchak/"
+  ],
+  "gates": {
+    "identity": "matched verified WUP 2025 archive, ranked roster, queue, and packet",
+    "bilingualSearches": "English and native language queries with result URLs recorded in paired packet",
+    "retainedPolygonCount": 0,
+    "independentAdapterQualification": false,
+    "runtimeAdmission": false
+  }
+}

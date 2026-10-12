@@ -1,0 +1,29 @@
+{
+  "taskId": "city:11626",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11626-zijin.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/zijin-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T213930-2be532dc/stdout.jsonl",
+    "tmp/valhalla-parcel-research/zijin/jg-root.json",
+    "tmp/valhalla-parcel-research/zijin/ZDORFWFTSearch.html"
+  ],
+  "checkedAt": "2026-10-11T21:42:24Z",
+  "city": "Zijin",
+  "reason": "English and Chinese searches are logged. First-party organization response identifies Zijin code 441621 and its registration center. The parcel/attachment query page requires a certificate number and uses login-cookie identity fields; no anonymous parcel-native ID or polygon was obtained.",
+  "identityVerifiedAgainst": "original WUP 2025 CSV, ranked roster, and pending queue: city code, rank, country, point, and population persons agree",
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGatesEvidenced": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeStateChanged": false
+}

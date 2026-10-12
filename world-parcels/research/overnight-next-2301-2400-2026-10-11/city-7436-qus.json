@@ -1,0 +1,43 @@
+{
+  "cityCode": 7436,
+  "queueRank": 2358,
+  "name": "Qus",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [25.9006233210632, 32.750250170756],
+  "population2025": 247941,
+  "population2025k": 247.941,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qus Egypt cadastral map official parcel registry GIS Egyptian Survey Authority Qus",
+        "result": "First-party discovery identified the Egyptian General Survey Authority (ESA) as the official survey/mapping custodian. Its service pages document paper and digital maps, topographic mapping, coordinate certificates, and land-survey records, but no public Qus parcel viewer or anonymous parcel API was exposed. A public Qena ArcGIS catalog was also found; its listed layers are administrative, infrastructure, and thematic layers, not cadastral parcel polygons.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://services5.arcgis.com/OesGQ9lCC4iHd7Hh/ArcGIS/rest/services/qenaa/FeatureServer"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "قوص مصر خريطة كادسترية سجل عقاري هيئة المساحة المصرية",
+        "result": "البحث العربي الرسمي وجد صفحات الهيئة المصرية العامة للمساحة التي توثق الخرائط الرقمية والورقية والخرائط المساحية وخدمات البحث في السجلات، كما وجد خبرًا رسميًا عن تعاون الهيئة مع محافظة قنا لإعداد خرائط مساحية وقاعدة بيانات لأملاك الدولة. لم تُثبت واجهة عامة مجهولة توفر هوية قطعة آمنة وهندسة مضلع لمدينة قوص.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingMapRoom.aspx",
+          "https://www.esa.gov.eg/NewsContent2.aspx?id=1509",
+          "https://www.alamiria.com/Sec/TashTxt?id=0%2FmFhkI9elg%3D"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "The ESA is evidenced as the official cadastral/survey custodian for Egypt, and Qena/ Qus is explicitly within the agency's mapping and survey scope. Public pages expose service descriptions and purchase/request workflows rather than a safe anonymous parcel feature service. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. No verified anonymous Qus parcel geometry with stable native identity was obtained."
+}

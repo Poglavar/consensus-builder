@@ -1,0 +1,70 @@
+{
+  "cityCode": 11583,
+  "queueRank": 2993,
+  "name": "Mejia",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [23.610528645396, 87.1160135232869],
+  "population2025": 200018,
+  "population2025k": 200.018,
+  "populationUnit": "persons",
+  "status": "complete",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mejia Bankura West Bengal official cadastral land records map parcel GIS BanglarBhumi",
+        "result": "First-party results identified the official Bankura district land-records page linking BanglarBhumi, the official Bankura block/gram-panchayat pages, and an official West Bengal document search result naming SPIO-BL&LRO-Mejia, Bankura. The current BanglarBhumi viewer did not yield an anonymous parcel vector response in bounded access.",
+        "actualResultUrls": ["https://bankura.gov.in/service/land-records/", "https://bankura.gov.in/gram-panchayats/", "https://bankura.gov.in/subdivision-blocks/", "https://banglarbhumi.gov.in/BanglarBhumi/", "https://par.wb.gov.in/writereaddata/No%2085%20CS.pdf"]
+      },
+      {
+        "language": "Bengali",
+        "query": "মেজিয়া বাঁকুড়া সরকারি জমির রেকর্ড খতিয়ান দাগ মৌজা মানচিত্র বাংলারভূমি",
+        "result": "First-party Bengali search results identified the Bengali Bankura district land-records page, which directs citizens to BanglarBhumi, and official Bankura pages confirming Mejia as a block. No anonymous parcel ID, geometry, schema, or CRS response was obtained.",
+        "actualResultUrls": ["https://bankura.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/", "https://banglarbhumi.gov.in/BanglarBhumi/", "https://bankura.gov.in/gram-panchayats/"]
+      }
+    ]
+  },
+  "executedQueries": [
+    {"language": "English", "query": "Mejia Bankura West Bengal official cadastral land records map parcel GIS BanglarBhumi", "result": "Official Bankura land-record route, block evidence, and BanglarBhumi viewer identified; no anonymous parcel vector response.", "actualResultUrls": ["https://bankura.gov.in/service/land-records/", "https://bankura.gov.in/gram-panchayats/", "https://bankura.gov.in/subdivision-blocks/", "https://banglarbhumi.gov.in/BanglarBhumi/", "https://par.wb.gov.in/writereaddata/No%2085%20CS.pdf"]},
+    {"language": "Bengali", "query": "মেজিয়া বাঁকুড়া সরকারি জমির রেকর্ড খতিয়ান দাগ মৌজা মানচিত্র বাংলারভূমি", "result": "Official Bengali Bankura land-record route and Mejia block evidence identified; no anonymous parcel vector response.", "actualResultUrls": ["https://bankura.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/", "https://banglarbhumi.gov.in/BanglarBhumi/", "https://bankura.gov.in/gram-panchayats/"]}
+  ],
+  "officialSources": [
+    {"url": "https://bankura.gov.in/service/land-records/", "publisher": "Bankura District Administration, Government of West Bengal", "observation": "Official district land-record page directs citizens to the Department of Land & Land Reforms BanglarBhumi portal."},
+    {"url": "https://bankura.gov.in/gram-panchayats/", "publisher": "Bankura District Administration, Government of West Bengal", "observation": "Official page states Mejia block consists of Ardhagram, Kushtor, Ramchandrapur, Banjora and Mejia gram panchayats."},
+    {"url": "https://bankura.gov.in/subdivision-blocks/", "publisher": "Bankura District Administration, Government of West Bengal", "observation": "Official administrative page places Mejia block in Bankura Sadar subdivision and reports its administrative extent."},
+    {"url": "https://bankura.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/", "publisher": "Bankura District Administration, Government of West Bengal", "observation": "Official Bengali land-record page directs citizens to BanglarBhumi."},
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/", "publisher": "Land and Land Reforms and Refugee Relief and Rehabilitation Department, Government of West Bengal", "observation": "Official state land-record portal identified as the relevant public service; current viewer access timed out."}
+  ],
+  "requests": [
+    {"url": "https://bankura.gov.in/service/land-records/", "method": "GET via official web fetch", "httpStatus": 200, "contentType": "text/html", "outcome": "Readable official page; links BanglarBhumi for land-record services."},
+    {"url": "https://bankura.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/", "method": "GET via official web fetch", "httpStatus": 200, "contentType": "text/html", "outcome": "Readable official Bengali page; directs users to BanglarBhumi."},
+    {"url": "https://bankura.gov.in/gram-panchayats/", "method": "GET via official web search/open", "httpStatus": 200, "contentType": "text/html", "outcome": "Mejia block and its five gram panchayats observed."},
+    {"url": "https://bankura.gov.in/subdivision-blocks/", "method": "GET via official web search/open", "httpStatus": 200, "contentType": "text/html", "outcome": "Mejia administrative block evidence observed."},
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/", "method": "GET via direct public curl and official web fetch", "httpStatus": null, "outcome": "Direct request timed out after 20 seconds; official web inspection also timed out. No login, CAPTCHA/Cloudflare bypass, private token, or TLS exception was attempted; no absence inference."},
+    {"url": "https://par.wb.gov.in/writereaddata/No%2085%20CS.pdf", "method": "GET via official web search/open", "httpStatus": 404, "outcome": "Search index exposed an official document result naming SPIO-BL&LRO-Mejia, Bankura, but the current PDF route returned 404; retained only as custodian-discovery evidence, not as a parcel-data route."}
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Bankura district administration identifies the state land-record service and Mejia as a local administrative block; the official search index also identifies SPIO-BL&LRO-Mejia, Bankura. This evidences a local registry/cadastral custodian and service, but not open parcel geometry.",
+  "registryEvidenceUrls": ["https://bankura.gov.in/service/land-records/", "https://bankura.gov.in/gram-panchayats/", "https://par.wb.gov.in/writereaddata/No%2085%20CS.pdf"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "sourceCandidate": {"url": "https://banglarbhumi.gov.in/BanglarBhumi/", "publisher": "Land and Land Reforms and Refugee Relief and Rehabilitation Department, Government of West Bengal", "kind": "BanglarBhumi land-record and cadastral-map viewer", "scope": "West Bengal service with Mejia/Bankura relevance; anonymous geometry access unverified", "safeSampleFile": null, "nativeFields": [], "safeFieldAllowlist": ["stable native parcel identity if source-proven", "geometry"]},
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_evidenced_no_public_geometry_verified",
+  "coverageAssessment": {"claimedScope": "West Bengal land-record and cadastral-map service with Bankura/Mejia administrative coverage", "verifiedOpenScope": "Bankura district land-record service, Mejia block administrative evidence, and state portal identity only; citywide parcel coverage, CRS, schema, native identity, and anonymous API access remain unverified.", "countrywideVerified": false},
+  "runtimeReadiness": "held_not_serially_qualified",
+  "remainingUncertainty": "BanglarBhumi may contain Mejia parcel records, but the current JavaScript/configuration, public API route, CRS, native parcel identity, city coverage, and safe geometry retrieval were not verified because the official viewer timed out. The timeout and unusable UI are access limitations, not evidence of citywide absence.",
+  "safeFieldPolicy": {"allowed": ["stable native parcel identity", "full parcel polygon or multipolygon geometry", "public source/service URL", "source CRS and query metadata"], "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration detail"]},
+  "pointBasis": "Exact immutable WUP queue point; not shifted to force a parcel hit.",
+  "populationBasis": "WUP queue record; preserved as 200018 persons and 200.018 thousands-equivalent value.",
+  "packetNote": "Research packet completion is not source integration, runtime admission, or proof of citywide parcel absence."
+}

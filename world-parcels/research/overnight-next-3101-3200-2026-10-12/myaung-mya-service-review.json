@@ -1,0 +1,62 @@
+{
+  "cityRecord": "city-4049-myaung-mya.json",
+  "cityCode": 4049,
+  "queueRank": 3144,
+  "city": "Myaung Mya",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Burmese first-party discovery identified Myanmar SLRD and Survey Department resources, plus Myaung Mya township evidence for a local land-records office/procedure. No anonymous public parcel API or bounded polygon response was verified.",
+  "queryAndRequestOutcomes": "All executed searches, URLs, request statuses, scope limits, and uncertainty are recorded in city-4049-myaung-mya.json.",
+  "custodians": [
+    {
+      "name": "Settlement and Land Records Department (SLRD)",
+      "scope": "National land-records custodian; township-level land-records procedure evidenced for Myaung Mya",
+      "evidence": "https://slrd.gov.mm/en, https://slrd.gov.mm/my/node/154, https://www.moi.gov.mm/iprd/news/248946"
+    },
+    {
+      "name": "Survey Department",
+      "scope": "National surveying/mapping agency; direct page request was unavailable during this attempt",
+      "evidence": "https://surveydepartment.gov.mm/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": "No parcel service schema was exposed.",
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "canonical native parcel identifier if later verified",
+    "parcel geometry",
+    "source CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [16.6022012206854, 94.9272856702308] was preserved in latitude/longitude order and not shifted.",
+    "No parcel polygon was retained; no GeoJSON sample was created.",
+    "The official SLRD page and Myaung Mya government notice establish custodianship/procedure, not open citywide geometry.",
+    "Survey Department request timed out; this is temporarily unavailable, not a negative coverage finding.",
+    "MIMU administrative and land-use resources do not establish cadastral parcel coverage.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "No public endpoint, native ID field, or parcel CRS could be inspected.",
+    "Potential office-mediated or authenticated SLRD records were not pursued with credentials.",
+    "No citywide completeness or absence inference is possible."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": [
+    "A national agency page is not an open parcel integration.",
+    "A timeout or inaccessible viewer is not evidence of parcel absence.",
+    "A township procedure does not prove citywide online parcel geometry."
+  ]
+}

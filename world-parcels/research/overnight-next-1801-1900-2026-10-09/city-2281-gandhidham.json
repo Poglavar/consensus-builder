@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 2281,
+  "queueRank": 1830,
+  "cityId": "queue:1830",
+  "name": "Gandhidham",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [23.0686534967028, 70.114622935814],
+  "centerLatLon": [23.0686534967028, 70.114622935814],
+  "population2025": 313691,
+  "population2025k": 313.691,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gandhidham Gujarat official cadastral parcel map land records Bhunaksha",
+        "result": "First-party discovery identified Gujarat Revenue Department land-record/property-card services, the official Directorate of Land Records link, the official Kutch district land-record custodian context, and a Gandhidham Development Authority survey-number search page. No public parcel feature endpoint was established.",
+        "actualResultUrls": [
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://gda.net.in/?page_id=2875",
+          "https://gsawb.gujarat.gov.in/writereaddata/Portal/Images/pdf/kachchh_district.pdf",
+          "https://dilrmp.gov.in/dilrmpold/State-RoR-Web"
+        ]
+      },
+      {
+        "language": "native/local (Gujarati)",
+        "query": "ગાંધીધામ ગુજરાત સત્તાવાર જમીન રેકોર્ડ નકશો ભુનકશા",
+        "result": "Gujarati-language first-party discovery surfaced the Gujarat Revenue Department's Gujarati-enabled official site and the same official land-record/property-card services. Search results did not expose a public Gandhidham parcel API or safe geometry response.",
+        "actualResultUrls": [
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://landrecords.gujarat.gov.in/",
+          "https://anyror.gujarat.gov.in/",
+          "https://e-milkat.gujarat.gov.in/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Gujarati first-party discovery followed by bounded TLS-verified anonymous GET attempts. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+      "observation": "Official Government of Gujarat Revenue Department page. It identifies survey, settlement, city-survey and the Settlement Commissioner/Superintendent of Land Records, and links to AnyRoR and e-Milkat; it is custodian/service evidence, not parcel geometry."
+    },
+    {
+      "url": "https://gda.net.in/?page_id=2875",
+      "observation": "Gandhidham Development Authority page titled Search By Survey Number. It is a local development-authority service route, but no safe result or geometry was retrieved."
+    },
+    {
+      "url": "https://gsawb.gujarat.gov.in/writereaddata/Portal/Images/pdf/kachchh_district.pdf",
+      "observation": "Official Gujarat district map PDF naming Gandhidham and the Settlement Commissionerate/Land Records context; cartographic administrative evidence only."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web",
+      "observation": "Official Department of Land Resources directory lists Gujarat's E-Dhara, Bhunaksha Gujarat and E-Milkat service categories; national directory metadata is not citywide geometry evidence."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/maps",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified anonymous curl request timed out after 20 seconds before HTML/JavaScript configuration was returned. No service route, schema, CRS, native ID or geometry was obtained. This is a route failure, not evidence of citywide absence."
+    },
+    {
+      "url": "https://gda.net.in/?page_id=2875",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified anonymous curl request failed certificate validation because the host certificate was expired. The authorized policy did not permit a source-specific TLS exception, so the request was not retried insecurely; no form response, schema, ID or geometry was obtained."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+      "method": "GET via public web retrieval",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official page retrieved. It exposed service links to AnyRoR, e-Milkat and iORA plus the land-record custodian, but no parcel feature response."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web",
+      "method": "GET via public web retrieval",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official directory retrieved. Gujarat service categories were confirmed; no Gandhidham parcel geometry or public API was returned."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Gujarat official Revenue/land-record services, Gandhidham Development Authority survey-number route, and Kutch district administrative land-record context.",
+    "verifiedOpenScope": "Local/state custodian and service existence only; no open Gandhidham parcel geometry coverage, schema or CRS verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current Gujarat maps JavaScript/configuration, public API route, Gandhidham city-survey unit identifiers, parcel schema, CRS, stable native identity, update currency and citywide completeness remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit/miss inference was made. A timeout, certificate failure or unusable UI is not evidence of cadastral absence.",
+  "nextStep": "A later attempt may inspect the Gujarat/Gandhidham service through an available valid public route and request only bounded anonymous native ID-plus-geometry data. Serial reviewer qualification remains required; runtime readiness stays held."
+}

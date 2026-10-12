@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5873",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-5873-panabo.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/panabo-service-review.json",
+    "tmp/valhalla-parcel-research/panabo/layer.json",
+    "tmp/valhalla-parcel-research/panabo/query.json"
+  ],
+  "reason": "WUP code 5873, rank 2394, Philippines, point [7.32044439924539,125.678394076922], 244050 persons match official 2025 source, ranked roster and queue. English and Cebuano/Filipino searches have executed attempts and result URLs. City Assessor office is first-party procedural context; registry custody remains unresolved (null). Original attempted metadata and bounded point responses are HTML errors, with no qualified ID, CRS, or parcel polygon. No independent live adapter or headed Details verification; held without citywide absence inference.",
+  "checkedAt": "2026-10-11T11:06:18Z"
+}

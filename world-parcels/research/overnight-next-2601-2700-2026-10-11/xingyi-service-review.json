@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-9098-xingyi.json",
+  "cityCode": 9098,
+  "queueRank": 2684,
+  "city": "Xingyi",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "held_for_serial_qualification",
+  "registryFound": null,
+  "summary": "Official and local-government-hosted evidence identifies Xingyi's natural-resources and real-estate-registration custodians, but no public cadastral viewer/API or bounded anonymous parcel ID+geometry response was available. No sample was retained.",
+  "discovery": {
+    "english": {
+      "query": "Xingyi China official cadastral map parcel GIS land registry Xingyi Natural Resources Bureau",
+      "outcome": "Found provincial cadastral/registration policy and a Xingyi land-use announcement reference; no public Xingyi parcel service.",
+      "urls": [
+        "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zfxxgk/fdzdgknr/qtfdxx/jyta/202507/t20250717_88298834.html",
+        "https://zrzy.guizhou.gov.cn/wzgb/ztzl/rdzt/wwbdcdjtjy_1/bdcdjzcfg/202410/P020241015550915516227.pdf",
+        "https://www.ldqxn.com/news/gonggao/20210713/507356.htm"
+      ]
+    },
+    "native": {
+      "language": "Chinese (中文)",
+      "query": "兴义市 自然资源和规划局 不动产登记 地籍图 宗地 GIS 官方",
+      "outcome": "Found Guizhou provincial registration-cloud evidence and an Xingyi registration-center report; no public Xingyi parcel service or geometry response.",
+      "urls": [
+        "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zfxxgk/fdzdgknr/qtfdxx/jyta/202507/t20250717_88298834.html",
+        "https://gzxy.wenming.cn/wmcj/202109/t20210923_3309096.html",
+        "https://www.95ye.com/qianxinan/gov/93801.html"
+      ]
+    }
+  },
+  "requestLog": "See city-9098-xingyi.json requestsAndEndpointChecks. GETs returned official-service HTTP 558, legacy land-bureau HTTP 404 over both HTTP and HTTPS, and national policy site HTTP 418. No parcel query was fabricated after the viewer/service route was unavailable.",
+  "custodianAssessment": {
+    "localCustodian": "Xingyi Natural Resources Bureau / Xingyi Natural Resources Bureau Real Estate Registration Center, evidenced by Xingyi-local reporting and an indexed government-service listing.",
+    "nationalOrProvincialContext": "Guizhou Provincial Department of Natural Resources and the national Real Estate Registration Center provide registration/cadastral framework context.",
+    "distinction": "Provincial/national prose and policy are not treated as evidence of a public Xingyi parcel layer. No local registry map/API was verified, so registryFound is null."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "parcel geometry",
+    "source layer/year",
+    "source CRS if declared",
+    "retrieval timestamp"
+  ],
+  "fieldMapping": "No native parcel schema was observed. No owner, address, contact, titleholder, personal, tax, account, or document fields were requested, logged, or retained.",
+  "coverageAndUncertainty": [
+    "No citywide or countrywide parcel coverage was verified.",
+    "Exact WUP point [25.0908649190814,104.906478294774] was not shifted and was never used to infer absence.",
+    "HTTP failures, 404, login/service unavailability, or lack of an exposed viewer are not evidence that Xingyi lacks cadastral data.",
+    "No CRS, axis order, geometry validity, native identity stability, or sample polygon could be assessed.",
+    "Packet completion is research evidence only and does not admit a runtime source."
+  ],
+  "sample": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "serialReviewerRequirements": [
+    "Independently find and qualify a live anonymous Xingyi parcel service or documented public data download.",
+    "Verify stable native parcel identity, CRS/axis behavior, city coverage, safe fields, and valid polygon geometry before any adapter work."
+  ]
+}

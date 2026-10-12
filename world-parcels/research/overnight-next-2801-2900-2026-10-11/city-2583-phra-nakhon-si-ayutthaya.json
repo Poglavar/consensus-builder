@@ -1,0 +1,61 @@
+{
+  "cityCode": 2583,
+  "queueRank": 2811,
+  "name": "Phra Nakhon Si Ayutthaya",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "iso2": "TH",
+  "iso3": "THA",
+  "locId": 764,
+  "capital": false,
+  "point": [14.3499319432754, 100.583952232203],
+  "population2025": 211344,
+  "population2025k": 211.344,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Phra Nakhon Si Ayutthaya Thailand official cadastral parcel map GIS Department of Lands",
+        "result": "First-party discovery found the Department of Lands national parcel-map center and the official Ayutthaya Provincial Land Office. The official national LandsMaps service is described as the Department of Lands parcel-map search, but its current public host timed out during direct anonymous access; no anonymous vector parcel endpoint was exposed.",
+        "actualResultUrls": ["https://www.dol.go.th/landmap/home/", "https://www.dol.go.th/ayutthaya/home/", "https://landsmaps.dol.go.th/"]
+      },
+      {
+        "language": "Thai (local/native)",
+        "query": "พระนครศรีอยุธยา แผนที่รูปแปลงที่ดิน กรมที่ดิน สำนักงานที่ดินจังหวัดพระนครศรีอยุธยา",
+        "result": "ผลการค้นหาจากแหล่งทางการพบศูนย์ข้อมูลแผนที่รูปแปลงที่ดินของกรมที่ดิน ระบบค้นหารูปแปลงที่ดิน LandsMaps และสำนักงานที่ดินจังหวัดพระนครศรีอยุธยา ซึ่งเป็นหลักฐานผู้ดูแลระดับจังหวัด แต่ไม่พบการตอบกลับแบบเวกเตอร์ที่มีรหัสแปลงและรูปเรขาคณิตอย่างปลอดภัยในการเข้าถึงแบบไม่ระบุตัวตน.",
+        "actualResultUrls": ["https://www.dol.go.th/dc/home/", "https://www.dol.go.th/landmap/home/", "https://www.dol.go.th/ayutthaya/home/"]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "สำนักงานที่ดินจังหวัดพระนครศรีอยุธยา / Ayutthaya Provincial Land Office, official Department of Lands subsite.",
+    "localCustodianScope": "Provincial land-office administration and public land-service information for Phra Nakhon Si Ayutthaya; the page does not itself expose parcel-vector data.",
+    "nationalMapService": "Department of Lands, Land Parcel Map Information Center and LandsMaps public parcel-map search.",
+    "registryEvidenceUrls": ["https://www.dol.go.th/ayutthaya/home/", "https://www.dol.go.th/landmap/home/", "https://landsmaps.dol.go.th/"]
+  },
+  "attemptsRecorded": [
+    {"method": "SEARCH", "url": "https://www.dol.go.th/landmap/home/", "httpStatus": 200, "outcome": "Official Department of Lands parcel-map information center found; page lists Lands State, Landpublic, CondoMaps and iPortal, but not a downloadable parcel-vector schema."},
+    {"method": "SEARCH", "url": "https://www.dol.go.th/ayutthaya/home/", "httpStatus": 200, "outcome": "Official Ayutthaya Provincial Land Office page loaded and identifies the provincial land officer and land-administration service scope; no parcel API was exposed in the retrieved page."},
+    {"method": "GET", "url": "https://www.dol.go.th/landmap/home/", "httpStatus": 200, "outcome": "Current official center page retrieved anonymously over HTTPS; no public parcel ID-plus-geometry response or service configuration was exposed."},
+    {"method": "GET", "url": "https://www.dol.go.th/ayutthaya/home/", "httpStatus": 200, "outcome": "Current official provincial office page retrieved anonymously over HTTPS; no public parcel ID-plus-geometry response was exposed."},
+    {"method": "GET", "url": "https://landsmaps.dol.go.th/", "httpStatus": null, "outcome": "Direct anonymous request timed out after 15 seconds with curl and also timed out in the web fetcher. No response body, schema, CRS, parcel identifier, or geometry was inferred."},
+    {"method": "GET", "url": "https://www.dol.go.th/media/716929789247754240/2026/01/9DKdc4Akf1wWsxbt7H5Gr3eq.pdf", "httpStatus": 200, "outcome": "Official 2026 Ayutthaya land-office service-plan PDF was discoverable and confirms the provincial land-office service context; it is not a parcel-vector response and no personal or title fields were requested or retained."}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdentity": null, "geometryCrs": null, "sourceFieldMapping": {}, "compositeKeyProvenance": null, "boundedAnonymousResponse": {"featureCount": null, "result": "No usable anonymous parcel-vector response."}},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No parcel-vector route was available; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope": "Official Department of Lands national parcel-map service and Ayutthaya Provincial Land Office.", "verifiedOpenScope": "Local custodian and national map-service pages were verified, but no anonymous parcel-vector coverage or citywide completeness was verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": ["The exact WUP point [14.3499319432754, 100.583952232203] was preserved in latitude/longitude order and was not shifted.", "The LandsMaps timeout, map extent absence, or unavailable UI is not evidence of citywide cadastral absence.", "No parcel polygon or raw source-specific attribute set is retained.", "No citywide coverage, update cadence, parcel schema, native identity semantics, or CRS was verified.", "This packet records research only and is not source integration or runtime admission."],
+  "uncertainty": "Thailand's Department of Lands and the Ayutthaya Provincial Land Office are evidenced first-party custodians, but the current anonymous LandsMaps endpoint did not respond within the bounded request window. A parcel service may require a different current bootstrap route or interaction; no credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+}

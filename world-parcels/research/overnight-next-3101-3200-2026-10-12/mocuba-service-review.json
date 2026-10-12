@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-3015-mocuba.json",
+  "cityCode": 3015,
+  "queueRank": 3134,
+  "city": "Mocuba",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Portuguese first-party discovery evidenced a real municipal Mocuba cadastral/land-information system, but no anonymous public parcel service, schema, CRS, or safe native-ID-plus-geometry response was qualified. No geometry sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries and direct request outcomes are recorded in city-3015-mocuba.json. No login, CAPTCHA/Cloudflare bypass, credential, private token, unsafe-field request, or TLS bypass occurred.",
+  "custodians": [
+    {
+      "name": "Conselho Municipal da Cidade de Mocuba",
+      "scope": "Local municipal cadastral/land-information custodian context evidenced by the official PDUL assessment.",
+      "evidence": "https://www.pdul.gov.mz/content/download/183/992/file/PDUL_AAD%202020_Mocuba.pdf"
+    },
+    {
+      "name": "Agência Nacional de Desenvolvimento Geo-Espacial (ADE) / MOZGIS",
+      "scope": "National geospatial portal context; inspected Mocuba service is not a parcel service.",
+      "evidence": "https://www.ade.gov.mz/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "No parcel polygon was safely returned; no sample GeoJSON was written.",
+    "Exact-point and citywide absence were not assessed because no qualified parcel endpoint existed.",
+    "Municipal cadastral-system evidence is not source integration/admission.",
+    "Runtime readiness remains held pending independent serial qualification."
+  ],
+  "uncertainty": [
+    "Municipal ArcGIS/shapefile coverage and current publication status are not independently observable from the public endpoints inspected.",
+    "The national catalog may omit separately hosted municipal services."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

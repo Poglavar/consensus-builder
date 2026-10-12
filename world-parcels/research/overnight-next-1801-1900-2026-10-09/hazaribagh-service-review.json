@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-11257-hazaribagh.json",
+  "schemaVersion": "1.0",
+  "cityCode": 11257,
+  "queueRank": 1812,
+  "city": "Hazaribagh",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Hazaribag district and Jharkhand land-record/map services were identified, but the direct JharBhoomi route timed out and no anonymous Hazaribagh parcel ID-plus-polygon response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Hindi discovery queries and actual result URLs are recorded in city-11257-hazaribagh.json. First-party district, state and national government pages establish local registry custody and public service existence, but not open citywide Hazaribagh geometry coverage.",
+  "requestOutcomes": "TLS-verified GET requests loaded the official district land-records page and state GIS gateway. The direct JharBhoomi page timed out after 20 seconds. The Government of India service-directory route redirected to its generic services page. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request or TLS disablement was used.",
+  "attemptedRoutes": [
+    "Hazaribag district administration land-records page",
+    "Jharkhand JharBhoomi newhome2 route",
+    "Government of India JharBhuNaksha service-directory route",
+    "Jharkhand State GIS gateway"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [23.9952991688034, 85.3602411525146] was preserved and never shifted; it was not tested against parcel geometry.",
+    "No Hazaribagh map unit, parcel geometry, native stable parcel identity, source parcel schema or CRS was retrieved.",
+    "No city boundary or complete city coverage was established for an open geometry service.",
+    "A timeout, map extent miss, login wall, partial endpoint response or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no Hazaribagh geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No Hazaribagh parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "https://jharbhoomi.jharkhand.gov.in/newhome2",
+      "https://hazaribag.nic.in/service/land-records/",
+      "https://gis.jharkhand.gov.in/"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Hazaribag district land-records page, Jharkhand land-record/map portals and state GIS gateway.",
+    "verifiedOpenScope": "Official service discovery only; no open Hazaribagh parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer access path, map-unit identifiers, relevant survey vintage, parcel schema, CRS, native identity, update currency, legal status and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title or completeness of Indian/Jharkhand cadastral data.",
+  "retainedSample": null
+}

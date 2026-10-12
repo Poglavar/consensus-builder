@@ -1,0 +1,92 @@
+{
+  "cityCode": 11889,
+  "queueRank": 1341,
+  "name": "Basirhat",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [22.6808297239835, 88.8431725176141],
+  "population2025": 419703,
+  "population2025k": 419.703,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Basirhat local administrative and land-record provenance is evidenced: the official Basirhat Municipality site identifies the municipality and lists the Sub-Divisional Land & Land Reforms Officer, the North 24 Parganas district site places Basirhat Municipality and Basirhat-I/II blocks in the Basirhat subdivision, and West Bengal's official Banglarbhumi portal provides plot-map, mouza-map, plot-information and ROR services. This establishes a local/state registry procedure and custodian path, not open parcel-vector integration.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Basirhat West Bengal official cadastral parcel map land records Banglarbhumi plot map",
+        "result": "Found the official West Bengal Banglarbhumi portal with Plot Map Request, Mouza Map Request, Plot Information and ROR services; official Basirhat Municipality map page; official North 24 Parganas subdivision listing; and the West Bengal government mouza-map request form. No public anonymous parcel-vector endpoint or bounded ID+geometry response was exposed.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://basirhatmunicipality.in/map/",
+          "https://north24parganas.gov.in/subdivision-blocks/",
+          "https://bsk.wb.gov.in/download/35.pdf"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "বাসিরহাট সরকারি জমির নকশা খতিয়ান দাগ মানচিত্র",
+        "result": "Bengali-language discovery resolved to the official Banglarbhumi land-record portal and Bengali cadastral terminology for plot/dag, khatian and mouza-map services, but did not identify an anonymous public parcel geometry API.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://north24parganas.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "role": "West Bengal Land and Land Reforms and Refugee Relief and Rehabilitation Department official land-record portal",
+      "observation": "Search discovery showed Plot Map Request, Mouza Map Request, RS-LR Plot Information, ROR and related citizen services. Direct anonymous HTTPS GET timed out after 25 seconds in this attempt; no login, CAPTCHA bypass, credentials or private token was used."
+    },
+    {
+      "url": "https://basirhatmunicipality.in/map/",
+      "role": "Official Basirhat Municipality map page",
+      "observation": "Search discovery lists Basirhat ward, land-use and baseline map downloads. It is municipal planning/map material, not evidence of parcel-vector schema or parcel identity. Direct curl DNS resolution failed from this host."
+    },
+    {
+      "url": "https://basirhatmunicipality.in/bashirhat-directory/",
+      "role": "Official Basirhat Municipality directory",
+      "observation": "Search discovery lists the Sub-Divisional Land & Land Reforms Officer and local administrative contacts, establishing a local custodian path; no parcel data was requested or retained."
+    },
+    {
+      "url": "https://north24parganas.gov.in/subdivision-blocks/",
+      "role": "Official North 24 Parganas district administrative listing",
+      "observation": "Anonymous GET returned HTTP 200. The page places Basirhat Municipality and Basirhat-I/II among the Basirhat subdivision units; it contains no parcel geometry endpoint."
+    },
+    {
+      "url": "https://bsk.wb.gov.in/download/35.pdf",
+      "role": "West Bengal government mouza-map request form",
+      "observation": "Search discovery describes the official application for RS scanned/LR digitized mouza maps addressed to the District Land & Land Reforms Officer, with district, police station, mouza, JL and sheet fields. Direct PDF request timed out; no map was obtained."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and was not shifted. Portal timeout, DNS failure, and non-cadastral municipal map material do not establish citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Basirhat Municipality, North 24 Parganas Basirhat subdivision, West Bengal Banglarbhumi official land-record services, and the government mouza-map request route.",
+    "verifiedOpenScope": "Official local/state registry and procedure provenance was established, but anonymous parcel-vector access, schema, CRS, native identity, exact-point containment and citywide coverage were not verified.",
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "safe parcel identifier only if publicly exposed and non-personal",
+    "geometry",
+    "CRS or coordinate-system metadata",
+    "non-personal layer/schema metadata",
+    "administrative hierarchy codes and names"
+  ],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

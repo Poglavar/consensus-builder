@@ -1,0 +1,115 @@
+{
+  "cityCode": 3939,
+  "queueRank": 2571,
+  "name": "Jega",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [12.2260741579243, 4.37548777841849],
+  "population2025": 228584,
+  "population2025k": 228.584,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jega Nigeria official cadastral parcel map land registry GIS Kebbi Surveyor General",
+        "result": "First-party results identified Kebbi Geographic Information Services (KEBGIS), the local Kebbi State land/GIS custodian, and the official Kebbi State e-services page linking KEBGIS. KEBGIS documents land registration, digital Certificate of Occupancy, thematic maps, satellite imagery, and land-document verification, but discovery did not expose a public anonymous parcel-geometry service.",
+        "actualResultUrls": [
+          "https://kebgis.com/about.html",
+          "https://kebbistate.gov.ng/kebbi-state-e-services",
+          "https://kebbistate.gov.ng/kebbi-geographical-information-system-kbgis",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      },
+      {
+        "language": "Hausa",
+        "query": "Jega Najeriya taswirar filaye kadastre rajistar ƙasa Kebbi",
+        "result": "The local-language discovery returned the first-party KEBGIS and Kebbi State land-service routes as the relevant local custodian. No separate Hausa parcel viewer or anonymous parcel-geometry/API route was identified.",
+        "actualResultUrls": [
+          "https://kebgis.com/about.html",
+          "https://kebbistate.gov.ng/kebbi-state-e-services",
+          "https://kebbistate.gov.ng/sites/default/files/Citizens%20budget%20%28Hausa%29%20Kasafin%20kudin%20jama%27ar%20Kebbi%20-%202025.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "sourceIds": [],
+  "officialLeads": [
+    {
+      "url": "https://kebgis.com/about.html",
+      "operator": "Kebbi Geographic Information Services Agency (KEBGIS)",
+      "scope": "Kebbi State land administration and GIS services, including land registration and property-document verification; Jega is in Kebbi State.",
+      "evidence": "The first-party KEBGIS page describes a secure digital land registry, land registration and transactions, land-use regulation, geospatial mapping, and digital C of O products. It does not document an anonymous parcel feature endpoint."
+    },
+    {
+      "url": "https://kebbistate.gov.ng/kebbi-state-e-services",
+      "operator": "Kebbi State Government",
+      "scope": "Official state e-services directory linking KEBGIS as the land-administration service.",
+      "evidence": "The official state page lists KEBBI GEOGRAPHIC INFORMATION SYSTEM (KEBGIS) under Land Administration and links to the KEBGIS website."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://kebgis.com/",
+      "httpStatus": 200,
+      "outcome": "Official KEBGIS landing page loaded. HTML describes land registration, digital C of O, thematic maps, satellite imagery, and reports; no map viewer or parcel feature-service configuration was present."
+    },
+    {
+      "method": "GET",
+      "url": "https://kebbistate.gov.ng/kebbi-state-e-services",
+      "httpStatus": 200,
+      "outcome": "Official Kebbi State e-services page loaded and linked KEBGIS as the land-administration service."
+    },
+    {
+      "method": "GET",
+      "url": "https://kebbistate.gov.ng/kebbi-geographical-information-system-kbgis",
+      "httpStatus": 200,
+      "outcome": "Official Kebbi State KBGIS information page loaded; no anonymous parcel geometry or service endpoint was exposed in the page."
+    },
+    {
+      "method": "GET",
+      "url": "https://app.kebgis.com/",
+      "httpStatus": 302,
+      "outcome": "Linked application redirected to /useraccounts/login, an authentication wall. No login, credential, private token, CAPTCHA bypass, or further authenticated request was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://kebgis.ng/auth/login",
+      "httpStatus": 200,
+      "outcome": "Staff-login page loaded. It exposed an email/password form only; no public map/API route was followed."
+    },
+    {
+      "method": "GET",
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "httpStatus": 200,
+      "outcome": "Federal Surveyor-General cadastral-services prose loaded. It confirms national cadastral responsibilities and a cadastral GIS function, but is general agency evidence rather than a Jega/Kebbi parcel service."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No public viewer JavaScript/configuration or feature-service URL was exposed by the inspected first-party KEBGIS pages.",
+    "responseSchema": "No parcel feature response was obtained.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not obtained; no synthetic identity was created.",
+    "sourceFieldMapping": "Not obtained.",
+    "compositeKeyProvenance": "Not obtained.",
+    "boundedAnonymousResponse": {"requestScope": "Jega exact WUP point [12.2260741579243, 4.37548777841849] preserved for qualification", "featureCount": 0, "geometryFeatureCount": 0, "interpretation": "No parcel query endpoint was available; this is not an exact-point miss or citywide absence result."}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later qualified", "polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date", "service metadata"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "certificate/title"],
+  "coverageAssessment": {
+    "claimedScope": "KEBGIS/Kebbi State land administration and GIS services",
+    "verifiedOpenScope": "Official local-custodian documentation and public landing pages only; no anonymous parcel geometry/native identity response verified",
+    "countrywideVerified": false
+  },
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "A real Kebbi local registry/GIS custodian is evidenced, but no anonymous native ID-plus-geometry response, schema, CRS, or adapter route was qualified."},
+  "scopeLimits": ["Exact WUP point was preserved and not shifted.", "No parcel polygon retained because no safe native geometry response was obtained.", "Authentication wall was not bypassed.", "No exact-point hit/miss, map extent miss, timeout, or unusable UI is treated as evidence of citywide absence.", "No source integration, adapter admission, runtime qualification, or credentials were used."],
+  "remainingUncertainty": "KEBGIS may expose additional authenticated or non-indexed mapping functionality. Public coverage for Jega, native identity semantics, geometry availability, CRS, update cadence, and runtime behavior remain unverified.",
+  "resultCategory": "official_local_registry_metadata_no_verified_open_geometry",
+  "identityPolicy": "Do not synthesize a parcel ID; retain only a native parcel identity if the source exposes one."
+}

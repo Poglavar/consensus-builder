@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:2817",
+  "cityCode": 5815,
+  "queueRank": 2817,
+  "name": "Kabondo-Dianda",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso2": "CD",
+  "iso3": "COD",
+  "point": [-8.90850556802448, 25.6662900880047],
+  "centerLatLon": [-8.90850556802448, 25.6662900880047],
+  "population2025": 211167,
+  "population2025k": 211.167,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kabondo-Dianda cadastral parcels Democratic Republic of the Congo official",
+        "result": "No official Kabondo-Dianda parcel viewer or parcel-vector endpoint found. Results pointed to general DRC cadastral administration and non-cadastral place references.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+        ]
+      },
+      {
+        "language": "French (official/local administrative language)",
+        "query": "Kabondo-Dianda cadastre parcelles République démocratique du Congo site officiel",
+        "result": "The official Ministry site, official land-registry consultation service, and official Ministry circonscriptions page were found; no public parcel geometry/API for Kabondo-Dianda was exposed.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Ministère des Affaires Foncières de la RDC; the official service describes cadastral and real-estate register consultation through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre. A Kabondo-Dianda-specific public local office or open data endpoint was not evidenced.",
+  "portalsFound": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "observation": "Official Ministry homepage returned HTTP 200 HTML. It advertises a Projet Pilote de Numérisation du Cadastre focused on management, preservation, security, and digitization of land archives; no public parcel map/vector endpoint was present in the inspected HTML or loaded JavaScript."
+    },
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "Official Ministry page lists 143 land/cadastral jurisdictions across 26 provinces. It is an administrative directory, not a parcel geometry service; Kabondo-Dianda was not listed as a jurisdiction in the retrieved page."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "observation": "Official land-search workflow accepts property/reference fields for charges, mortgages, or fiscal status. It is a form workflow and not an anonymous parcel-vector API."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "Official public-service catalog describes paid consultation of cadastral and real-estate registers through the responsible land-registration/cadastre offices. It does not publish parcel geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official HTML loaded with browser-like headers; viewer/config inspection found Next.js content APIs and a localhost document link, but no WFS, FeatureServer, MapServer, OGC API, or GeoJSON parcel endpoint."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/api/documents?view=catalog",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Official content catalog returned document metadata, including the cadastral digitization project; no parcel IDs, geometries, schema, or CRS."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/api/sliders",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Official homepage content API returned project/news slide metadata only; no parcel records."
+    },
+    {
+      "url": "https://backend-cadastre.193.203.191.123.sslip.io/wp-json/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Backend WordPress root exposed only standard content namespaces/routes on inspection; no cadastral parcel feature service was identified. This host was not treated as a parcel source."
+    },
+    {
+      "url": "https://cadastre.gouv.cd/",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "DNS resolution failed through the request environment",
+      "assessment": "Unreachable and not a verdict on national or citywide absence; no TLS exception or bypass attempted."
+    }
+  ],
+  "source": null,
+  "verifiedParcelResponse": null,
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Ministry presents a national cadastral administration and a pilot digitization project; the official directory claims 26 provinces and 143 jurisdictions.",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "bounded query metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [-8.90850556802448, 25.6662900880047] was preserved in latitude/longitude order and was not shifted to force a hit.",
+    "No exact-point hit or miss, map extent miss, DNS failure, or absent public endpoint was treated as evidence of citywide absence.",
+    "No parcel polygon, source-specific raw attribute set, native identity, schema, or CRS was obtained or retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+    "Packet completion is research completion only, not source integration or admission."
+  ],
+  "remainingUncertainty": "The Ministry's cadastral records and digitization program may include Kabondo-Dianda through a local or provincial office, but the current anonymous public map/API URL, parcel schema, stable native identity semantics, CRS, and open coverage were not established.",
+  "nextStep": "Serial reviewer may recheck official Ministry deployments and any future public cadastral viewer, using a bounded anonymous ID-plus-geometry request if one is exposed.",
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification"
+}

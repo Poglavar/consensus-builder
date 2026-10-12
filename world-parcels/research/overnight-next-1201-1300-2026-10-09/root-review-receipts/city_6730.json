@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6730",
+  "decision": "held",
+  "reason": "Batman identity and English/Turkish searches match the queue. Original TKGM point response contains one polygon; the one-feature sample matches it exactly and retains only a safe composite cadastral ID. It proves local public geometry only. No independent live adapter exact-ID protocol, forced paging, 13 cells, metric GEOS/overlap, source binding or headed Details verification.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6730-batman.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/batman-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/batman-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/batman-attempt3/api.json"
+  ],
+  "checkedAt": "2026-10-09T11:44:40.361222Z"
+}

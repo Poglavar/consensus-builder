@@ -1,0 +1,14 @@
+{
+  "taskId": "packet:9127",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9127-haldwani.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/haldwani-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:44:31Z",
+  "reason": "Immutable WUP identity matches rank 1201, India, point [29.2175763639524,79.51183207031], and 463530 persons. The complete packet records English and Hindi searches and official revenue-record custody, but the parcel portals and advertised map-service metadata timed out before HTTP; the accessible registration GIS configuration identifies administrative, village, road, and rate-related layers, not a parcel layer. No full native-ID polygon, forced paging, 13 bounded cells, independent metric GEOS checks, source binding, or headed Details check is evidenced. Timeouts are not absence. The packet is not integrated and remains held."
+}

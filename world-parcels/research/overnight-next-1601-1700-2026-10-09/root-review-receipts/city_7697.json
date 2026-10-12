@@ -1,0 +1,19 @@
+{
+  "taskId": "city:7697",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7697-mandi-bahauddin.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/mandi-bahauddin-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:01:34Z",
+  "reason": "WUP archive and queue agree on Mandi Bahauddin, Pakistan, rank 1695, point [32.5807897110688,73.4859193391159], and 337161 persons. English and Urdu queries and first-party URLs are recorded. District revenue administration and the Punjab PULSE viewer support cadastral custody and a public map procedure. An independently repeated ArcGIS metadata request returned application error 499 Token Required within HTTP 200; the PULSE hierarchy route returned HTTP 401. No anonymous native parcel ID plus full polygon response or safe sample was evidenced. Authentication walls are not absence.",
+  "firstPartyChecks": [
+    "https://mandibahauddin.punjab.gov.pk/administration",
+    "https://lis.pulse.gop.pk/",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+    "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDivisionsList"
+  ],
+  "admissionGates": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification; runtime remains held."
+}

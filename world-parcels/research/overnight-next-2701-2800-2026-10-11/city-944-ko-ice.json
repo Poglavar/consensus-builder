@@ -1,0 +1,80 @@
+{
+  "cityCode": 944,
+  "queueRank": 2724,
+  "country": "Slovakia",
+  "countryCode": "SK",
+  "name": "Košice",
+  "iso3": "SVK",
+  "point": [48.7182343856836, 21.2550572326794],
+  "population2025": 216740,
+  "population2025k": 216.74,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Košice Slovakia official cadastral map parcel viewer API kataster map",
+        "result": "Found the official City of Košice GISPLAN cadastral map viewer. It identifies the cadastral layer as Kataster: ÚGKK SR and exposes parcel identification in the public map UI. Found the official Slovak geodesy WFS publication page and national C-register parcel WFS.",
+        "actualResultUrls": [
+          "https://gisplan.kosice.sk/mapa/katastralna-mapa/",
+          "https://www.skgeodesy.sk/vugk/produkty-sluzby/inspire/ukladacie-sluzby/",
+          "https://inspirews.skgeodesy.sk/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetCapabilities"
+        ]
+      },
+      {
+        "language": "Slovak",
+        "query": "Slovensko Košice oficiálna katastrálna mapa parcely mapový klient API",
+        "result": "Found the official Košice GISPLAN Katastrálna mapa and the official Slovak geoportal/geodesy publication describing open C- and E-register cadastral parcel data. The Košice map is a local public viewer; the WFS is the national first-party service operated/published through VÚGK/ÚGKK SR.",
+        "actualResultUrls": [
+          "https://gisplan.kosice.sk/mapa/katastralna-mapa/",
+          "https://geoportal.gov.sk/gallery/maps",
+          "https://www.skgeodesy.sk/vugk/produkty-sluzby/inspire/ukladacie-sluzby/"
+        ]
+      }
+    ],
+    "researchedAt": "2026-10-11",
+    "searchScope": "First-party discovery only; no login, credentials, CAPTCHA bypass, private fields, or unsafe owner/titleholder/address/contact fields used."
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "City of Košice GISPLAN public cadastral map viewer",
+    "nationalCustodian": "Research Institute of Geodesy and Cartography in Bratislava (VÚGK), under the Slovak geodesy/cadastre authority ecosystem (ÚGKK SR)",
+    "localViewerUrl": "https://gisplan.kosice.sk/mapa/katastralna-mapa/",
+    "nationalServiceUrl": "https://inspirews.skgeodesy.sk/geoserver/cp/wfs",
+    "evidence": "The local viewer is a public cadastral map for Košice and displays parcel identification; the national WFS GetCapabilities describes the C-register cadastral parcel layer for Slovakia and names VÚGK as provider."
+  },
+  "service": {
+    "kind": "OGC WFS 2.0.0",
+    "endpoint": "https://inspirews.skgeodesy.sk/geoserver/cp/wfs",
+    "typeName": "cp:CP.CadastralParcel",
+    "scope": "Slovakia C-register cadastral parcels; not a Košice-only service",
+    "defaultCrs": "EPSG:4258",
+    "responseCrsObserved": "urn:ogc:def:crs:EPSG::4258",
+    "outputFormat": "application/json",
+    "schemaObserved": ["feature id", "geometry", "inspireId", "nationalCadastralReference", "label", "areaValue", "referencePoint", "validFrom", "validTo", "administrativeUnit"],
+    "safeFieldAllowlist": ["feature id", "geometry", "inspireId.localId", "inspireId.namespace", "inspireId.versionId", "nationalCadastralReference", "label", "areaValue.value", "areaValue.@uom", "referencePoint", "validFrom", "validTo", "administrativeUnit.@href"],
+    "nativeIdentityPreference": "inspireId.localId or nationalCadastralReference; WFS feature id is also available as CP.<number>. Do not use a synthetic row number."
+  },
+  "boundedEvidence": {
+    "broadBbox": "EPSG:4326 BBOX 21.245,48.708,21.265,48.728",
+    "broadRequestOutcome": "HTTP 200 anonymous JSON; numberMatched=9556, numberReturned=3, full polygon geometries and safe parcel metadata returned.",
+    "exactPointNeighborhood": "EPSG:4326 BBOX 21.2550,48.7180,21.2552,48.7184",
+    "exactNeighborhoodOutcome": "HTTP 200 anonymous JSON; parcel polygons returned in the small neighborhood query. This is not evidence that the exact WUP point lies inside a parcel.",
+    "observedExampleIdentity": "CP.2390154",
+    "observedExampleNativeFields": {
+      "inspireId.localId": "827118_1862/5.C",
+      "inspireId.namespace": "SK.ESKN.CP",
+      "nationalCadastralReference": "827118_1862/5.C",
+      "label": "1862/5",
+      "versionId": "20261005T07:10:00"
+    },
+    "sampleRetained": false
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The national WFS is first-party and publicly queryable, but it is a Slovakia-wide service rather than a dedicated Košice adapter endpoint.",
+    "The bounded response demonstrates service availability and parcel geometry near the city point, not complete city coverage or point containment.",
+    "No adapter was admitted or runtime-qualified in this research packet."
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400",
+  "cityId": "wup2025:3588",
+  "wupCityCode": 3588,
+  "cityCode": 3588,
+  "queueRank": 1357,
+  "rank": 1357,
+  "name": "Batangas City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "point": [13.7711568084999, 121.034906155156],
+  "centerLatLon": [13.7711568084999, 121.034906155156],
+  "pointBasis": "Immutable WUP 2025 coordinate, copied without adjustment.",
+  "population2025": 415103,
+  "population2025k": 415.103,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_local_registry_procedure_no_verified_open_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "The official Batangas City government website identifies a City Assessor's Office responsible for assessing all real properties in the city, and its official Citizen's Charter documents Taxmapping & Real Property Identification Division service for locating real property in the tax map. This evidences a local registry/tax-mapping custodian, not public parcel-vector access.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review_no_verified_geometry",
+  "runtimeEligible": false,
+  "blocker": "The current official city map is a raster barangay map and the assessor material describes an in-person/request-based tax-map service requiring title or tax-declaration documents. No anonymous safe native parcel ID plus full polygon response or current official parcel API was verified. The exact WUP point was not shifted and no point miss or unavailable endpoint is treated as citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Batangas City Government City Assessor's Office / Taxmapping & Real Property Identification Division",
+    "url": "https://batangascity.gov.ph/web/caoprofile",
+    "operator": "City Government of Batangas, Philippines",
+    "serviceType": "Official local assessor and tax-mapping service; public parcel geometry service not verified",
+    "layer": "City tax map / real-property identification, not exposed as a public feature layer",
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "outputCrs": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": ["safe parcel ID", "geometry", "CRS"],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "safeFieldAllowlist": ["stable native parcel ID", "full native parcel polygon geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "personal data"]
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Batangas City government assessor, tax-mapping, city-map and Philippine government cadastral-information pages were reviewed.",
+    "verifiedOpenScope": "Local assessor/tax-mapping custody and a 105-barangay raster city map are evidenced; anonymous parcel schema, CRS, geometry and citywide vector coverage remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "A City Assessor, DENR Land Management Bureau, or another official system may provide cadastral/tax-map data through a request or non-indexed workflow. Whether any current public anonymous parcel-vector endpoint exists, its schema/CRS, and its coverage of the WUP point remain unknown.",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Batangas City Philippines official cadastral map parcel land records GIS assessor",
+        "result": "First-party discovery identified the official Batangas City map, City Assessor's Office profile, City Assessor Citizen's Charter, and Philippine government FOI pages. The official material evidences local tax mapping and national cadastral custody, but no public anonymous parcel-vector service was found.",
+        "actualResultUrls": [
+          "https://batangascity.gov.ph/web/caoprofile",
+          "https://www.batangascity.gov.ph/web/images/Offices/CityAssessorsOffice.pdf",
+          "https://batangascity.gov.ph/web/about-the-city/city-profile/batangas-city-map",
+          "https://www.foi.gov.ph/agencies/cgb/cadastral-zoning-and-utilities-data-for-batangas-site/",
+          "https://www.foi.gov.ph/agencies/denrlmb/batangas-city-cadastral-map-in-shp/"
+        ]
+      },
+      {
+        "language": "Filipino",
+        "query": "Batangas City opisyal mapa kadastral lupa talaan ari-arian GIS",
+        "result": "Filipino-language discovery did not identify a separate local public parcel API. Review of the official city website still led to the City Assessor/tax-mapping workflow and the official barangay raster map; no safe anonymous parcel ID plus geometry response was obtained.",
+        "actualResultUrls": [
+          "https://batangascity.gov.ph/web/caoprofile",
+          "https://batangascity.gov.ph/web/about-the-city/city-profile/batangas-city-map",
+          "https://www.batangascity.gov.ph/web/images/Offices/CityAssessorsOffice.pdf"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The current official city map HTML was fetched and inspected. It contains a single raster image (/web/images/barangay-maps.jpg), barangay links, and no embedded WMS/WFS/ArcGIS/GeoJSON/parcel API route. The City Assessor profile contains no public map/API endpoint. No login, credentials, CAPTCHA bypass, private token, unsafe field request, or TLS exception was used.",
+    "requests": [
+      {
+        "url": "https://batangascity.gov.ph/web/about-the-city/city-profile/batangas-city-map",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded official Batangas City barangay map page; inspected HTML references and found a raster barangay map, not parcel geometry or an API."
+      },
+      {
+        "url": "https://batangascity.gov.ph/web/caoprofile",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded official City Assessor profile; it states citywide real-property assessment mandate but exposes no anonymous parcel endpoint."
+      },
+      {
+        "url": "https://www.batangascity.gov.ph/web/images/Offices/CityAssessorsOffice.pdf",
+        "method": "GET; anonymous public read/search result",
+        "httpStatus": "not independently fetched in this attempt",
+        "contentType": "application/pdf (as indexed by official site/search result)",
+        "assessment": "Official Citizen's Charter result documents tax-map identification service and documentary requirements; no parcel geometry response was requested or retained."
+      },
+      {
+        "url": "https://www.foi.gov.ph/agencies/cgb/cadastral-zoning-and-utilities-data-for-batangas-site/",
+        "method": "GET; anonymous public read/search result",
+        "httpStatus": "not independently fetched in this attempt",
+        "contentType": "text/html (as indexed by official FOI portal)",
+        "assessment": "Official FOI response distinguishes DENR/Land Management Bureau cadastral custody from City Assessor tax mapping and notes request/privacy constraints; it does not provide parcel geometry."
+      },
+      {
+        "url": "https://www.foi.gov.ph/agencies/denrlmb/batangas-city-cadastral-map-in-shp/",
+        "method": "GET; anonymous public read/search result",
+        "httpStatus": "not independently fetched in this attempt",
+        "contentType": "text/html (as indexed by official FOI portal)",
+        "assessment": "Official FOI record shows a request for a Batangas City cadastral shapefile remains pending in the indexed result; no file was downloaded or treated as available."
+      }
+    ]
+  },
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer may independently qualify an official Batangas parcel adapter only after confirming a current public route, safe native ID, CRS/schema, and bounded full geometry response."
+}

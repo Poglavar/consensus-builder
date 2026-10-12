@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:3427",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-3427-sandakan.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/sandakan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T08:01:10Z",
+  "reason": "Sabah JTU and its Sandakan survey office support local custody; JTUWMA Pro advertises geometrical cadastral information for registered users. No anonymous native-ID polygon or adapter qualification; no absence inferred."
+}

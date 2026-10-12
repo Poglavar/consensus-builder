@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1650",
+  "wupCityCode": 1650,
+  "name": "Kaolack",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "iso3": "SEN",
+  "rank": 1365,
+  "queueRank": 1365,
+  "point": [14.1552214925657, -16.0736772019438],
+  "centerLatLon": [14.1552214925657, -16.0736772019438],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 412347,
+  "population2025k": 412.347,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Senegal's official DGID identifies the CSF Kaolack office at Quartier Léona, Kaolack, and states that the local cadastral bureau issues NICAD and cadastral-plan extracts. This establishes a city-local cadastral custodian/procedure, but not a public parcel geometry feed.",
+  "registryEvidenceUrls": [
+    "https://www.dgid.sn/",
+    "https://www.dgid.sn/fiches/nicad",
+    "https://www.dgid.sn/wp-content/uploads/2023/02/NICAD.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No anonymous source-native response containing a safe parcel identifier, complete polygon, schema, and CRS was verified. Public Géo Sénégal downloads inspected for Kaolack are urban buildings data, not parcel data; ONDDL's bounded public catalog exposed administrative datasets but no Kaolack parcel layer.",
+  "scopeLimits": "Local cadastral custody and public parcel geometry are assessed separately. No parcel polygon or owner/address/titleholder/tax data was retained. No citywide or countrywide parcel completeness is asserted.",
+  "resultCategory": "custodian_verified_no_verified_public_geometry",
+  "remainingUncertainty": "The exact parcel at the preserved WUP point, any anonymous DGID/municipal map endpoint, native parcel-ID field, CRS, and citywide coverage remain unverified. A zero direct hit or inaccessible route would not establish absence.",
+  "nextStep": "Serial review may pursue a source-native public parcel route if DGID or the municipality publishes one with safe identifiers and geometry.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaolack Senegal official cadastre land registry cadastral map parcel portal",
+        "result": "First-party DGID land/cadastre material was found, including the CSF Kaolack office and NICAD/cadastral-plan procedures. Géo Sénégal exposes Kaolack 2019 buildings, roads, and networks datasets, not a parcel layer. No anonymous Kaolack parcel feature response was found.",
+        "actualResultUrls": [
+          "https://www.dgid.sn/",
+          "https://www.dgid.sn/fiches/nicad",
+          "https://geosenegal.gouv.sn/kaolack-bati-2019.html",
+          "https://sig.onddl.sn/"
+        ],
+        "executionMethod": "Separate fresh English web search followed by first-party page review and bounded public GET/API checks."
+      },
+      {
+        "language": "French",
+        "query": "Kaolack Sénégal cadastre registre foncier carte parcellaire portail officiel",
+        "result": "La DGID confirme le Centre des services fiscaux de Kaolack au quartier Léona et décrit le NICAD ainsi que l'extrait de plan cadastral délivrés par le bureau du Cadastre local. Géo Sénégal publie des données urbaines de bâti pour Kaolack, mais aucune couche parcellaire publique anonyme n'a été vérifiée.",
+        "actualResultUrls": [
+          "https://www.dgid.sn/",
+          "https://www.dgid.sn/fiches/nicad",
+          "https://www.dgid.sn/wp-content/uploads/2023/02/NICAD.pdf",
+          "https://geosenegal.gouv.sn/description-et-acces-aux-services.html"
+        ],
+        "executionMethod": "Recherche fraîche séparée en français, puis consultation de pages officielles et requêtes GET/API publiques bornées."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.dgid.sn/",
+      "role": "Direction générale des Impôts et des Domaines (DGID)",
+      "observation": "Official DGID page identifies its fiscal, domain, and cadastral mandate and lists CSF Kaolack at Quartier Léona, Kaolack."
+    },
+    {
+      "url": "https://www.dgid.sn/fiches/nicad",
+      "role": "DGID NICAD procedure",
+      "observation": "States that NICAD is the unique cadastral identifier and that the local cadastral bureau issues it and cadastral-plan extracts; the stated document requirements include title/attribution copy, situation plan, and owner identity copy. No request was submitted and no unsafe fields were requested or retained."
+    },
+    {
+      "url": "https://geosenegal.gouv.sn/kaolack-bati-2019.html",
+      "role": "Géo Sénégal / ANAT urban data",
+      "observation": "Official Kaolack 2019 vector urban dataset is described as buildings and related built features in SHP format, not cadastral parcels. The ZIP was downloaded to ignored scratch only; no retained geometry was derived."
+    },
+    {
+      "url": "https://sig.onddl.sn/",
+      "role": "ONDDL SIG public catalog",
+      "observation": "Public GeoNode API catalog query returned seven Senegal administrative datasets (including region, département, and GADM layers); no Kaolack parcel dataset was listed. This is a bounded catalog result, not a countrywide absence claim."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "outputCrs": null,
+    "exactWupPointTest": "No parcel containment test was completed. Exact WUP point [14.1552214925657, -16.0736772019438] was preserved and not shifted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kaolack-local cadastral custody and publicly discoverable Senegal geospatial services reviewed through DGID, Géo Sénégal/ANAT, and ONDDL SIG.",
+    "verifiedOpenScope": "Local DGID cadastral procedure and public non-parcel geospatial datasets were verified; no anonymous parcel geometry, native ID, CRS, or citywide parcel completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "researchAttempt": 1
+}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 71,
+  "queueRank": 1911,
+  "name": "Szczecin",
+  "country": "Poland",
+  "countryCode": "PL",
+  "iso3": "POL",
+  "point": [53.4353064484097, 14.5350485616163],
+  "population2025": 300314,
+  "population2025k": 300.314,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Szczecin official cadastral parcel map geoportal EGiB parcels",
+        "result": "Found the official City of Szczecin Portal of Spatial Information and its EGiB parcel layer documentation. The portal identifies the parcel layer as Działki - EGiB and lists viewing/download services, but no live feature response was obtained.",
+        "actualResultUrls": ["https://geoportal.szczecin.eu/", "https://geoportal.szczecin.eu/index.php/dane-przestrzenne", "https://geoportal.szczecin.eu/geonetwork/srv/search"]
+      },
+      {
+        "language": "Polish",
+        "query": "Szczecin oficjalna mapa działek ewidencyjnych geoportal kataster",
+        "result": "Found the official municipal SIP geoportal, its EGiB data catalogue, and GeoNetwork metadata describing Działki - EGiB with identifier, cadastral district, number, unit and area attributes. Direct service/config retrieval was unavailable during this attempt.",
+        "actualResultUrls": ["https://geoportal.szczecin.eu/index.php/dane-przestrzenne", "https://geoportal.szczecin.eu/geonetwork/srv/search", "https://geoportal.szczecin.eu/index.php"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://geoportal.szczecin.eu/",
+      "operator": "City of Szczecin, Portal Systemu Informacji Przestrzennej Miasta Szczecin",
+      "evidence": "Official city portal states that it provides EGiB viewing and download services and that parcel boundaries can be displayed."
+    },
+    {
+      "url": "https://geoportal.szczecin.eu/index.php/dane-przestrzenne",
+      "operator": "City of Szczecin SIP",
+      "evidence": "Official data catalogue lists EGiB layers including Działki ewidencyjne, Obręby and Jednostki ewidencyjne for Szczecin."
+    },
+    {
+      "url": "https://geoportal.szczecin.eu/geonetwork/srv/search",
+      "operator": "City of Szczecin SIP GeoNetwork catalogue",
+      "evidence": "Search-indexed official metadata describes Działki - EGiB as cadastral parcels with identifier, cadastral district, number, unit and area attributes."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://geoportal.szczecin.eu/",
+      "method": "GET",
+      "status": "failed",
+      "summary": "Direct curl over verified TLS failed with HTTP/2 PROTOCOL_ERROR, then an HTTP/1.1 retry returned an empty reply; no HTML or current JavaScript/configuration was retained."
+    },
+    {
+      "url": "https://geoportal.szczecin.eu/index.php/dane-przestrzenne",
+      "method": "GET",
+      "status": "search-indexed",
+      "summary": "First-party search result was available and documented the municipal EGiB Działki layer; direct fetch was not usable."
+    },
+    {
+      "url": "https://geoportal.szczecin.eu/geonetwork/srv/search",
+      "method": "GET",
+      "status": 502,
+      "summary": "Official metadata endpoint returned 502 through the retrieval route; no service URL, schema response, CRS, or feature geometry could be verified."
+    },
+    {
+      "url": "https://geoportal.szczecin.eu/index.php",
+      "method": "GET",
+      "status": "search-indexed",
+      "summary": "First-party search result confirmed the portal scope and parcel-boundary display, but no bounded anonymous ID-plus-geometry response was available."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "identifier",
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "identifier": "Native parcel identifier documented by the official Działki - EGiB metadata; not retrieved in a feature response.",
+      "geometry": "Parcel polygon geometry expected from the official EGiB Działki layer; no usable geometry response was obtained."
+    },
+    "crs": "Not confirmed from a usable feature response; no CRS transformation was applied.",
+    "geometryType": "Not confirmed from a usable feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Szczecin SIP portal and its EGiB cadastral parcel layer for the municipal area.",
+    "verifiedOpenScope": "Official municipal metadata and portal descriptions only; Szczecin feature coverage was not independently verified by geometry.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable point or feature response was obtained. This is a service retrieval limitation, not evidence of parcel absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["identifier", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "ownership or rights details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_city_cadastral_map_metadata_geometry_unverified",
+  "remainingUncertainty": "The current municipal viewer JavaScript/configuration and public service endpoint could not be retrieved during this attempt. CRS, exact native identifier field encoding, anonymous feature access, and geometry coverage remain unverified. No owner or title data were accessed.",
+  "nextStep": "Serial reviewer should independently inspect the current Szczecin SIP viewer/configuration, identify its public EGiB Działki service, verify CRS and safe identifier-only feature access, and test coverage near the WUP point before adapter admission."
+}

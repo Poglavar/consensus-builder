@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12109-wenling.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh English and Chinese searches found official Wenling evidence for a municipal Natural Resources and Planning Bureau, a real-estate registration service center, cadastral-map/archive work, and a public geospatial framework. No anonymous parcel feature service, schema, CRS, native parcel ID, or safe parcel geometry was found.",
+  "registryAssessment": "Local registry custody is evidenced, so registryFound is true. The evidence does not establish a public machine-readable cadastral endpoint or runtime adapter qualification.",
+  "officialPrimarySources": [
+    {"title": "Wenling basic surveying and mapping plan", "url": "https://www.wl.gov.cn/art/2021/11/29/art_1229599807_3757799.html", "observation": "Official plan documents digital geospatial databases, a public geospatial framework, and Tianditu·Wenling."},
+    {"title": "Wenling real-estate registration service-center record", "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf", "observation": "Official record refers to cadastral maps and parcel-map/archive processing for the municipal registration service center."},
+    {"title": "Wenling land-use publication", "url": "https://www.wl.gov.cn/art/2025/5/30/art_1423973_59104537.html", "observation": "Official Natural Resources and Planning Bureau publication with a Wenling land parcel/unit reference; not a public geometry service."},
+    {"title": "Zhejiang geospatial public-service platform", "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html", "observation": "Official provincial platform identified; no parcel schema or anonymous geometry endpoint was exposed in the bounded review."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Wenling official cadastral map parcel GIS land registry Zhejiang", "executionMethod": "Executed separate web search", "resultUrls": ["https://www.wl.gov.cn/art/2025/5/30/art_1423973_59104537.html", "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf", "https://ditu.zjzwfw.gov.cn/platform-main/index.html"]},
+    {"language": "Chinese", "query": "温岭 不动产登记 地籍图 GIS 官方", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://www.wl.gov.cn/art/2021/11/29/art_1229599807_3757799.html", "https://www.wl.gov.cn/art/2017/9/22/art_1598685_2699368.html", "https://www.wl.gov.cn/art/2025/5/30/art_1423973_59104537.html"]}
+  ],
+  "attempts": [
+    {"attempt": "official Wenling homepage", "url": "https://www.wl.gov.cn/", "result": "Direct curl returned HTTP 403; no bypass attempted. Indexed official pages remained usable for evidence.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official Wenling surveying plan", "url": "https://www.wl.gov.cn/art/2021/11/29/art_1229599807_3757799.html", "result": "Official content inspected; documents general geospatial infrastructure and Tianditu·Wenling, but no public parcel API.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Zhejiang public geospatial platform", "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html", "result": "Official platform found via web inspection; direct shell retry hit DNS timeout; no parcel schema or geometry endpoint exposed.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Wenling registration-service-center record", "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf", "result": "Official document inspected; cadastral-map/archive processing evidenced, but no machine-readable parcel response.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official land-use publication", "url": "https://www.wl.gov.cn/art/2025/5/30/art_1423973_59104537.html", "result": "Official publication inspected; contains a land parcel/unit reference but no geometry API or safe parcel feature response.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Official sources document municipal registration custody and city/province geospatial infrastructure.", "verifiedOpenScope": "No open parcel geometry, citywide parcel query coverage, native identity, or CRS verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "A separate authenticated or non-indexed local cadastral viewer may exist; exact-point and citywide parcel coverage were not tested because no public parcel endpoint was identified.",
+  "runtimeReadiness": "held_unqualified"
+}

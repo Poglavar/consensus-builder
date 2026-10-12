@@ -1,0 +1,23 @@
+{
+  "taskId": "city:2075",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-2075-kankan.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/kankan-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_2075-layer0.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_2075-application.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_2075-point-query.json"
+  ],
+  "checkedAt": "2026-10-10T19:33:24Z",
+  "reason": "Kankan: open ArcGIS layer is country boundary only; application layer requires a token. No native parcel polygon or adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

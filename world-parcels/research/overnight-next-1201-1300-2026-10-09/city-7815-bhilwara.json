@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:7815",
+  "wupCityCode": 7815,
+  "queueRank": 1288,
+  "rank": 1288,
+  "name": "Bhilwara",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [25.3436339514634, 74.6310689921485],
+  "centerLatLon": [25.3436339514634, 74.6310689921485],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 434406,
+  "population2025k": 434.406,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["bhilwara"],
+  "status": "complete",
+  "resultCategory": "official_local_registry_entry_verified_but_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "Official Rajasthan sources identify the Bhilwara district administration and Revenue Tehsil, Bhilwara land-record offices; official state cadastral services identify Bhu-Naksha, Apna Khata, Rajdharaa Urban GIS, and e-Mapping as Rajasthan land-record/map services. This establishes a local/state registry and map-service custodian, not citywide geometry completeness.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official Rajasthan Bhu-Naksha host timed out during the bounded anonymous request before current JavaScript/configuration or a public parcel response could be inspected. No safe native parcel ID, schema, CRS, or polygon geometry was verified; timeout is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Rajasthan Land Records / Bhu-Naksha and Rajdharaa GIS",
+    "url": "https://bhunaksha.rajasthan.gov.in/",
+    "operator": "Government of Rajasthan; local custodian evidenced as Revenue Tehsil, Bhilwara / Bhilwara district administration",
+    "serviceType": "Official state cadastral-map and land-record services",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Bhilwara district/Revenue Tehsil land-record custodian and Rajasthan state cadastral/map services.",
+    "verifiedOpenScope": "Official local custodian and state service identity only; no anonymous parcel response or geometry obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhilwara Rajasthan official cadastral parcel map GIS land records Bhu Naksha",
+        "result": "Found official Rajasthan Bhu-Naksha, Apna Khata, Rajdharaa Urban GIS, Rajasthan e-Mapping, Bhilwara district portal, and DILRMP Bhilwara status pages. Discovery did not expose a safe parcel response or geometry.",
+        "actualResultUrls": [
+          "https://bhunaksha.rajasthan.gov.in/",
+          "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://gis.rajasthan.gov.in/dlcinfo/",
+          "https://bhilwara.rajasthan.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/122"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "भीलवाड़ा राजस्थान आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख",
+        "result": "Found the official Rajasthan Bhu-Naksha and Apna Khata services, plus official Rajasthan land-record modernization prose. No safe native parcel identity, schema, CRS, or polygon response was verified.",
+        "actualResultUrls": [
+          "https://bhunaksha.rajasthan.gov.in/",
+          "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/settlementdepartment/programs-and-schemes/dilrmp/introductionandobjectives.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index"
+        ]
+      }
+    ],
+    "portals": [
+      {"url": "https://bhilwara.rajasthan.gov.in/", "operator": "Bhilwara district administration, Government of Rajasthan", "scope": "Official local district portal."},
+      {"url": "https://rajkaj.rajasthan.gov.in/reports/PAR-Report-of-offices-by-appointing-dept-and-office.php?AppointDeptId=3000307&OfficeId=3024007", "operator": "Government of Rajasthan", "scope": "Official personnel record naming Revenue Tehsil, Bhilwara and Inspector Land Record roles; custodian evidence only."},
+      {"url": "https://bhunaksha.rajasthan.gov.in/", "operator": "Government of Rajasthan / NIC", "scope": "Official Bhu-Naksha cadastral map viewer."},
+      {"url": "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx", "operator": "Revenue Board, Rajasthan", "scope": "Official textual land-record service; not treated as geometry evidence."},
+      {"url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "operator": "Government of Rajasthan", "scope": "Official urban GIS viewer with Khasra search and map layers; no parcel response retained."},
+      {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/122", "operator": "Department of Land Resources, Government of India", "scope": "Bhilwara district map-digitization/ULPIN status; national status evidence, not local parcel geometry."}
+    ],
+    "requests": [
+      {"url": "https://bhunaksha.rajasthan.gov.in/", "method": "GET; anonymous public request over TLS", "httpStatus": null, "contentType": null, "assessment": "Timed out after 30 seconds before HTML/JavaScript/configuration could be retained."},
+      {"url": "https://bhilwara.rajasthan.gov.in/", "method": "HEAD; anonymous public request over TLS", "httpStatus": null, "contentType": null, "assessment": "Timed out after 20 seconds."},
+      {"url": "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx", "method": "HEAD; anonymous public request over TLS", "httpStatus": null, "contentType": null, "assessment": "Bounded request did not yield a response before the command timeout; no credentials or login attempted."},
+      {"url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "method": "Discovery/open review; anonymous public service", "httpStatus": null, "contentType": "text/html via indexed first-party result", "assessment": "Official viewer description exposes Khasra and map-layer controls, but no live parcel payload was obtained."},
+      {"url": "https://gis.rajasthan.gov.in/dlcinfo/", "method": "Discovery/open review; anonymous public service", "httpStatus": null, "contentType": "text/html via indexed first-party result", "assessment": "Official e-Mapping viewer description exposes polygon-based DLC/Khasra controls, but no live parcel payload was obtained."},
+      {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/122", "method": "Discovery/open review; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Bhilwara district map-digitization/ULPIN status page; treated as status evidence only."}
+    ],
+    "schemaCrs": {"nativeCrs": null, "geometryResponseSchema": "Not verified", "viewerLayers": []}
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "The current Bhu-Naksha/Rajdharaa/e-Mapping JavaScript, API routes, native schema/CRS, parcel identity field, anonymous geometry capability, and Bhilwara citywide coverage remain unknown. No exact-point parcel query was run; the exact WUP point was preserved and not used as evidence of absence.",
+  "registryEvidenceUrls": ["https://bhilwara.rajasthan.gov.in/", "https://rajkaj.rajasthan.gov.in/reports/PAR-Report-of-offices-by-appointing-dept-and-office.php?AppointDeptId=3000307&OfficeId=3024007", "https://bhunaksha.rajasthan.gov.in/", "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx", "https://rajdharaa.rajasthan.gov.in/citizenudh/index"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently qualify the current Rajasthan viewer/configuration and any public parcel geometry route; keep runtime held until safe native IDs and real polygon geometry are independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

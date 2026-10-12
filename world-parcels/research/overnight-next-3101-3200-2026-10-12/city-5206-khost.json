@@ -1,0 +1,99 @@
+{
+  "cityCode": 5206,
+  "queueRank": 3196,
+  "name": "Khost",
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "iso3": "AFG",
+  "locId": 4,
+  "capital": false,
+  "aliases": ["khost"],
+  "point": [33.3351201341707, 69.896927858371],
+  "population2025": 188579,
+  "population2025k": 188.579,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khost Afghanistan cadastral map parcel registry official; Afghanistan cadastral land registry GIS map official Khost",
+        "result": "First-party discovery found Afghanistan's Ministry of Justice Property Registration Management Information System (PRMIS/PMS), the Ministry of Urban Development and Land report on state-land surveying and registration in Khost, and the national Khost province information page. No public Khost parcel-vector viewer or anonymous parcel API was exposed. The Ministry of Justice PMS returned an Afghanistan-only access notice from this environment.",
+        "actualResultUrls": [
+          "https://pms.moj.gov.af/",
+          "https://mudh.gov.af/en/over-178000-jeribs-land-registered-khost",
+          "https://afg.gov.af/provinces/khost"
+        ]
+      },
+      {
+        "language": "Pashto/Dari (local/official languages)",
+        "query": "د خوست کادستر نقشه ځمکې رسمي; کادستر خوست افغانستان نقشه ثبت املاک",
+        "result": "د رسمي سرچینو په موندنه کې د عدلیې وزارت د معاملو د لارښونې سیستم (PRMIS/PMS)، د خوست د دولتي ځمکو د سروې او ثبت رسمي راپور، او د خوست ولایتي معلومات وموندل شول. د خوست د پارسلونو لپاره عامه خوندي ID+geometry خدمت ونه موندل شو؛ PMS له دې چاپېریال څخه د افغانستان دننه لاسرسي پیغام وښود.",
+        "actualResultUrls": [
+          "https://pms.moj.gov.af/",
+          "https://mudh.gov.af/en/over-178000-jeribs-land-registered-khost",
+          "https://afg.gov.af/provinces/khost",
+          "https://moi.gov.af/dr/%D8%B3%DB%8C%D8%B3%D8%AA%D9%85-%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A-%D8%A7%D8%B2-%D8%B3%D9%88%DB%8C-%D8%B3%D8%B1%D9%BE%D8%B1%D8%B3%D8%AA-%D9%88%D8%B2%D8%A7%D8%B1%D8%AA-%D8%AF%D8%A7%D8%AE%D9%84%D9%87-%D8%AF%D8%B1-%D8%B1%DB%8C%D8%A7%D8%B3%D8%AA-%D8%B9%D9%85%D9%88%D9%85%D9%8A-%Dپ%D9%84%D8%A7%D9%86-%D9%88%D8%A7%D9%88%D9%BE%D8%B1%D8%A7%D8%B3%D9%8A%D9%88%D9%86-%D9%88%D8%B2%D8%A7%D8%B1%D8%AA%D8%8C"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "No Khost local registry/cadastre custodian with a public parcel service was evidenced. National Ministry of Justice and land-survey agencies were found, but national agency prose and a provincial state-land registration report do not establish a city-local public parcel source.",
+    "scope": "The official MUDL report says 178,188 jeribs of state-owned land and public properties were surveyed and registered in Khost province; it does not publish parcel polygons, safe parcel IDs, or a public query service.",
+    "evidenceUrls": [
+      "https://mudh.gov.af/en/over-178000-jeribs-land-registered-khost",
+      "https://pms.moj.gov.af/"
+    ]
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "No qualified public Khost cadastral parcel source.",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://pms.moj.gov.af/",
+        "outcome": "HTTP 200 official Ministry of Justice application shell. The page identifies PRMIS/PMS as a property-registration management system but displayed an access restriction stating the program is usable only from Afghanistan. No anonymous parcel endpoint was exposed in the retrieved shell."
+      },
+      {
+        "method": "GET",
+        "url": "https://pms.moj.gov.af/main.733b75d24438b70d.js",
+        "outcome": "HTTP 200 current JavaScript inspected. It confirms a same-origin /api backend and application routes, but no anonymous cadastral parcel route was identified; no login or credentialed request was attempted."
+      },
+      {
+        "method": "GET",
+        "url": "https://mudh.gov.af/en/over-178000-jeribs-land-registered-khost",
+        "outcome": "Official MUDL report found. It documents province-level state-land surveying and registration in Khost, but provides no public parcel schema, native parcel ID, CRS, geometry response, or map/API URL."
+      },
+      {
+        "method": "GET",
+        "url": "https://services7.arcgis.com/EatAamwsHn8Z2rBE/ArcGIS/rest/services/Khost_Boundary/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson",
+        "outcome": "HTTP 200 anonymous ArcGIS response inspected as a cross-check. The layer is named Khost_Boundary, is a single boundary polygon layer in EPSG:3857, and exposes FID as its system-maintained object ID; it is not a cadastral parcel layer and was not retained as a parcel sample."
+      },
+      {
+        "method": "GET",
+        "url": "https://afg.gov.af/provinces/khost",
+        "outcome": "Official national portal page confirms Khost provincial information and offices, but does not expose a cadastral parcel map or public parcel API."
+      }
+    ],
+    "note": "The exact WUP point was preserved and was not shifted or used as an absence test. No exact-point parcel query was issued because no qualified public parcel endpoint was exposed. An access restriction, map-layer mismatch, or lack of an exposed API is not evidence of citywide absence."
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "No local Khost cadastral custodian or public parcel-vector service was evidenced in this attempt.",
+    "The official Khost report concerns surveyed state/public land at province scale and does not provide queryable parcel geometry or safe native parcel IDs.",
+    "The ArcGIS Khost_Boundary response is an administrative boundary, not parcel evidence; no GeoJSON sample was written.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

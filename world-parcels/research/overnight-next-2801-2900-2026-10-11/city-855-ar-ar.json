@@ -1,0 +1,69 @@
+{
+  "cityCode": 855,
+  "queueRank": 2859,
+  "name": "Ar'ar",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "iso3": "SAU",
+  "locId": 682,
+  "capital": false,
+  "point": [30.9797356858465, 41.0313344245833],
+  "population2025": 208320,
+  "population2025k": 208.32,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saudi Arabia official cadastral parcel map Arar Northern Borders municipality GIS",
+        "result": "First-party results identified the Ministry of Municipalities and Housing Urban Maps service, the Northern Borders Municipality branch, and the official UMAPS viewer. The Urban Maps description says the service covers land plots and plot details across Saudi cities, but no anonymous parcel response was returned by the current viewer/API route.",
+        "actualResultUrls": [
+          "https://momah.gov.sa/en/node/15098",
+          "https://momah.gov.sa/ar/branches/northern-borders-municipality",
+          "https://umaps.momah.gov.sa/"
+        ]
+      },
+      {
+        "language": "Arabic (local)",
+        "query": "أرضي عرعر خريطة قطع الأراضي السجل العقاري أمانة منطقة الحدود الشمالية",
+        "result": "First-party Arabic results identified the Northern Borders Municipality's Arar land-plot inquiry service and Arar city planning atlas, plus the Ministry's Urban Maps description. These evidence a local municipal map/procedure route, not an anonymous downloadable parcel layer; the current UMAPS viewer requires login/token access.",
+        "actualResultUrls": [
+          "https://arar-mu.momah.gov.sa/ar/node/3630",
+          "https://arar-mu.momah.gov.sa/ar/node/4777",
+          "https://momah.gov.sa/ar/e-services/urban-maps",
+          "https://umaps.momah.gov.sa/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Northern Borders Municipality / Arar Municipality, Ministry of Municipalities and Housing",
+    "locality": "Ar'ar city and Northern Borders Municipality",
+    "evidenceUrls": [
+      "https://momah.gov.sa/ar/branches/northern-borders-municipality",
+      "https://arar-mu.momah.gov.sa/ar/node/3630",
+      "https://arar-mu.momah.gov.sa/ar/node/4777"
+    ],
+    "scopeNote": "The official local page names an Arar land-plot inquiry service, and the municipality publishes Arar planning atlases. This evidences a local municipal map/procedure custodian, but not open citywide parcel geometry or a cadastral registry download."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "UMAPS / Urban Maps",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "No parcel polygon was retained. The exact WUP point was not shifted and was not used as an absence test."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The current UMAPS HTML and JavaScript configuration exposed the official service URLs, including the parcel-identify MapServer and Search API, but the anonymous ArcGIS service metadata requests returned HTTP 499 Token Required and the anonymous search POST returned HTTP 401.",
+    "The viewer configuration reported allowAnonymous=false and presented a login wall; no credentials, private token, CAPTCHA bypass, or unsafe parcel attributes were requested.",
+    "The official Urban Maps prose describes plots, land-use classifications, sizes, and building regulations, but does not itself provide a public parcel schema, CRS, or geometry response.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained."
+  ]
+}

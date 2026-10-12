@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-4200-lisala.json",
+  "cityCode": 4200,
+  "queueRank": 2353,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-11",
+  "requestOutcomes": [
+    {
+      "route": "English and French first-party web discovery",
+      "request": "Search queries recorded in city-4200-lisala.json",
+      "outcome": "Official Ministry of Land Affairs directory found Lisala under Mongala; official service pages describe registry/cadastre procedures."
+    },
+    {
+      "route": "https://bic.cd/",
+      "request": "Anonymous HTTPS GET of public landing page and current JavaScript bundle/configuration",
+      "outcome": "Viewer loads publicly. BIC advertises digital parcel coverage only for Nord-Kivu and Sud-Kivu. Current bundle uses a public Supabase project."
+    },
+    {
+      "route": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/catalog_config?select=*",
+      "request": "Anonymous GET using the public anon key exposed by the viewer bundle",
+      "outcome": "200 JSON response returned. available_provinces was [Nord-Kivu, Sud-Kivu]; search examples were generic parcel references. No Lisala/Mongala layer or geometry configuration was returned."
+    },
+    {
+      "route": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/",
+      "request": "Anonymous GET for REST schema/OpenAPI metadata",
+      "outcome": "No usable public paths/schema were returned for parcel geometry discovery. No parcel table or bounded ID+geometry response was retained."
+    },
+    {
+      "route": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes and https://servicepublic.gouv.cd/service/4671",
+      "request": "Read-only inspection of official land-search procedure pages",
+      "outcome": "Procedure requires a formal request and parcel/reference information; pages expose no anonymous parcel geometry API. No form was submitted."
+    }
+  ],
+  "localRegistryCustodian": {
+    "found": true,
+    "evidence": "Ministry directory explicitly lists Lisala as a circonscription foncière under Mongala.",
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  "scopeLimits": [
+    "Research covered public first-party web pages, the BIC viewer's current public bundle/configuration, and anonymous REST metadata/config requests only.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe owner/title/address/tax query was used.",
+    "No parcel polygon was retained because no safe native identity plus public geometry response was available.",
+    "The official custodian listing is not equivalent to citywide digital parcel coverage."
+  ],
+  "safeFieldAllowlist": ["native stable parcel ID", "geometry", "source field names in metadata only", "CRS", "source URL", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Independent serial adapter qualification remains outstanding; this packet records source discovery only and does not claim source integration/admission.",
+  "uncertainty": [
+    "BIC's advertised province coverage may change independently of the Ministry's local registry records.",
+    "A public map extent miss or absent API is not evidence of citywide absence.",
+    "The exact WUP point was preserved as [longitude, latitude] per queue convention and was not shifted to seek a parcel hit."
+  ]
+}

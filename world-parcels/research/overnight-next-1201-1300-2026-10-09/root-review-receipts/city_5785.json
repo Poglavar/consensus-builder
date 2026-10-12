@@ -1,0 +1,12 @@
+{
+  "taskId": "city:5785",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5785-takasaki-maebashi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/takasaki-maebashi-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/takasaki-maebashi-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-09T13:19:10Z",
+  "reason": "Official Takasaki open data and one safe point-containing polygon are evidenced, but fresh adapter reads, forced paging, 13 cells, metric batch checks, binding, and headed Details verification are missing."
+}

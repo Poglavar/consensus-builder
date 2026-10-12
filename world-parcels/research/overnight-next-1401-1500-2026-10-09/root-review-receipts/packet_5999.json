@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:5999",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5999-mallawi.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/mallawi-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T08:01:10Z",
+  "reason": "Mallawi local registry remains unresolved: ESA supports national survey/map custody, but the saved Minya MAGIC response is a login shell. No native-ID polygon or adapter qualification; no absence inferred."
+}

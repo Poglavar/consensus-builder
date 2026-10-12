@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12121-zhanghua-city.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Taiwan/NLSC and Changhua land-office channels for safe anonymous cadastral geometry and stable parcel identifiers.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Changhua has a local official land office and Taiwan's NLSC public cadastral reference viewer. The current viewer code identifies a public cadastral overlay service, but the exact unchanged WUP-point request returned a no-land-number message and the public location query returned an empty body. No full polygon, native parcel ID, or absence conclusion was recorded.",
+  "registryAssessment": "Official Changhua Land Office material establishes the local registry/custodian and links the NLSC cadastral viewer and local land-information services. It does not verify unrestricted anonymous parcel-vector access.",
+  "coverageAssessment": {
+    "claimedScope": "Official national NLSC viewer, NLSC service documentation, and Changhua Land Office portal reviewed.",
+    "verifiedOpenScope": "Viewer endpoint/configuration verified; no anonymous parcel geometry or safe stable parcel ID verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://landoffice.chcg.gov.tw/changhua/05links/links01.aspx",
+      "operator": "Changhua County Changhua Land Office",
+      "scope": "Official local portal identifies the office, address, and links to the NLSC cadastral reference service and Changhua land-information services."
+    },
+    {
+      "url": "https://maps.nlsc.gov.tw/T09/mapshow.action",
+      "operator": "National Land Surveying and Mapping Center",
+      "scope": "Public viewer exposes cadastral map layer controls and current JavaScript configuration. Its disclaimer limits the map to spatial reference; actual boundaries require land-office verification."
+    },
+    {
+      "url": "https://www.nlsc.gov.tw/cp.aspx?n=16734",
+      "operator": "National Land Surveying and Mapping Center",
+      "scope": "Official material documents public WMTS/API integration including cadastral layers, but not a verified safe parcel-polygon response for this city point."
+    },
+    {
+      "url": "https://www.land.nat.gov.tw/About/PriceInfoEN2",
+      "operator": "Taiwan Ministry of the Interior land service",
+      "scope": "Official English service description documents nationwide e-cadastral transcripts and their paid/authenticated access model; no request was made because it would involve transcript/record access."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhanghua City Taiwan official cadastral parcel map GIS land registration service",
+      "result": "Found first-party NLSC viewer, national land-service documentation, and Changhua Land Office portal; no safe anonymous polygon result.",
+      "actualResultUrls": ["https://maps.nlsc.gov.tw/T09/mapshow.action", "https://landoffice.chcg.gov.tw/changhua/05links/links01.aspx", "https://www.land.nat.gov.tw/About/PriceInfoEN2"]
+    },
+    {
+      "language": "Chinese (Traditional)",
+      "query": "彰化市 地籍圖 地政事務所 圖台 不動產 官方",
+      "result": "確認彰化地政事務所與國土測繪圖資服務雲；公開資料只支持參考圖台與服務入口，未取得安全匿名完整地籍多邊形。",
+      "actualResultUrls": ["https://landoffice.chcg.gov.tw/changhua/05links/links01.aspx", "https://maps.nlsc.gov.tw/T09/mapshow.action", "https://www.nlsc.gov.tw/cp.aspx?n=16734"]
+    }
+  ],
+  "attempts": [
+    "Retrieved the official NLSC viewer HTML and inspected its current JavaScript; identified qryTileMapIndex flag=1 city/X/Y cadastral overlay logic and projected-coordinate handling.",
+    "Retrieved the official Changhua Land Office links page and confirmed local registry custody plus links to NLSC and Changhua land-information services.",
+    "Queried the NLSC cadastral overlay anonymously at the exact WUP point using Changhua city code N01 and EPSG:3826 coordinates; HTTP 200 returned only 地號查詢無資料!.",
+    "POSTed the exact WGS84 point to the NLSC LocationQuery endpoint; HTTP 200 returned an empty body. No inference about absence was made.",
+    "Did not access e-transcripts, owner/address/title/transaction data, login-protected services, credentials, CAPTCHA, or private tokens."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Attempted unchanged [24.0755359501311, 120.515005910844]; overlay returned no-land-number message and location query returned empty body.",
+    "requestEvidence": [
+      {"url": "https://landmaps.nlsc.gov.tw/S_Maps/qryTileMapIndex?type=2&flag=1&city=N01&x=200684.374&y=2663473.704&alpah=0.5f", "method": "GET", "httpStatus": 200, "responseBytes": 34, "result": "[{\"msg\":\"地號查詢無資料!\"}]"},
+      {"url": "https://api.nlsc.gov.tw/MapSearch/LocationQuery", "method": "POST", "httpStatus": 200, "responseBytes": 0, "result": "empty response body"}
+    ]
+  },
+  "nextStep": "Serial reviewer may re-check the public NLSC viewer or a documented Changhua service for safe anonymous geometry; keep runtime readiness held until independently qualified.",
+  "remainingUncertainty": "The viewer may require parcel-number interaction or a session-specific map operation, and the Changhua local system may expose undocumented routes. Neither is evidence of citywide absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

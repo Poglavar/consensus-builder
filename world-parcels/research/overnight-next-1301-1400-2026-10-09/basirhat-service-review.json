@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11889-basirhat.json",
+  "cityCode": 11889,
+  "purpose": "Document first-party discovery, current public map/API routes, bounded anonymous access review, safe-field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official West Bengal Banglarbhumi land-record service provenance and Basirhat local administrative provenance were found. The service advertises plot/mouza maps and plot information, but the portal timed out during the bounded anonymous request and no current JavaScript/configuration, schema/CRS, safe ID response or geometry could be inspected. No sample GeoJSON is retained.",
+  "registryAssessment": "registryFound is true for evidenced local/state procedure provenance: official Basirhat Municipality and North 24 Parganas sources identify the local administrative context and land-reform custodian path, while Banglarbhumi is the official West Bengal land-record service. Geometry integration and runtime admission remain unverified.",
+  "queries": [
+    {
+      "language": "English",
+      "query": "Basirhat West Bengal official cadastral parcel map land records Banglarbhumi plot map",
+      "outcome": "Official Banglarbhumi, Basirhat Municipality, North 24 Parganas and West Bengal mouza-map form routes found; no public anonymous parcel-vector endpoint found.",
+      "actualResultUrls": ["https://banglarbhumi.gov.in/", "https://basirhatmunicipality.in/map/", "https://north24parganas.gov.in/subdivision-blocks/", "https://bsk.wb.gov.in/download/35.pdf"]
+    },
+    {
+      "language": "Bengali",
+      "query": "বাসিরহাট সরকারি জমির নকশা খতিয়ান দাগ মানচিত্র",
+      "outcome": "Bengali discovery found the official Banglarbhumi portal and Bengali plot/dag, khatian and mouza-map service terminology; no anonymous parcel geometry API was identified.",
+      "actualResultUrls": ["https://banglarbhumi.gov.in/", "https://north24parganas.gov.in/"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://banglarbhumi.gov.in/", "method": "GET", "result": "Anonymous HTTPS request timed out after 25 seconds; no login or CAPTCHA interaction and no TLS bypass."},
+    {"url": "https://basirhatmunicipality.in/map/", "method": "GET", "result": "Search discovery found the official municipal map page; direct curl failed DNS resolution from this host. No parcel data was requested."},
+    {"url": "https://basirhatmunicipality.in/bashirhat-directory/", "method": "GET", "result": "Search discovery found the official municipal directory and Sub-Divisional Land & Land Reforms Officer listing; no parcel data was requested."},
+    {"url": "https://north24parganas.gov.in/subdivision-blocks/", "method": "GET", "result": "HTTP 200; official page loaded and confirmed Basirhat Municipality and Basirhat-I/II within the Basirhat subdivision. No parcel API/configuration exposed."},
+    {"url": "https://bsk.wb.gov.in/download/35.pdf", "method": "GET", "result": "Search discovery found the official RS/LR digitized mouza-map application form; direct request timed out after 20 seconds. No map or geometry obtained."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No exact-point parcel request was possible because Banglarbhumi did not return a usable anonymous viewer/API response. The exact WUP point [22.6808297239835,88.8431725176141] was not shifted."
+  },
+  "remainingUncertainty": "Banglarbhumi may expose parcel lookup and downloadable maps through an interactive, CAPTCHA/payment or otherwise restricted workflow not reachable in this attempt. Official procedure and custodian evidence does not establish public vector availability, current CRS, stable parcel identity, citywide coverage or exact-point containment. No owner, address, titleholder, tax, contact or personal fields were requested.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "requestCache": "tmp/valhalla-parcel-research/basirhat/"
+}

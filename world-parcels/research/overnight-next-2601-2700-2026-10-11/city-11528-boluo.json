@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 11528,
+  "wupCityCode": 11528,
+  "queueRank": 2666,
+  "cityId": "wup2025:11528",
+  "name": "Boluo",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [23.1738716422502, 114.279932891963],
+  "centerLatLon": [23.1738716422502, 114.279932891963],
+  "population2025": 221573,
+  "population2025k": 221.573,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Boluo County Real Estate Registration Center, under the Huizhou/Boluo Natural Resources authority, is evidenced by official registration notices and the official Huizhou map-inquiry service announcement; no anonymous parcel geometry service was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Boluo County China cadastral parcel map official natural resources land registration map",
+        "result": "Found the official Huizhou Natural Resources announcement for the citywide real-estate map inquiry service and the official Boluo government registration-center notice. The map inquiry requires identity verification; no public anonymous parcel feature API or downloadable parcel dataset was found.",
+        "actualResultUrls": [
+          "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+          "https://www.boluo.gov.cn/zwgk/gzwj/tzgg/content/post_5759802.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "博罗县 不动产登记 地籍图 官方 地图",
+        "result": "确认博罗县不动产登记中心发布官方登记公示，惠州市自然资源局说明全市不动产登记信息及宗地图、分户图可视化查询；进入“以图查房”前需身份认证/人脸识别，未发现可匿名访问的宗地要素服务。",
+        "actualResultUrls": [
+          "https://www.boluo.gov.cn/zwgk/gzwj/tzgg/content/post_5759802.html",
+          "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+          "https://www.gdzwfw.gov.cn/portal/index?region=441322"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.boluo.gov.cn/zwgk/gzwj/tzgg/content/post_5759802.html",
+      "operator": "Boluo County Real Estate Registration Center / Huizhou Boluo Natural Resources Bureau",
+      "scope": "Boluo County",
+      "observation": "Official 2026 registration notice names the Boluo County Real Estate Registration Center, gives its service-center address and contact channels, and publishes a land-right registration notice. This establishes a local registry custodian but publishes no parcel geometry or safe native parcel ID."
+    },
+    {
+      "url": "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+      "operator": "Huizhou Municipal Natural Resources Bureau",
+      "scope": "Huizhou City, including Boluo County",
+      "observation": "Official announcement describes the public “以图查房” map service for real-estate registration information, cadastral maps and house-unit maps. It is accessed through the bureau WeChat account and requires identity verification/facial recognition before map inquiry."
+    },
+    {
+      "url": "https://www.gdzwfw.gov.cn/portal/index?region=441322",
+      "operator": "Guangdong Government Services Network / Boluo County service portal",
+      "scope": "Boluo County",
+      "observation": "Official regional portal lists “不动产登记资料查询” as a service. The inspected public page exposes service discovery, not an anonymous parcel feature endpoint."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.boluo.gov.cn/zwgk/gzwj/tzgg/content/post_5759802.html",
+      "method": "GET",
+      "status": "HTTP 200 via official page/search open",
+      "summary": "Official Boluo registration-center notice fetched; local registry custodian and registration procedure evidenced. No parcel geometry or public API present."
+    },
+    {
+      "url": "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+      "method": "GET",
+      "status": "HTTP 200 via direct request; web search open timed out once",
+      "summary": "Official Huizhou Natural Resources announcement fetched and HTML inspected. It documents the map inquiry workflow and identity gate; no JavaScript/configuration for an anonymous parcel API was exposed."
+    },
+    {
+      "url": "https://www.gdzwfw.gov.cn/portal/index?region=441322",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Guangdong/Boluo service portal loaded. “不动产登记资料查询” is listed, but no anonymous parcel ID-plus-geometry response or public feature endpoint was returned."
+    },
+    {
+      "url": "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html (documented map workflow)",
+      "method": "bounded anonymous inspection",
+      "status": "not publicly callable without identity verification",
+      "summary": "The official instructions require WeChat entry and identity verification/facial recognition before selecting query scope and entering the map. No login, credentials, private token, CAPTCHA/Cloudflare bypass, owner/address/titleholder query, or unsafe field request was attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Boluo County local registry custodian and Huizhou-wide official real-estate map-inquiry workflow.",
+    "verifiedOpenScope": "Official local registration notices, official service listing, and official map-service workflow; no open parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Local Boluo registry existence and procedure are evidenced; anonymous public cadastral data access is not evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No parcel geometry obtained.",
+    "crs": null,
+    "identityReadiness": "No native parcel identity observed.",
+    "safeFieldAllowlist": ["stable native parcel ID if later exposed", "geometry", "source layer/year", "source CRS if explicitly declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained; no owner, address, titleholder, contact, tax, account, personal, or other unsafe fields were accessed."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous public parcel ID-plus-geometry response or downloadable cadastral dataset was verified. Serial review must independently qualify any future public source for coverage, stable identity, CRS and legal/source semantics.",
+  "scopeLimits": [
+    "Exact WUP point [23.1738716422502,114.279932891963] preserved in latitude/longitude order; it was not shifted and no exact-point hit or miss was treated as citywide evidence.",
+    "No sample GeoJSON retained because no safe native parcel ID plus full polygon was obtained.",
+    "A login wall, unavailable map API, map extent miss, or failed route is not evidence of citywide cadastral absence.",
+    "No login, credentials, private token use, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+    "Packet completion is research evidence only and is not source integration or admission."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If a future source is qualified, retain exactly one stable native parcel identity as properties.id and keep source field mapping and any composite-key provenance in metadata.",
+  "nextStep": "Serial reviewer should independently inspect any authenticated-free official Boluo/Huizhou parcel endpoint that becomes available, verify stable native IDs, CRS/axis handling and coverage, and keep runtime held until qualification."
+}

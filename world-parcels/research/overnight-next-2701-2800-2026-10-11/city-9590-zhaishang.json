@@ -1,0 +1,64 @@
+{
+  "purpose": "City-specific discovery of an official cadastral parcel source for Zhaishang (寨上), Tianjin Binhai New Area, China; access failures and non-parcel official pages are not treated as evidence of citywide absence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 9590,
+  "queueRank": 2721,
+  "name": "Zhaishang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [39.244546234481, 117.803670026467],
+  "population2025": 217558,
+  "population2025k": 217.558,
+  "populationUnit": "persons",
+  "aliases": ["zhaishang", "寨上"],
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhaishang China cadastral parcel map official 39.244546234481 117.803670026467",
+        "result": "Located official Tianjin Tianditu and Tianjin Planning and Natural Resources leads; no public parcel-polygon endpoint was established.",
+        "actualResultUrls": ["https://tianjin.tianditu.gov.cn/", "https://ghhzrzy.tj.gov.cn/"]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "寨上街道 天津 滨海新区 地籍图 宗地 查询 官方",
+        "result": "Located official Binhai open-data material identifying 寨上街道 and official Tianjin planning/natural-resources land material; no anonymous safe parcel geometry service was found.",
+        "actualResultUrls": ["https://open.data.tj.gov.cn/sjj/9cf44deb5e154c3587b24f50aa121c0e.htm", "https://ghhzrzy.tj.gov.cn/", "https://tianjin.tianditu.gov.cn/static/html/bzmap.html"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Tianjin Planning and Natural Resources and Tianjin Tianditu sources evidence the city-level land/natural-resources and mapping custodians; the Binhai New Area government open-data page specifically identifies 寨上街道. This is local custodian/procedural evidence only and does not qualify source integration.",
+  "officialSources": [
+    {"url": "https://tianjin.tianditu.gov.cn/", "operator": "Tianjin Planning and Natural Resources Bureau; Tianjin Surveying and Mapping Geographic Information Research Center", "scope": "Official Tianjin public geographic-information portal; map and layer-switching functions are described, but no accessible cadastral parcel API was exposed during this attempt."},
+    {"url": "https://ghhzrzy.tj.gov.cn/", "operator": "Tianjin Planning and Natural Resources Bureau", "scope": "Official municipal land and natural-resources custodian; search results expose Binhai land/standard-parcel material, not a safe parcel-geometry service."},
+    {"url": "https://open.data.tj.gov.cn/sjj/9cf44deb5e154c3587b24f50aa121c0e.htm", "operator": "Binhai New Area Government", "scope": "Official open-data page for 寨上街道 community boundary extents; boundary/administrative material, not cadastral parcel polygons."}
+  ],
+  "routesAttempted": [
+    {"url": "https://tianjin.tianditu.gov.cn/", "method": "GET", "headers": "Chrome-like User-Agent, Accept, Accept-Language: zh-CN,zh;q=0.9,en;q=0.8; cookie jar used", "outcome": "TLS verification failed because the host certificate is expired (curl error 60); request was not retried with verification disabled or a certificate exception."},
+    {"url": "https://tianjin.tianditu.gov.cn/static/html/bzmap.html", "method": "GET/search-open", "outcome": "Official Tianjin standard-map page was found in first-party search results and identifies Binhai map products, but direct TLS access was not usable in this environment; no service configuration or parcel response obtained."},
+    {"url": "https://ghhzrzy.tj.gov.cn/", "method": "GET", "headers": "Chrome-like User-Agent, Accept, Accept-Language: zh-CN,zh;q=0.9,en;q=0.8", "outcome": "HTTP 403 text/html from the official host; no login, CAPTCHA/Cloudflare bypass, private token, or TLS bypass attempted."},
+    {"url": "https://open.data.tj.gov.cn/sjj/9cf44deb5e154c3587b24f50aa121c0e.htm", "method": "GET", "headers": "Chrome-like User-Agent, Accept, Accept-Language: zh-CN,zh;q=0.9,en;q=0.8", "outcome": "Request timed out at approximately 30 seconds in this environment; first-party search metadata identifies the page as an open Binhai dataset for 寨上街道 community extents, not parcel polygons."},
+    {"url": "https://www.tj.gov.cn/zwgk/szfgb/xqk/2010/14/bmgfxwj/202512/t20251231_7212805.html", "method": "GET/search-open", "outcome": "Official Tianjin government material describes land-registration and cadastral-number procedures for Binhai-related areas; procedural evidence only, no anonymous parcel geometry endpoint."}
+  ],
+  "schemaCrsAndResponse": {"service": null, "nativeFields": null, "crs": null, "boundedResponse": null, "geometryRetained": false, "reason": "No public parcel service endpoint or bounded ID-plus-geometry response was established."},
+  "scopeLimits": [
+    "No citywide completeness claim.",
+    "The exact WUP point [39.244546234481,117.803670026467] was preserved and not shifted; no exact-point absence inference was made.",
+    "Official map, standard-map, administrative-boundary, and land-procedure pages do not prove that a public vector parcel layer is currently anonymous or downloadable.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate/title, or other unsafe fields were requested or retained.",
+    "No full parcel polygons were retained; no sample GeoJSON is written.",
+    "This packet is research evidence only, not source integration or admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "service URL", "bounded query metadata"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "verifiedSample": false,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "remainingUncertainty": "The Tianjin Tianditu viewer may expose interactive layers or an unindexed route, and the official services may change. The expired TLS certificate, HTTP 403, and timeout prevented inspection of current JavaScript/configuration and any anonymous ID-plus-geometry response during this attempt.",
+  "integrationDecision": "not_integrated"
+}

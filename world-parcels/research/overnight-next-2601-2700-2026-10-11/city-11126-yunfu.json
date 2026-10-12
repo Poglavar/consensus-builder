@@ -1,0 +1,95 @@
+{
+  "cityCode": 11126,
+  "queueRank": 2700,
+  "name": "Yunfu",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [22.9329430199513, 112.037362109571],
+  "population2025": 219227,
+  "population2025k": 219.227,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yunfu China official cadastral parcel map real estate registration natural resources GIS",
+        "result": "Official Yunfu Natural Resources material was found for a map-based property inquiry service; no anonymous parcel feature service was found.",
+        "actualResultUrls": [
+          "https://www.yunfu.gov.cn/zrzy/zwgk/tzgg/content/post_1703962.html",
+          "https://www.yunfu.gov.cn/zrzy/bdcdj/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "云浮市 不动产登记 地籍图 地图 服务 官方",
+        "result": "官方云浮市自然资源局公告确认“以图查房”地图浏览和登记信息查询；查询需身份验证，未发现匿名宗地 ID+几何接口。",
+        "actualResultUrls": [
+          "https://www.yunfu.gov.cn/zrzy/zwgk/tzgg/content/post_1703962.html",
+          "https://www.yunfu.gov.cn/zrzy/bdcdj/gzcx/content/post_1750876.html",
+          "https://www.yunfu.gov.cn/zwgk/zzjg/szr/content/post_1979724.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Yunfu Natural Resources official material names the Yunfu urban-district and county real-estate registration centers and describes the citywide map-based property inquiry service.",
+  "sourceAssessment": {
+    "officialCustodian": "Yunfu Municipal Bureau of Natural Resources (云浮市自然资源局), with registration centers in Yuncheng, Yunan, Xinxing, Yunan County, and Luoding listed in the official cross-city service notice.",
+    "service": "以图查房 (map-based property inquiry), announced by the Yunfu Municipal Bureau of Natural Resources.",
+    "scopeClaimed": "Yunfu municipal jurisdiction / registered real estate shown through the official service; exact cadastral parcel coverage and geometry export scope not verified.",
+    "endpoint": null,
+    "schemaCrs": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "reuseStatus": "Unverified; no downloadable parcel dataset or licence terms were exposed by the checked pages."
+  },
+  "verifiedParcelResponse": null,
+  "requests": [
+    {
+      "url": "https://www.yunfu.gov.cn/zrzy/zwgk/tzgg/content/post_1703962.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "Official notice confirms map browsing and registration-information inquiry, but says users must undergo identity verification; no public API/configuration or parcel response exposed."
+    },
+    {
+      "url": "https://www.yunfu.gov.cn/zrzy/bdcdj/",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "Official Yunfu real-estate-registration channel; no anonymous parcel feature endpoint exposed in the page."
+    },
+    {
+      "url": "https://www.gdzwfw.gov.cn/hlwbdcdj/gdzwfwwbdczt/index.html",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "Anonymous direct request timed out with no response; no retry with credentials or bypass was attempted."
+    },
+    {
+      "url": "https://www.yunfu.gov.cn/img/0/272/272270/1703962.png",
+      "method": "GET",
+      "httpStatus": "not fetched",
+      "assessment": "The official notice embeds an operation-guide image; it was not treated as a parcel API or geometry source."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS only when explicitly returned",
+    "source layer/year",
+    "retrieval timestamp"
+  ],
+  "sampleFiles": [],
+  "runtimeReadiness": "held",
+  "scopeLimits": [
+    "Exact WUP point [22.9329430199513, 112.037362109571] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, map-extent result, or citywide absence claim is made.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "A local registry custodian and citywide map-based inquiry are evidenced, but no anonymous parcel integration endpoint is qualified.",
+    "No retained GeoJSON sample was created because no safe native parcel ID plus full polygon was obtained.",
+    "Packet completion is not source integration or adapter admission."
+  ],
+  "uncertainty": "The official inquiry may expose cadastral or real-estate map content after identity verification, through an application route not discoverable from the checked public HTML. Anonymous timeout and absence of a public feature response are route limitations, not evidence that Yunfu lacks cadastral coverage.",
+  "serialReviewRecommendation": "Hold. Independently recheck any specifically identified official anonymous endpoint and qualify coverage, stable identity, CRS/axis semantics, licensing, and runtime admissibility before integration."
+}

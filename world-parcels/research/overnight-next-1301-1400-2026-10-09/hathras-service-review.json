@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8963-hathras.json",
+  "cityCode": 8963,
+  "purpose": "Document first-party discovery, current public map/API routes, bounded anonymous access review, safe-field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The current UP Bhu-Naksha viewer was reachable and its server configuration was inspected. Hathras-specific aggregate digitization evidence was found, but bounded anonymous requests did not produce a safe parcel ID, schema/CRS response, or polygon. No parcel sample is retained.",
+  "registryAssessment": "registryFound is true for the documented District Hathras land-record service and Hathras-specific official cadastral digitization dashboard. This does not qualify a parcel adapter or prove open citywide geometry coverage.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS or coordinate-system metadata", "non-personal layer/schema metadata", "administrative hierarchy codes and names"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Hathras Uttar Pradesh official land records cadastral map parcel Bhu Naksha",
+      "outcome": "Official District Hathras land-records, UP Bhulekh, UP Bhu-Naksha, and Hathras digitization dashboard routes found.",
+      "actualResultUrls": ["https://hathras.nic.in/service/land-records/", "https://upbhulekh.gov.in/", "https://upbhunaksha.gov.in/bhunaksha/", "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=144"]
+    },
+    {
+      "language": "Hindi",
+      "query": "हाथरस उत्तर प्रदेश भू नक्शा खसरा नक्शा आधिकारिक",
+      "outcome": "Hindi official district and state land-record routes were found; no safe parcel ID plus polygon was exposed for the target point.",
+      "actualResultUrls": ["https://hathras.nic.in/hi/service/भूमि-रिकॉर्ड्स/", "https://upbhulekh.gov.in/", "https://upbhunaksha.gov.in/bhunaksha/", "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=144"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://hathras.nic.in/service/land-records/","method":"GET/search-open","httpStatus":200,"result":"Official district land-records page loaded; it names the Collectorate land-record computer room and links UP Bhulekh. No parcel schema or geometry in the page response."},
+    {"url":"https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=144","method":"GET/search-open","httpStatus":200,"result":"Official Hathras digitization dashboard loaded; Hathras tehsil aggregate rows report cadastral-map linkage/georeferencing status. No individual parcel feature response."},
+    {"url":"https://upbhulekh.gov.in/","method":"GET/search-open","httpStatus":200,"result":"Official Board of Revenue land-record portal loaded; public record/map navigation was described, but no unsafe fields were requested and no parcel geometry was returned."},
+    {"url":"https://upbhunaksha.gov.in/bhunaksha/","method":"GET","httpStatus":200,"result":"Current public viewer HTML loaded; current JavaScript/configuration inspected. SSR state exposed state code 09, level count metadata and District/Tehsil/Village labels."},
+    {"url":"https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode","method":"GET","httpStatus":200,"result":"Returned state code 09."},
+    {"url":"https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels","method":"GET","httpStatus":200,"result":"Returned [District, Tehsil, Village]."},
+    {"url":"https://upbhunaksha.gov.in/bhunakshaserver/Levels/districtList","method":"GET","httpStatus":500,"result":"No static resource response; no district data inferred."},
+    {"url":"https://upbhunaksha.gov.in/bhunakshaserver/Levels/getDistricts","method":"GET","httpStatus":500,"result":"No static resource response; no district data inferred."},
+    {"url":"https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotInfo","method":"GET","httpStatus":405,"result":"Method not supported; no POST was guessed without current client evidence and no parcel data inferred."},
+    {"url":"https://upbhunaksha.gov.in/bhunakshaserver/Map/getMap","method":"GET","httpStatus":401,"result":"Authorization required; no token or credential was used or requested."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":"up-bhunaksha","nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. Exact WUP point [27.5960398715243, 78.0517222203948] was preserved and not shifted; route/API failure is not evidence of citywide absence."},
+  "remainingUncertainty": "The viewer's current anonymous hierarchy and parcel feature request contract, CRS, native parcel identity, exact-point containment, and citywide urban/open coverage remain unverified. Aggregate Hathras digitization counts do not substitute for individual polygon evidence.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "requestCache": "tmp/valhalla-parcel-research/8963/"
+}

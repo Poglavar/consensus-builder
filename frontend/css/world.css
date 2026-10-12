@@ -4,6 +4,7 @@
 .world-view {
     --world-live: #43e6a6;
     --world-full: var(--cb-world-coverage-full);
+    --world-mostly: var(--cb-world-coverage-mostly);
     --world-source: #ffc24b;
     --world-partial: var(--world-source);
     --world-none: var(--cb-world-coverage-none);
@@ -364,6 +365,7 @@ body.world-view-open {
 
 .world-tier-dot--live { background: var(--world-live); box-shadow: 0 0 10px var(--world-live); }
 .world-tier-dot--full { background: var(--world-full); }
+.world-tier-dot--mostly { background: var(--world-mostly); }
 .world-tier-dot--partial,
 .world-tier-dot--source { background: var(--world-partial); }
 .world-tier-dot--none { background: var(--world-none); }

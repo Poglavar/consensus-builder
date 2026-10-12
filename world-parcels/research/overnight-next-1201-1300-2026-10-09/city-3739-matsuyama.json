@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3739,
+  "cityId": "wup2025:3739",
+  "name": "Matsuyama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "centerLatLon": [33.8263081285138, 132.766078613925],
+  "queueRank": 1275,
+  "population2025": 437355,
+  "population2025k": 437.355,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Matsuyama official cadastral parcel map GIS land parcel map city Japan",
+        "result": "First-party discovery found Matsuyama City's official cadastral-survey/results page, its public e~yo Machi Navi map portal, and the Geospatial Information Authority/Ministry of Justice registry-map dataset catalog for Matsuyama (municipality code 38201). The city map portal documents public administrative map viewing but no cadastral parcel API was verified.",
+        "actualResultUrls": [
+          "https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html",
+          "https://www2.wagmap.jp/matsuyamacity/Portal",
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "松山市 地籍図 公図 地番図 GIS 公式",
+        "result": "松山市公式の地籍調査ページで、地籍図・地籍簿の作成、市役所備付け、地区別の閲覧申請・交付手続を確認した。公式e～よまちナビは都市計画等の行政情報マップを公開しているが、匿名の地籍図ポリゴンAPIは確認できなかった。G-Spaceの法務省登記所備付地図データに松山市の2022～2026年GeoJSONが掲載されている。",
+        "actualResultUrls": [
+          "https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html",
+          "https://info-faq.city.matsuyama.ehime.jp/faq/show/1173?site_domain=default",
+          "https://www2.wagmap.jp/matsuyamacity/Portal",
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialCityService": "Matsuyama City e~yo Machi Navi public administrative map portal; city documentation describes map viewing/search for administrative information, but an anonymous cadastral parcel service was not exposed in the inspected page.",
+    "localRegistryProcedure": "Matsuyama City official cadastral-survey page documents city-held cadastral results and fee-based viewing/application for eligible districts; this is local institutional custody and procedure evidence, not a public anonymous runtime parcel API.",
+    "openGeometrySource": "G-Space CKAN catalog record aigid-moj-38201, Ministry of Justice registry-office map extract for Matsuyama, with 2022-2026 GeoJSON resources. The 2026 catalog URL returned a GeoJSON FeatureCollection labelled 2025 and was inspected as published.",
+    "nativeIdentity": "ID",
+    "sourceFields": ["ID", "市区町村C", "大字コード", "丁目コード", "小字コード", "予備コード", "市区町村名", "大字名", "丁目名", "地番", "精度区分", "座標値種別", "地図名", "座標系", "測地系判別"],
+    "fieldMapping": {"ID": "stable source feature identity retained as id"},
+    "compositeKeyProvenance": "The source exposes municipality/area/lot fields, but no composite key was used because the stable source ID field ID was present. Retained GeoJSON contains only ID-derived id.",
+    "crs": "CRS84; source coordinates are longitude, latitude and retained GeoJSON follows RFC 7946.",
+    "sampleFile": "sample-matsuyama-parcels.geojson",
+    "sampleScope": "One source polygon intersected the exact unchanged WUP point in a bounded 0.0000003-degree query window; one polygon is retained as a safe-ID geometry sample. This is not a citywide completeness claim."
+  },
+  "verifiedSample": true,
+  "targetGeometryEvidence": "exact_wup_point_intersection_verified_in_bounded_source_query",
+  "coverageAssessment": {
+    "claimedScope": "Matsuyama municipality in the published Ministry of Justice registry-map extract; bounded local query only.",
+    "verifiedOpenScope": "The catalog record and published GeoJSON were verified, and one exact-point intersecting feature was observed. Dataset completeness, public-coordinate coverage, and cadastral status by parcel remain unvalidated.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html", "method": "GET/web open; first-party", "status": "HTTP page found", "summary": "Official cadastral-survey page; documents survey products, district coverage, viewing/application and city custody; no parcel API exposed."},
+    {"url": "https://www2.wagmap.jp/matsuyamacity/Portal", "method": "GET/web open; anonymous", "status": "HTTP page found", "summary": "Official public map portal; page describes administrative-information maps, but no cadastral parcel layer/API was verified from the public HTML."},
+    {"url": "https://info-faq.city.matsuyama.ehime.jp/faq/show/1173?site_domain=default", "method": "GET/web open; first-party", "status": "HTTP page found", "summary": "Official FAQ links the e~yo Machi Navi map and states public map use for urban-planning information; it does not expose cadastral geometry."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200 JSON", "summary": "Catalog metadata returned Matsuyama 2022-2026 GeoJSON/SHP resources and source schema metadata."},
+    {"url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/38/aigid-moj-38201/38201_%E6%9D%BE%E5%B1%B1%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%994%E7%B3%BB_%E7%AD%86R_2026.geojson", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200 GeoJSON", "summary": "Published GeoJSON fetched to ignored scratch; CRS84, Polygon features, native ID field present. Bounded source filtering around exact WUP point returned one feature ID H000002385."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "A real public source-native geometry and stable ID were verified, including an exact-point hit, but the official city viewer's live configuration/API and citywide completeness were not independently qualified for runtime integration.",
+  "remainingUncertainty": "The published registry-map extract may have incomplete or varying cadastral coverage; the exact source-version label is inconsistent (catalog resource named 2026 while fetched FeatureCollection name is 2025); no owner, address, lot, title, or other unsafe fields were retained.",
+  "nextStep": "If runtime qualification is required, inspect the official map portal's current JavaScript/configuration and independently validate source coverage and adapter behavior; retain geometry and safe native IDs only.",
+  "identityPolicy": "Retain only the stable native source ID as id with geometry; do not expose Japanese lot/address or person/property fields.",
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

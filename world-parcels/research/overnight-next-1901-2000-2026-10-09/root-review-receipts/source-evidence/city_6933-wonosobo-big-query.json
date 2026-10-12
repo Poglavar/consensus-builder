@@ -1,0 +1,1 @@
+{"displayFieldName":"kecamatan","fieldAliases":{"kecamatan":"kecamatan"},"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":4326,"latestWkid":4326},"fields":[{"name":"kecamatan","type":"esriFieldTypeString","alias":"kecamatan","length":254}],"features":[]}

@@ -1,0 +1,62 @@
+{
+  "cityRecord": "city-5770-souk-ahras.json",
+  "cityCode": 5770,
+  "queueRank": 2699,
+  "name": "Souk Ahras",
+  "country": "Algeria",
+  "iso2": "DZ",
+  "point": [36.2826961442925, 7.95223805895454],
+  "population2025": 219287,
+  "population2025k": 219.287,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "discovery": {
+    "english": "Ministry of Finance cadastral-structure documentation and ASGA's official general 1:200,000 viewer were found; no public Souk Ahras parcel API was qualified.",
+    "native": "Arabic discovery found official Ministry of Finance and public-service references, but no anonymous Souk Ahras parcel geometry service."
+  },
+  "localRegistryCustodian": {
+    "evidenced": false,
+    "url": null,
+    "details": "National Ministry of Finance documents evidence cadastral/land-conservation administration, but this attempt did not obtain a first-party local Souk Ahras office directory or local service endpoint."
+  },
+  "attempts": [
+    "English first-party discovery query recorded in city packet.",
+    "Arabic first-party discovery query recorded in city packet.",
+    "GET official ASGA BNDG 1:200,000 viewer: timeout after 20 seconds; no configuration, schema, CRS, parcel layer, or geometry.",
+    "GET official Ministry of Finance home: HTTP 500; no authenticated retry.",
+    "GET/inspect official Ministry of Finance cadastral PDFs via indexed first-party URLs: institutional mandate and cadastral-section evidence only.",
+    "Inspect official Interior public-services portal and ANURB lead: no parcel feature endpoint evidenced."
+  ],
+  "serviceAssessment": {
+    "publicParcelGeometryFound": false,
+    "verifiedParcelResponse": null,
+    "sourceFieldMapping": null,
+    "nativeIdentityField": null,
+    "crs": null,
+    "sampleGeojson": null,
+    "mapExtentProbe": "Not used to infer absence; no parcel map endpoint was established."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier if publicly returned",
+    "parcel polygon geometry",
+    "service/source metadata",
+    "CRS and response format",
+    "retrieval timestamp"
+  ],
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "fullPolygonsRetained": 0,
+    "citywideCoverage": false,
+    "countrywideCoverage": false,
+    "notes": "No anonymous bounded ID+geometry response was available to qualify. General 1:200,000 cartography is not treated as cadastral parcel coverage."
+  },
+  "uncertainty": [
+    "Institutional national evidence does not establish a public anonymous API or Souk Ahras local office endpoint.",
+    "The ASGA viewer timeout and Ministry HTTP 500 are access failures only.",
+    "No conclusion about cadastral coverage, parcel absence, or exact-point availability is drawn.",
+    "No owner, titleholder, address, contact, tax, account, personal, or other unsafe fields were requested."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Serial review is required before any adapter can be considered runtime-ready; this packet does not claim integration or admission."
+}

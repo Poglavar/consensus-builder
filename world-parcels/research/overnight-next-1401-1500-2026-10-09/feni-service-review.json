@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7441-feni.json",
+  "purpose": "Document first-party registry/map discovery, viewer configuration, bounded anonymous requests, safe field limits, and uncertainty for Feni.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Bangladesh's official DLRS and Ministry of Land sources establish cadastral/mouza-map custody and public map-service context. The public map viewer's current JavaScript identifies a GeoServer route and wsDMMS:mouza layer, but the GIS host returned HTTP 503 for capabilities and a geometry/info request at the exact WUP point. The administrative lookup did not return Feni in the returned Chattogram-division district list, which may reflect incomplete project coverage or application data; it is not treated as citywide absence.",
+  "registryAssessment": "Local/city service custody is evidenced at the official national/regional level: DLRS states that finalized mouza maps are held through settlement publication camps and district record rooms, and the official DLRS portal assigns Feni to the Noakhali zonal settlement office. No Feni-local public parcel-vector endpoint was qualified.",
+  "officialPrimarySources": [
+    {"url":"https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map","observation":"Official DLRS mouza-map access/custody procedure; scanned copies require application and fee."},
+    {"url":"https://dlrs.portal.gov.bd/","observation":"Official DLRS portal lists Feni under the Noakhali zonal settlement office."},
+    {"url":"https://map.land.gov.bd/","observation":"Official Ministry of Land/DLRS digital mouza-and-plot map viewer; page says mouza sheets are digitized and georeferenced."},
+    {"url":"https://settlement.gov.bd/Map/MapSearch","observation":"Official land-record/map search interface with administrative and plot selectors; anonymous fetch timed out in this attempt."}
+  ],
+  "searchQueries": [
+    {"language":"English","query":"Feni Bangladesh official cadastral map land records parcel GIS mouza map DLRS Feni","result":"Official DLRS, Ministry of Land viewer, and Feni district sources found; no open Feni parcel vector response found.","actualResultUrls":["https://dlrs.gov.bd/","https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map","https://map.land.gov.bd/","https://feni.gov.bd/pages/static-pages/69914380516a96d4de41167d"]},
+    {"language":"Bengali","query":"ফেনী বাংলাদেশ সরকারি ভূমি রেকর্ড মৌজা মানচিত্র সীমানা ক্যাডাস্ট্রাল","result":"Official Bengali DLRS/map sources found; they establish custody and service context but no safe anonymous Feni geometry response.","actualResultUrls":["https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map","https://map.land.gov.bd/","https://dlrs.portal.gov.bd/","https://feni.gov.bd/pages/static-pages/69914380516a96d4de41167d"]}
+  ],
+  "viewerReview": {"viewerUrl":"https://map.land.gov.bd/","jsConfig":"http://gis.land.gov.bd/geoserver/","currentParcelLayer":"wsDMMS:mouza","observedProjection":"EPSG:4326 in the viewer WMS configuration","nativeFieldMapping":"Not obtained; capabilities and feature response were unavailable."},
+  "safeFieldAllowlist": ["stable native parcel/mouza identifier if returned", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":null,"exactWupPointTest":"Attempted against the viewer's wsDMMS:mouza layer, but the GIS host returned HTTP 503.","requestEvidence":[{"url":"http://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities","httpStatus":503},{"url":"http://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&request=GetCapabilities&version=1.0.0","httpStatus":503},{"url":"http://gis.land.gov.bd/geoserver/wsDMMS/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=wsDMMS:mouza&QUERY_LAYERS=wsDMMS:mouza&INFO_FORMAT=application/json&SRS=EPSG:4326&BBOX=91.3923696544438,23.0124664645176,91.3939696544438,23.0140664645176&WIDTH=101&HEIGHT=101&X=50&Y=50&FEATURE_COUNT=3","httpStatus":503}]},
+  "coverageAssessment": {"claimedScope":"National/regional cadastral and mouza-map custody; official digital land-zoning viewer scope.","verifiedOpenScope":"No Feni-specific open geometry scope verified.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "attempts": [
+    {"url":"https://map.land.gov.bd/","method":"GET","httpStatus":200,"result":"Viewer HTML and JavaScript fetched; public GIS host and layer configuration inspected."},
+    {"url":"https://map.land.gov.bd/getAdminByCode","method":"POST","httpStatus":200,"result":"Division lookup succeeded; Chattogram district lookup returned four districts and omitted Feni in that response."},
+    {"url":"https://settlement.gov.bd/Map/MapSearch","method":"GET","httpStatus":null,"result":"Timed out after 25 seconds; no authenticated route used."},
+    {"url":"http://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities","method":"GET","httpStatus":503,"result":"No GIS server available."},
+    {"url":"http://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&request=GetCapabilities&version=1.0.0","method":"GET","httpStatus":503,"result":"No GIS server available."},
+    {"url":"http://gis.land.gov.bd/geoserver/wsDMMS/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=wsDMMS:mouza&QUERY_LAYERS=wsDMMS:mouza&INFO_FORMAT=application/json&SRS=EPSG:4326&BBOX=91.3923696544438,23.0124664645176,91.3939696544438,23.0140664645176&WIDTH=101&HEIGHT=101&X=50&Y=50&FEATURE_COUNT=3","method":"GET","httpStatus":503,"result":"Bounded exact-point request returned no feature, schema, or geometry because the GIS host was unavailable."}
+  ],
+  "remainingUncertainty":"Feni may have cadastral/mouza maps through the Noakhali zonal settlement and district record-room channels, and the public viewer may have incomplete administrative coverage or temporary GIS outage. No anonymous safe parcel geometry or native identifier was available in this attempt.",
+  "runtimeAssessment":"held; no adapter qualification because no real parcel geometry response was verified."
+}

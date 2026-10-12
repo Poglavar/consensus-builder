@@ -1,0 +1,26 @@
+{
+  "taskId": "city:5976",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-5976-sapucaia-do-sul.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/sapucaia-do-sul-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T221745-6cb924cd/stdout.jsonl",
+    "tmp/valhalla-parcel-research/5976/planning.html"
+  ],
+  "checkedAt": "2026-10-11T22:21:11Z",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "The official municipal Planning Secretariat page and referenced procurement material support a local cadastral/GIS custodian lead. The inspected municipal page supplies no public native parcel ID plus polygon; contextual maps and procurement intent do not qualify live geometry.",
+  "scopeLimit": "No public geometry was qualified; this is unresolved access and coverage, not a finding of citywide parcel absence."
+}

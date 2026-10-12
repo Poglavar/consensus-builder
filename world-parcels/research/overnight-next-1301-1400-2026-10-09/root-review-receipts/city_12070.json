@@ -1,0 +1,26 @@
+{
+  "taskId": "city:12070",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-12070-huangyan-district.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/huangyan-district-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "checkedAt": "2026-10-09T15:28:39+00:00",
+  "reason": "The immutable WUP identity and bilingual recorded searches match. The first-party Huangyan notice at https://www.zjhy.gov.cn/art/2024/8/26/art_1622221_59111271.html names the local sub-bureau and its homestead registration procedure. Packet registryFound=null conflicts with the job rule that local procedure evidence supports true; worker-owned packet needs correction. No anonymous safe native-ID polygon or independent adapter qualification exists.",
+  "reviewFindings": {
+    "queueIdentityVerified": true,
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "adapterQualificationComplete": false,
+    "integrationState": "held"
+  },
+  "custodyFinding": {
+    "packetRegistryFound": null,
+    "localCustodyEvidenceSupports": true,
+    "packetCorrectionNeeded": true
+  }
+}

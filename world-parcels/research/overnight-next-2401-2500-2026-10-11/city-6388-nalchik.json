@@ -1,0 +1,30 @@
+{
+  "cityCode": 6388,
+  "queueRank": 2496,
+  "name": "Nalchik",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "point": [43.4935772664619, 43.6257957772128],
+  "population2025": 234831,
+  "population2025k": 234.831,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nalchik Russia official cadastral parcel map Rosreestr public map",
+        "result": "Search identified the current national public cadastral map as the Rosreestr/NSPD map and official Nalchik municipal land/city-map pages. Direct anonymous access to the current NSPD map timed out during this attempt.",
+        "actualResultUrls": ["https://nspd.gov.ru/map?thematic=PKK", "https://admnalchik.ru/category/officialn/land-relations/", "https://admnalchik.ru/category/urban-environment/interactive-maps/"]
+      },
+      {
+        "language": "Russian",
+        "query": "Нальчик кадастровая карта официальный Росреестр публичная кадастровая карта",
+        "result": "Russian-language search identified official municipal publications containing cadastral plans/numbers and the current NSPD public cadastral map destination. Search results also surfaced non-official mirror sites, which were not used as source integration evidence.",
+        "actualResultUrls": ["https://nspd.gov.ru/map?thematic=PKK", "https://admnalchik.ru/", "https://xn----7sbablnnmsiu1dzd9c.xn--p1ai/wp-content/uploads/2026/04/15_2026.pdf"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Official Nalchik municipal land-relations and interactive-map sections were reachable, and official municipal publications expose cadastral-plan material and cadastral numbers. The national NSPD public cadastral map was identified but its map request timed out; no anonymous parcel API response or safe full parcel geometry was verified in this attempt. This packet is not source integration or runtime admission."
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10887-motihari.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "Bihar's official BhuNaksha public viewer was followed through its current JavaScript to live REST endpoints. Motihari Sadar/Motihari/मोतिहारी(122) administrative data and EPSG:32645 cadastral sheet extents were verified. Anonymous point probes returned two opaque parcel ids, but no safe polygon geometry or stable native schema was exposed; no GeoJSON sample was retained and runtime remains held.",
+  "registryAssessment": "Local custody is evidenced by the official East Champaran district land-record page naming the Motihari land-record office, while the Bihar Department of Revenue and Land Reforms/BhuNaksha portal provides state cadastral map custody. These establish relevant registry custody but not an open parcel-vector integration.",
+  "officialPrimarySources": [
+    {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "operator": "Directorate of Land Records & Survey, Government of Bihar / NIC", "observation": "Official public cadastral viewer; live UI exposes administrative selection, map extents, plot point lookup and WMS rendering."},
+    {"url": "https://eastchamparan.nic.in/service/view-khata-jamabandi-records-online/", "operator": "East Champaran District Administration, Government of Bihar", "observation": "Official page identifies the Motihari land-record office and Bihar online Khata/Jamabandi route."},
+    {"url": "https://land.bihar.gov.in/landbihar/Default.aspx", "operator": "Department of Revenue and Land Reforms, Government of Bihar", "observation": "Official department page links Bhu-Naksha, land records, surveys and related revenue services."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Motihari Bihar official cadastral map land records parcel GIS", "result": "Official Bihar BhuNaksha, Bihar Revenue and Land Reforms, East Champaran district and Bihar GIS sources found.", "actualResultUrls": ["https://bhunaksha.bihar.gov.in/index.jsp", "https://land.bihar.gov.in/landbihar/Default.aspx", "https://eastchamparan.nic.in/service/view-khata-jamabandi-records-online/", "https://gis.bihar.gov.in/DEPTS/Default.aspx"]},
+    {"language": "Hindi", "query": "मोतिहारी बिहार आधिकारिक भू नक्शा खतियान भूमि अभिलेख नक्शा", "result": "Hindi discovery found official Bihar BhuNaksha and East Champaran land-information sources.", "actualResultUrls": ["https://bhunaksha.bihar.gov.in/index.jsp", "https://eastchamparan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%9C%E0%A4%BE%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A5%80-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%E0%A4%8F%E0%A4%82/"]}
+  ],
+  "attempts": [
+    {"attempt": "Current BhuNaksha HTML/config/JavaScript inspection", "result": "HTTP 200 public viewer and assets retrieved; REST/WMS paths identified; no authentication used.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Administrative level discovery", "result": "Public POSTs returned 7 levels and Motihari path 02/01/01/0009; Cadastral Survey map 06 sheets 01 and 02 were listed.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Bounded anonymous extent requests", "result": "Public POSTs returned EPSG:32645 extents and gisCodes CS02010100091220601/602.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Bounded anonymous point lookup", "result": "getPlotAtXY returned id+kide pairs for two interior test points; no geometry or attributes_json was returned. Exact WUP point was not treated as a coverage absence.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "ScalarDatahandler metadata route", "result": "Direct GET attempt returned generic 404 error page; no unsafe fields requested.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "requests": [
+    {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "method": "POST", "outcome": "200; 7 levels", "safeRequest": true},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "method": "POST", "outcome": "200; Motihari administrative and map choices", "safeRequest": true},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "method": "POST", "outcome": "200; EPSG:32645 sheet extents", "safeRequest": true},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "method": "POST", "outcome": "200; ids-only point responses", "safeRequest": true},
+    {"url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=5", "method": "GET", "outcome": "404 generic error page", "safeRequest": true}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No full parcel polygon was obtained. Two bounded point responses contained opaque ids only; no GeoJSON was retained."},
+  "coverageAssessment": {"claimedScope": "BhuNaksha Bihar cadastral map service with district-to-sheet administrative scope.", "verifiedOpenScope": "Motihari mauza enumeration, two cadastral sheet extents and two ids-only point responses.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable native parcel or survey identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "The interactive viewer may use another UI-specific route to render or select parcel geometry. The exact WUP point lies outside tested sheet 01's returned extent; this does not establish absence.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

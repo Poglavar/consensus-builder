@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-7356-abonnema.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Office of the Surveyor General, Rivers State is evidenced by its public SGRIV land-management portal. The public landing, registration, and login routes were reachable, but current public JavaScript exposes no anonymous cadastral map, parcel layer, schema, CRS, or geometry endpoint. No polygon was retained.",
+  "registryAssessment": "Local/state registry custodian evidenced: Rivers State land administration through the Office of the Surveyor General and related Ministry of Lands and Surveys procedures. This establishes a service custodian, not open parcel-data availability.",
+  "registryFound": true,
+  "geometryDecision": "No parcel geometry retained; no qualifying safe WUP-point or bounded city sample was available.",
+  "queries": [
+    {
+      "language": "English",
+      "query": "Abonnema Nigeria official cadastral map parcel Rivers State land registry GIS",
+      "result": "First-party Rivers State Government and SGRIV leads found; no public Abonnema parcel viewer/API found.",
+      "actualResultUrls": ["https://riversstate.gov.ng/", "https://www.sgriv.com/"]
+    },
+    {
+      "language": "Kalabari/Ijaw local-language lead",
+      "query": "Abonnema Kalabari ilẹ̀ cadastral map land registry",
+      "result": "No useful first-party local-language cadastral result; no geometry evidence.",
+      "actualResultUrls": ["https://fr.wikipedia.org/wiki/Abonnema"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://www.sgriv.com/", "method": "GET", "httpStatus": 200, "result": "Public Office of the Surveyor General portal loaded; no public map/API in HTML or current JS."},
+    {"url": "https://www.sgriv.com/register", "method": "GET", "httpStatus": 200, "result": "Anonymous registration page loaded; no submission."},
+    {"url": "https://www.sgriv.com/login", "method": "GET", "httpStatus": 200, "result": "Anonymous login page loaded; no credentials or login attempt."},
+    {"url": "https://riversstate.gov.ng/", "method": "GET", "httpStatus": 403, "result": "Official state portal blocked anonymous request; not interpreted as absence."},
+    {"url": "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=4.75278647885249&lon=6.77389678023712&zoom=18&addressdetails=0", "method": "GET", "httpStatus": 200, "result": "OSM road result near Degema, Rivers; non-cadastral and not retained."}
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer/service identifier", "CRS", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "coverageAssessment": {
+    "claimedScope": "Rivers State land administration/survey service custody.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "No anonymous public parcel endpoint was identified. A login wall, HTTP 403, or missing exact-point feature cannot establish citywide absence. Runtime admission remains held pending independent adapter qualification.",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,130 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T11:47:38Z",
+  "cityCode": 4458,
+  "queueRank": 1231,
+  "cityId": "wup:4458",
+  "name": "Maturin",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso3": "VEN",
+  "centerLatLon": [9.73302840745386, -63.1841133113144],
+  "point": [9.73302840745386, -63.1841133113144],
+  "population2025": 452835,
+  "population2025k": 452.835,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Maturin Venezuela official cadastral map parcel GIS land registry",
+        "result": "Search identified Maturín-specific municipal cadastral ordinance material and reporting on the municipal Dirección de Catastro, but no official public parcel viewer, service URL, layer schema, CRS, or anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.scribd.com/document/956314131/12-Ordinance-on-Property-Tax-of-the-Municipality-of-Maturin-in-the-State-of-Monagas",
+          "https://elorientaldemonagas.com/alcaldia-de-maturin-avanza-en-la-modernizacion-de-los-servicios-catastrales/",
+          "https://laprensademonagas.com/alcaldia-proceso-mas-de-600-cedulas-catastrales-en-el-inicio-de-2026/"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Maturín Venezuela catastro mapa parcelario registro inmobiliario GIS oficial alcaldía",
+        "result": "La búsqueda identificó evidencia específica del Municipio Maturín: la Dirección de Catastro Municipal mantiene el Registro Catastral Municipal y su contenido incluye mapa catastral, plano de mensura y cédula catastral. No se verificó un visor público, servicio GIS, esquema de capa, CRS ni respuesta anónima de geometría parcelaria.",
+        "actualResultUrls": [
+          "https://es.scribd.com/document/736293532/12-Ordenanza-sobre-Impuesto-Inmobiliario-del-Municipio-Maturin-del-Estado-Monagas",
+          "https://elorientaldemonagas.com/alcaldia-de-maturin-avanza-en-la-modernizacion-de-los-servicios-catastrales/",
+          "https://diarioeloriental.com/alcaldia-digitaliza-mas-de-20-mil-archivos-catastrales/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.scribd.com/document/956314131/12-Ordinance-on-Property-Tax-of-the-Municipality-of-Maturin-in-the-State-of-Monagas",
+      "operator": "Municipio Maturín / Alcaldía Bolivariana del Municipio Maturín (ordinance copy hosted by Scribd)",
+      "observation": "The Maturín-specific ordinance states that the Municipality, through Dirección de Catastro Municipal, maintains the municipal cadastral register; the listed contents include a cadastral map identifying the property, survey plan and cadastral certificate. The host is a document mirror, not a verified municipal API or viewer.",
+      "scope": "Local municipal cadastral custody and procedure evidence; no public vector service verified."
+    },
+    {
+      "url": "https://elorientaldemonagas.com/alcaldia-de-maturin-avanza-en-la-modernizacion-de-los-servicios-catastrales/",
+      "operator": "Report citing Alcaldía de Maturín Dirección de Catastro",
+      "observation": "The report identifies the municipal cadastral office and describes modernization under national cadastral law and municipal ordinances. It does not publish a parcel API, viewer configuration or geometry.",
+      "scope": "Maturín municipal cadastral office context; not anonymous geometry access."
+    },
+    {
+      "url": "https://laprensademonagas.com/alcaldia-proceso-mas-de-600-cedulas-catastrales-en-el-inicio-de-2026/",
+      "operator": "Report citing municipal Dirección de Catastro de Maturín",
+      "observation": "The report describes municipal issuance of cadastral certificates and certificates of registration, confirming an active local cadastral procedure. No public map or safe machine-readable parcel response is exposed.",
+      "scope": "Local cadastral procedure evidence."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://alcaldiadematurin.gob.ve",
+      "method": "HEAD; anonymous; TLS verification enabled",
+      "httpStatus": null,
+      "contentType": null,
+      "responseBytes": null,
+      "error": "curl connection timeout after 10 seconds",
+      "outcome": "No municipal web service or viewer configuration could be inspected; timeout is not evidence of service absence."
+    },
+    {
+      "url": "https://maturin.gob.ve",
+      "method": "HEAD; anonymous; TLS verification enabled",
+      "httpStatus": null,
+      "contentType": null,
+      "responseBytes": null,
+      "error": "DNS resolution failure",
+      "outcome": "Candidate domain did not resolve; no inference about municipal cadastral coverage."
+    },
+    {
+      "url": "https://alcaldiamaturin.gob.ve",
+      "method": "HEAD; anonymous; TLS verification enabled",
+      "httpStatus": null,
+      "contentType": null,
+      "responseBytes": null,
+      "error": "DNS resolution failure",
+      "outcome": "Candidate domain did not resolve; no inference about municipal cadastral coverage."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Maturín-specific ordinance and municipal-office reporting evidence a local Dirección de Catastro Municipal and municipal cadastral register/procedure. This establishes local registry/cadastre custody, but not an anonymously accessible parcel-vector service.",
+  "registryEvidenceUrls": [
+    "https://www.scribd.com/document/956314131/12-Ordinance-on-Property-Tax-of-the-Municipality-of-Maturin-in-the-State-of-Monagas",
+    "https://elorientaldemonagas.com/alcaldia-de-maturin-avanza-en-la-modernizacion-de-los-servicios-catastrales/",
+    "https://laprensademonagas.com/alcaldia-proceso-mas-de-600-cedulas-catastrales-en-el-inicio-de-2026/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": null,
+    "kind": "Municipal cadastral register/procedure evidenced; public parcel service not verified",
+    "publisher": "Municipio Maturín / Dirección de Catastro Municipal",
+    "scope": "Municipal Maturín cadastral register and procedures; no anonymous vector endpoint, safe native ID, schema or CRS verified.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not run against a returned parcel feature layer: no anonymous public parcel-geometry endpoint was verified. The exact WUP point [9.73302840745386, -63.1841133113144] was preserved unchanged and was not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal sources describe a Maturín cadastral register containing cadastral maps and certificates.",
+    "verifiedOpenScope": "Maturín-specific cadastral custody and procedures from ordinance/reporting; no open parcel geometry or schema.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe parcel/cadastral identifier only if exposed by a future anonymous endpoint", "geometry", "CRS/layer metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_local_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The municipal cadastral backend, any public map viewer, and any non-indexed or authenticated GIS service remain unverified. Search results and domain probes did not expose a safe anonymous endpoint. No conclusion about citywide parcel absence or completeness is made. No owner, address, contact, titleholder, tax, account, applicant, or personal fields were requested or retained."
+}

@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-4128-ibrat.json",
+  "cityCode": 4128,
+  "queueRank": 3164,
+  "serviceReview": "Official Uzbekistan cadastral and National Geoportal sources were identified, and Ibrat was localized to Buvayda district, Farg'ona region. No safe anonymous Ibrat parcel geometry, stable native parcel identity, schema, or CRS was qualified.",
+  "registryFound": null,
+  "registryCustodian": "O'zbekiston Respublikasi Kadastr agentligi / Davlat kadastrlari palatasi; Farg'ona regional cadastral department evidenced, Buvayda open parcel service not evidenced.",
+  "sourceLead": "https://open.ngis.uz/",
+  "requestOutcomes": [
+    {"method":"GET","url":"https://open.ngis.uz/","outcome":"Timed out after 25 seconds; no viewer configuration or public service response obtained."},
+    {"method":"GET","url":"https://dgov.uz/en/solution/detail/52/","outcome":"First-party English documentation retrieved; public land-parcel information scope confirmed, no geometry API exposed."},
+    {"method":"GET","url":"https://dgov.uz/uz/solution/detail/52/","outcome":"First-party Uzbek documentation retrieved; open National Geoportal and cadastral information scope confirmed, no geometry API exposed."},
+    {"method":"GET","url":"https://gov.uz/oz/kadastr/news/view/143473","outcome":"First-party Cadastre Agency notice retrieved; public geoportal launch confirmed, no parcel response."},
+    {"method":"GET","url":"https://olddata.gov.uz/uz/datasets/4323?dp-1-page=68&dp-1-sort=g6","outcome":"First-party open-data page retrieved; Ibrat shaharchasi in Buvayda district evidenced, no parcel data."},
+    {"method":"GET","url":"https://olddata.gov.uz/uz/datasets/9598","outcome":"First-party directory identifies Farg'ona regional land/cadastre department; no Buvayda parcel endpoint."},
+    {"method":"POST","url":"https://open.ngis.uz/","outcome":"Not attempted; no documented public contract was available and no authentication or unsafe lookup was used."}
+  ],
+  "scopeAndLimits": [
+    "Exact WUP point [40.5761536405821, 71.1278684966842] was preserved.",
+    "No exact-point parcel request was made; this is not evidence of citywide absence.",
+    "Official portal documentation and locality/custodian evidence do not establish open parcel coverage or an adapter contract.",
+    "No schema, CRS, safe native ID, or polygon was verified; no GeoJSON sample retained.",
+    "No unsafe fields, credentials, private tokens, CAPTCHA bypass, login, or owner/property lookup was used."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata", "retrieval date"],
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "The official National Geoportal is a credible source lead, but its page timed out and no anonymous bounded parcel ID-plus-geometry response was observed. This packet is complete as research evidence, not source integration or admission."
+}

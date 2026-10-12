@@ -1,0 +1,38 @@
+{
+  "cityCode": 1582,
+  "queueRank": 2488,
+  "name": "Mbanza-Ngungu",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "point": [-5.24781208336063, 14.8666010891615],
+  "population2025": 236056,
+  "population2025k": 236.056,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mbanza-Ngungu cadastral map parcel cadastre official Democratic Republic of the Congo",
+        "result": "The official DRC Ministry of Land Affairs directory lists Mbanza-Ngungu among Kongo-Central cadastral/land jurisdictions. No public English-language parcel geometry for the city was returned.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Mbanza-Ngungu RDC cadastre parcelle carte parcellaire officiel",
+        "result": "Les sources officielles indiquent les circonscriptions foncières de Mbanza-Ngungu/Ville et Mbanza-Ngungu/Territoire. Le service public BIC est accessible, mais les requêtes anonymes bornées n'ont retourné aucune parcelle sûre.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.leganet.cd/Legislation/JO/2015/Numeros/JO.15.06.2015.pdf",
+          "https://bic.cd/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "First-party Ministry evidence establishes local Mbanza-Ngungu city and territory cadastral jurisdictions. The current public BIC viewer exposed a public cadastral table and safe identity/location fields; city-name and bounded extent requests returned zero rows. That is a point/extent miss only, not evidence of citywide absence. No parcel sample is retained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

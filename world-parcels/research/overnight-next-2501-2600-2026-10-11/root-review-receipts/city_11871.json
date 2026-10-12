@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11871",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-11871-bilasipara.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/bilasipara-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/bilasipara-parcels-sample.geojson",
+    "tmp/valhalla-parcel-research/11871/parcel-1.json",
+    "tmp/valhalla-parcel-research/11871/parcel-2.json",
+    "tmp/valhalla-parcel-research/11871/parcel-3.json"
+  ],
+  "checkedAt": "2026-10-11T13:29:30.887117Z",
+  "reason": "Immutable WUP code/rank/country/point/population match the original UN row. English and Assamese searches are recorded. Three full sampled polygons have only native uniqueId properties; their IDs and EPSG:32646-to-4326 geometries match the three cached first-party Assam responses. The sample is one town village, not citywide coverage. Fresh exact-ID reads, forced paging, 13 bounded cells, metric full-scope GEOS checks, source binding and headed Details verification are not independently evidenced."
+}

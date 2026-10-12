@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-499-buenaventura.json",
+  "cityFile": "city-499-buenaventura.json",
+  "wupCityCode": 499,
+  "queueRank": 1272,
+  "city": "Buenaventura",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "point": [3.87751185998404, -77.019907696878],
+  "serviceReviewStatus": "complete_research_held_for_serial_qualification",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localRegistry": "The Alcaldía Distrital de Buenaventura official maps pages were discovered, but no public parcel endpoint was verified there.",
+    "nationalAgency": "IGAC is the evidenced national cadastral operator/service publisher for the public ArcGIS layer used here.",
+    "distinction": "IGAC national service evidence is not presented as proof that the district itself operates the service."
+  },
+  "attempts": [
+    {
+      "route": "English first-party discovery",
+      "query": "Buenaventura Colombia official cadastral map parcel GIS catastro open data IGAC Alcaldía Buenaventura",
+      "outcome": "Official IGAC open-data, Colombia en Mapas cadastral guide, ArcGIS REST service, and district maps page found.",
+      "urls": ["https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales", "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html", "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer", "https://www.buenaventura.gov.co/categorias/mapas"]
+    },
+    {
+      "route": "Spanish first-party discovery",
+      "query": "Buenaventura Colombia catastro mapa predial visor geográfico oficial",
+      "outcome": "Official IGAC consultation guidance confirms Buenaventura is enabled for Colombia en Mapas use-land consultation; no separate district parcel API verified.",
+      "urls": ["https://sigi.igac.gov.co/colombia-mapas/como-consultar-el-uso-del-suelo/index.html", "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html", "https://www.buenaventura.gov.co/?articulos=mapas-de-buenaventura"]
+    },
+    {
+      "route": "Layer metadata",
+      "method": "GET",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4?f=pjson",
+      "outcome": "HTTP 200; U_TERRENO polygon layer, EPSG:4686 source CRS, safe fields CODIGO and FID, maxRecordCount 2000, public Query capability."
+    },
+    {
+      "route": "Exact WUP point hit-test",
+      "method": "GET then JSON query",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "payloadSummary": "point -77.019907696878,3.87751185998404 in EPSG:4686; intersects; outFields FID,CODIGO,MANZANA_CO,NUMERO_SUB,CODIGO_ANT,GLOBALID_S; geometry returned in EPSG:4326",
+      "outcome": "HTTP 200 JSON with zero features. This is recorded as a point miss only, not citywide absence."
+    },
+    {
+      "route": "Bounded city-area ID query",
+      "method": "POST",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "payloadSummary": "envelope -77.12,3.82,-76.92,3.94 in EPSG:4686; intersects; returnIdsOnly=true",
+      "outcome": "HTTP 200 JSON with 16,338 object IDs. A narrower envelope near the exact point returned zero features."
+    },
+    {
+      "route": "Bounded safe geometry sample",
+      "method": "POST",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "payloadSummary": "objectIds 3048212,3048213,3048214; outFields FID,CODIGO; returnGeometry=true; outSR=4326",
+      "outcome": "HTTP 200 GeoJSON with three Polygon features; retained in buenaventura-parcels-sample.geojson with exactly one canonical id property per feature."
+    }
+  ],
+  "safeFieldAllowlist": ["CODIGO", "FID"],
+  "nativeIdentity": {
+    "preferred": "CODIGO",
+    "compositeKey": null,
+    "provenance": "CODIGO is the service's 30-character national cadastral code field; FID is retained only as an alternate ArcGIS object identifier in the request evidence. No synthetic row number was used.",
+    "unsafeFieldsNotRequestedForRetention": ["MANZANA_CO", "NUMERO_SUB", "CODIGO_ANT", "GLOBALID_S", "GlobalID", "SHAPE_Leng", "SHAPE_Area"]
+  },
+  "scopeLimits": [
+    "Exact point had no hit; no coordinate was shifted to force a hit.",
+    "The broad envelope proves accessible records in the city area, not complete citywide coverage or municipal boundary matching.",
+    "No owner, address, contact, titleholder, tax, account, or personal fields were requested or retained.",
+    "No login, credential, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "Requires serial independent validation of adapter behavior, identity choice, CRS handling, service freshness, and citywide completeness."
+}

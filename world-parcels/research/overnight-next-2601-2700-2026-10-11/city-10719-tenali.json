@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 10719,
+  "wupCityCode": 10719,
+  "queueRank": 2676,
+  "cityId": "wup2025:10719",
+  "name": "Tenali",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [16.2384731991918, 80.6452406809308],
+  "centerLatLon": [16.2384731991918, 80.6452406809308],
+  "population2025": 220719,
+  "population2025k": 220.719,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Andhra Pradesh Space Applications Centre (APSAC) official AP Cadastral Map application, with Tenali Municipality official GIS-map route; no anonymous Tenali parcel response was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tenali Andhra Pradesh official cadastral parcel map GIS land records; Tenali municipality official GIS map property parcel Andhra Pradesh",
+        "result": "Found the official Tenali Municipality Government of Andhra Pradesh site, its GIS-map route, the official APSAC AP Cadastral Map application, the Andhra Pradesh state GIS portal, and the DILRMP Tenali Mandal map-digitization record. The APSAC application configuration exposed a public ArcGIS web map and statewide cadastral MapServer URL, but the anonymous REST metadata request to that service returned HTTP 403.",
+        "actualResultUrls": [
+          "https://tenali.cdma.ap.gov.in/",
+          "https://tenali.cdma.ap.gov.in/ulbprofile/tenali/gis-map",
+          "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps",
+          "https://apsac.ap.gov.in/gisportal/apps/webappviewer/index.html?id=7e3b53a1a265421483fbcbb26c275834",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/5115"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "తెనాలి ఆంధ్రప్రదేశ్ అధికారిక భూ పటం కాడస్ట్రల్ పార్సెల్ భూమి రికార్డులు; తెనాలి మునిసిపాలిటీ అధికారిక GIS పటం భూ రికార్డులు",
+        "result": "Telugu-language discovery found official Andhra Pradesh land-record and BhuSeva references and the official AP cadastral-map/state GIS services. No Telugu-language Tenali-specific public parcel feature endpoint or downloadable safe parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://bhudhaar.ap.gov.in/",
+          "https://apsac.ap.gov.in/dashboard-staging/",
+          "https://tirupati.ap.gov.in/te/service/land-recordss/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://apsac.ap.gov.in/gisportal/apps/webappviewer/index.html?id=7e3b53a1a265421483fbcbb26c275834",
+      "operator": "Andhra Pradesh Space Applications Centre (APSAC)",
+      "scope": "Official AP Cadastral Map web application; web-map configuration references statewide cadastral service https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer.",
+      "observation": "The current public JavaScript/configuration was followed to the ArcGIS web map and service URL. No parcel response was retained because the service metadata route was denied anonymously. Statewide service intent was evidenced; Tenali coverage was not independently verified."
+    },
+    {
+      "url": "https://tenali.cdma.ap.gov.in/ulbprofile/tenali/gis-map",
+      "operator": "Tenali Municipality, Government of Andhra Pradesh / Commissioner & Director of Municipal Administration",
+      "scope": "Tenali municipal GIS-map route.",
+      "observation": "Official municipal route exists, but its delivered page did not expose a public parcel feature service or safe native parcel identity in bounded shell inspection."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/5115",
+      "operator": "Government of India, Department of Land Resources, DILRMP",
+      "scope": "Tenali Mandal map-digitization status.",
+      "observation": "Official record lists Tenali Mandal village cadastral-map progress and fields for digitization, georeferencing, ROR linkage, and Bhu-Naksha use. This is status evidence, not a parcel feature feed."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://apsac.ap.gov.in/dashboard-staging/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official APSAC dashboard loaded and linked to the AP Cadastral Maps application."
+    },
+    {
+      "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/7e3b53a1a265421483fbcbb26c275834/data?f=json",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Current Web AppBuilder configuration exposed web map item b54a4a9a00b441a2bdd8f993d140edd5 and official cadastral MapServer URL; no parcel feature was requested from this configuration response."
+    },
+    {
+      "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/b54a4a9a00b441a2bdd8f993d140edd5/data?f=json",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Web-map data identified the operational cadastral layer as https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer."
+    },
+    {
+      "url": "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer?f=pjson",
+      "method": "GET",
+      "status": "HTTP 403 Forbidden",
+      "summary": "Anonymous ArcGIS REST metadata request was denied by the official service host. No login, CAPTCHA/Cloudflare bypass, credential, private token, unsafe field, or TLS exception was attempted."
+    },
+    {
+      "url": "https://tenali.cdma.ap.gov.in/ulbprofile/tenali/gis-map",
+      "method": "GET",
+      "status": "HTTP 200 HTML",
+      "summary": "Official Tenali municipal GIS route loaded. Bounded HTML/JavaScript inspection found no public parcel feature URL or schema."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official AP statewide cadastral application and Tenali municipal GIS route.",
+    "verifiedOpenScope": "Application configuration and service identity only; no live anonymous parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "An official state cadastral map application and official Tenali municipal GIS route are evidenced; local parcel coverage and live access remain unverified."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No geometry retained; anonymous service metadata request returned HTTP 403.",
+    "crs": "The web-map configuration uses Web Mercator extent metadata, but the cadastral layer response CRS was not obtained; parcel CRS is unverified.",
+    "identityReadiness": "Not assessed because no parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained; owner, address, contact, titleholder, personal, tax, account, and document fields were excluded."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify anonymous Tenali coverage, a live public parcel response, native identity semantics, CRS/axis handling, and safe geometry before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [16.2384731991918,80.6452406809308] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss, map-extent miss, HTTP 403, timeout, login wall, or unusable UI is evidence of citywide absence.",
+    "No retained GeoJSON sample because no safe Tenali parcel feature with native identity and geometry was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and any composite-key provenance in city/service-review metadata.",
+  "nextStep": "Serial reviewer should retry the official APSAC cadastral service, determine whether Tenali is covered, inspect any currently accessible layer schema/CRS, and independently validate safe anonymous parcel geometry and identity behavior."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3890",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3890-stoke-on-trent.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/stoke-on-trent-service-review.json",
+    "tmp/valhalla-parcel-research/stoke-on-trent/council-map.html"
+  ],
+  "checkedAt": "2026-10-10T13:52:58Z",
+  "reason": "Queue identity and English/local-English searches checked. Council cache is a thematic viewer with an ownership-boundary disclaimer; no full parcel polygon or native-ID geometry response was retained. Independent adapter and headed Details qualification are absent."
+}

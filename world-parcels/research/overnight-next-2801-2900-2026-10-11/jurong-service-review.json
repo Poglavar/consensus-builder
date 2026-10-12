@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-11388-jurong.json",
+  "cityCode": 11388,
+  "queueRank": 2853,
+  "name": "Jurong",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [31.9475298591092, 119.170776494803],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Official Jurong Natural Resources and Planning Bureau material identifies the local natural-resource and real-estate registration/cadastral custodian and its registration information platform; no anonymous public parcel-vector endpoint was evidenced.",
+  "publicMapLead": "Jiangsu Tianditu public geographic-information service portal, https://jiangsu.tianditu.gov.cn/server/index; public access was confirmed, but no Jurong cadastral vector layer or safe parcel query was exposed.",
+  "queryOutcomes": "Separate English and Chinese discovery queries were performed. Both identified official Jurong local registration/cadastral responsibility. Neither produced an anonymous Jurong parcel ID-plus-geometry service, safe schema, or CRS.",
+  "requestOutcomes": "Anonymous GET requests to the official Jurong bureau page, Jiangsu Tianditu portal, and Jiangsu government real-estate-registration page returned HTTP 200 HTML. Public page/configuration inspection did not expose a usable Jurong parcel-vector route. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [31.9475298591092, 119.170776494803] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss was inferred because no parcel-vector response was available.",
+    "Official local custodian and provincial service context do not establish open Jurong cadastral geometry coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous public parcel ID-plus-geometry response, schema, CRS, native identity semantics, or citywide open coverage was qualified."
+  },
+  "uncertainty": "The public record supports a genuine Jurong local registration/cadastral service context, but no safe public vector endpoint or parcel sample was exposed during this attempt. Registry evidence is local-custodian evidence, not source integration or runtime admission."
+}

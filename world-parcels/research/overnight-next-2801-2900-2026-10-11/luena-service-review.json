@@ -1,0 +1,25 @@
+{
+  "cityRecord": "city-5858-luena.json",
+  "cityCode": 5858,
+  "queueRank": 2897,
+  "city": "Luena",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "registryCustodian": {"name": "Not locally evidenced", "nationalAgency": "Ministère des Affaires Foncières", "reason": "The official jurisdiction directory lists Haut-Lomami jurisdictions Kamina and Kanyama, not Luena or Bukama."},
+  "routesAttempted": [
+    {"route": "Official Ministry jurisdiction directory", "request": "GET https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "outcome": "200; Haut-Lomami lists Kamina and Kanyama only."},
+    {"route": "Official BIC landing/viewer", "request": "GET https://bic.cd/ and current JS chunks", "outcome": "200; public parcel viewer advertises Nord-Kivu/Sud-Kivu coverage; current JS inspected for public service configuration."},
+    {"route": "BIC public cadastral view, Haut-Lomami filter", "request": "GET Supabase REST cadastral_parcels_public selecting only id, parcel_number, latitude, longitude, gps_coordinates, province, ville, territoire; limit 3", "outcome": "200 empty array."},
+    {"route": "BIC public cadastral view, Luena coordinate box", "request": "GET same safe field allowlist with latitude -9.60..-9.25 and longitude 25.60..25.95; limit 3", "outcome": "200 empty array."},
+    {"route": "BIC public cadastral view control", "request": "GET same safe field allowlist; limit 3", "outcome": "200; unrelated Goma control record returned, proving anonymous view access only."}
+  ],
+  "schemaAndCrs": {"publicView": "cadastral_parcels_public", "safeFieldsRequested": ["id", "parcel_number", "latitude", "longitude", "gps_coordinates", "province", "ville", "territoire"], "crs": null, "geometryResponse": false, "nativeFieldMapping": {"id": "public view id", "parcel_number": "public view parcel_number", "gps_coordinates": "public view gps_coordinates", "latitude": "public view latitude", "longitude": "public view longitude"}, "compositeKeyProvenance": null},
+  "sampleGeojson": null,
+  "safeFieldAllowlist": ["canonical native parcel ID only", "polygon/multipolygon geometry", "public source/service metadata", "CRS", "retrieval metadata"],
+  "scopeLimits": ["No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested.", "No parcel polygon or raw source attribute set was retained.", "No exact-point hit/miss, extent miss, timeout, or empty response was interpreted as citywide absence.", "No source integration, runtime adapter admission, login, credential use, CAPTCHA/Cloudflare defeat, or TLS exception occurred."],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "A national custodian and public viewer are evidenced, but a Luena-local registry/API, public parcel coverage, geometry CRS, and native identity semantics are not qualified."
+}

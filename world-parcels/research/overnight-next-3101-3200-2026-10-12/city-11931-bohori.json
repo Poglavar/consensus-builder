@@ -1,0 +1,102 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 11931,
+  "queueRank": 3110,
+  "name": "Bohori",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "aliases": ["bohori", "Bohari"],
+  "point": [26.2673137503951, 91.1637219475427],
+  "population2025": 193105,
+  "population2025k": 193.105,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bohori Assam official cadastral map land records parcel map",
+        "result": "First-party Assam sources identify the state ILRMS land-record hub, Bhunaksha cadastral mapping viewer, Jamabandi land-record service, and Assam cadastral mapping program. First-party Barpeta district material identifies Chenga as a revenue circle and a current village-list route; the district's official site does not expose an open parcel polygon for Bohori in the bounded review.",
+        "actualResultUrls": [
+          "https://ilrms.assam.gov.in/",
+          "https://bhunaksha.assam.gov.in/",
+          "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+          "https://barpeta.assam.gov.in/about-us/district-data",
+          "https://barpeta.assam.gov.in/sites/default/files/public_utility/ChengaRevCircle.pdf",
+          "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping"
+        ]
+      },
+      {
+        "language": "Assamese (local/native-language discovery)",
+        "query": "বহৰি অসম চৰকাৰ ভূমি মানচিত্ৰ জমিৰ নক্সা",
+        "result": "অসমীয়া discovery reached the same first-party Assam ILRMS/Bhunaksha/Jamabandi services. The official Bhunaksha village response uses Assamese labels and contains the Chenga circle; the official Barpeta Chenga revenue-village PDF lists Bahari and Niz Bahari, but no retained parcel geometry or safe native parcel identity was obtained.",
+        "actualResultUrls": [
+          "https://ilrms.assam.gov.in/",
+          "https://bhunaksha.assam.gov.in/",
+          "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+          "https://barpeta.assam.gov.in/sites/default/files/public_utility/ChengaRevCircle.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Government of Assam Revenue & Disaster Management Department / Directorate of Land Records, with Barpeta district administration and Chenga Revenue Circle local scope.",
+    "locality": "Bohori/Bohari, Barpeta district, Assam; official Barpeta material identifies Chenga as a revenue circle and lists Bahari/Niz Bahari in the Chenga revenue-village material.",
+    "evidenceUrls": [
+      "https://barpeta.assam.gov.in/about-us/district-data",
+      "https://barpeta.assam.gov.in/sites/default/files/public_utility/ChengaRevCircle.pdf",
+      "https://ilrms.assam.gov.in/",
+      "https://bhunaksha.assam.gov.in/"
+    ],
+    "scopeNote": "Local administrative custody and a current public cadastral viewer are evidenced. The Bohori queue point is preserved exactly; the evidence does not establish citywide open parcel geometry completeness."
+  },
+  "officialSources": [
+    {"url": "https://barpeta.assam.gov.in/about-us/district-data", "observation": "Official Barpeta district page defines revenue villages and lists Chenga among the six revenue circles."},
+    {"url": "https://barpeta.assam.gov.in/sites/default/files/public_utility/ChengaRevCircle.pdf", "observation": "Official Chenga revenue-circle PDF lists 72 revenue villages, including Niz Bahari and Bahari."},
+    {"url": "https://ilrms.assam.gov.in/", "observation": "Official Assam ILRMS hub links Bhunaksha as cadastral mapping software and Jamabandi as the public land-record service."},
+    {"url": "https://bhunaksha.assam.gov.in/", "observation": "Current first-party Bhunaksha viewer JavaScript was inspected; it uses public backend routes for district/circle/village discovery and parcel display."},
+    {"url": "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping", "observation": "Official Assam Science Technology and Environment Council page describes Assam cadastral maps under the SIS-DP project."}
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Assam Bhunaksha / ILRMS official cadastral lead",
+    "nativeIdField": null,
+    "crs": "EPSG:32646 is specified by the current Bhunaksha client for parcel_info requests; no returned geometry was obtained to validate it for this city.",
+    "boundedResponse": "The public Bhunaksha district endpoint returned district codes; POST circle discovery for Assam code 05 returned Barpeta and POST village discovery for circle 050106 returned the Chenga village list. The client configuration exposes POST /bhunakshaBackEnd/proxy/parcel_info with village_code, layer_code=ASSAM_PARCEL, dag_no, and crs=32646, plus a WMS route. No dag number was guessed or used, and no parcel_info geometry response was retained.",
+    "note": "No usable anonymous parcel identity-plus-geometry response was obtained. The exact WUP point was preserved and was not used as an absence test."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://ilrms.assam.gov.in/", "outcome": "HTTP 200; official hub exposed Bhunaksha, Jamabandi, and department links."},
+    {"method": "GET", "url": "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC", "outcome": "HTTP 200; public location form exposed district, sub-division, circle, mouza, lot, village, patta and dag selectors plus CAPTCHA; no record query was submitted."},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/", "outcome": "HTTP 200; current JavaScript viewer loaded."},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts", "outcome": "HTTP 200; public district list returned Assamese/English labels and district codes."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/circles", "requestBody": {"dist_code": "05"}, "outcome": "HTTP 200; returned Barpeta, Baghbar, Baranagar, Kalgachia, Sarthebari, and Chenga circles; no parcel geometry."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages", "requestBody": {"circle_code": "050106"}, "outcome": "HTTP 200; returned Chenga village codes and labels including Bahari/Niz Bahari; no parcel geometry."},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/api/visitor", "outcome": "HTTP 401 Unauthorized; no token or private credential was used."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/parcel_info", "outcome": "Not submitted: no verified dag number was available, and guessing a parcel identity would be unsafe and unsupported."},
+    {"method": "GET", "url": "https://barpeta.assam.gov.in/sites/default/files/public_utility/ChengaRevCircle.pdf", "outcome": "HTTP 200/PDF; official Chenga revenue-village list retrieved and reviewed."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable anonymous parcel-vector response; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope": "Assam state ILRMS/Bhunaksha cadastral services with Barpeta/Chenga local administrative scope.", "verifiedOpenScope": "Local registry custody, current viewer configuration, district/circle/village discovery, and a parcel-info route were evidenced; anonymous parcel geometry and native identity semantics were not verified for Bohori.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "integration": "not_admitted",
+  "scopeLimits": ["Exact WUP point [26.2673137503951, 91.1637219475427] was preserved and not shifted to force a hit.", "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.", "No parcel polygon or source-specific raw attribute set is retained.", "No citywide polygon completeness, current anonymous parcel response, validated CRS, native identity semantics, or update cadence was verified.", "The public Jamabandi form exposes CAPTCHA and was not submitted.", "This packet records research only and is not source integration or admission."],
+  "uncertainty": "Bohori/Bohari is locally associated with Barpeta and the Chenga administrative context through first-party district material and current Bhunaksha discovery labels. The public viewer's parcel route is technically visible, but no safe anonymous native parcel identity-plus-geometry response was qualified; runtime remains held."
+}

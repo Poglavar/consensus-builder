@@ -1,0 +1,148 @@
+{
+  "cityCode": 11832,
+  "queueRank": 3231,
+  "name": "Haiyan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [30.5279096337097, 120.93591002564],
+  "population2025": 186884,
+  "population2025k": 186.884,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haiyan County Zhejiang official cadastral map parcel GIS parcel viewer natural resources real estate registration",
+        "result": "First-party discovery found the Haiyan County government portal, a county master-plan publication attributed to the Haiyan Natural Resources and Planning Bureau, and the official Zhejiang Geographic Information Public Service Platform. The public results describe planning/geospatial services but did not expose an anonymous parcel ID-plus-geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.haiyan.gov.cn/",
+          "https://www.haiyan.gov.cn/art/2024/7/16/art_1229575954_5414129.html",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "海盐县 自然资源和规划局 不动产登记 地籍图 GIS 地图 服务平台",
+        "result": "第一方检索找到海盐县自然资源和规划局的官方公开材料，说明县级不动产登记、权籍调查、基础测绘和地理信息公共服务职责；浙江省地理信息公共服务平台提供在线地图、资源中心和开发中心入口，但检索和直接检查没有得到匿名安全地籍宗地编号加完整几何响应。",
+        "actualResultUrls": [
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3018/site/attach/0/c6b80b9945dc4d7c98d72bc62eb2fb97.pdf",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+          "https://www.haiyan.gov.cn/art/2024/7/16/art_1229575954_5414129.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Haiyan County Natural Resources and Planning Bureau and its county real-estate registration service function",
+    "scope": "County natural-resources and real-estate registration administration, cadastral/rights survey, basic surveying and public geographic-information platform duties",
+    "evidenceUrls": [
+      "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3018/site/attach/0/c6b80b9945dc4d7c98d72bc62eb2fb97.pdf",
+      "https://www.haiyan.gov.cn/art/2024/7/16/art_1229575954_5414129.html"
+    ],
+    "scopeNote": "The official Haiyan/Zhejiang materials evidence a local custodial bureau and public geospatial-service infrastructure. They do not establish a verified open parcel-vector feed or citywide anonymous geometry coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Official Haiyan County government, Haiyan Natural Resources and Planning Bureau material, and Zhejiang Geographic Information Public Service Platform",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and not shifted. No exact-point miss or citywide absence inference was made."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.haiyan.gov.cn/art/2024/7/16/art_1229575954_5414129.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Official county publication retrieved. It is attributed to the Haiyan Natural Resources and Planning Bureau and publishes the 2021-2035 county spatial plan; it is planning evidence, not an open parcel API."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.haiyan.gov.cn/col/col1229499143/index.html",
+      "httpStatus": "timeout",
+      "outcome": "Official county overview URL was attempted with a bounded 20-second request and timed out locally. Search discovery still identified the official county portal and Haiyan geography. This is not evidence of remote unavailability or cadastral absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "outcome": "Official Zhejiang Geographic Information Public Service Platform landing page retrieved. It advertises online map, resource-center, geocoding and developer-center functions. The landing page did not expose a parcel layer URL or anonymous parcel schema."
+    },
+    {
+      "method": "GET",
+      "url": "https://ditu.zjzwfw.gov.cn/platform-app/",
+      "httpStatus": 502,
+      "outcome": "The linked platform-app root returned a gateway error. No retry escalation, login, private token, CAPTCHA/Cloudflare bypass, or TLS exception was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/js/areaSystem.js",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "The current landing-page JavaScript route was inspected. It resolved to an anti-bot/interstitial HTML response rather than usable viewer configuration; no parcel service endpoint was extracted."
+    },
+    {
+      "method": "GET",
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3018/site/attach/0/c6b80b9945dc4d7c98d72bc62eb2fb97.pdf",
+      "httpStatus": "search-result/opened",
+      "outcome": "Official Haiyan Natural Resources and Planning Bureau material was identified in first-party discovery. Its text describes county natural-resources, cadastral/rights-survey, registration-system and public geospatial-platform duties; no anonymous parcel geometry response was obtained."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"featureCount": 0, "result": "No parcel response obtained; zero is not an absence finding."}
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public service/layer metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel endpoint was reached; exact WUP point [30.5279096337097, 120.93591002564] was preserved in latitude/longitude order. No hit/miss inference was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Haiyan County natural-resources, cadastral/registration and Zhejiang public geospatial-platform services",
+    "verifiedOpenScope": "Local custodial and public-platform evidence only; anonymous parcel schema, CRS, geometry and citywide vector coverage were not verified",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [30.5279096337097, 120.93591002564] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide cadastral absence.",
+    "No native parcel identity, schema, CRS or full polygon geometry was verified, so no sample GeoJSON is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title or other unsafe fields were requested or retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "The local custodial bureau and public geospatial platform are evidenced, but the current anonymous parcel viewer/API endpoint, native identity semantics, CRS, geometry delivery, update behavior and Haiyan-wide completeness remain unresolved."
+}

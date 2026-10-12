@@ -1,0 +1,130 @@
+{
+  "cityCode": 1985,
+  "queueRank": 3248,
+  "name": "Quevedo",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "iso3": "ECU",
+  "locId": 218,
+  "capital": false,
+  "point": [-1.02545546722259, -79.4662879911697],
+  "population2025": 186130,
+  "population2025k": 186.13,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Quevedo Ecuador official cadastral parcel map GIS land registry; Ecuador official cadastre parcel map GIS Quevedo",
+        "result": "First-party discovery found the official Municipality of Quevedo site, an official municipal notice naming the Dirección de Avalúos y Catastros e Inquilinato and Registro de la Propiedad Municipal, and the official IGM Quevedo cartography/download page. No public Quevedo parcel viewer or anonymous parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://quevedo.gob.ec/impulsan-actualizacion-catastral-en-quevedo/",
+          "https://quevedo.gob.ec/tramites-ciudadanos/",
+          "https://www.geoportaligm.gob.ec/descargas_prueba/quevedo.html",
+          "https://www.geoportaligm.gob.ec/pry_ca/"
+        ]
+      },
+      {
+        "language": "Spanish (Ecuador, local)",
+        "query": "Quevedo Ecuador catastro mapa predial visor parcelas registro de la propiedad municipal; servicio WFS catastro Quevedo",
+        "result": "La búsqueda en español confirmó la custodia municipal de Avalúos y Catastros y del Registro de la Propiedad, además del visor oficial IGM de Capacidad de Acogida. La configuración JavaScript actual del visor usa WFS temático de límites/capacidad de acogida, no predios; no se obtuvo una capa parcelaria pública con identidad nativa estable.",
+        "actualResultUrls": [
+          "https://quevedo.gob.ec/impulsan-actualizacion-catastral-en-quevedo/",
+          "https://quevedo.gob.ec/tramites-ciudadanos/",
+          "https://www.geoportaligm.gob.ec/pry_ca/",
+          "https://www.geoportaligm.gob.ec/visualizador_ca/dist/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "The Municipality of Quevedo is evidenced as the local custodian reference: its official notice names the Dirección de Avalúos y Catastros e Inquilinato and Registro de la Propiedad Municipal de Quevedo.",
+    "scopeNote": "This establishes local cadastral/registry responsibility, not a public parcel data service. The IGM sources are national thematic/cartographic services and were not treated as a local Quevedo parcel registry."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": "A bounded anonymous WFS response was returned for v_area_cantones1, a thematic canton-area layer; it contained a MultiPolygon boundary feature and no parcel identity. It is not retained as a parcel sample.",
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": [],
+      "compositeKeyProvenance": null
+    },
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted or used as a citywide absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://quevedo.gob.ec/impulsan-actualizacion-catastral-en-quevedo/",
+      "outcome": "HTTP 200. Official municipal notice dated 2024-03-28 describes a cadastral-management diagnostic and names local Avalúos y Catastros and Registro de la Propiedad offices; no map/API or parcel schema was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://quevedo.gob.ec/tramites-ciudadanos/",
+      "outcome": "HTTP 200. Official municipal procedure page links to requirements/manuals for Avalúos y Catastros and Registro de la Propiedad via Google Drive; no anonymous parcel geometry service was exposed and no login was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoportaligm.gob.ec/descargas_prueba/quevedo.html",
+      "outcome": "HTTP 200. Official IGM Quevedo page exposes thematic cartography/geodatabases for Quevedo Norte and Sur, including land-use and socioeconomic products; it does not expose a parcel cadastral layer."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoportaligm.gob.ec/pry_ca/",
+      "outcome": "HTTP 200. Official IGM Capacidad de Acogida page links to the current viewer and identifies GAD Quevedo among 200 cities; this is a planning/thematic project, not evidence of a public parcel registry."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoportaligm.gob.ec/visualizador_ca/dist/",
+      "outcome": "HTTP 200. Current HTML loads script.js. JavaScript inspection showed WFS requests only to igm_ca2022 thematic layers v_area_cantones1, organizacion_territorial_cantonal_v_4326, provincias_v1 and related project layers; no parcel/predio layer or parcel field mapping was present."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoportaligm.gob.ec/igm_afc/igm_ca2022/ows?service=WFS&request=GetCapabilities",
+      "outcome": "HTTP 200. WFS capabilities were retrieved and searched for parcel/predio/catastro layers; only thematic Quevedo-named layers such as v_densidad_pob_a_quevedo and v_geomorfologia_* were found."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoportaligm.gob.ec/igm_afc/igm_ca2022/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=igm_ca2022%3Av_area_cantones1&maxFeatures=1&outputFormat=application%2Fjson",
+      "outcome": "HTTP 200 JSON FeatureCollection with one thematic MultiPolygon feature and a WFS-generated feature id; no parcel identity or parcel attributes. Not retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoportaligm.gob.ec/igm_afc/igm_ca2022/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=igm_ca2022%3Av_area_cantones1&outputFormat=application%2Fjson&CQL_FILTER=dpa_canton=%272%27",
+      "outcome": "HTTP 200 response containing an OGC ServiceException for the attempted filter; treated as a query/filter failure, not evidence of absence."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if publicly exposed and source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The local municipal cadastral and property-registration systems may be non-public or authenticated; no credentials or private fields were used.",
+    "The IGM viewer is current public thematic infrastructure but does not expose a parcel layer in its JavaScript/configuration or WFS capabilities inspected here.",
+    "The exact-point result, thematic-layer scope, and failed filter request are not citywide absence evidence.",
+    "No parcel polygon is retained because no stable native parcel identity and safe parcel geometry were verified.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ],
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

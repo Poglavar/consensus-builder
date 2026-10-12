@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-2515-kuala-terengganu.json",
+  "cityCode": 2515,
+  "queueRank": 1759,
+  "city": "Kuala Terengganu",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Malaysia/JUPEM cadastral routes were identified, including the MyLand viewer and Terengganu eKadaster, but no safe anonymous parcel identity plus full polygon was verified. Runtime remains held.",
+  "queryOutcomes": "Separate English and Malay discovery queries and actual first-party URLs are recorded in city-2515-kuala-terengganu.json.",
+  "requestOutcomes": "MyLand loaded as a public viewer; JUPEM KADASTER metadata was available through indexed service documentation; a Terengganu ArcGIS layer request failed local TLS verification; a direct KADASTER layer request timed out; eKadaster presented a login route. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used.",
+  "scopeLimits": [
+    "Exact WUP point [5.33670141494936, 103.114434141764] and population fields were preserved; no coordinate was shifted.",
+    "No exact-point hit or miss was obtained, so no parcel-absence inference is made.",
+    "Official service metadata and viewer availability do not establish Kuala Terengganu citywide coverage.",
+    "No GeoJSON sample is retained because no full parcel polygon and stable native identity were verified.",
+    "Timeout, login wall, TLS failure, or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry if returned", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": {
+    "candidateLayerFields": ["FID", "DAERAH", "PA", "LOT", "UPI", "STATUS"],
+    "source": "Terengganu ArcGIS layer metadata as exposed by first-party search result",
+    "geometry": "not returned",
+    "identity": "not retained; no live parcel response"
+  },
+  "compositeKeyProvenance": "No composite parcel key was returned in this attempt. Candidate UPI/LOT fields are source metadata only and were not promoted to an identity.",
+  "crs": "Candidate Terengganu layer metadata reported spatial reference 102062; no parcel geometry or independent CRS response was obtained.",
+  "geometryQuality": "not evaluated; no polygon geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeIdField": null, "exactWupPointTest": "Not performed; no hit/miss inference.", "requestEvidence": ["Terengganu ArcGIS layer TLS failure", "JUPEM KADASTER layer timeout", "eKadaster login wall"]},
+  "coverageAssessment": {"claimedScope": "Official Malaysia/JUPEM cadastral routes relevant to Terengganu.", "verifiedOpenScope": "Public viewer and service metadata only; no city parcel response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The local custodian/route is evidenced at national/state service level, but public parcel geometry, Kuala Terengganu coverage, update currency, legal status, and native identity remain unresolved. No claim is made about parcel absence, ownership, title, taxation, or completeness."
+}

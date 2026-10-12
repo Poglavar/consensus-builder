@@ -1,0 +1,63 @@
+{
+  "cityCode": 7057,
+  "queueRank": 2893,
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "point": [57.9159404079383, 59.9797336203239],
+  "population2025": 206030,
+  "population2025k": 206.03,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nizhny Tagil official cadastral map land parcels Rosreestr",
+        "result": "Found the official Nizhny Tagil municipal cadastral-work page and the official NSPD public cadastral map destination described by Rosreestr regional material; the municipal page identifies cadastral procedures and local land administration contacts.",
+        "actualResultUrls": [
+          "https://ntagil.org/zemlya/kadastr/",
+          "https://ntagil.org/zemlya/info/",
+          "https://nspd.gov.ru/map"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Нижний Тагил официальный кадастровая карта земельные участки Росреестр",
+        "result": "Found the official Нижний Тагил municipal land-use/cadastral pages, the municipal listing for the Нижнетагильский Rosreestr office, and official Rosreestr material stating that the public cadastral map is on NSPD and is public without authorization. No separate city-owned parcel API was identified.",
+        "actualResultUrls": [
+          "https://ntagil.org/zemlya/kadastr/",
+          "https://ntagil.org/zemlya/info/",
+          "https://rosreestr.tatarstan.ru/index.htm/news/2373794.htm",
+          "https://nspd.gov.ru/map"
+        ]
+      }
+    ],
+    "source": {
+      "name": "Nizhny Tagil municipal cadastral information and Russian NSPD public cadastral map",
+      "custodian": "Administration of Nizhny Tagil for local cadastral-work notices; Rosreestr/NSPD for the national public cadastral map",
+      "serviceUrl": "https://nspd.gov.ru/map",
+      "request": {
+        "method": "GET",
+        "scope": "bounded anonymous viewer reachability check only; no parcel feature request completed"
+      },
+      "response": {
+        "format": null,
+        "crs": null,
+        "featureCount": null,
+        "nativeIdentityField": null,
+        "geometryTypesObserved": [],
+        "sampleFile": null
+      },
+      "safeFieldAllowlist": ["id", "geometry"],
+      "fieldMapping": {}
+    }
+  },
+  "registryFound": true,
+  "runtimeReadiness": "held_serial_review_no_adapter_qualification",
+  "uncertainty": [
+    "The municipal site evidences a local cadastral custodian/procedure context and names the Нижнетагильский Rosreestr office, but it does not expose a machine-readable parcel layer in the reviewed pages.",
+    "The NSPD map host was unreachable from this environment after bounded TLS-verified GET attempts (timeouts); no JavaScript/configuration or parcel schema could therefore be inspected.",
+    "No exact-point parcel query was used, so there is no claim of presence or absence at the WUP point. The exact WUP point was preserved without shifting it.",
+    "No owner, address, titleholder, contact, tax/account, or other unsafe fields were requested or retained. No GeoJSON sample was retained because no safe native ID+geometry response was obtained."
+  ]
+}

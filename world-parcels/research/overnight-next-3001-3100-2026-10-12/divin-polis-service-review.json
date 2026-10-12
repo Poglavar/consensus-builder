@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-7685-divin-polis.json",
+  "cityCode": 7685,
+  "queueRank": 3065,
+  "city": "Divinópolis",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Portuguese first-party discovery identified the official municipal Geoportal/DiviGeo and Cadastro Imobiliário. The public downloads API returned cadastral-map documentation, while the current interactive-map configuration endpoint redirected anonymously to a GeoWise login. No safe anonymous parcel ID-plus-geometry response was qualified and no sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, viewer configuration inspection, endpoint checks, response outcomes, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-7685-divin-polis.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Prefeitura de Divinópolis — Cadastro Imobiliário / Geoportal (DiviGeo)",
+      "scope": "Local municipal cadastral and territorial-management custodian, evidenced by official municipal geoprocessing and cadastral-map materials.",
+      "evidence": "https://www.divinopolis.mg.gov.br/portal/noticias/0/3/10618/prefeitura-realiza-modernizacao-atualizacao-cadastral-e-territorial-atraves-do-geoprocessamento"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "The login-wall outcome is an access/qualification result, not evidence of parcel absence.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "Authenticated GeoWise configuration may expose WMS/WFS sources that were not available anonymously.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

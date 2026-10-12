@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-10710-laixi.json",
+  "cityCode": 10710,
+  "queueRank": 2744,
+  "city": "Laixi",
+  "country": "China",
+  "countryCode": "CN",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_no_verified_open_parcel_source",
+  "registryFound": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "queryAndRequestOutcome": "Separate English and Chinese discovery was completed. Official Shandong geospatial pages and official Qingdao/Laixi registration evidence were recorded. The current Shandong map bootstrap, configuration bundle, API page and natural-resources channel were inspected. No safe anonymous Laixi parcel layer, schema, or bounded ID-plus-geometry response was established. A direct service token route returned 401; no authentication or bypass was attempted.",
+  "routesAttempted": [
+    {"url": "https://www.sdmap.gov.cn/map.html", "method": "GET", "outcome": "200; current JS/config inspected; no Laixi parcel endpoint"},
+    {"url": "https://www.sdmap.gov.cn/Config_url.v002.js", "method": "GET", "outcome": "200; service hosts/routes inspected; no parcel schema"},
+    {"url": "https://www.sdmap.gov.cn/mapAPI.html", "method": "GET", "outcome": "200; public map API documentation, no cadastral response"},
+    {"url": "https://www.sdmap.gov.cn/naturalChanel.html", "method": "GET", "outcome": "200; natural-resources channel, no anonymous parcel response"},
+    {"url": "https://service.sdmap.gov.cn:8081/token/publicKeyGenerate", "method": "GET", "outcome": "401 route/auth error; no credentials or token use"},
+    {"url": "https://www.qingdao.gov.cn/ywdt/qsdt/202103/t20210304_2995124.shtml", "method": "GET/search-open", "outcome": "official Laixi registration evidence; no public geometry API"}
+  ],
+  "schemaCrsAndResponse": {"service": null, "nativeFields": null, "crs": null, "boundedResponse": null, "geometryRetained": false, "reason": "No public anonymous parcel service or parcel response was established."},
+  "scopeLimits": [
+    "Provincial geospatial platform existence does not prove Laixi parcel-layer coverage.",
+    "Laixi registration activity and municipal system procurement are custodian/process evidence, not an open parcel feed.",
+    "The exact WUP point was not shifted and no exact-point or map-extent miss was treated as citywide absence.",
+    "Search-index absence, undocumented routes, and the 401 service route do not prove cadastral absence.",
+    "No raw source attribute set or unsafe registration record was requested or retained."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "uncertainty": "A local public viewer may be unindexed or may expose geometry only after a normal viewer bootstrap. No login, credentials, private token, CAPTCHA/Cloudflare defeat, or TLS exception was used.",
+  "admissionDecision": "hold; no source integration or runtime admission",
+  "sampleGeoJSON": null
+}

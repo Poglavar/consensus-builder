@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { addCanonicalFeature, assessForcedQueryEvidence, assessHmlrBrowserCompletenessEvidence,
-    canonicalSafeFeature, cellsForPoint } from '../qualify-parcel-source.mjs';
+    canonicalSafeFeature, cellsForPoint, exactReadCost, footprintBbox, makeSafeFetch, shouldShrinkCell } from '../qualify-parcel-source.mjs';
 
 const geometry = { type:'Polygon', coordinates:[[[0,0],[1,0],[1,1],[0,1],[0,0]]] };
 const feature = (id, extra = {}) => ({ type:'Feature', id, properties:{ parcelId:id, sourceId:'public-test', sourceParcelId:id.slice(5), owner:'omit', ...extra }, geometry });
@@ -95,4 +95,43 @@ test('accepts HMLR immutable snapshot completeness only when release, date, IDs,
     assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
         firstExact:exact, secondExact:exact, absenceResult:absent, firstPass:[cell(sampleIds), { ...cell([]), complete:false }],
         secondPass, absentId:'GB-HMLR-BROWSER-v1-99' }).completeSampleQueries, false);
+});
+
+test('single-equality exact reads are judged by their singleton objectIds geometry requests', () => {
+    const requests = [
+        { queryHash:'count-a' }, { queryHash:'ids-a' }, { queryHash:'oid-1', idListParam:'objectIds', idListCount:1 },
+        { queryHash:'count-b' }, { queryHash:'ids-b' }, { queryHash:'oid-2', idListParam:'objectIds', idListCount:1 }
+    ];
+    const evidence = assessForcedQueryEvidence({ requests, expectedIds:['N-1','N-2'], returnedIds:['N-1','N-2'], complete:true, mode:'single-equality' });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.kind, 'single-equality-manifest');
+    assert.equal(assessForcedQueryEvidence({ requests, expectedIds:['N-1','N-2'], returnedIds:['N-1','N-2'], complete:true }).passed, false);
+});
+
+test('a cursor-paged request is a distinct query identity', async () => {
+    const state = { requests: [] };
+    globalThis.__qualificationOriginalFetch = async () => new Response('{}');
+    const fetch = makeSafeFetch({ state, stage: 'forced-page-size-one' });
+    await fetch('https://api.example/collections/parcels/items?f=json&limit=1');
+    await fetch('https://api.example/collections/parcels/items?f=json&limit=1&cursor=abc');
+    await fetch('https://api.example/collections/parcels/items?f=json&limit=1&cursor=def');
+    delete globalThis.__qualificationOriginalFetch;
+    assert.equal(new Set(state.requests.map(request => request.queryHash)).size, 3);
+    const evidence = assessForcedQueryEvidence({ requests: state.requests, expectedIds:['A','B','C'], returnedIds:['A','B','C'], complete:true });
+    assert.equal(evidence.passed, true);
+});
+
+test('dense cities shrink the cell only for sources that read one parcel per request or worse', () => {
+    assert.equal(exactReadCost(3, 3), 1);
+    assert.equal(exactReadCost(9, 3), 3);
+    assert.equal(exactReadCost(1, 3), 0);
+    // The probe box spans the 13 cells' 5x5-cell footprint.
+    assert.deepEqual(footprintBbox([-1.2, 51.5], 0.001), [-1.202, 51.498, -1.197, 51.503]);
+    // Palma: ~400 parcels in the 0.001° footprint, one request each, would re-read ~230.
+    assert.equal(shouldShrinkCell({ footprintFeatures: 400, perIdCost: 1, step: 0.001 }), true);
+    assert.equal(shouldShrinkCell({ footprintFeatures: 100, perIdCost: 1, step: 0.0005 }), false);
+    // Wellington: a sparse centre cell, but ~150 parcels around it at three requests each.
+    assert.equal(shouldShrinkCell({ footprintFeatures: 150, perIdCost: 3, step: 0.001 }), true);
+    assert.equal(shouldShrinkCell({ footprintFeatures: 400, perIdCost: 0, step: 0.001 }), false);
+    assert.equal(shouldShrinkCell({ footprintFeatures: 900, perIdCost: 3, step: 0.00025 }), false);
 });

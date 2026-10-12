@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5617-wonsan.json",
+  "purpose": "Document first-party registry/map discovery, bounded request outcomes, scope limits, and safe-field policy for Wonsan.",
+  "assessment": "No DPRK/Wonsan public cadastral registry, parcel map, current viewer configuration, parcel API, or safe parcel geometry was verified. South Korean K-GeoP is a real first-party cadastral viewer but is outside the requested DPRK jurisdiction.",
+  "registryAssessment": "No local Wonsan custodian or DPRK national public parcel service was evidenced. General official DPRK web material is not sufficient to mark registryFound true.",
+  "officialPrimarySources": [
+    {"url": "https://www.naenara.com.kp/", "observation": "Official DPRK-domain portal identified during discovery; no cadastral or parcel-map endpoint was identified from the public result."},
+    {"url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf", "observation": "Official DPRK-domain PDF contains general economic-zone/geographic material and mentions Wonsan as a place on a regional map; it does not publish parcel identities or parcel polygons."},
+    {"url": "https://www.kgeop.go.kr/", "observation": "Official Republic of Korea Ministry of Land K-GeoP homepage; jurisdictionally inapplicable to Wonsan/DPRK."},
+    {"url": "https://kgeop.go.kr/info/infoMap.do", "observation": "Official Republic of Korea K-GeoP map page exposes Korean land/building and single-parcel controls; no DPRK data was requested or retained."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": null,
+    "observedTechnology": "No DPRK viewer was located. K-GeoP HTML was retrieved over normal TLS and showed links to /info/infoMap.do and Korean land-information controls, but it is not a DPRK source.",
+    "observedControls": [],
+    "schemaAndCrs": "No DPRK parcel schema or CRS was verified.",
+    "nativeFieldNames": [],
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.naenara.com.kp/", "method": "GET", "normalTlsVerification": true, "result": "TLS certificate verification failed with curl error 60 (unable to get local issuer certificate); request was not retried with verification disabled and no content was treated as evidence."},
+    {"url": "https://www.kgeop.go.kr/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; HTML retrieved and cached only under ignored tmp evidence. This is an ROK service, not a DPRK/Wonsan registry; no parcel query was made."},
+    {"url": "https://kgeop.go.kr/info/infoMap.do", "method": "GET", "normalTlsVerification": true, "result": "Identified by first-party K-GeoP page/search evidence as an ROK land-information map. No Wonsan/DPRK data or geometry was requested."},
+    {"url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf", "method": "GET", "normalTlsVerification": true, "result": "Located through official-domain search evidence; not used as a live parcel service and no parcel geometry or unsafe fields were extracted."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying DPRK safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No DPRK parcel endpoint was identified for an exact-point query.", "point": [39.1532486092339, 127.443512271531]},
+  "coverageAssessment": {"claimedScope": "Public first-party discovery for DPRK/Wonsan.", "verifiedOpenScope": "No public DPRK parcel service or geometry verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "A restricted or non-indexed DPRK system may exist. Search non-result, TLS failure, jurisdiction mismatch, and absent geometry do not prove citywide cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent DPRK anonymous ID-plus-geometry response or qualified adapter source."}
+}

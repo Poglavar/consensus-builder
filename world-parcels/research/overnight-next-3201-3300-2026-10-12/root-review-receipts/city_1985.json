@@ -1,0 +1,21 @@
+{
+  "taskId": "city:1985",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-1985-quevedo.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/quevedo-service-review.json",
+    "tmp/valhalla-parcel-research/quevedo/viewer.js",
+    "tmp/valhalla-parcel-research/quevedo/capabilities.xml",
+    "tmp/valhalla-parcel-research/quevedo/bounded.json",
+    "tmp/valhalla-parcel-research/quevedo/test.json"
+  ],
+  "checkedAt": "2026-10-12T06:53:39Z",
+  "findings": {
+    "identity": "Verified rank 3248, city code, Ecuador, exact point, and 186130 persons against ranked and pending rosters and SHA-256-verified WUP 2025 source archive.",
+    "searches": "English and Spanish query texts, outcomes, and URLs are recorded in packet.",
+    "geometry": "Saved IGM viewer script and WFS capabilities describe thematic layers; bounded response contains one canton MultiPolygon with no native parcel ID. Filter request returned OGC ServiceException. No parcel polygon sample is retained and no citywide absence inferred.",
+    "admission": "Held: no verified native ID plus full parcel polygon; fresh reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+  }
+}

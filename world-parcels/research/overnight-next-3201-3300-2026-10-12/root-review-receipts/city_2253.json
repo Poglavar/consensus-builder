@@ -1,0 +1,23 @@
+{
+  "taskId": "city:2253",
+  "decision": "held",
+  "evidenceFiles": [
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-2253-ploie-ti.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ploie-ti-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:38:04Z",
+  "findings": {
+    "identity": "WUP 2025 SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, City_Code 2253, rank 3210, Romania, point [44.939739029389,26.0238060859835], and 188227 persons match the source row, immutable roster, queue, and packet.",
+    "searches": "English and Romanian queries, outcomes, and actual first-party result URLs are recorded in the packet.",
+    "custody": "registryFound true is grounded by the municipal Cadastru service and ANCPI/OCPI lead. It establishes administration, not open parcel geometry.",
+    "firstPartyUrls": [
+      "https://ploiesti.ro/administratie/directia-generala-de-dezvoltare-urbana/serviciul-cadastru-si-verificare-documentatii-tehnice/",
+      "https://geoportal.ancpi.ro/imobile.html"
+    ],
+    "geometry": "Zero retained polygons and no native-ID plus full-polygon response. The reported INSPIRE service timeout is unresolved availability, not absence.",
+    "admission": "No original acceptance metrics or independent evidence for fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, or headed Details-panel verification. Held; no runtime/catalog/report admission."
+  }
+}

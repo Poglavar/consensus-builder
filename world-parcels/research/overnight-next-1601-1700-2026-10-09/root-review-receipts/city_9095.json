@@ -1,0 +1,13 @@
+{
+  "taskId": "city:9095",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-9095-burhanpur.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/burhanpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:58:55Z",
+  "reason": "Burhanpur: immutable WUP identity matches the roster and English/Hindi searches were executed. Official district/state cadastral custody is supported, but viewer/GIS requests yielded no safe native-ID full polygon; no forced paging, 13 bounded cells, metric geometry checks, source binding, or headed Details verification exists. Viewer timeout and indexed digitization statistics are not citywide absence.",
+  "runtimeAdmission": false
+}

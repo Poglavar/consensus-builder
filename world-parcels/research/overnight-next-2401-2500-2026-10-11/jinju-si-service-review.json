@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-3095-jinju-si.json",
+  "cityCode": 3095,
+  "queueRank": 2463,
+  "name": "Jinju-si",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "pointLatLon": [35.1856844205804, 128.100758236721],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://www.kgeop.go.kr/","httpStatus":200,"outcome":"Official K-GeoP landing page loaded and identifies the Ministry of Land, Infrastructure and Transport national land-information service."},
+    {"method":"GET","url":"https://www.kgeop.go.kr/info/infoMap.do?initMode=L","httpStatus":200,"outcome":"Official public map viewer loaded; visible workflow includes 일필지정보 (one-parcel information), map selection, and land/building information."},
+    {"method":"GET","url":"https://www.kgeop.go.kr/js/map/func/geoRequest.js","httpStatus":200,"outcome":"Current viewer JavaScript inspected. It constructs anonymous WFS GetFeature requests with outputFormat application/json, propertyName=pnu, and geometry-intersects/CQL options."},
+    {"method":"GET","url":"https://www.kgeop.go.kr/js/ptl/info/ilpilji/IlPilji.js","httpStatus":200,"outcome":"Current one-parcel JavaScript inspected. It confirms PNU-based parcel lookup and calls to the viewer API; unsafe owner/address fields were not requested."},
+    {"method":"GET","url":"https://www.kgeop.go.kr/js/map/core/geopassApi.js","httpStatus":200,"outcome":"Current API wrapper inspected. It exposes public-viewer calls including one-parcel and address/PNU lookup paths, but does not itself provide a retained parcel polygon response."},
+    {"method":"GET","url":"http://map.kgeop.go.kr:20000/bag/api/map/wfs?service=WFS&request=GetCapabilities","httpStatus":0,"outcome":"Configured WFS host from current viewer was attempted with browser-like headers and viewer Referer; DNS resolution failed before HTTP response (curl error 6). No feature type, schema, CRS, or geometry obtained."},
+    {"method":"SEARCH","url":"https://www.jinju.go.kr/00133/00446/00560.web?amode=view&cpage=10&gubun=03&idx=295&num=55","httpStatus":200,"outcome":"Official Jinju page identifies the real-estate-price committee and 토지정보과 (land-information division), including individual land-price responsibilities; this is local administrative evidence, not a parcel geometry API."},
+    {"method":"SEARCH","url":"https://www.jinju.go.kr/searchmultiple/searchmultipleresult.web?cpage=2&sstring=%EC%A0%95%EC%B4%8C&type=STAFF","httpStatus":200,"outcome":"Official Jinju staff/search page identifies 토지정보과 duties including cadastral-survey-result inspection and cadastral control-point management; no public parcel geometry endpoint exposed."},
+    {"method":"SEARCH","url":"https://www.lx.or.kr/eng/sub02_03_02.do","httpStatus":200,"outcome":"Official LX page provides national cadastral spatial-information service context; treated as national-agency prose, separate from Jinju local custodian evidence."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L and current linked JavaScript",
+    "apiBase": "http://map.kgeop.go.kr:20000/bag/api/map/wfs (configured by viewer; unreachable here)",
+    "geometryCrs": "No anonymous parcel response obtained; no CRS asserted.",
+    "nativeIdentity": "PNU is referenced by the viewer for one-parcel lookup, but no parcel PNU value was obtained.",
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"GetCapabilities attempt to the configured WFS host; DNS failure before HTTP response.","featureCount":null,"featuresRetained":0}
+  },
+  "localCustodianAssessment": "K-GeoP is the national public land-information/cadastral viewer. Jinju's official pages specifically identify its 토지정보과 and cadastral/individual-land-price responsibilities. No separate Jinju municipal parcel map/API was evidenced; national viewer evidence and local administrative evidence are kept distinct.",
+  "safeFieldAllowlist": ["stable native parcel identity if independently exposed", "polygon geometry if independently exposed", "source service URL", "source CRS / coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "login credentials", "private tokens"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official public viewer and Jinju local land-information evidence are verified, but no anonymous parcel geometry response, usable schema/CRS, or safe native parcel identity was verified."},
+  "scopeLimits": ["Exact WUP point was preserved in latitude/longitude order and was not shifted.","No exact-point hit or miss was used as an absence claim.","The configured WFS host failed DNS resolution; this is an environment/access limitation, not evidence of citywide parcel absence.","No GeoJSON sample is retained because no safe anonymous polygon response was verified.","No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request was attempted.","This packet does not constitute source integration, adapter admission, or runtime readiness."],
+  "uncertainty": "K-GeoP's current public viewer and WFS request construction are verified from first-party HTML/JavaScript. Public WFS availability from this environment, layer names, parcel schema, geometry CRS, licensing, update cadence, and adapter behavior remain unverified. Jinju-specific official pages establish local administrative responsibility but not a public parcel geometry service."
+}

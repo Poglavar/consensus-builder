@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10819-eluru.json",
+  "wupCityCode": 10819,
+  "queueRank": 1483,
+  "city": "Eluru",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [16.7087221660549, 81.1059717333012],
+  "status": "complete",
+  "reviewOutcome": "held_no_verified_open_parcel_service",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "queryOutcomes": {
+    "english": "Official Bhunaksha, DILRMP Eluru district, Eluru district land-records, municipal GIS and APSAC leads found; no usable public parcel geometry response.",
+    "telugu": "Official Bhunaksha and Eluru district leads found; no city-scoped anonymous parcel geometry endpoint.",
+    "actualQueries": [
+      "Eluru Andhra Pradesh official cadastral parcel map GIS land records survey parcels",
+      "ఏలూరు ఆంధ్రప్రదేశ్ భూ నక్షా కడాస్ట్రల్ పార్సెల్ మ్యాప్ భూమి రికార్డులు"
+    ]
+  },
+  "requestOutcomes": [
+    {"url": "https://bhunaksha.ap.gov.in/", "method": "GET", "status": "timeout", "scope": "state cadastral portal"},
+    {"url": "https://eluru.ap.gov.in/service/land-records/", "method": "GET", "status": "HTTP 200 placeholder", "scope": "Eluru district land records"},
+    {"url": "https://eluru.cdma.ap.gov.in/ulbprofile/eluru/gis-map/", "method": "GET", "status": "HTTP 200", "scope": "Eluru municipal map/Sachivalayam UI"},
+    {"url": "https://apcmms.ap.gov.in/apiv1/open/ulbs", "method": "GET", "status": "HTTP 200 JSON; Eluru ulb_id 89", "scope": "municipal catalog"},
+    {"url": "https://apcmms.ap.gov.in/apiv1/external/ulb/89/fetch/sachivalayam/data", "method": "GET", "status": "HTTP 404 JSON", "scope": "municipal Sachivalayam data route"}
+  ],
+  "scopeLimits": [
+    "DILRMP status is Eluru-district/tehsil evidence, not citywide parcel geometry.",
+    "The exact WUP point was preserved and not shifted; no exact-point hit or miss was used to infer absence.",
+    "The municipal map is not a cadastral source and its empty/404 data response is not evidence of no parcels.",
+    "No owner, address, contact, titleholder, tax, account or other unsafe fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["id", "geometry", "source", "crs", "layer", "retrievedAt"],
+  "retainedSamples": [],
+  "uncertainty": "No public geometry, CRS or stable native parcel ID was verified. State/district cadastral custody is evidenced, but open Eluru-city parcel-service availability remains unresolved.",
+  "qualification": "Not qualified for runtime integration; serial reviewer must independently qualify any future adapter.",
+  "sourceLinks": [
+    "https://bhunaksha.ap.gov.in/",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/805",
+    "https://eluru.ap.gov.in/service/land-records/",
+    "https://eluru.cdma.ap.gov.in/ulbprofile/eluru/gis-map/"
+  ]
+}

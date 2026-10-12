@@ -1,0 +1,13 @@
+{
+  "taskId": "city:10150",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-10150-qufu.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/qufu-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T11:01:26Z",
+  "reason": "Official Jining/Qufu government material corroborates local real-estate registration custody. The Shandong viewer/configuration and anonymous probes produced no safe parcel ID plus full polygon response or CRS.",
+  "admissionGates": "No independent live adapter qualification for fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details-panel verification. No runtime admission."
+}

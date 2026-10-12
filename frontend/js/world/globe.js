@@ -41,10 +41,11 @@
     const TAP_MAX_PX = 7;
     const TAP_MAX_MS = 600;
     // Country extent and app city availability are separate dimensions, including in the legend.
-    const COVERAGE_COLORS = { full: '#71bc91', partial: '#ffc24b', none: '#d8918c', unknown: '#a4acb8' };
+    // `mostly` is full coverage where a parcel check failed in a minority of cities: a lighter green.
+    const COVERAGE_COLORS = { full: '#71bc91', mostly: '#b1dac2', partial: '#ffc24b', none: '#d8918c', unknown: '#a4acb8' };
     const TIER_COLORS = { live: '#43e6a6', source: COVERAGE_COLORS.partial, none: COVERAGE_COLORS.none, unknown: COVERAGE_COLORS.unknown };
-    const COVERAGE_LABELS = { full: 'Full country coverage', partial: 'Some open data', none: 'Checked: none found', unknown: 'Unchecked / inconclusive' };
-    const REGION_COVERAGE_LABELS = { full: 'Full region coverage', partial: 'Some open data in this region', none: 'Checked: none found in this region', unknown: 'Region unchecked / inconclusive' };
+    const COVERAGE_LABELS = { full: 'Full country coverage', mostly: 'Most checked cities work', partial: 'Some open data', none: 'Checked: none found', unknown: 'Unchecked / inconclusive' };
+    const REGION_COVERAGE_LABELS = { full: 'Full region coverage', mostly: 'Most checked cities in this region work', partial: 'Some open data in this region', none: 'Checked: none found in this region', unknown: 'Region unchecked / inconclusive' };
     const TIER_LABELS = { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Unconfirmed' };
 
     let coveragePromise = null;
@@ -511,6 +512,7 @@
                 const li = el('li', 'world-legend__item');
                 // Regions are painted too, so the green entry cannot say "country".
                 const label = level === 'full' ? t('world.legend.full', 'Full country or region coverage')
+                    : level === 'mostly' ? t('world.legend.mostly', 'Full coverage, but checks failed in a few cities')
                     : t('world.coverage.' + level + '.short', COVERAGE_LABELS[level]);
                 li.append(el('span', 'world-tier-dot world-tier-dot--' + level), el('span', '', { text: label }));
                 legendList.appendChild(li);
@@ -927,12 +929,14 @@
             };
             const countryTexts = {
                 full: 'Open parcel data is confirmed for the whole country. Cities available in the app are marked separately.',
+                mostly: 'Open parcel data covers the whole country, and it works in most cities we checked, but the parcel check failed in a few. Cities available in the app are marked separately.',
                 partial: 'Open parcel data is confirmed in at least one city or region. Coverage at this specific location, or across the whole country, is not confirmed. Cities available in the app are marked separately.',
                 none: 'We checked for open parcel data in this country and found none. This records the result of our search, not proof that no source exists.',
                 unknown: 'This country has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
             };
             const regionTexts = {
                 full: 'Open parcel data is confirmed for this whole region. Cities available in the app are marked separately.',
+                mostly: 'Open parcel data covers this whole region, and it works in most cities we checked, but the parcel check failed in a few. Cities available in the app are marked separately.',
                 partial: 'Open parcel data is confirmed somewhere in this region. Coverage at this specific location, or across the whole region, is not confirmed. Cities available in the app are marked separately.',
                 none: 'We checked for open parcel data in this region and found none. This records the result of our search, not proof that no source exists.',
                 unknown: 'This region has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 10818,
+  "queueRank": 1827,
+  "cityId": "queue:1827",
+  "name": "Hezhou",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [24.4161609670455, 111.56070559287],
+  "centerLatLon": [24.4161609670455, 111.56070559287],
+  "population2025": 313994,
+  "population2025k": 313.994,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hezhou China official cadastral parcel map GIS natural resources real estate registration",
+        "result": "Search identified the official Hezhou Natural Resources Bureau site, Guangxi Natural Resources Department registration guidance, and references to Hezhou's spatial-information management platform. No public anonymous parcel ID-plus-geometry endpoint was exposed in indexed results.",
+        "actualResultUrls": [
+          "https://hz.dnr.gxzf.gov.cn/",
+          "https://dnr.gxzf.gov.cn/zxgz/yhyshj/bsrk/",
+          "https://hz.dnr.gxzf.gov.cn/zfxxgk_001/FDZDGKNR_001/wjtz/index.shtml"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "贺州 不动产登记 地籍图 查询 贺州市自然资源局 空间信息管理平台",
+        "result": "Native-language discovery found the official Hezhou Natural Resources Bureau notice index, the notice for launching the Hezhou multi-survey comprehensive management platform, the notice for Hezhou spatial-information platform operations, and Guangxi registration guidance. These establish local custodial and procedure evidence, not an open parcel feature service.",
+        "actualResultUrls": [
+          "https://hz.dnr.gxzf.gov.cn/zfxxgk_001/FDZDGKNR_001/wjtz/index.shtml",
+          "https://dnr.gxzf.gov.cn/xwzx/sxdt/index_16.shtml",
+          "https://dnr.gxzf.gov.cn/zxgz/yhyshj/bsrk/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by TLS-verified bounded GET attempt; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://hz.dnr.gxzf.gov.cn/",
+      "observation": "Official Hezhou Natural Resources Bureau host; direct bounded GET timed out before page/API inspection completed."
+    },
+    {
+      "url": "https://hz.dnr.gxzf.gov.cn/zfxxgk_001/FDZDGKNR_001/wjtz/index.shtml",
+      "observation": "Official notice index identifies Hezhou's multi-survey comprehensive management platform and spatial-information platform operations notices; no parcel endpoint was exposed in indexed content."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/zxgz/yhyshj/bsrk/",
+      "observation": "Official Guangxi natural-resources service-entry page includes real-estate registration access guidance for the region; it is not a public parcel geometry API."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/xwzx/sxdt/index_16.shtml",
+      "observation": "Official Guangxi provincial page provides Hezhou natural-resources and registration context; no anonymous citywide parcel geometry service was identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://hz.dnr.gxzf.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified curl request timed out after 25 seconds; not evidence of cadastral absence."
+    },
+    {
+      "url": "https://hz.dnr.gxzf.gov.cn/zfxxgk_001/FDZDGKNR_001/wjtz/index.shtml",
+      "method": "GET via indexed first-party result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Search index was inspected and returned the official notice listing; direct page fetch was unavailable to the bounded web reader, so no API route or schema was inferred."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/zxgz/yhyshj/bsrk/",
+      "method": "GET via indexed first-party result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official regional service-entry evidence inspected; no public parcel ID-plus-geometry response."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Hezhou city local natural-resources, cadastral, spatial-information and real-estate-registration administration in Guangxi, China.",
+    "verifiedOpenScope": "Local custodial/procedure evidence only; anonymous parcel geometry, schema/CRS and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current Hezhou viewer/API route, access controls, parcel schema, CRS, stable native identity and citywide coverage remain unresolved. The direct host timeout and lack of an endpoint in indexed portal material are access/inspection limits, not evidence of citywide cadastral absence. The exact WUP point was preserved and never shifted; no exact-point hit or miss was inferred.",
+  "nextStep": "A later attempt may inspect an officially exposed Hezhou map viewer or approved public API route and issue only a bounded anonymous ID-plus-geometry request if one is revealed."
+}

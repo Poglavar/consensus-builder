@@ -1,0 +1,146 @@
+{
+  "cityCode": 3419,
+  "queueRank": 2998,
+  "name": "Jiuquan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [39.7421157206995, 98.5431385018488],
+  "population2025": 199602,
+  "population2025k": 199.602,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jiuquan China official cadastral parcel map GIS Natural Resources land registration",
+        "result": "First-party discovery identified the official Jiuquan Tianditu geographic-information portal and the Ministry of Natural Resources registration-center portal. The Jiuquan portal's current HTML, JavaScript, and configuration expose standard maps, imagery, terrain, place search, geocoding, administrative search, and cached vector/imagery tiles, but no cadastral parcel viewer, parcel feature service, schema, CRS metadata for parcels, or safe native parcel ID plus geometry response.",
+        "actualResultUrls": [
+          "https://gansu.tianditu.gov.cn/jiuquan/",
+          "https://gansu.tianditu.gov.cn/jiuquan/map/map.html",
+          "https://www.rerc.com.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "酒泉市 官方 不动产登记 地籍图 地图 查询 自然资源局",
+        "result": "Native-language discovery found the official 天地图·酒泉 portal, described as operated by 酒泉市自然资源局, and general Ministry registration context. The directly inspected official Jiuquan map is a public base-map/geospatial portal; no public anonymous cadastral/parcel layer or safe parcel feature response was exposed. Search results describing cadastral inquiry in other Chinese cities were not treated as Jiuquan evidence.",
+        "actualResultUrls": [
+          "https://gansu.tianditu.gov.cn/jiuquan/",
+          "https://gansu.tianditu.gov.cn/jiuquan/bzmap/bzmap.html",
+          "https://www.rerc.com.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "Separate first-party English and Chinese discovery; direct TLS-verified retrieval of the official Jiuquan portal, current map HTML, JavaScript, and configuration; bounded anonymous REST checks against the portal's disclosed ArcGIS tile host.",
+  "sourceReview": "The official city-branded geographic-information portal is local custodial evidence for general map services and is operated by 酒泉市自然资源局, but it does not evidence a public cadastral registry or parcel feature service. The Ministry registration-center site is general national institutional context only. No local registry/cadastre service was qualified, so registryFound remains null.",
+  "attemptsRecorded": [
+    {
+      "method": "GET",
+      "url": "https://gansu.tianditu.gov.cn/jiuquan/",
+      "httpStatus": 200,
+      "outcome": "Official Jiuquan portal retrieved. It advertises online maps, standard maps, thematic maps, development resources, and public geographic-information services; no cadastral parcel endpoint was evident in the page links."
+    },
+    {
+      "method": "GET",
+      "url": "https://gansu.tianditu.gov.cn/jiuquan/map/map.html",
+      "httpStatus": 200,
+      "outcome": "Official online map HTML retrieved. Current scripts were inspected for service routes and query behavior. The map is a base-map viewer and contains no parcel/cadastre query UI or feature endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://gansu.tianditu.gov.cn/jiuquan/static/config.js",
+      "httpStatus": 200,
+      "outcome": "Current configuration retrieved. It exposes Tianditu tokens and portal environment settings, not a cadastral data source. No credentials were used."
+    },
+    {
+      "method": "GET",
+      "url": "https://gansu.tianditu.gov.cn/jiuquan/map/js/map/mapinit.js",
+      "httpStatus": 200,
+      "outcome": "Current map JavaScript retrieved. Disclosed layers are cached vector/imagery/terrain and Jiuquan base-map tile services; no parcel layer, feature service, schema, or native parcel identity was present."
+    },
+    {
+      "method": "GET",
+      "url": "https://gansu.tianditu.gov.cn/serviceresource",
+      "httpStatus": 200,
+      "outcome": "Official provincial service-resource page retrieved, but bounded inspection exposed general platform resources rather than a Jiuquan cadastral parcel service."
+    },
+    {
+      "method": "GET",
+      "url": "http://125.74.216.11:6080/arcgis/rest/services?f=pjson",
+      "httpStatus": null,
+      "outcome": "Disclosed ArcGIS host timed out after 15 seconds. No retry escalation, TLS bypass, login, or attempt to infer absence was made."
+    },
+    {
+      "method": "GET",
+      "url": "http://125.74.216.11:6080/arcgis/rest/services/vec_c_jq/MapServer?f=pjson",
+      "httpStatus": null,
+      "outcome": "Disclosed cached vector map service REST metadata request timed out after 15 seconds. This is not a parcel-service response and is not evidence of cadastral absence."
+    },
+    {
+      "method": "GET",
+      "url": "http://125.74.216.11:6080/arcgis/rest/services/cva_c_jq/MapServer?f=pjson",
+      "httpStatus": null,
+      "outcome": "Disclosed cached annotation map service REST metadata request timed out after 15 seconds. This is not a parcel-service response and is not evidence of cadastral absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.rerc.com.cn/",
+      "httpStatus": 200,
+      "outcome": "Official national real-estate-registration-center site retrieved. It provides national institutional and general service context, not a Jiuquan public parcel feature service."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Official Jiuquan map configuration and JavaScript inspected; only base-map/cache routes were exposed.",
+    "geometryCrs": "Not observed for cadastral data.",
+    "nativeIdentity": "Not observed; no parcel feature response obtained.",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [39.7421157206995, 98.5431385018488] preserved; no coordinate shift or parcel-hit inference.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public cadastral feature-query route was exposed; disclosed base-map REST metadata requests timed out."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if later exposed and source-proven",
+    "full parcel polygon geometry if later exposed",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No public anonymous Jiuquan cadastral feature response with a source-proven native identity and full geometry was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved and not shifted.",
+    "No exact-point hit or miss, map-extent miss, timeout, login wall, or unusable UI was used as evidence of citywide cadastral absence.",
+    "General national registration context and the local base-map portal do not establish a local public parcel registry service.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, cadastral service CRS, viewer configuration, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "A Jiuquan-specific public cadastral custodian/service, parcel schema, CRS, coverage, and native identity semantics remain unverified. Runtime/admission remains held; this packet is not source integration/admission."
+}

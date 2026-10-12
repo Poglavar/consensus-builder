@@ -1,0 +1,108 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Kahemba, Democratic Republic of the Congo; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 2820,
+  "queueRank": 2734,
+  "name": "Kahemba",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-7.29714955028119, 18.9560228334937],
+  "population2025": 215825,
+  "population2025k": 215.825,
+  "populationUnit": "persons",
+  "aliases": ["kahemba"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kahemba Democratic Republic of Congo official cadastral parcel GIS map land registry",
+        "result": "Search identified the official DRC Ministry of Land Affairs jurisdiction directory and the first-party BIC cadastral map. The Ministry directory lists Kahemba under Kwango. No public Kahemba parcel geometry response was identified.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://bic.cd/", "https://bic.cd/cadastral-map"]
+      },
+      {
+        "language": "French (official/local-language attempt)",
+        "query": "Kahemba RDC cadastre parcelles carte SIG circonscription foncière Kwango",
+        "result": "The official Ministry directory lists Kahemba as a Kwango land/cadastral jurisdiction. BIC presents a public cadastral application but states that parcel service is available for Nord-Kivu and Sud-Kivu; no anonymous Kahemba parcel geometry was established.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://bic.cd/", "https://servicepublic.gouv.cd/service/4671"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "Current official Ministry of Land Affairs directory lists Kahemba in the Kwango province section among the land and cadastral jurisdictions. This is local jurisdiction evidence, not parcel geometry or citywide coverage evidence."
+    },
+    {
+      "url": "https://bic.cd/",
+      "observation": "First-party Bureau d'Informations Cadastrales public site exposes a cadastral map entry point and states that parcel service is available for Nord-Kivu and Sud-Kivu. No Kwango/Kahemba coverage is claimed by the observed page."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "Official public-service catalogue describes formal consultation of cadastral and land registers through the competent land-affairs offices; it is a procedure, not an open parcel geometry service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "method": "GET official jurisdiction directory",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Anonymous response contained Kahemba in the Kwango section. No parcel IDs, geometry, schema, or CRS were returned."
+    },
+    {
+      "url": "https://bic.cd/",
+      "method": "GET public cadastral application",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Viewer HTML and current JavaScript were inspected. The page states parcel service is available for Nord-Kivu and Sud-Kivu. The current JavaScript exposed a public Supabase project and cadastral_parcels table access path; no login, private token, or unsafe owner fields were used."
+    },
+    {
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels?select=id%2Cparcel_number%2Cgps_coordinates%2Cprovince%2Cville%2Ccommune%2Cquartier&province=ilike.Kwango&limit=3",
+      "method": "GET bounded anonymous REST query using public viewer configuration",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "outcome": "Returned [] for the Kwango filter. Only safe ID, parcel-number, geometry-coordinate, and administrative fields were requested; no native schema metadata or CRS was returned."
+    },
+    {
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels?select=id%2Cparcel_number%2Cgps_coordinates%2Cprovince%2Cville%2Ccommune%2Cquartier&limit=3",
+      "method": "GET bounded anonymous REST query without a province filter",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "outcome": "Returned [] in the observed anonymous response. This is not evidence of citywide or countrywide parcel absence."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "method": "GET official cadastral-register procedure page",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Procedure page describes formal paid register consultation through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre. No open geometry service was exposed."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Ministry of Land Affairs directory explicitly lists Kahemba as a circonscription foncière under Kwango. This establishes local jurisdiction/custodian evidence, but not an open parcel geometry API or citywide completeness.",
+  "registryEvidenceUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "nativeSchema": null,
+  "resultCategory": "registry_jurisdiction_found_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Kahemba land/cadastral jurisdiction is listed by the DRC Ministry of Land Affairs.",
+    "verifiedOpenScope": "Only jurisdiction-directory evidence and an empty bounded public BIC REST response were verified; no parcel geometry was returned.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "africa",
+  "remainingUncertainty": "BIC may not cover Kwango, and a Kahemba-specific office workflow or undiscovered endpoint may exist. The exact WUP point was preserved and not shifted. An empty REST response, map extent miss, timeout, login wall, or unusable viewer would not establish citywide cadastral absence. No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"]
+}

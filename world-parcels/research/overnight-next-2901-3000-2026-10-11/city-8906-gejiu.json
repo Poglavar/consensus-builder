@@ -1,0 +1,96 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 8906,
+  "queueRank": 2928,
+  "name": "Gejiu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [23.3536020032069, 103.153296865863],
+  "population2025": 203928,
+  "population2025k": 203.928,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gejiu official cadastral map parcel viewer land registration GIS Yunnan",
+        "result": "No public Gejiu parcel viewer or anonymous parcel geometry API was identified in first-party results. The official Gejiu government site identifies the Gejiu Natural Resources Bureau as responsible for cadastral survey, real-estate registration, surveying, and the local natural-resources information platform.",
+        "actualResultUrls": [
+          "https://www.hhgj.gov.cn/info/12091/269911.htm",
+          "https://www.hhgj.gov.cn/info/11971/270361.htm"
+        ]
+      },
+      {
+        "language": "Chinese (local)",
+        "query": "个旧市 官方 地籍图 不动产登记 自然资源局 地图",
+        "result": "第一方结果确认个旧市自然资源局承担统一确权登记、权籍调查、不动产测绘和登记信息平台建设；政府信息公开指南列明不动产登记信息属于该机关公开范围，但未提供公开地籍图查看器、图层服务或匿名宗地几何接口。",
+        "actualResultUrls": [
+          "https://www.hhgj.gov.cn/info/12091/269911.htm",
+          "https://www.hhgj.gov.cn/info/11971/270361.htm",
+          "https://www.hhgj.gov.cn/info/13241/672481.htm"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "个旧市自然资源局 (Gejiu Natural Resources Bureau)",
+    "locality": "Gejiu, Honghe Hani and Yi Autonomous Prefecture, Yunnan, China",
+    "evidenceUrls": [
+      "https://www.hhgj.gov.cn/info/12091/269911.htm",
+      "https://www.hhgj.gov.cn/info/11971/270361.htm"
+    ],
+    "scopeNote": "The local government identifies this bureau as responsible for natural-resource and real-estate confirmation/registration, cadastral investigation, real-estate surveying, and registration information management. This is a local custodian/procedure reference, not evidence of a public parcel geometry service."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "No safe anonymous parcel ID-plus-geometry response was exposed by the first-party routes inspected. No GeoJSON sample was retained. This is not evidence of citywide absence."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.hhgj.gov.cn/info/12091/269911.htm",
+      "outcome": "HTTP/web retrieval successful; official bureau duties page confirms cadastral investigation, real-estate surveying, registration information-platform responsibility, and local registration work."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.hhgj.gov.cn/info/11971/270361.htm",
+      "outcome": "HTTP/web retrieval successful; official information-disclosure guide identifies real-estate registration information among bureau-held information and provides the local disclosure route."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.hhgj.gov.cn/",
+      "outcome": "HTTP/web retrieval successful; official Gejiu government homepage inspected for current map, GIS, cadastral, and service links. No public parcel geometry endpoint was exposed in the inspected page."
+    },
+    {
+      "method": "GET",
+      "url": "https://zwfw.yn.gov.cn/portal/#/home?regnCode=532501000000&flag=false",
+      "outcome": "Official Yunnan government-service portal route was linked from the Gejiu government site; no anonymous cadastral geometry endpoint was identified from the first-party discovery results. No login, credentials, or private token was used."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The local custodian is evidenced, but no public map/API service, layer schema, CRS, native parcel identifier, or bounded geometry response was found.",
+    "No exact-point query result was treated as a citywide absence claim; the WUP point was preserved exactly and not shifted.",
+    "The official information-disclosure route may require a formal request for cadastral materials; no request was submitted.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

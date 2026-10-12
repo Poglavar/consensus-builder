@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "wupCityCode": 10404,
+  "cityCode": 10404,
+  "queueRank": 3083,
+  "name": "Jianshan",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:10404",
+  "point": [46.6160899700731, 131.14008793902],
+  "population2025": 195003,
+  "population2025k": 195.003,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jianshan Shuangyashan China official cadastral map parcel public map service natural resources bureau",
+        "result": "First-party discovery found official Heilongjiang and Shuangyashan natural-resources/government sources and an official Shuangyashan real-estate registration service announcement. No anonymous public parcel feature service or map API was identified.",
+        "actualResultUrls": [
+          "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31729432.shtml",
+          "https://sys.zwfw.hlj.gov.cn/yshjzq/yshjzczl/djcc/art/2023/art_5846c0aab3fd463cbb816b60b8257b05.html",
+          "https://www.hlj.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "中国 黑龙江 双鸭山 尖山区 自然资源局 不动产登记 地籍图 查询 官方",
+        "result": "Official Chinese-language discovery confirmed the Shuangyashan Natural Resources Bureau and Shuangyashan Real Estate Registration Center as relevant custodial/service institutions. The public announcement describes online registration and electronic certificate/query workflows requiring identity authentication; it does not expose an anonymous parcel geometry service.",
+        "actualResultUrls": [
+          "https://sys.zwfw.hlj.gov.cn/yshjzq/yshjzczl/djcc/art/2023/art_5846c0aab3fd463cbb816b60b8257b05.html",
+          "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31729432.shtml",
+          "https://www.hlj.gov.cn/"
+        ]
+      }
+    ],
+    "officialLeads": [
+      {
+        "url": "https://sys.zwfw.hlj.gov.cn/yshjzq/yshjzczl/djcc/art/2023/art_5846c0aab3fd463cbb816b60b8257b05.html",
+        "operator": "双鸭山市不动产登记中心 (Shuangyashan Real Estate Registration Center)",
+        "scope": "Local city-level real-estate registration service covering properties in the center's jurisdiction; the notice is a procedure/service lead, not open parcel-vector evidence.",
+        "evidence": "Official notice states that the center operates an internet-plus real-estate registration platform and supports online registration and electronic certificate/query workflows. It directs users to sysbdc.org.cn and the Heilongjiang government-service portal."
+      },
+      {
+        "url": "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31729432.shtml",
+        "operator": "双鸭山市自然资源局 (Shuangyashan Natural Resources Bureau)",
+        "scope": "Municipal natural-resources authority; relevant registration and cadastral custodian context for Jianshan District.",
+        "evidence": "Official Heilongjiang Natural Resources Department page identifies the municipal bureau's real-estate-registration and natural-resources legal-administration role; no public parcel layer is exposed."
+      }
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://sys.zwfw.hlj.gov.cn/yshjzq/yshjzczl/djcc/art/2023/art_5846c0aab3fd463cbb816b60b8257b05.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "contentType": "text/html",
+      "summary": "Official announcement loaded. HTML exposed the official registration-center procedure and links to sysbdc.org.cn and the provincial government-service portal, but no parcel viewer, service URL, layer schema, CRS, or anonymous geometry endpoint."
+    },
+    {
+      "url": "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31729432.shtml",
+      "method": "GET",
+      "status": "HTTP 200",
+      "contentType": "text/html",
+      "summary": "Official natural-resources page loaded. No parcel viewer, map-service configuration, parcel schema, CRS, or safe ID-plus-geometry response was exposed."
+    },
+    {
+      "url": "http://sysbdc.org.cn",
+      "method": "GET",
+      "status": "timeout after 20 seconds (HTTP 000)",
+      "summary": "Officially linked registration site did not complete an anonymous request; no login, form submission, protected query, or bypass was attempted. This is not evidence of cadastral absence."
+    },
+    {
+      "url": "https://sysbdc.org.cn",
+      "method": "GET",
+      "status": "empty reply / HTTP 000",
+      "summary": "HTTPS retry returned no response body. No TLS verification was disabled and no alternate certificate exception was used."
+    },
+    {
+      "url": "https://www.zwfw.hlj.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "contentType": "text/html",
+      "summary": "Provincial government-service shell loaded, but no anonymous Jianshan parcel endpoint or safe parcel geometry response was identified."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 418",
+      "summary": "National map portal returned an anti-automation response; no attempt was made to defeat it or access protected services. This is not evidence of parcel absence."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Jianshan District within Shuangyashan municipal registration/natural-resources jurisdiction, plus provincial/national public-service leads.",
+    "verifiedOpenScope": "Local registration custodian and public procedure leads only; no open parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_verified_open_parcel_geometry",
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [46.6160899700731, 131.14008793902] was preserved in latitude/longitude order; no exact-point hit or miss was tested or inferred.",
+    "Local city registration-custodian evidence is distinct from general provincial/national agency prose and does not establish an anonymous parcel API or citywide open coverage.",
+    "No parcel polygon, stable native parcel identity, source schema, CRS, or public map/API response was retrieved or retained; no GeoJSON sample is created.",
+    "Timeout, empty response, anti-automation response, inaccessible viewer, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public parcel viewer/API route, layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

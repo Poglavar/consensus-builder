@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1033",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-1033-s-gou.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/s-gou-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:36:52Z",
+  "reason": "Official DGDC cadastre and DRDC/SEGOU local custody are evidenced, but no public native-ID/full-polygon response or qualified adapter exists."
+}

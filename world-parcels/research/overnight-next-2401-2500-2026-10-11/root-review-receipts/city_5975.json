@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5975",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-5975-corpus-christi.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/corpus-christi-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-11T12:11:40Z",
+  "reason": "Immutable WUP rank 2446, United States, unchanged point, and 239855 persons match roster and queue. English and separate Spanish-form queries and results are recorded, although the second language tag says English. Nueces CAD and Corpus Christi pages support local custody; the reported third-party ArcGIS layer has no retained original feature response. A timeout establishes neither a point miss nor citywide absence. No safe native ID/full polygon, fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding, or headed Details verification is evidenced. Held; no runtime admission.",
+  "sourcePagesChecked": [
+    "https://nuecescad.net/",
+    "https://addressing.cctexas.com/"
+  ]
+}

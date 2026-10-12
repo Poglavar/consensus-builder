@@ -1,0 +1,69 @@
+{
+  "cityCode": 11578,
+  "queueRank": 2100,
+  "name": "Tai Po",
+  "country": "China, Hong Kong SAR",
+  "countryCode": "HK",
+  "iso2": "HK",
+  "iso3": "HKG",
+  "point": [22.4526281787517, 114.168905498697],
+  "population2025": 276367,
+  "population2025k": 276.367,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tai Po Hong Kong official cadastral map land registry parcel map API",
+        "result": "First-party discovery found the Hong Kong Lands Department's official iC1000 digital land boundary metadata, the public Lot Index API documentation, the Land Parcel and Public Utility Number Search API, and Hong Kong Map Service 2.0. The Lot Index API is a bounded public polygon service; digital iC1000 downloads are licensed/ordered products.",
+        "actualResultUrls": [
+          "https://portal.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+          "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LPPUNSearchAPI",
+          "https://www.hkmapmeta.gov.hk/mcs/home/web/data/lands/iC1000.html",
+          "https://www.landsd.gov.hk/en/spatial-data/geospatial-infomation-services/geospatial-portals.html/1000"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "大埔 香港 官方 地籍圖 地段 地圖 土地註冊處",
+        "result": "官方中文结果确认香港地政总署提供地段索引图、香港地图服务2.0和公开地图API；土地注册处提供新界地段/地址对照表及大埔查册中心信息。未发现需要登录的公开地籍矢量下载；公开地段几何服务由地政总署提供。",
+        "actualResultUrls": [
+          "https://www.landsd.gov.hk/tc/survey-mapping/mapping/land-boundary-map-plan-production/lot-index-plan.html",
+          "https://www.landreg.gov.hk/tc/services/services_b_9.htm",
+          "https://www.hkmapservice.gov.hk/OneStopSystem/map-search?locale=zh_hk"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Hong Kong Lands Department Survey and Mapping Office is the first-party cadastral/land-boundary custodian. Its official iC1000 metadata identifies continuously updated vector digital land parcel data and explicitly includes Tai Po; the public Lot Index API exposes private lots, GLAs and STTs. Land Registry provides the separate land-record registration/search function and a Tai Po search office, but was not used for owner or title information.",
+  "sourceUrls": [
+    "https://portal.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+    "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=835347,834697,835547,834897,EPSG:2326",
+    "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LPPUNSearchAPI",
+    "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/lus/lot/SearchNumber?text=DD%206%201",
+    "https://www.hkmapmeta.gov.hk/mcs/home/web/data/lands/iC1000.html",
+    "https://www.landreg.gov.hk/tc/services/services_b_9.htm"
+  ],
+  "parcelService": {
+    "provider": "Hong Kong Lands Department Survey and Mapping Office",
+    "service": "LandsD iC1000 Lot Index API",
+    "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot",
+    "request": "bbox=835347,834697,835547,834897,EPSG:2326",
+    "responseFormat": "GML/WFS FeatureCollection",
+    "schema": "landsd:lot_lotindexapi; lotid, lotcode, lotnumber, lottype, cislotdisplayname, shape, lastupdatedate",
+    "nativeIdField": "lotid",
+    "crs": "EPSG:2326 / HK80"
+  },
+  "geometrySample": {
+    "file": "tai-po-sample.geojson",
+    "featureCount": 3,
+    "nativeIdField": "lotid",
+    "sourceGeometryCrs": "EPSG:2326 / HK80",
+    "retainedGeometryCrs": "EPSG:4326",
+    "conversion": "Coordinates transformed from HK80/EPSG:2326 to WGS84/EPSG:4326 for GeoJSON; no geometry simplification was applied."
+  },
+  "runtimeReadiness": "held_for_serial_review"
+}

@@ -1,0 +1,23 @@
+{
+  "taskId": "city:10657",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10657-kanchipuram.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/kanchipuram-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:53:55Z",
+  "reason": "Kanchipuram district and Tamil Nadu custody documented; the official e-Services target timed out and no native parcel ID plus full polygon or adapter qualification is evidenced.",
+  "bilingualSearchRecheck": [
+    {
+      "language": "English",
+      "query": "Kanchipuram Tamil Nadu official cadastral parcel map GIS land records e-services"
+    },
+    {
+      "language": "Tamil",
+      "query": "காஞ்சிபுரம் தமிழ்நாடு அதிகாரப்பூர்வ நில வரைபடம் பட்டா புல வரைபடம் GIS"
+    }
+  ],
+  "retainedFullPolygons": 0
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8031",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-8031-singaraja.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/singaraja-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:23:43.056926Z",
+  "reason": "ATR/BPN BHUMI first-party map and layer metadata support cadastral-map custody, but the recorded WFS route yielded no usable feature response. NIB stability, geometry, CRS, bounded coverage, and adapter qualification remain unverified; the packet pointHit=false is not treated as absence."
+}

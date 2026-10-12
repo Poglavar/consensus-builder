@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-2522-puerto-vallarta.json",
+  "cityCode": 2522,
+  "queueRank": 2958,
+  "name": "Puerto Vallarta",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Spanish first-party discovery identified the Jalisco Catastro eCarto public map and the Puerto Vallarta municipal Sub Dirección de Catastro. The current map HTML/configuration was followed to map 808 and its UTFGrid tile route. A bounded exact-point request returned only manzana/redvial map-feature metadata and no parcel polygon or safe parcel ID+geometry response. No sample GeoJSON was retained.",
+  "attemptedRoutes": [
+    {"url": "https://catastro.jalisco.gob.mx/", "method": "GET", "outcome": "official Jalisco Catastro portal retrieved"},
+    {"url": "https://catastro.jalisco.gob.mx/cartografia.html", "method": "GET", "outcome": "official cartography page retrieved; current iframe route identified"},
+    {"url": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808", "method": "GET", "outcome": "public eCarto map HTML retrieved; JavaScript/configuration route identified"},
+    {"url": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808/getmapviz", "method": "GET", "outcome": "HTTP 200 map configuration; statewide tile layers and UTFGrid metadata observed"},
+    {"url": "https://ec1.jalisco.gob.mx/tiles/fzh9qhyk-bcc6913ef99b49f2e57efdfac3eb867a8090ed71:grid/18/54455/115701.json", "method": "GET", "outcome": "HTTP 200 bounded exact-point tile; manzana/redvial IDs only, no parcel polygon"},
+    {"url": "https://transparencia.puertovallarta.gob.mx/art8.php?pag=art8-sec6b", "method": "GET", "outcome": "official municipal cadastral procedure page retrieved; no public parcel API exposed"},
+    {"url": "https://transparencia.puertovallarta.gob.mx/art15.php?pag=art15-sec5", "method": "GET", "outcome": "official planning/cadastral-value document index retrieved; no parcel service exposed"},
+    {"url": "https://transparencia.puertovallarta.gob.mx/articulo15.php?pag=art15-secV", "method": "GET", "outcome": "official static planning-map index retrieved; no parcel geometry service exposed"}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [20.6462709094644, -105.216998614097] was preserved and not shifted; the map tile result is not evidence of citywide parcel absence.",
+    "The bounded UTFGrid response demonstrates public map-feature metadata, not parcel coverage, parcel geometry, legal survey status, or currentness.",
+    "No full parcel polygon was available from the inspected anonymous routes, so no retained GeoJSON sample was created.",
+    "Municipal cadastral procedure pages evidence a local custodian but describe request-based services and unsafe cadastral/account data; those fields were not requested."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": null,
+    "alsoObserved": ["ecarto_id for manzana/redvial map features"],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "No parcel native identity was observed. The returned ecarto_id values identify non-parcel UTFGrid map features and were not promoted to parcel identities."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "A first-party Puerto Vallarta municipal cadastral custodian and a first-party Jalisco public cartographic viewer are evidenced. The source is not admitted: the inspected current public route did not return safe parcel identity+geometry, the exact-point request exposed only non-parcel map features, and municipal pages describe request-based cadastral information. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+}

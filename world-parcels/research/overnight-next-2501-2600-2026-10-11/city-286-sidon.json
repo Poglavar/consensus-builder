@@ -1,0 +1,95 @@
+{
+  "cityCode": 286,
+  "queueRank": 2532,
+  "name": "Sidon",
+  "country": "Lebanon",
+  "countryCode": "LB",
+  "iso3": "LBN",
+  "point": [33.549733669263, 35.380906250917],
+  "population2025": 232143,
+  "population2025k": 232.143,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lebanon official cadastral parcel map viewer Sidon Directorate of Land Registry and Cadastre",
+        "result": "First-party discovery found the General Directorate of Land Registry and Cadastre (DLRC) site, its official paid title-register service, and the registry/cadastre office directory naming the Sidon–Jezzine registry office and South cadastral office. No open first-party parcel-geometry viewer or anonymous parcel API was found.",
+        "actualResultUrls": [
+          "https://www.lrc.gov.lb/en",
+          "https://payment.lrc.gov.lb/main.aspx?lang=en",
+          "https://www.lrc.gov.lb/en/content/registry-offices-location"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "لبنان صيدا خريطة عقارية السجل العقاري المساحة",
+        "result": "First-party Arabic DLRC results identify أمانة السجل العقاري في صيدا – جزين and دائرة المساحة في الجنوب. Arabic commercial map results claim parcel-map coverage in Sidon, but disclaim legal/official status and were not used as authoritative parcel evidence.",
+        "actualResultUrls": [
+          "https://www.lrc.gov.lb/ar/node/62",
+          "https://www.lrc.gov.lb/ar/content/%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9",
+          "https://lebcad.com/ar/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "General Directorate of Land Registry and Cadastre, Ministry of Finance, Lebanese Republic; the official directory names أمانة السجل العقاري في صيدا – جزين and دائرة المساحة في الجنوب.",
+    "nationalOrStateContext": "The DLRC is the national Lebanese land-registry/cadastre authority. Its public title-register workflow requires province, caza, cadastral zone, and parcel number and charges for viewing title-register documents.",
+    "registryBasis": "Official DLRC pages and the current payment.lrc.gov.lb workflow were fetched anonymously. The official service exposes a paid title-register form, not parcel polygons or a documented open geometry endpoint.",
+    "registryFoundReason": "A local Sidon registry office and regional cadastral office are explicitly evidenced by the first-party DLRC directory; this does not prove an open parcel feature service or runtime integration."
+  },
+  "schemaAndCrs": {
+    "serviceUrl": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4",
+    "endpoint": "Lebanese Ministry of Public Health ArcGIS REST Feature Layer 4, named Cadaster under Administrative_Zones; administrative-zone layer, not a parcel layer.",
+    "responseType": "ArcGIS JSON metadata and GeoJSON query response were available.",
+    "geometryType": "Polygon",
+    "geometryCrs": "Service native WKID 102100 / latest WKID 3857; bounded query requested output WKID 4326.",
+    "nativeIdentity": "ID (GUID) and OID are native fields for the returned administrative-zone feature; they are not treated as parcel identities.",
+    "sourceFieldMapping": {
+      "ID": "administrative-zone GUID",
+      "OID": "ArcGIS object identifier",
+      "NAME": "administrative-zone name",
+      "NAME_AR": "Arabic administrative-zone name",
+      "PCODE": "administrative-zone code",
+      "SHAPE": "administrative-zone polygon geometry"
+    },
+    "compositeKeyProvenance": "No composite key used or inferred.",
+    "schemaEvidence": "Layer metadata declares name Cadaster, fields ID/OID/NAME/NAME_AR/PCODE/STATUS, and a polygon geometry; it does not expose parcel-number fields or parcel-level semantics."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "The preserved exact WUP point [33.549733669263, 35.380906250917] was queried without coordinate shifting. The government administrative-zone layer returned one containing polygon named Saida Ed-Dekermane / صيدا الدكرمان, but this is not parcel geometry and was not retained.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official DLRC registry/cadastre offices and paid title-register lookup; separate Ministry of Public Health administrative-zone layer covers Lebanon administrative cadastral zones.",
+    "verifiedOpenScope": "Only administrative-zone metadata and one exact-point administrative-zone response were verified; no parcel-level geometry response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source service URL", "declared CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude ordering were preserved; no coordinate shift was used to force a hit.",
+    "The exact-point government response is an administrative cadastral-zone polygon, not evidence of a parcel hit or citywide parcel coverage.",
+    "No raw source-specific attribute set, parcel geometry, or synthetic identity is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "The paid title-register workflow was not submitted and no title-register or ownership data was requested."
+  ],
+  "uncertainty": "A first-party local registry/cadastre custodian is established, but no open anonymous parcel geometry service was discovered. Commercial Sidon map products may contain parcel maps, yet their legal disclaimers and lack of first-party service qualification prevent using them for source admission. Runtime remains held."
+}

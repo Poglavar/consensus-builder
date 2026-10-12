@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-4758-ijagbo-offa.json",
+  "cityCode": 4758,
+  "queueRank": 2955,
+  "name": "Ijagbo Offa",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Yoruba discovery was performed. First-party Kwara State Government and KWGIS pages were retrieved, and the official KWGIS E-Services WordPress page plus its REST representation were inspected for current viewer/configuration/API routes. The pages evidence KWGIS as a state land/GIS custodian and describe digital land administration, but no public anonymous parcel service, schema, CRS, or ID+geometry response was exposed.",
+  "attemptedRoutes": [
+    {"url": "https://kwarastate.gov.ng/", "method": "GET", "outcome": "official state site; KW-GIS and land-service links"},
+    {"url": "https://kwarastate.gov.ng/government/lgas/", "method": "GET", "outcome": "official locality context; Ijagbo listed among Oyun LGA towns"},
+    {"url": "https://kwarastate.gov.ng/online_services/register-for-your-land-titles/", "method": "GET", "outcome": "official land-registration procedure and collaborating agencies; no public parcel API"},
+    {"url": "https://www.kwgis.org/e-services/", "method": "GET", "outcome": "HTTP 200; page body had no viewer/API content; static site assets and map image only"},
+    {"url": "https://www.kwgis.org/wp-json/wp/v2/pages/123", "method": "GET", "outcome": "HTTP 200; REST metadata confirmed empty E-Services page body"},
+    {"url": "https://www.kwgis.org/map-shop/", "method": "GET", "outcome": "official map-shop route checked; no anonymous parcel service exposed"},
+    {"url": "https://www.kwgis.org/apply-online/", "method": "GET", "outcome": "official application route checked; no public parcel feature service exposed"},
+    {"url": "https://www.kwgis.org/e-payment/", "method": "GET", "outcome": "official payment/GRM route checked; no parcel query performed or exposed"},
+    {"url": "https://kwarastate.gov.ng/press_releases/cofo-ready-in-30-days-as-kwara-governor-launches-digital-land-administration/", "method": "GET", "outcome": "official announcement confirms KW-GIS digital land information system, but gives no public viewer/API URL"}
+  ],
+  "scopeLimits": [
+    "No parcel geometry or native parcel identity was observed, so no sample GeoJSON was written.",
+    "No exact-point query was possible; this is not evidence of parcel absence at the preserved WUP point or citywide.",
+    "KWGIS is evidenced as a state custodian/procedure source; no city-owned Ijagbo endpoint was found.",
+    "The public pages may be incomplete or the digital system may require a separate undisclosed route; no login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+  ],
+  "nativeFieldMapping": {"canonicalIdentity": null, "alsoObserved": [], "retainedGeoJSONProperty": null, "compositeKeyProvenance": "Not applicable: no parcel feature response was obtained."},
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "KWGIS/state procedure evidence is real, but public parcel-service integration remains unverified. This packet is not source admission and contains no unsafe personal or title data."
+}

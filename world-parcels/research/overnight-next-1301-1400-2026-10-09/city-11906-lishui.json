@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 11906,
+  "queueRank": 1350,
+  "cityId": "wup2025:11906",
+  "name": "Lishui",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [28.4584496684552, 119.924925938316],
+  "centerLatLon": [28.4584496684552, 119.924925938316],
+  "pointBasis": "Exact WUP queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 416469,
+  "population2025k": 416.469,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "capital": false,
+  "aliases": ["lishui", "丽水", "丽水市"],
+  "status": "complete",
+  "metadataReviewFile": "lishui-service-review.json",
+  "registryFound": null,
+  "registryAssessment": "Official Lishui government material confirms the municipal Natural Resources and Planning Bureau as a local planning/natural-resources authority, but the executed research did not evidence a public local cadastral registry, parcel viewer, or anonymous parcel procedure. Registry status is therefore null.",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lishui China official cadastral map parcel GIS land registration natural resources",
+        "result": "Official Lishui government and Natural Resources and Planning Bureau material was found, plus the current Lishui open-data platform. No anonymous cadastral parcel viewer, parcel feature service, or safe ID-plus-geometry response was found.",
+        "actualResultUrls": ["https://www.lishui.gov.cn/", "https://www.lishui.gov.cn/art/2024/7/11/art_1229830585_5328568.html", "https://data.lishui.gov.cn/"]
+      },
+      {
+        "language": "native/local",
+        "script": "Simplified Chinese",
+        "query": "丽水市 地籍图 不动产登记 地图 查询 自然资源局 官方",
+        "result": "官方检索找到丽水市自然资源和规划局公开答复及丽水市数据开放平台。未找到可匿名访问的地籍宗地地图、宗地要素服务或安全的宗地编号加几何响应；公开材料主要涉及国土空间规划和数据目录。",
+        "actualResultUrls": ["https://www.lishui.gov.cn/art/2024/7/11/art_1229830585_5328568.html", "https://data.lishui.gov.cn/jdop_front/channal/data_public.do?domainId=9&regionId=1103", "https://data.lishui.gov.cn/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.lishui.gov.cn/art/2024/7/11/art_1229830585_5328568.html",
+      "operator": "Lishui Municipal Natural Resources and Planning Bureau",
+      "scope": "First-party 2024 response describing Lishui spatial-planning and land-use policy work. It identifies the local bureau and planning custody but contains no cadastral parcel schema, CRS, native ID, or geometry response."
+    },
+    {
+      "url": "https://data.lishui.gov.cn/",
+      "operator": "Lishui municipal open-data platform",
+      "scope": "Current first-party public data catalog. Its JavaScript configuration exposed an anonymous catalog API; bounded catalog retrieval returned 1,818 dataset records, with no title/content match for cadastral, real-estate registration, parcel, land, surveying, or spatial parcel data."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lishui.gov.cn/",
+      "method": "GET; anonymous curl",
+      "httpStatus": 403,
+      "result": "Official municipal portal denied this environment's anonymous request; no bypass or login was attempted."
+    },
+    {
+      "url": "https://www.lishui.gov.cn/art/2024/7/11/art_1229830585_5328568.html",
+      "method": "GET via official search/open",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "Official bureau publication retrieved and reviewed; no parcel service configuration, schema, CRS, native parcel ID, or geometry was present."
+    },
+    {
+      "url": "https://data.lishui.gov.cn/",
+      "method": "GET; anonymous curl",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "result": "Current platform HTML and JavaScript configuration retrieved; API base and public catalog routes were inspected."
+    },
+    {
+      "url": "https://data.lishui.gov.cn/api-gateway/jpaas-lssjkf-web-server/interface/index/queryBaseData",
+      "method": "POST with {} and bounded catalog inspection",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "result": "Anonymous API returned a catalog response containing 1,818 datasets. No cadastral/parcel dataset was identified in the returned title/content fields; no geometry response was obtained."
+    },
+    {
+      "url": "https://data.lishui.gov.cn/api-gateway/jpaas-lssjkf-web-server/interface/opendata/queryOpenBaseData",
+      "method": "POST with {}",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "result": "Anonymous request returned no usable parcel result in the bounded attempt; no native ID, schema, CRS, or geometry retained."
+    },
+    {
+      "url": "https://data.lishui.gov.cn/api-gateway/jpaas-lssjkf-web-server/interface/opendata/getVisualData",
+      "method": "POST with {}",
+      "httpStatus": 500,
+      "contentType": "application/json;charset=UTF-8",
+      "result": "Platform returned a generic system error; no retry with credentials or protected parameters was attempted."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Lishui municipal government, municipal Natural Resources and Planning Bureau, and current municipal open-data platform.",
+    "verifiedOpenScope": "Official local authority publication and anonymous public data-catalog API only; no open cadastral parcel layer.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "geometry", "source CRS", "public service metadata", "HTTP status/content type"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_authority_evidenced_geometry_unverified",
+  "remainingUncertainty": "A protected or separately hosted cadastral service may exist, but this attempt did not locate one through official discovery or the current open-data configuration. Portal access denial, catalog absence, API error, and lack of an exact-point hit are not evidence of citywide cadastral absence.",
+  "nextStep": "Serial reviewer may independently inspect any current Lishui cadastral or real-estate map service without authentication or unsafe fields and qualify only a bounded safe native-ID-plus-geometry response if publicly returned."
+}

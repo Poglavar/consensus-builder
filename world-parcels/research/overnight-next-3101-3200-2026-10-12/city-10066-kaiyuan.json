@@ -1,0 +1,64 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10066,
+  "queueRank": 3168,
+  "name": "Kaiyuan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [42.5395291206321, 124.025248665006],
+  "population2025": 189704,
+  "population2025k": 189.704,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaiyuan Liaoning cadastral parcel map official China GIS natural resources",
+        "result": "Search did not identify a Kaiyuan-specific first-party cadastral viewer or anonymous parcel geometry API. Results included Liaoning natural-resources map/public-service context and general registration material, but no Kaiyuan parcel endpoint or response.",
+        "actualResultUrls": ["https://liaoning.tianditu.gov.cn/standardmap/index.html", "https://www.lnzwfw.gov.cn/bmfw/", "https://rerc.com.cn/"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "开原市 不动产登记 地籍 地图 自然资源局 官方",
+        "result": "Search identified the official Kaiyuan municipal government domain and general Liaoning government-service/natural-resources context, but no verified Kaiyuan public cadastral map, viewer/API route, schema, CRS, or anonymous native-ID-plus-geometry response.",
+        "actualResultUrls": ["http://www.lnky.gov.cn/", "https://www.lnzwfw.gov.cn/bmfw/", "https://rerc.com.cn/zcflk/bdcdj/index.html"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "开原市 自然资源局 不动产登记中心 官方网站",
+        "result": "Search did not expose a Kaiyuan-specific first-party registry viewer or public parcel API. A search result described the official Kaiyuan government homepage, while other results were national/provincial or secondary context and were not treated as local parcel-service evidence.",
+        "actualResultUrls": ["http://www.lnky.gov.cn/", "https://www.rerc.com.cn/", "https://www.lnzwfw.gov.cn/bmfw/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "The official Kaiyuan municipal government domain was identified, and Liaoning provincial natural-resources/public-service sources describe cadastral and registration responsibilities. No Kaiyuan-specific public registry map/service or anonymous parcel geometry access was verified, so registryFound remains null.",
+  "officialSources": [
+    {"url": "http://www.lnky.gov.cn/", "role": "official Kaiyuan Municipal Government homepage", "access": "HTTP and HTTPS GET attempts timed out within 15 seconds from the research environment; no viewer/API route could be inspected"},
+    {"url": "https://liaoning.tianditu.gov.cn/standardmap/index.html", "role": "official Liaoning natural-resources standard-map service", "access": "public search result; standard maps/context only, no Kaiyuan parcel geometry endpoint verified"},
+    {"url": "https://www.lnzwfw.gov.cn/bmfw/", "role": "official Liaoning government-service portal", "access": "public search result; provincial service context only, no Kaiyuan parcel response verified"},
+    {"url": "https://rerc.com.cn/zcflk/bdcdj/index.html", "role": "official national Real Estate Registration Center registration context", "access": "public search result; national context only, not local Kaiyuan service evidence"}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"route": "http://www.lnky.gov.cn/", "method": "GET", "outcome": "Connection timed out after 15 seconds; no retry or bypass used"},
+    {"route": "https://www.lnky.gov.cn/", "method": "GET", "outcome": "Connection timed out after 15 seconds; no certificate exception, login, CAPTCHA/Cloudflare bypass, or private token used"},
+    {"route": "https://liaoning.tianditu.gov.cn/standardmap/index.html", "method": "search/discovery", "outcome": "Official provincial standard-map page found; no parcel API or Kaiyuan cadastral response observed"},
+    {"route": "https://www.lnzwfw.gov.cn/bmfw/", "method": "search/discovery", "outcome": "Official provincial government-service portal found; no anonymous Kaiyuan parcel response observed"},
+    {"route": "https://rerc.com.cn/zcflk/bdcdj/index.html", "method": "search/discovery", "outcome": "Official national registration context found; no local Kaiyuan parcel endpoint or geometry"}
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_custodian_context_unverified_no_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel query was attempted because no public Kaiyuan parcel endpoint was identified. The exact WUP point was preserved and not shifted. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current Kaiyuan local registry/viewer, native parcel identity field, safe schema, CRS, query semantics, and citywide coverage remain unknown. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only, not source integration or admission."
+}

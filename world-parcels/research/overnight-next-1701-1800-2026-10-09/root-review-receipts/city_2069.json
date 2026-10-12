@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2069",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-2069-cap-haitien.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/cap-haitien-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:57:17Z",
+  "reason": "Held: official DGI/ONACA local custody is evidenced, but the inspected public pages and boundary dataset provide no safe native parcel ID or full polygon. CIAT HTTP 503 is unresolved access, not citywide absence. No fresh adapter, paging, 13-cell, GEOS, binding, or headed Details qualification."
+}

@@ -1,0 +1,108 @@
+{
+  "cityCode": 6891,
+  "queueRank": 3207,
+  "name": "Rio Claro",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "capital": false,
+  "point": [-22.4005622169302, -47.5673761504207],
+  "population2025": 188359,
+  "population2025k": 188.359,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rio Claro SP cadastral parcel map land registry official GIS municipal cadastre",
+        "result": "First-party discovery identified Rio Claro Municipal Government pages for the Planning Secretariat and the public services portal, plus the municipality's municipal tax portal. Official municipal legislation/search evidence identifies a municipal cadastro imobiliário and cadastro/geoprocessamento function, but no anonymous parcel map or parcel API was exposed by the public pages inspected.",
+        "actualResultUrls": [
+          "https://rioclaro.sp.gov.br/secretaria/secretaria-de-planejamento/",
+          "https://rioclaro.sp.gov.br/portal-de-servicos/",
+          "https://rioclaro.sp.leg.br/wp-content/uploads/2021/12/ORDEM-DO-DIA-N%C2%BA-054-PARTE-3.pdf"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil, local)",
+        "query": "Rio Claro SP cadastro imobiliário mapa cadastral lotes prefeitura geoprocessamento oficial",
+        "result": "A pesquisa em português encontrou the Prefeitura de Rio Claro pages for Secretaria de Planejamento, the Portal de Serviços, and the municipal IPTU/tax service reference. The official municipal material describes cadastro imobiliário, atualização da base cartográfica, and cadastro/geoprocessamento responsibilities, but did not provide a public anonymous parcel geometry route.",
+        "actualResultUrls": [
+          "https://rioclaro.sp.gov.br/secretaria/secretaria-de-planejamento/",
+          "https://rioclaro.sp.gov.br/portal-de-servicos/",
+          "https://rioclaro.sp.gov.br/economia-e-financas/carnes-de-iptu-de-rio-claro-podem-ser-acessados-em-site/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Prefeitura Municipal de Rio Claro, Secretaria de Planejamento, Gestão e Desenvolvimento Urbano; municipal Departamento de Cadastro e Geoprocessamento / Cadastro Imobiliário",
+    "locality": "Rio Claro municipality, São Paulo, Brazil",
+    "evidenceUrls": [
+      "https://rioclaro.sp.gov.br/secretaria/secretaria-de-planejamento/",
+      "https://rioclaro.sp.leg.br/wp-content/uploads/2021/12/ORDEM-DO-DIA-N%C2%BA-054-PARTE-3.pdf",
+      "https://rioclaro.sp.gov.br/portal-de-servicos/"
+    ],
+    "scopeNote": "Official municipal material evidences a local cadastral custodian and cadastral/geoprocessing responsibilities. It does not evidence an open citywide parcel geometry service or complete parcel coverage. The municipal tax portal is a property-record/payment route and was not used to request unsafe property data."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Rio Claro municipal cadastral/tax and planning portals",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": ["municipal cadastral reference", "parcel/lot and block labels", "cartographic base"],
+      "compositeKeyProvenance": null
+    },
+    "note": "No parcel response was retained. The exact WUP point was preserved and was not shifted or used as an absence test. No source schema, CRS, native parcel identity, or geometry response was available from the anonymous routes tested."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://rioclaro.sp.gov.br/portal-de-servicos/",
+      "outcome": "200; current municipal portal retrieved. It linked to Tributos Municipais (IPTU and other fees) at https://www2.rioclaro.sp.gov.br/ifgrp, but no parcel viewer or GIS endpoint was exposed in the page HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://rioclaro.sp.gov.br/secretaria/secretaria-de-planejamento/",
+      "outcome": "200 via first-party discovery; municipal Planning Secretariat page retrieved and used as local custodian evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www2.rioclaro.sp.gov.br/ifgrp",
+      "outcome": "403 Cloudflare challenge; anonymous access was not pursued, no CAPTCHA or challenge bypass was attempted, and no credentials were used."
+    },
+    {
+      "method": "GET",
+      "url": "http://sistemas.rioclaro.sp.gov.br:8080/cgi-bin/nwwcgi/PLP/CIDADAO",
+      "outcome": "Timed out after 20 seconds; no retry escalation or credentialed access was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://rioclaro.sp.leg.br/wp-content/uploads/2021/12/ORDEM-DO-DIA-N%C2%BA-054-PARTE-3.pdf",
+      "outcome": "First-party municipal legislative PDF identified by discovery; it documents cadastral/geoprocessing and cartographic-base responsibilities. No geometry was extracted or retained."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity if publicly exposed",
+    "full parcel geometry",
+    "geometry CRS",
+    "non-sensitive administrative source identifiers needed to establish identity"
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The municipal custodian is evidenced, but citywide parcel-service coverage and an anonymous parcel API were not verified.",
+    "The public tax route may require a municipal cadastral reference and is not a geometry service; no property, owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "A Cloudflare challenge and a timeout blocked two portal routes. These are access limitations, not evidence of citywide parcel absence.",
+    "No retained GeoJSON sample is included because no safe public parcel polygon and stable native identity were observed."
+  ]
+}

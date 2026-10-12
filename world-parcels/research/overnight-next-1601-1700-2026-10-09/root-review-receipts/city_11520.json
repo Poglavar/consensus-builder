@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11520",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11520-ningguo.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ningguo-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:11:08Z",
+  "reason": "The immutable queue and original WUP 2025 archive agree on China, rank 1700, point [30.6231868111898,118.975033216834], and 336274 persons. English and Chinese executed searches and inspected URLs are recorded. Ningguo government pages identify the natural-resources bureau and registration center, owner-gated cadastral-map queries, and an internal real-estate-unit code policy. No anonymous native parcel ID plus full polygon response, public schema, or CRS was obtained. Authentication and the national portal HTTP 418 are not citywide absence.",
+  "firstPartyChecks": [
+    "https://www.ningguo.gov.cn/InKnowledgeBase/show/3473.html",
+    "https://www.ningguo.gov.cn/Yhyshj/show/751.html"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held."
+}

@@ -1,0 +1,20 @@
+{
+  "taskId": "city:3104",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-3104-puerto-montt.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/puerto-montt-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-3104-puerto-montt-sample.geojson",
+    "tmp/valhalla-parcel-research/3104/basepmontt-6.json",
+    "tmp/valhalla-parcel-research/3104/exact-point.geojson",
+    "tmp/valhalla-parcel-research/3104/bounded-sample.geojson"
+  ],
+  "reason": "WUP source and immutable queue agree on Puerto Montt code 3104, rank 2622, Chile, point [-41.4662574314677,-72.9516331610089], and 224918 persons. English and Spanish searches are recorded. First-party municipal Predios layer metadata declares polygons and objectid as its OID field. The original bounded GeoJSON response has three polygons with IDs 98911, 98912, and 98913, and exceededTransferLimit=true; the safe ID-only retained geometries exactly match it. The zero-feature exact-point query is only a point miss. Fresh exact native-ID reads, complete forced paging, 13 bounded cells, independent metric GEOS checks, source binding, and headed Details verification are not evidenced; hold without runtime admission.",
+  "custodyFinding": "true: municipal first-party Predios layer returned native-ID polygon features; complete city coverage is unverified",
+  "retainedFullPolygons": 3,
+  "checkedAt": "2026-10-11T16:21:26Z",
+  "runtimeAdmitted": false
+}

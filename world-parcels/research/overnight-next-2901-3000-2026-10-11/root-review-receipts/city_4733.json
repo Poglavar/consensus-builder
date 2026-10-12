@@ -1,0 +1,26 @@
+{
+  "taskId": "city:4733",
+  "decision": "held",
+  "checkedAt": "2026-10-11T23:51:19Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-4733-al-managil.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/al-managil-service-review.json",
+    "tmp/valhalla-parcel-research/4733/nic.html"
+  ],
+  "city": "Al Managil",
+  "queueRank": 2965,
+  "registryFound": null,
+  "geometryDiscovered": false,
+  "reviewFindings": "Roster, queue, and packet agree on code 4733, rank 2965, Sudan, point [14.2446771030179,32.9861128410293], and 201443 persons. English and Arabic executed searches are recorded. The cached first-party NIC page advertises WMS/WFS and links the Sudan Spatial Portal, but the portal host did not resolve; no first-party local parcel schema, native ID, or full geometry response is available. National registration information does not establish Al Managil-specific record custody. Service unavailability is not citywide parcel absence.",
+  "missingAdmissionGates": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed details-panel verification"
+  ],
+  "runtimeAdmitted": false
+}

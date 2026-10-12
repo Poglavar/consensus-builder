@@ -1,0 +1,1232 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3656",
+  "cityName": "Hengelo",
+  "sourceId": "nl-pdok-brk-kadastrale-kaart",
+  "candidateSha256": "ad6f78fb1b3d8c8dc0cfce2ab1e541b87e4fb093d0b804e7704fd4291a14f4d2",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 258,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 258,
+      "collectedUniqueCount": 258
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 674
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "3f6c95f2ab4bb061e92f00c2e59e04f373361ac8c7d35842d914c5555504d583",
+      "featureCount": 258,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32632",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "3f6c95f2ab4bb061e92f00c2e59e04f373361ac8c7d35842d914c5555504d583",
+  "featureCount": 258,
+  "sampleIds": [
+    "NL-BRK-65310060670000",
+    "NL-BRK-65310060570000",
+    "NL-BRK-65310060370000"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        6.799,
+        52.267,
+        6.8,
+        52.268
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "NL-BRK-65310032070000",
+        "NL-BRK-65310032170000",
+        "NL-BRK-65310032270000",
+        "NL-BRK-65310032370000",
+        "NL-BRK-65310035770000",
+        "NL-BRK-65310199570000",
+        "NL-BRK-65310209470000",
+        "NL-BRK-65310366570000",
+        "NL-BRK-65310377470000",
+        "NL-BRK-65310422270000",
+        "NL-BRK-65310434070000",
+        "NL-BRK-65310435370000",
+        "NL-BRK-65310435670000",
+        "NL-BRK-65310476770000",
+        "NL-BRK-65310510770000",
+        "NL-BRK-65310515770000",
+        "NL-BRK-65310555670000",
+        "NL-BRK-65310555770000"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        6.8,
+        52.267,
+        6.801,
+        52.268
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "NL-BRK-65310032170000",
+        "NL-BRK-65310032270000",
+        "NL-BRK-65310032370000",
+        "NL-BRK-65310032470000",
+        "NL-BRK-65310032570000",
+        "NL-BRK-65310069570000",
+        "NL-BRK-65310377470000",
+        "NL-BRK-65310422270000",
+        "NL-BRK-65310434070000",
+        "NL-BRK-65310435070000",
+        "NL-BRK-65310435170000",
+        "NL-BRK-65310435370000",
+        "NL-BRK-65310436970000",
+        "NL-BRK-65310461970000",
+        "NL-BRK-65310462070000",
+        "NL-BRK-65310462870000",
+        "NL-BRK-65310462970000",
+        "NL-BRK-65310476670000",
+        "NL-BRK-65310476770000",
+        "NL-BRK-65310499870000",
+        "NL-BRK-65310515770000",
+        "NL-BRK-65310515870000",
+        "NL-BRK-65310539170000",
+        "NL-BRK-65310555770000"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        6.801,
+        52.267,
+        6.802,
+        52.268
+      ],
+      "complete": true,
+      "featureCount": 40,
+      "ids": [
+        "NL-BRK-65310069570000",
+        "NL-BRK-65310069670000",
+        "NL-BRK-65310070070000",
+        "NL-BRK-65310073970000",
+        "NL-BRK-65310074070000",
+        "NL-BRK-65310074170000",
+        "NL-BRK-65310074470000",
+        "NL-BRK-65310217770000",
+        "NL-BRK-65310282170000",
+        "NL-BRK-65310282270000",
+        "NL-BRK-65310282370000",
+        "NL-BRK-65310282470000",
+        "NL-BRK-65310282570000",
+        "NL-BRK-65310291270000",
+        "NL-BRK-65310307870000",
+        "NL-BRK-65310312470000",
+        "NL-BRK-65310312570000",
+        "NL-BRK-65310337770000",
+        "NL-BRK-65310337870000",
+        "NL-BRK-65310337970000",
+        "NL-BRK-65310346570000",
+        "NL-BRK-65310358570000",
+        "NL-BRK-65310422270000",
+        "NL-BRK-65310426570000",
+        "NL-BRK-65310435170000",
+        "NL-BRK-65310436970000",
+        "NL-BRK-65310455470000",
+        "NL-BRK-65310455570000",
+        "NL-BRK-65310461970000",
+        "NL-BRK-65310462070000",
+        "NL-BRK-65310472770000",
+        "NL-BRK-65310472870000",
+        "NL-BRK-65310476670000",
+        "NL-BRK-65310476770000",
+        "NL-BRK-65310539170000",
+        "NL-BRK-65310569870000",
+        "NL-BRK-65310569970000",
+        "NL-BRK-65310570070000",
+        "NL-BRK-65310605470000",
+        "NL-BRK-65310605570000"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        6.799,
+        52.268,
+        6.8,
+        52.269
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "NL-BRK-65310499870000",
+        "NL-BRK-65310510770000",
+        "NL-BRK-65310539170000",
+        "NL-BRK-65310555770000",
+        "NL-BRK-65310555870000",
+        "NL-BRK-65340186470000",
+        "NL-BRK-65340233670000",
+        "NL-BRK-65340238870000",
+        "NL-BRK-65340240670000",
+        "NL-BRK-65340240770000"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        6.8,
+        52.268,
+        6.801,
+        52.269
+      ],
+      "complete": true,
+      "featureCount": 37,
+      "ids": [
+        "NL-BRK-65310060370000",
+        "NL-BRK-65310060470000",
+        "NL-BRK-65310060570000",
+        "NL-BRK-65310060670000",
+        "NL-BRK-65310060770000",
+        "NL-BRK-65310060870000",
+        "NL-BRK-65310060970000",
+        "NL-BRK-65310069570000",
+        "NL-BRK-65310183170000",
+        "NL-BRK-65310183270000",
+        "NL-BRK-65310183370000",
+        "NL-BRK-65310188270000",
+        "NL-BRK-65310188370000",
+        "NL-BRK-65310199670000",
+        "NL-BRK-65310199770000",
+        "NL-BRK-65310284370000",
+        "NL-BRK-65310284470000",
+        "NL-BRK-65310315270000",
+        "NL-BRK-65310321370000",
+        "NL-BRK-65310321470000",
+        "NL-BRK-65310353070000",
+        "NL-BRK-65310403270000",
+        "NL-BRK-65310403370000",
+        "NL-BRK-65310476370000",
+        "NL-BRK-65310477470000",
+        "NL-BRK-65310495470000",
+        "NL-BRK-65310499870000",
+        "NL-BRK-65310504470000",
+        "NL-BRK-65310504570000",
+        "NL-BRK-65310515870000",
+        "NL-BRK-65310525170000",
+        "NL-BRK-65310525270000",
+        "NL-BRK-65310539170000",
+        "NL-BRK-65310555770000",
+        "NL-BRK-65310555870000",
+        "NL-BRK-65340186470000",
+        "NL-BRK-65340233670000"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        6.801,
+        52.268,
+        6.802,
+        52.269
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "NL-BRK-65310069570000",
+        "NL-BRK-65310069670000",
+        "NL-BRK-65310069970000",
+        "NL-BRK-65310070070000",
+        "NL-BRK-65310070170000",
+        "NL-BRK-65310070270000",
+        "NL-BRK-65310070370000",
+        "NL-BRK-65310199770000",
+        "NL-BRK-65310282170000",
+        "NL-BRK-65310282270000",
+        "NL-BRK-65310282370000",
+        "NL-BRK-65310282470000",
+        "NL-BRK-65310321470000",
+        "NL-BRK-65310353370000",
+        "NL-BRK-65310358470000",
+        "NL-BRK-65310358570000",
+        "NL-BRK-65310372470000",
+        "NL-BRK-65310440570000",
+        "NL-BRK-65310440670000",
+        "NL-BRK-65310477470000",
+        "NL-BRK-65310539170000",
+        "NL-BRK-65310603970000",
+        "NL-BRK-65310604070000",
+        "NL-BRK-65310604170000"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        6.799,
+        52.269,
+        6.8,
+        52.27
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "NL-BRK-65340132970000",
+        "NL-BRK-65340212670000",
+        "NL-BRK-65340216170000",
+        "NL-BRK-65340216470000",
+        "NL-BRK-65340216570000",
+        "NL-BRK-65340224570000",
+        "NL-BRK-65340224970000",
+        "NL-BRK-65340233570000",
+        "NL-BRK-65340233670000",
+        "NL-BRK-65340238870000",
+        "NL-BRK-65340240670000"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        6.8,
+        52.269,
+        6.801,
+        52.27
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "NL-BRK-65310060870000",
+        "NL-BRK-65310060970000",
+        "NL-BRK-65310477470000",
+        "NL-BRK-65340076470000",
+        "NL-BRK-65340186470000",
+        "NL-BRK-65340209070000",
+        "NL-BRK-65340209170000",
+        "NL-BRK-65340209270000",
+        "NL-BRK-65340209370000",
+        "NL-BRK-65340209470000",
+        "NL-BRK-65340209870000",
+        "NL-BRK-65340209970000",
+        "NL-BRK-65340210070000",
+        "NL-BRK-65340210170000",
+        "NL-BRK-65340210270000",
+        "NL-BRK-65340210370000",
+        "NL-BRK-65340210470000",
+        "NL-BRK-65340213670000",
+        "NL-BRK-65340224570000",
+        "NL-BRK-65340233670000"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        6.801,
+        52.269,
+        6.802,
+        52.27
+      ],
+      "complete": true,
+      "featureCount": 26,
+      "ids": [
+        "NL-BRK-65310477470000",
+        "NL-BRK-65310603970000",
+        "NL-BRK-65340076470000",
+        "NL-BRK-65340077570000",
+        "NL-BRK-65340077670000",
+        "NL-BRK-65340106870000",
+        "NL-BRK-65340107070000",
+        "NL-BRK-65340108870000",
+        "NL-BRK-65340108970000",
+        "NL-BRK-65340122270000",
+        "NL-BRK-65340122370000",
+        "NL-BRK-65340122970000",
+        "NL-BRK-65340134570000",
+        "NL-BRK-65340134670000",
+        "NL-BRK-65340151270000",
+        "NL-BRK-65340151370000",
+        "NL-BRK-65340151470000",
+        "NL-BRK-65340168570000",
+        "NL-BRK-65340168870000",
+        "NL-BRK-65340186170000",
+        "NL-BRK-65340186270000",
+        "NL-BRK-65340186470000",
+        "NL-BRK-65340210370000",
+        "NL-BRK-65340225370000",
+        "NL-BRK-65340233370000",
+        "NL-BRK-65340233470000"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        6.8,
+        52.266,
+        6.801,
+        52.267
+      ],
+      "complete": true,
+      "featureCount": 38,
+      "ids": [
+        "NL-BRK-65310037770000",
+        "NL-BRK-65310038070000",
+        "NL-BRK-65310038270000",
+        "NL-BRK-65310038370000",
+        "NL-BRK-65310038470000",
+        "NL-BRK-65310038570000",
+        "NL-BRK-65310038670000",
+        "NL-BRK-65310038770000",
+        "NL-BRK-65310038870000",
+        "NL-BRK-65310039370000",
+        "NL-BRK-65310039470000",
+        "NL-BRK-65310039670000",
+        "NL-BRK-65310284670000",
+        "NL-BRK-65310288570000",
+        "NL-BRK-65310288670000",
+        "NL-BRK-65310304070000",
+        "NL-BRK-65310304170000",
+        "NL-BRK-65310373170000",
+        "NL-BRK-65310373270000",
+        "NL-BRK-65310377470000",
+        "NL-BRK-65310416970000",
+        "NL-BRK-65310417070000",
+        "NL-BRK-65310417170000",
+        "NL-BRK-65310417270000",
+        "NL-BRK-65310417370000",
+        "NL-BRK-65310417570000",
+        "NL-BRK-65310422670000",
+        "NL-BRK-65310428670000",
+        "NL-BRK-65310428770000",
+        "NL-BRK-65310428870000",
+        "NL-BRK-65310435470000",
+        "NL-BRK-65310435570000",
+        "NL-BRK-65310436970000",
+        "NL-BRK-65310476770000",
+        "NL-BRK-65310591470000",
+        "NL-BRK-65310591570000",
+        "NL-BRK-65310627170000",
+        "NL-BRK-65310627270000"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        6.8,
+        52.27,
+        6.801,
+        52.271
+      ],
+      "complete": true,
+      "featureCount": 33,
+      "ids": [
+        "NL-BRK-65340076470000",
+        "NL-BRK-65340078770000",
+        "NL-BRK-65340078870000",
+        "NL-BRK-65340079070000",
+        "NL-BRK-65340079170000",
+        "NL-BRK-65340088170000",
+        "NL-BRK-65340088270000",
+        "NL-BRK-65340093770000",
+        "NL-BRK-65340093870000",
+        "NL-BRK-65340113270000",
+        "NL-BRK-65340113370000",
+        "NL-BRK-65340113470000",
+        "NL-BRK-65340113570000",
+        "NL-BRK-65340204570000",
+        "NL-BRK-65340207870000",
+        "NL-BRK-65340207970000",
+        "NL-BRK-65340208070000",
+        "NL-BRK-65340208170000",
+        "NL-BRK-65340208270000",
+        "NL-BRK-65340208370000",
+        "NL-BRK-65340208470000",
+        "NL-BRK-65340208570000",
+        "NL-BRK-65340208670000",
+        "NL-BRK-65340208770000",
+        "NL-BRK-65340208870000",
+        "NL-BRK-65340208970000",
+        "NL-BRK-65340209070000",
+        "NL-BRK-65340209570000",
+        "NL-BRK-65340209670000",
+        "NL-BRK-65340209770000",
+        "NL-BRK-65340209870000",
+        "NL-BRK-65340224370000",
+        "NL-BRK-65340233670000"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        6.798,
+        52.268,
+        6.799,
+        52.269
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "NL-BRK-65310510770000",
+        "NL-BRK-65310555670000",
+        "NL-BRK-65310555770000",
+        "NL-BRK-65310555870000",
+        "NL-BRK-65310604370000",
+        "NL-BRK-65310631570000",
+        "NL-BRK-65310632570000",
+        "NL-BRK-65340081270000",
+        "NL-BRK-65340128070000",
+        "NL-BRK-65340137970000",
+        "NL-BRK-65340154970000",
+        "NL-BRK-65340186470000",
+        "NL-BRK-65340240670000",
+        "NL-BRK-65340240770000"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        6.802,
+        52.268,
+        6.803,
+        52.269
+      ],
+      "complete": true,
+      "featureCount": 42,
+      "ids": [
+        "NL-BRK-65310061670000",
+        "NL-BRK-65310062570000",
+        "NL-BRK-65310070370000",
+        "NL-BRK-65310070770000",
+        "NL-BRK-65310070870000",
+        "NL-BRK-65310070970000",
+        "NL-BRK-65310071070000",
+        "NL-BRK-65310071270000",
+        "NL-BRK-65310199770000",
+        "NL-BRK-65310199970000",
+        "NL-BRK-65310200070000",
+        "NL-BRK-65310206870000",
+        "NL-BRK-65310207070000",
+        "NL-BRK-65310217870000",
+        "NL-BRK-65310268670000",
+        "NL-BRK-65310268770000",
+        "NL-BRK-65310282070000",
+        "NL-BRK-65310282470000",
+        "NL-BRK-65310282570000",
+        "NL-BRK-65310282670000",
+        "NL-BRK-65310282770000",
+        "NL-BRK-65310282870000",
+        "NL-BRK-65310306470000",
+        "NL-BRK-65310306570000",
+        "NL-BRK-65310306670000",
+        "NL-BRK-65310327270000",
+        "NL-BRK-65310344270000",
+        "NL-BRK-65310353370000",
+        "NL-BRK-65310413670000",
+        "NL-BRK-65310420070000",
+        "NL-BRK-65310472570000",
+        "NL-BRK-65310472670000",
+        "NL-BRK-65310476070000",
+        "NL-BRK-65310476170000",
+        "NL-BRK-65310495770000",
+        "NL-BRK-65310495870000",
+        "NL-BRK-65310525470000",
+        "NL-BRK-65310555070000",
+        "NL-BRK-65310603970000",
+        "NL-BRK-65310604070000",
+        "NL-BRK-65310604170000",
+        "NL-BRK-65310620870000"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 40,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:27.718Z",
+      "queryHash": "a78895c26b9774a2165e370509c68427d1de977eac3844b336773018554b8912",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 348
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.070Z",
+      "queryHash": "a78895c26b9774a2165e370509c68427d1de977eac3844b336773018554b8912",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 84
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.154Z",
+      "queryHash": "108dea2fb98acd9dacb649e4da56add6343a137a9548d8a4691f774c83062314",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 81
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.237Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 156
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.395Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 82
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.480Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 93
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.579Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 85
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.674Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 89
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.840Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 84
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:28.930Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 103
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.044Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 101
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.147Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 92
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.248Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 88
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.338Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 87
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.427Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 83
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.513Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 95
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.611Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 86
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.700Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 85
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.786Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 85
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:29.943Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 86
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.031Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 88
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.189Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 81
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.273Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 86
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.361Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 80
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.446Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 83
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.534Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 82
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.619Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 85
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.711Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 94
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.808Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 82
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.906Z",
+      "queryHash": "3725a62f93c56d3085cfccdc25bb1df4dfe48a013c08ead5cb579ca3a6c4c66b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 90
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:30.998Z",
+      "queryHash": "5df6a5753f07ad2d3327875578db705111a35b1bef0e3cbb51e6b1578264bbf8",
+      "safeParamNames": [
+        "cursor",
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 90
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.089Z",
+      "queryHash": "3cccd58672f5b83c5790821f7b60399f1c3fcfc2cec2b4ce06d03b7e375b863d",
+      "safeParamNames": [
+        "cursor",
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 79
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.169Z",
+      "queryHash": "0a563cd808a9ecce658f6ba41d62990993ce459fe8117a9cc71af118ce9f0ffa",
+      "safeParamNames": [
+        "cursor",
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 82
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.252Z",
+      "queryHash": "5f67674fb66debb75533a23f5415a15a65b410b8f9487324a1dc01c42fdfe594",
+      "safeParamNames": [
+        "cursor",
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 103
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.357Z",
+      "queryHash": "a78895c26b9774a2165e370509c68427d1de977eac3844b336773018554b8912",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 80
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.453Z",
+      "queryHash": "3e60f41c57051ab4ecbff7c8202ce91b40bedc108acd08c87ce0f316f8c3425b",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 84
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.588Z",
+      "queryHash": "7b84722e980b0af082a66f952726e1678123f9a034ae06797bbc88829b074db1",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 89
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.751Z",
+      "queryHash": "10da3720c96588318cbb0e8e949c2a20564c4f0e530d2de67c4dbb61f9addcb0",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 95
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:31.942Z",
+      "queryHash": "0d6fafe603dc14538b44f366e79fb8d89de6d519cec38151a9f14459d3433a41",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 108
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "api.pdok.nl",
+      "method": "GET",
+      "startedAt": "2026-10-12T14:47:32.124Z",
+      "queryHash": "d93f00a35b17af81624b32761e7f2f9c07978533bb00e0112a6b0477b4b4b3ad",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 107
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

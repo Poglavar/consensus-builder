@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-2939-verona.json",
+  "cityCode": 2939,
+  "queueRank": 2757,
+  "city": "Verona",
+  "country": "Italy",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "executedAttempts": [
+    {
+      "route": "Official Comune di Verona SIGI service page",
+      "url": "https://www.comune.verona.it/Servizi/Consulta-il-Geoportale-SIGI-Sistema-informativo-Geografico-integrato",
+      "outcome": "Success. The page identifies Geoportale SIGI as a public map service for Verona and lists Catasto e urbanistica; it links to http://mappe.comune.verona.it."
+    },
+    {
+      "route": "Official SIGI public viewer",
+      "url": "http://mappe.comune.verona.it/",
+      "outcome": "Timed out after 20 seconds. No login, CAPTCHA, Cloudflare bypass, or TLS exception was attempted; this is a viewer usability limitation, not evidence of source absence."
+    },
+    {
+      "route": "Official Agenzia delle Entrate WMS GetCapabilities",
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?SERVICE=WMS&REQUEST=GetCapabilities",
+      "outcome": "Success. The response identifies Cartografia Catastale, layer CP.CadastralParcel / Particelle, queryability, supported CRS including EPSG:6706, and GetFeatureInfo formats text/html, text/plain, and application/vnd.ogc.gml."
+    },
+    {
+      "route": "Bounded exact-point-vicinity GetFeatureInfo, GML",
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=CP.CadastralParcel&QUERY_LAYERS=CP.CadastralParcel&CRS=EPSG:6706&BBOX=45.4370,10.9884,45.4390,10.9904&WIDTH=201&HEIGHT=201&I=100&J=100&INFO_FORMAT=application/vnd.ogc.gml&FEATURE_COUNT=3",
+      "outcome": "Success. Returned one parcel feature with native geometry envelope 10.988886,45.437899 to 10.989622,45.438264 in the response, but no full polygon or attributes."
+    },
+    {
+      "route": "Same bounded GetFeatureInfo, HTML safe-field response",
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=CP.CadastralParcel&QUERY_LAYERS=CP.CadastralParcel&CRS=EPSG:6706&BBOX=45.4370,10.9884,45.4390,10.9904&WIDTH=201&HEIGHT=201&I=100&J=100&INFO_FORMAT=text/html&FEATURE_COUNT=3",
+      "outcome": "Success. Returned native identity IT.AGE.PLA.L781B016600.361, namespace IT.AGE.PLA., Label 361, and NationalCadastralReference L781B016600.361. No owner, address, titleholder, tax/account, or personal fields were requested or retained."
+    },
+    {
+      "route": "Same bounded GetFeatureInfo, plain text",
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=CP.CadastralParcel&QUERY_LAYERS=CP.CadastralParcel&CRS=EPSG:6706&BBOX=45.4370,10.9884,45.4390,10.9904&WIDTH=201&HEIGHT=201&I=100&J=100&INFO_FORMAT=text/plain&FEATURE_COUNT=3",
+      "outcome": "Success but not useful for identity: returned only a generic GetFeatureInfo result and no parcel attributes."
+    }
+  ],
+  "scopeLimits": [
+    "The exact WUP point was preserved and used only as the center of a bounded vicinity request; no coordinate was shifted to force a hit.",
+    "The bounded response confirms a nearby parcel identity and geometry envelope, not citywide coverage completeness or absence outside the request window.",
+    "The official WMS did not return a full polygon in the safe bounded response, so no GeoJSON sample was retained.",
+    "The SIGI viewer timeout is not evidence of registry absence; the official Comune page and official national WMS establish the source context.",
+    "No unsafe owner, address, contact, titleholder, tax/account, or personal fields were requested or retained. TLS verification remained enabled and no certificate exception was used."
+  ],
+  "uncertainty": [
+    "The WMS InspireId localId is treated as the stable native parcel identity because it was returned by the official service; the underlying database key definition was not separately exposed.",
+    "EPSG:6706 axis ordering was followed as returned by the WMS response; the GML envelope is recorded as source evidence only.",
+    "Packet completion records research and source qualification evidence only; runtime integration remains held."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "retainedArtifacts": [],
+  "runtimeReadiness": "held"
+}

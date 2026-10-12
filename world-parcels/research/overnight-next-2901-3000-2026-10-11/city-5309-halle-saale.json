@@ -1,0 +1,81 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 5309,
+  "queueRank": 2904,
+  "name": "Halle (Saale)",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso3": "DEU",
+  "locId": 276,
+  "capital": false,
+  "point": [51.4757741888282, 11.9673603065752],
+  "population2025": 205398,
+  "population2025k": 205.398,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Halle (Saale) official cadastral map parcel viewer Flurstücke Saxony-Anhalt",
+        "result": "First-party Halle service documentation identifies the state Geobasis-Viewer as the public route for Liegenschaftskataster information, including parcel boundaries, and links to the Saxony-Anhalt geodata portal. The state portal documents free ALKIS parcel WFS access without personal data.",
+        "actualResultUrls": [
+          "https://halle.de/serviceportal/dienstleistungen/leistung/liegenschaftskarte-auskunft/407135317",
+          "https://www.geodatenportal.sachsen-anhalt.de/gfds/de/gdp-geowebdienste-lsa.html",
+          "https://www.geodatenportal.sachsen-anhalt.de/gfds/de/gdp-open-data.html"
+        ]
+      },
+      {
+        "language": "German (local)",
+        "query": "Halle Saale amtliches Liegenschaftskataster Flurstück Viewer Sachsen-Anhalt",
+        "result": "Die amtliche Hallenser Dienstleistungsseite verweist für Flurstücksgrenzen und Kartendarstellung auf den Geobasis-Viewer des Landes Sachsen-Anhalt. Das Landesportal weist einen kostenfreien WFS für Flurstücke ohne personenbezogene Daten aus.",
+        "actualResultUrls": [
+          "https://halle.de/serviceportal/dienstleistungen/leistung/liegenschaftskarte-auskunft/407135317",
+          "https://geodatenportal.sachsen-anhalt.de/gfds/de/gdp-alkis-geowebdienste.html",
+          "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Landesamt für Vermessung und Geoinformation Sachsen-Anhalt (LVermGeo), with Halle (Saale) directing users to the state Geobasis-Viewer",
+    "locality": "Halle (Saale), Saxony-Anhalt, Germany",
+    "evidenceUrls": [
+      "https://halle.de/serviceportal/dienstleistungen/leistung/liegenschaftskarte-auskunft/407135317",
+      "https://www.geodatenportal.sachsen-anhalt.de/gfds/de/gdp-alkis-geowebdienste.html"
+    ],
+    "scopeNote": "The Halle city service is a local custodian/procedure reference; parcel geometry was obtained from the first-party state LVermGeo open-data WFS, not from a city-owned endpoint."
+  },
+  "parcelDiscovery": {
+    "geometryFound": true,
+    "sampleFiles": ["halle-saale-parcels-sample.geojson"],
+    "source": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?",
+    "nativeIdField": "idflurst",
+    "nativeIdentityObserved": "DESTLIKA0001LU9l, DESTLIKA0001LU9m, DESTLIKA0001LU9n; gml/oid values were also observed",
+    "crs": "EPSG:25832 response; retained GeoJSON reprojected to EPSG:4326",
+    "boundedResponse": {"requestBbox": [708000, 5709400, 708500, 5710000], "requestCrs": "EPSG:25832", "count": 3, "nativeLayer": "ave:Flurstueck"},
+    "note": "The exact WUP-point EPSG:4326 bbox returned zero features; this was not treated as citywide absence. A nearby bounded projected request returned three complete polygons. Retained feature properties contain only the canonical native id field."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://halle.de/serviceportal/dienstleistungen/leistung/liegenschaftskarte-auskunft/407135317", "outcome": "HTTP/web retrieval successful; official Halle procedure states that the Geobasis-Viewer provides parcel boundaries and map display."},
+    {"method": "GET", "url": "https://www.geodatenportal.sachsen-anhalt.de/gfds/de/gdp-alkis-geowebdienste.html", "outcome": "HTTP/web retrieval successful; official portal documents ALKIS WMS/WFS and says the free WFS exposes parcels without personal data."},
+    {"method": "GET", "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&request=GetCapabilities", "outcome": "HTTP 200; capabilities exposed native feature type ave:Flurstueck and schema/operation metadata."},
+    {"method": "GET", "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=3&srsName=EPSG:4326&bbox=11.9670,51.4754,11.9678,51.4761,EPSG:4326", "outcome": "HTTP 200 GML response with numberReturned=0; exact-point result only, not an absence claim."},
+    {"method": "GET", "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=3&srsName=EPSG:25832&bbox=708000,5709400,708500,5710000,EPSG:25832", "outcome": "HTTP 200 GML response; numberReturned=3 with complete parcel geometries and native IDs; source response retained in ignored tmp evidence and a sanitized three-feature GeoJSON sample retained in cohort."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The WFS is state-level rather than a city-owned service; Halle is evidenced as the local procedure/custodian reference, while LVermGeo is the geometry service operator.",
+    "The sample is bounded and is not evidence of complete city coverage or of the exact WUP point parcel.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

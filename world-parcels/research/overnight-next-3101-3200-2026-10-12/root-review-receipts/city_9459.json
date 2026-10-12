@@ -1,0 +1,38 @@
+{
+  "taskId": "city:9459",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-9459-betul.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/betul-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:04:22Z",
+  "queueIdentity": {
+    "rank": 3192,
+    "cityCode": 9459,
+    "country": "India",
+    "point": [
+      21.905978088695,
+      77.9011833206885
+    ],
+    "populationPersons": 188624
+  },
+  "registryFound": true,
+  "finding": "Official Betul district land-record service points to MP Bhulekh and local tehsil offices. Viewer timeout and DILRMP TLS failure leave public parcel geometry unresolved, not absent.",
+  "researchChecks": {
+    "englishAndLocalLanguageQueriesRecorded": true,
+    "fullParcelPolygonCount": 0,
+    "safeNativeParcelIdsVerified": false,
+    "citywideAbsenceEstablished": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-1630-kanggye.json",
+  "cityCode": 1630,
+  "queueRank": 1854,
+  "city": "Kanggye",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "No first-party local Kanggye registry, DPRK public cadastral viewer, or anonymous parcel ID-plus-geometry service was evidenced. Search results were non-local/secondary, and direct DPRK-domain access was unsuccessful. No GeoJSON sample was retained.",
+  "queryOutcomes": "Separate English and Korean discovery queries are recorded in city-1630-kanggye.json. They did not identify an authoritative Kanggye parcel source.",
+  "requestOutcomes": [
+    {"route":"https://www.kcna.kp/","method":"GET","status":"TLS/protocol error","outcome":"Connection returned OpenSSL wrong-version-number; no content or service schema obtained. TLS was not disabled."},
+    {"route":"https://naenara.com.kp/","method":"GET","status":"TLS certificate verification failure","outcome":"Certificate chain was not trusted by the default client; request was not retried with verification disabled."},
+    {"route":"https://www.rodong.rep.kp/","method":"GET","status":"timeout","outcome":"Connection timed out after 8 seconds; no retry escalation, login, credentials, or bypass attempted."},
+    {"route":"https://kgeop.go.kr/","method":"GET/search discovery","status":200,"outcome":"Official Republic of Korea land-information portal found in search results; it is not a DPRK/Kanggye custodian and was not queried for parcels."},
+    {"route":"https://kras.gg.go.kr/land_info/info/landmap/landmap.do","method":"GET/search discovery","status":200,"outcome":"Official Gyeonggi Republic of Korea cadastral viewer found in search results; its jurisdiction excludes Kanggye and no parcel request was made."},
+    {"route":"https://nkinfo.unikorea.go.kr/nkp/main/portalMain.do","method":"GET/search discovery","status":200,"outcome":"South Korean Ministry of Unification DPRK information portal found; general country information only, no public Kanggye parcel service or geometry."},
+    {"route":"https://nationalatlas.ngii.go.kr/pages/page_3900.php","method":"GET/search discovery","status":200,"outcome":"South Korean national atlas material about DPRK land/economic history; not a cadastral registry or parcel service."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[40.9699241568181,126.595496917771],"coordinateOrderNote":"WUP point preserved as latitude/longitude. No exact-point query completed and no coordinate shift applied."},
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source":null,"retainedSample":null},
+  "geometryQuality": "No parcel geometry response obtained; zero samples retained.",
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because no authoritative parcel service was identified; this is not evidence of parcel absence.","requestEvidence":"tmp/valhalla-parcel-research/1630/"},
+  "coverageAssessment": {"claimedScope":"None beyond discovery attempts.","verifiedOpenScope":"No local or national DPRK parcel service verified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "Search results from Republic of Korea services and South Korean DPRK-information portals do not establish a DPRK registry custodian.",
+    "DPRK-domain protocol, certificate, and timeout failures are access limitations, not evidence of no registry or no parcels.",
+    "No map extent miss or zero exact-point hit was used as an absence claim.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only; runtime readiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "A restricted, offline, differently named, or non-indexed DPRK land-record system may exist. Parcel completeness, legal status, update currency, stable native identity, CRS, and public accessibility remain unverified."
+}

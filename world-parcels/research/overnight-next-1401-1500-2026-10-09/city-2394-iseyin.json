@@ -1,0 +1,56 @@
+{
+  "cityCode": 2394,
+  "queueRank": 1464,
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [7.97280424771093, 3.59129420276946],
+  "population2025": 389526,
+  "population2025k": 389.526,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Iseyin Nigeria official cadastral parcel map land registry GIS",
+        "result": "First-party discovery found the Oyo State Ministry of Lands, Housing and Urban Development land-use-charge page listing ISEYIN, the OyoGISS state land-administration description, the Oyo State Office of the Surveyor General digital survey-plan registry procedure, and the federal cadastral-survey custodian. No anonymous parcel feature service or downloadable safe-ID geometry was verified.",
+        "actualResultUrls": [
+          "https://lands.oyostate.gov.ng/service-3.html",
+          "https://lands.oyostate.gov.ng/oyo-giss.html",
+          "https://lands.oyostate.gov.ng/survey-search.html",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      },
+      {
+        "language": "Yoruba (native/local)",
+        "query": "Iseyin Nigeria Yoruba cadastral taswirar ilẹ̀ àti ìforúkọsílẹ̀ ilẹ̀ osise",
+        "result": "The native-language discovery query did not expose a separate Yoruba-language first-party parcel viewer. The official Oyo State pages remain the relevant local-source results: OyoGISS describes statewide digital land administration and the survey registry describes public survey-plan verification. No anonymous parcel feature service or downloadable safe-ID geometry was verified.",
+        "actualResultUrls": [
+          "https://lands.oyostate.gov.ng/oyo-giss.html",
+          "https://lands.oyostate.gov.ng/survey-search.html",
+          "https://lands.oyostate.gov.ng/service-3.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Oyo State Government Ministry of Lands, Housing and Urban Development and the Oyo State Office of the Surveyor General; OyoGISS is the state geographic-information and land-administration service.",
+    "localOffice": "Oyo State Ministry of Lands, Housing and Urban Development / Office of the Surveyor General, with OyoGISS state coverage including Iseyin.",
+    "localOfficeEvidenceUrl": "https://lands.oyostate.gov.ng/oyo-giss.html",
+    "sourceScope": "The official OyoGISS page describes a state platform for capturing, storing, managing and analyzing geographic data for land administration and says properties in all 33 LGAs were digitized. The official land-use-charge page has an ISEYIN row. This establishes local state registry/GIS context, not open parcel-geometry access.",
+    "geometryAccess": "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or owner/address/titleholder/personal fields were used. The official linked survey-search application returned HTTP 403 from Cloudflare to an anonymous GET; no JavaScript/configuration or feature endpoint was inspected beyond the public procedure page."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a public parcel feature service. The 403 response from the linked search application and absence of a public feature endpoint are not evidence of citywide absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A local Oyo State land/GIS and survey-registry custodian with Iseyin/statewide context is evidenced, but no anonymous safe-ID geometry response, schema, CRS, or independently qualified adapter was found.",
+    "adapterAdmission": false
+  }
+}

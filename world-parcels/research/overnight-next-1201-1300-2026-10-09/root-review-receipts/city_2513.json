@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2513",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2513-pematang-siantar.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pematang-siantar-service-review.json",
+    "tmp/valhalla-parcel-research/2513/wms.headers",
+    "tmp/valhalla-parcel-research/2513/wms-capabilities.xml",
+    "tmp/valhalla-parcel-research/2513/wms2.headers"
+  ],
+  "checkedAt": "2026-10-09T12:12:21Z",
+  "identity": "Rank 1247, code 2513, Indonesia/ID/IDN, point [2.9699913021302,99.0743292415551], 446269 persons match immutable roster and queue.",
+  "searchAndSourceReview": "English and Indonesian queries with result URLs are recorded. Official city and ATR/BPN material identifies the local land office; BHUMI help describes parcel layers. Cached WMS attempts redirect to an HTML/404 shell, not capabilities or polygon features. PersilHak/NIB configuration is not a returned native-ID read.",
+  "admissionReview": "Zero full polygons retained, so safe ID attributes cannot be demonstrated. No fresh native-ID feature read, forced pagination, 13 bounded cells, independent metric GEOS validity/duplicate/overlap/operation checks, source binding, or headed Details-panel verification is evidenced. No integration or runtime admission. Unresolved geometry access is not a finding of citywide absence."
+}

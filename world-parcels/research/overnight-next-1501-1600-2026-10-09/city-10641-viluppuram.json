@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10641",
+  "cityCode": 10641,
+  "wupCityCode": 10641,
+  "name": "Viluppuram",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1514,
+  "queueRank": 1514,
+  "point": [11.9348150998099, 79.5013535000942],
+  "centerLatLon": [11.9348150998099, 79.5013535000942],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375616,
+  "population2025k": 375.616,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Viluppuram District Administration land-record page identifies the Assistant Director of Survey and Land Records at the Collectorate in Viluppuram and links Tamil Nadu land-record e-Services. This establishes local service custody only, not anonymous parcel geometry or ownership evidence.",
+  "registryEvidenceUrls": [
+    "https://viluppuram.nic.in/service/e-services-land-records/",
+    "https://eservices.tn.gov.in/eservicesnew/home.html",
+    "https://www.tngis.tn.gov.in/apps.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No safe anonymous native parcel ID plus complete polygon was verified. The official e-Services and TNGIS routes did not complete within bounded direct retrievals; the reviewed district page and DILRMP reporting provide service and digitization evidence but not a usable feature response. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Viluppuram District Administration Survey and Land Records service custody plus Tamil Nadu e-Services/TNGIS and DILRMP map-digitization reporting.",
+    "verifiedOpenScope": "No anonymous complete parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Viluppuram Tamil Nadu official land records cadastral map GIS viewer parcel map",
+        "scope": "Identify local registry custody and a safe public parcel geometry route.",
+        "result": "Search located the official Viluppuram District land-record page, Tamil Nadu e-Services, TNGIS, DILRMP Viluppuram map-digitization pages, and a NATMO district planning map. Local survey-and-land-record custody was verified; no safe anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://viluppuram.nic.in/service/e-services-land-records/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/609",
+          "https://dilrmp.gov.in/physicalProgressReports/map/district-level/33",
+          "https://www.geoportal.natmo.gov.in/dataset/villupuram"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Tamil",
+        "query": "விழுப்புரம் தமிழ்நாடு அதிகாரப்பூர்வ நில அளவை வரைபடம் நில பதிவுகள் GIS",
+        "scope": "Independent local-language search for local registry custody and public cadastral geometry.",
+        "result": "Search results were consistent with the official Tamil Nadu land-record and survey context, including Viluppuram district services, but did not provide a verified anonymous complete-polygon response.",
+        "actualResultUrls": [
+          "https://viluppuram.nic.in/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ],
+        "executionMethod": "Separate Tamil-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. Public parcel-layer coverage, request shape, schema, CRS, native identity, urban coverage, and citywide completeness remain unverified. A timeout, map extent miss, or unusable UI is not treated as evidence of parcel absence.",
+  "nextStep": "Serial reviewer should independently validate a first-party anonymous native parcel endpoint and a bounded Viluppuram-area geometry response before any adapter qualification; keep runtime held."
+}

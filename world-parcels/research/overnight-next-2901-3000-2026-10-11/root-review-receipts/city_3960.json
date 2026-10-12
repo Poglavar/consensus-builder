@@ -1,0 +1,26 @@
+{
+  "taskId": "city:3960",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-3960-udhampur.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/udhampur-service-review.json",
+    "tmp/valhalla-parcel-research/udhampur/jklr.html",
+    "tmp/valhalla-parcel-research/udhampur/index.js"
+  ],
+  "checkedAt": "2026-10-11T22:51:02Z",
+  "reason": "WUP 2025 archive, rank, country, point and 204468 persons agree with the immutable queue and packet. English and Hindi searches with result URLs are recorded. Udhampur district administration links to land records; the saved JKLR viewer bundle exposes land-record routes, while the reported anonymous requests returned 401. No full polygon, qualified native parcel ID, or independent adapter qualification exists. The access wall and TLS error do not prove citywide absence.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "observedBoundedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

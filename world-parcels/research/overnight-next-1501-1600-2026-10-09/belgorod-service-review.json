@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3903-belgorod.json",
+  "purpose": "Document first-party local/regional cadastral custody and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Rosreestr/NSPD cadastral-map custody is evidenced, but the bounded anonymous requests did not produce a safe native parcel ID plus full polygon. NSPD timed out; the municipal GIS exposed an administration/login page and its inspected JavaScript referenced only a regional-boundary WFS layer.",
+  "registryAssessment": "The regional Rosreestr announcement identifies the NSPD public cadastral map as the public cadastral-map service available without authorization. This is cadastral-service custody evidence, not proof of current parcel geometry availability at the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kartgeocentre.ru/produkty-i-uslugi/publichnaya-kadastrovaya-karta-teper-dostupna-na-platforme-nacionalnaya-sistema",
+      "observation": "Announcement attributed to the Rosreestr administration for Belgorod Region identifies the NSPD public cadastral map and states that it is available without authorization. No parcel response was extracted from the platform in this attempt."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "Official NSPD homepage; bounded GET timed out after 20 seconds."
+    },
+    {
+      "url": "https://belgorod.geofsm.ru/mapadmin/",
+      "observation": "Belgorod municipal GIS administration page; anonymous access returns a login wall."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Belgorod official cadastral map parcel GIS Rosreestr public cadastral map",
+      "result": "Rosreestr/NSPD public map route and Belgorod municipal GIS identified; no verified anonymous parcel geometry response.",
+      "method": "Separate English-language discovery and first-party/official-service inspection.",
+      "scope": "First-party cadastral custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "Russian",
+      "query": "Белгород официальная кадастровая карта земельные участки Росреестр геопортал",
+      "result": "Rosreestr/NSPD public map announcement and municipal GIS identified; municipal GIS showed login wall and no safe parcel response.",
+      "method": "Separate Russian-language discovery and first-party/official-service inspection.",
+      "scope": "Local/regional cadastral custody and safe anonymous parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No parcel geometry retained. This is not a citywide absence claim; exact-point coverage and current public API behavior remain unknown."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rosreestr/NSPD public cadastral-map custody is evidenced for the regional service context; the municipal GIS is a separate administration portal.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "Official NSPD viewer/homepage route",
+      "result": "Bounded GET timed out after 20 seconds.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Belgorod municipal GIS public entrypoint",
+      "result": "HTTP 200 administration/login page; no login attempted.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Belgorod municipal GIS public JavaScript/configuration",
+      "result": "HTTP 200 JavaScript referenced a regional-boundary WFS layer, not parcel features; no third-party request made.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "timeout after 20 seconds"
+    },
+    {
+      "url": "https://belgorod.geofsm.ru/mapadmin/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "administration/login page"
+    },
+    {
+      "url": "https://belgorod.geofsm.ru/mapadmin/scripts/mapsurfer/map_with_cku.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "public configuration inspected; only regional-boundary WFS layer identified"
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "uncertainty": "A timeout, login wall, or unavailable viewer is not evidence of citywide parcel absence. No unsafe owner, address, contact, titleholder, tax, account, or personal fields were requested or retained.",
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "adapterQualification": "held_pending_independent_serial_review"
+}

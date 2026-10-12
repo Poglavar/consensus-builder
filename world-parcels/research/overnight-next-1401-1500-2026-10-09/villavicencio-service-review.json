@@ -1,0 +1,72 @@
+{
+  "cityCode": 4306,
+  "queueRank": 1484,
+  "city": "Villavicencio",
+  "country": "Colombia",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodian": {
+    "name": "Alcaldía de Villavicencio, Secretaría de Catastro y Espacio Público",
+    "evidence": "Official municipal announcement identifies the catastral dissemination portal and says it supports predial/cadastral consultation.",
+    "url": "https://villavicencio.gov.co/portal-de-difusion-catastral-de-villavicencio-herramienta-de-informacion-predial-al-servicio-de-la-comunidad/"
+  },
+  "serviceReview": {
+    "endpoint": "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer/1",
+    "routeOutcome": "HTTP 200 service metadata and HTTP 200 anonymous bounded query responses",
+    "schema": "Polygon Feature Layer U_TERRENO, EPSG:3116, display/identity field CODIGO; service also exposes OBJECTID and GLOBALID.",
+    "safeFieldAllowlist": [
+      "CODIGO",
+      "OBJECTID",
+      "GLOBALID",
+      "GLOBALID_SNC",
+      "codigo_municipio"
+    ],
+    "excludedFields": [
+      "DIRECCION",
+      "USUARIO_LOG",
+      "FECHA_LOG",
+      "CODIGO_ANTERIOR",
+      "MANZANA_CODIGO",
+      "NUMERO_SUBTERRANEOS",
+      "Shape__Area",
+      "Shape__Length"
+    ],
+    "identityDecision": "Use CODIGO as the canonical native parcel identity; OBJECTID and GLOBALID are retained only as observed corroborating native fields in research metadata.",
+    "compositeKey": null
+  },
+  "requests": [
+    {
+      "kind": "official discovery",
+      "method": "GET",
+      "url": "https://villavicencio.gov.co/portal-de-difusion-catastral-de-villavicencio-herramienta-de-informacion-predial-al-servicio-de-la-comunidad/",
+      "outcome": "HTTP 200; municipal portal description found"
+    },
+    {
+      "kind": "service metadata",
+      "method": "GET",
+      "url": "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer/1?f=pjson",
+      "outcome": "HTTP 200; schema, extent, CRS and fields inspected"
+    },
+    {
+      "kind": "exact point",
+      "method": "GET",
+      "url": "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer/1/query",
+      "outcome": "HTTP 200; one intersecting polygon returned for exact projected WUP point"
+    },
+    {
+      "kind": "bounded envelope",
+      "method": "GET",
+      "url": "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer/1/query",
+      "outcome": "HTTP 200; three polygons returned in 500 m half-width envelope, capped at three"
+    }
+  ],
+  "scopeLimits": [
+    "The exact hit and 1 km envelope establish local service availability, not citywide completeness.",
+    "No full-city extraction, owner/address lookup, or unsafe attribute request was attempted.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No retained GeoJSON sample was created; query geometries and larger evidence remain in ignored tmp/valhalla-parcel-research/4306/.",
+    "Runtime readiness remains held pending serial adapter qualification."
+  ],
+  "uncertainty": "The municipal portal announcement links the local custodian to cadastral dissemination, while the ArcGIS service is public and parcel-like but its publication ownership is represented by the ArcGIS item/service metadata. Service coverage is bounded by the observed extent and queries only.",
+  "cityRecord": "city-4306-villavicencio.json"
+}

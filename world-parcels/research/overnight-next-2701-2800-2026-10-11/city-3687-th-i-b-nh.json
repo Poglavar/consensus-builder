@@ -1,0 +1,88 @@
+{
+  "cityCode": 3687,
+  "queueRank": 2745,
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "point": [20.4481823356867, 106.333012330417],
+  "population2025": 215012,
+  "population2025k": 215.012,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thái Bình Viet Nam official cadastral parcel map land registry GIS service",
+        "result": "First-party discovery found the official VBDLIS public landing page identifying Sở TNMT Thái Bình as a participating land-information system, and the official provincial public-service portal. The current authenticated VBDLIS entry route was inspected but did not expose an anonymous parcel API.",
+        "actualResultUrls": [
+          "https://tracuucr.vbdlis.vn/",
+          "https://dt-authen.mplis.gov.vn/",
+          "https://dichvucong.thaibinh.gov.vn/"
+        ]
+      },
+      {
+        "language": "Vietnamese (local/native)",
+        "query": "bản đồ địa chính thửa đất cổng thông tin chính thức tỉnh Thái Bình tra cứu đất đai",
+        "result": "First-party discovery found the official provincial service procedure pages describing Văn phòng đăng ký đất đai / chi nhánh as the custodian for cadastral-map extracts and land-database updates, plus the official VBDLIS service. No anonymous current parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://dichvucong.thaibinh.gov.vn/trang-chu/tra-cuu/chi-tiet-thu-tuc?ma-thu-tuc=32297",
+          "https://tracuucr.vbdlis.vn/",
+          "https://pbgdpl.thaibinh.gov.vn/doi-thoai-chinh-sach-phap-luat/thi-truc-tuyen-tim-hieu-luat-dat-dai-nam-2024-7065.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Sở Tài nguyên và Môi trường Thái Bình / Văn phòng đăng ký đất đai and its city branch",
+    "evidence": "The official VBDLIS landing page names Sở TNMT Thái Bình among deployed provincial land-information systems. The official provincial procedure page assigns cadastral-map extracts and land-database updating to Văn phòng đăng ký đất đai or its branch. This evidences local registry/procedure custody, not open parcel geometry.",
+    "urls": [
+      "https://tracuucr.vbdlis.vn/",
+      "https://dichvucong.thaibinh.gov.vn/trang-chu/tra-cuu/chi-tiet-thu-tuc?ma-thu-tuc=32297"
+    ]
+  },
+  "sourceAssessment": {
+    "service": "VBDLIS public landing page and MPLIS/VBDLIS authenticated entry route",
+    "serviceUrl": "https://tracuucr.vbdlis.vn/",
+    "serviceDescription": "Official VBDLIS public product/landing page for provincial land-information systems; the current MPLIS entry route is an authenticated restricted-government login page.",
+    "scope": "Local Thái Bình registry/procedure and official VBDLIS service discovery only; no citywide anonymous parcel layer was verified.",
+    "routesAttempted": [
+      {
+        "method": "GET",
+        "url": "https://tracuucr.vbdlis.vn/",
+        "outcome": "HTTP 200; HTML loaded a React landing page. Its current JavaScript bundle and static content were inspected. No parcel service URL, public feature schema, CRS, or geometry endpoint was exposed.",
+        "safeFieldsRequested": ["public landing-page metadata", "public service description"]
+      },
+      {
+        "method": "GET",
+        "url": "https://dt-authen.mplis.gov.vn/",
+        "outcome": "HTTP 200 login page; page declares a restricted government land-information system and requires username/password. No login or further requests were attempted.",
+        "safeFieldsRequested": ["public login-page metadata only"]
+      },
+      {
+        "method": "GET",
+        "url": "https://dichvucong.thaibinh.gov.vn/trang-chu/tra-cuu/chi-tiet-thu-tuc?ma-thu-tuc=32297",
+        "outcome": "Official procedure content was available through first-party discovery and records the cadastral-map-extract and database-update role of the land-registration office; it is not a parcel geometry service.",
+        "safeFieldsRequested": ["procedure/custodian text only"]
+      }
+    ],
+    "schemaAndCrs": "Unverified: no anonymous parcel response was returned.",
+    "nativeIdentity": null,
+    "exactPointHit": null,
+    "boundedPointRequest": {
+      "request": null,
+      "result": "Not performed because no verified anonymous parcel endpoint was exposed.",
+      "interpretation": "No inference about citywide parcel presence or absence."
+    },
+    "safeFieldAllowlist": ["verified stable native parcel/object ID", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "registration details", "encumbrance", "personal fields"]
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The local registry and VBDLIS deployment are evidenced, but the public route does not provide an anonymous current parcel schema or geometry response.",
+    "The authenticated MPLIS route is a login wall; no credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe lookup was used.",
+    "A preliminary diagnostic fetch of the authenticated host used curl -k; it was not relied on as source evidence and no certificate exception is authorized or retained as a qualification. Subsequent public-route inspection used normal TLS verification.",
+    "No exact-point hit or map-extent test was possible; this is an access limitation, not evidence of citywide absence.",
+    "No GeoJSON sample is retained because no safe native parcel ID and full native polygon were independently verified."
+  ]
+}

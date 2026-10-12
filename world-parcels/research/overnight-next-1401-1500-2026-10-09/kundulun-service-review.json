@@ -1,0 +1,51 @@
+{
+  "cityCode": 8753,
+  "queueRank": 1496,
+  "cityRecord": "city-8753-kundulun.json",
+  "cityFile": "city-8753-kundulun.json",
+  "city": "KUNDULUN",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "reviewStatus": "complete_research_held_runtime",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localOrState": "Bauchi State BAGIS/Ministry of Land & Survey is evidenced as a state land administration custodian through the BAGIS page and Bauchi government BAGIS materials.",
+    "federal": "OSGOF is evidenced as a general nationwide cadastral/legal survey authority.",
+    "citySpecific": "Not established; no Kundulun-specific public parcel record was returned."
+  },
+  "queryOutcomes": [
+    "English first-party discovery: Kundulun-specific parcel source not found; BAGIS and OSGOF official pages identified.",
+    "Hausa discovery: no first-party Kundulun parcel result or public parcel endpoint found.",
+    "Enugu public viewer inspected and its bbox API queried around [10.2825633635709, 11.166111601033]; response was an empty FeatureCollection, which is scope-mismatched and not an absence claim.",
+    "BauGIS public-maps page reached, but no inspectable bounded parcel response with safe native identity and geometry was available."
+  ],
+  "sourceUrls": [
+    "https://sites.google.com/view/bagisbauchistategovng/home",
+    "https://www.bauchistate.gov.ng/sdm_categories/bagis-reports/",
+    "https://osgof.gov.ng/cadastral-legal-surveys/",
+    "https://survey.engis.en.gov.ng/maps/",
+    "https://survey.engis.en.gov.ng/api/layouts-visible/?in_bbox=10.27,11.15,10.30,11.18&limit=60",
+    "https://baugis.vercel.app/public-maps"
+  ],
+  "requestLimits": [
+    "Anonymous public GET only; no login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe owner/title/contact fields.",
+    "No parcel geometry or source-specific attribute set retained.",
+    "No exact-point hit, map extent miss, timeout, login wall, or unusable UI is interpreted as citywide absence."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "native geometry", "source CRS", "bounded service metadata"],
+  "geometryDecision": "none_retained",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": [
+    "The WUP point was not independently matched to a BAGIS parcel or public state map feature.",
+    "BAGIS custodian evidence establishes registry relevance at state scope, not citywide public API availability.",
+    "A serial reviewer must independently qualify any adapter before runtime configuration."
+  ],
+  "completionSummary": {
+    "attempt": 1,
+    "of": 3,
+    "artifactsWritten": ["city-8753-kundulun.json", "kundulun-service-review.json"],
+    "sampleGeojsonWritten": false,
+    "geometryFeatures": 0,
+    "runtimeHeld": true
+  }
+}

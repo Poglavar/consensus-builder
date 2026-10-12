@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-106-marsa-matruh.json",
+  "cityCode": 106,
+  "queueRank": 3228,
+  "city": "Marsa Matruh",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "Separate English and Arabic first-party discovery identified the Egyptian Survey Authority as the national survey/map custodian and official Matrouh GIS/planning references. ESA's current public digital-map page is a purchase workflow with no anonymous parcel ID-plus-geometry service. No parcel sample is retained.",
+  "queryAndRequestOutcomes": "All executed searches and bounded routes, statuses, source-page findings, and the one TLS-verification failure are recorded in city-106-marsa-matruh.json.",
+  "custodians": [
+    {"name": "Egyptian Survey Authority (هيئة المساحة المصرية)", "scope": "national surveying, cadastral/property-map records, and digital map products", "evidence": "official ESA homepage and digital-map service page"},
+    {"name": "General Organization for Physical Planning / Matrouh governorate GIS-planning committee", "scope": "official Matrouh infrastructure/planning map coordination; not a qualified parcel registry service", "evidence": "official GOPP Matrouh infrastructure-map article"}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned and source-proven", "full parcel polygon geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [31.3460995840892, 27.2526447044638] was preserved in latitude/longitude order and not shifted.",
+    "No exact-point hit or miss, map-extent miss, timeout, TLS failure, or unavailable workflow was treated as evidence of citywide cadastral absence.",
+    "ESA national custodianship and Matrouh planning/GIS references do not prove citywide public parcel-vector coverage.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": ["No anonymous parcel schema, CRS, native identity, or unchanged polygon response was observed.", "Independent serial review is required before runtime qualification."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": null,
+  "doNotInfer": ["ESA purchase workflow is not a public parcel API", "A TLS/login/unusable-service condition is not evidence of parcel absence", "Official planning/GIS prose is not parcel-level source integration"]
+}

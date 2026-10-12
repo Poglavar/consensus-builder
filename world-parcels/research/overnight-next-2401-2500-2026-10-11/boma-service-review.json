@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-818-boma.json",
+  "cityCode": 818,
+  "queueRank": 2421,
+  "name": "Boma",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "pointLatLon": [-5.8308666761627, 13.0561881029742],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH/GET","url":"https://affairesfoncieres.gouv.cd/secretariat/circonscriptions","httpStatus":200,"outcome":"Official Ministry directory loaded and listed Boma under the 11 Kongo-Central land/cadastral jurisdictions."},
+    {"method":"GET","url":"https://www.affairesfoncieres.gouv.cd/","httpStatus":200,"outcome":"Official Ministry home page loaded and exposed current cadastral, land-transaction, and digitization materials; no public parcel viewer endpoint was identified."},
+    {"method":"GET","url":"https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes","httpStatus":200,"outcome":"Official research-request page loaded. It requires a formal request and identity/supporting documents; it is not an anonymous parcel geometry service. No form was submitted."},
+    {"method":"SEARCH/GET","url":"https://servicepublic.gouv.cd/service/4671","httpStatus":200,"outcome":"Official public-service catalogue describes consultation of cadastral/land registers through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre, with a formal request and fee; no public geometry endpoint is provided."},
+    {"method":"GET","url":"https://cadastre.gouv.cd/","httpStatus":0,"outcome":"DNS resolution failed in the research environment; no login, credential, CAPTCHA, or TLS bypass was attempted."},
+    {"method":"SEARCH/GET","url":"https://bic.cd/","httpStatus":200,"outcome":"Non-government BIC landing page loaded, but its stated public cadastral coverage is Nord-Kivu and Sud-Kivu, not Kongo-Central/Boma; no Boma request was made."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "apiBase": null,
+    "geometryCrs": "No public Boma parcel geometry response was found, so no CRS was exposed or converted.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"No anonymous Boma parcel endpoint was exposed by the first-party pages; no parcel query was attempted.","featureCount":0,"nativeIdentity":null}
+  },
+  "localCustodianAssessment": "The first-party DRC Ministry of Land Affairs directory explicitly lists Boma as a Kongo-Central land/cadastral jurisdiction. The Ministry's formal search procedure routes requests to the competent land-register/cadastre officials. This is local custodian evidence, not evidence of an open geometry API.",
+  "safeFieldAllowlist": ["stable native parcel identity", "polygon geometry if publicly returned", "latitude/longitude or source CRS", "source service URL", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "mortgage", "dispute", "payment", "audit"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A first-party local cadastral jurisdiction is evidenced, but no public anonymous parcel identity/geometry service was found. Adapter qualification remains a separate serial review."},
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point or extent parcel query was possible because no public Boma geometry endpoint was exposed; this is not evidence of citywide parcel absence.",
+    "The Ministry directory evidences jurisdiction/custodian only, not geometry coverage, completeness, update cadence, licensing, or API integration.",
+    "The cadastre.gouv.cd route failed DNS resolution; no bypass was attempted.",
+    "No GeoJSON sample is retained because no safe full parcel polygon and native identity were returned.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.",
+    "Unchanged HTML response evidence is under ignored tmp/valhalla-parcel-research/818/.",
+    "This packet is not source integration/admission."
+  ],
+  "uncertainty": "Boma's first-party cadastral jurisdiction is well evidenced. Public parcel geometry availability, schema, CRS, identity fields, coverage, completeness, licensing, and update cadence remain unresolved. Runtime readiness remains held."
+}

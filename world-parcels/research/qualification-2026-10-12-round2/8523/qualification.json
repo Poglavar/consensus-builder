@@ -1,0 +1,1379 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "8523",
+  "cityName": "Lynn",
+  "sourceId": "us-ma-massgis-l3-tax-parcels",
+  "candidateSha256": "70852c1d0b2b30123c7b77f94b1ba0ad3d6f19400a87846c14fb00ce61c650b8",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 208,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 208,
+      "collectedUniqueCount": 208
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 592
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "94d57fad1bad4fb7fc6bb4d70d04009361ae53e9cf66f5634a91413e074f8473",
+      "featureCount": 208,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32619",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "94d57fad1bad4fb7fc6bb4d70d04009361ae53e9cf66f5634a91413e074f8473",
+  "featureCount": 208,
+  "sampleIds": [
+    "US-MA-STATEWIDE-M_244809_913353",
+    "US-MA-STATEWIDE-M_244803_913343",
+    "US-MA-STATEWIDE-M_244807_913375"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -70.957,
+        42.468,
+        -70.956,
+        42.469
+      ],
+      "complete": true,
+      "featureCount": 34,
+      "ids": [
+        "US-MA-STATEWIDE-M_244672_913208",
+        "US-MA-STATEWIDE-M_244730_913221",
+        "US-MA-STATEWIDE-M_244717_913269",
+        "US-MA-STATEWIDE-M_244749_913205",
+        "US-MA-STATEWIDE-M_244706_913295",
+        "US-MA-STATEWIDE-M_244720_913313",
+        "US-MA-STATEWIDE-M_244722_913210",
+        "US-MA-STATEWIDE-M_244740_913292",
+        "US-MA-STATEWIDE-M_244665_913247",
+        "US-MA-STATEWIDE-M_244673_913254",
+        "US-MA-STATEWIDE-M_244725_913280",
+        "US-MA-STATEWIDE-M_244739_913186",
+        "US-MA-STATEWIDE-M_244737_913232",
+        "US-MA-STATEWIDE-M_244708_913257",
+        "US-MA-STATEWIDE-M_244689_913272",
+        "US-MA-STATEWIDE-M_244749_913251",
+        "US-MA-STATEWIDE-M_244656_913301",
+        "US-MA-STATEWIDE-M_244720_913284",
+        "US-MA-STATEWIDE-M_244662_913237",
+        "US-MA-STATEWIDE-M_244731_913277",
+        "US-MA-STATEWIDE-M_244646_913290",
+        "US-MA-STATEWIDE-M_244666_913312",
+        "US-MA-STATEWIDE-M_244743_913242",
+        "US-MA-STATEWIDE-M_244704_913187",
+        "US-MA-STATEWIDE-M_244680_913262",
+        "US-MA-STATEWIDE-M_244698_913284",
+        "US-MA-STATEWIDE-M_244696_913245",
+        "US-MA-STATEWIDE-M_244731_913290",
+        "US-MA-STATEWIDE-M_244655_913185",
+        "US-MA-STATEWIDE-M_244713_913199",
+        "US-MA-STATEWIDE-M_244648_913205",
+        "US-MA-STATEWIDE-M_244737_913304",
+        "US-MA-STATEWIDE-M_244680_913220",
+        "US-MA-STATEWIDE-M_244687_913233"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -70.956,
+        42.468,
+        -70.955,
+        42.469
+      ],
+      "complete": true,
+      "featureCount": 30,
+      "ids": [
+        "US-MA-STATEWIDE-M_244796_913203",
+        "US-MA-STATEWIDE-M_244835_913210",
+        "US-MA-STATEWIDE-M_244730_913221",
+        "US-MA-STATEWIDE-M_244749_913205",
+        "US-MA-STATEWIDE-M_244748_913301",
+        "US-MA-STATEWIDE-M_244740_913292",
+        "US-MA-STATEWIDE-M_244739_913186",
+        "US-MA-STATEWIDE-M_244737_913232",
+        "US-MA-STATEWIDE-M_244749_913251",
+        "US-MA-STATEWIDE-M_244731_913277",
+        "US-MA-STATEWIDE-M_244823_913286",
+        "US-MA-STATEWIDE-M_244743_913242",
+        "US-MA-STATEWIDE-M_244765_913237",
+        "US-MA-STATEWIDE-M_244763_913273",
+        "US-MA-STATEWIDE-M_244823_913193",
+        "US-MA-STATEWIDE-M_244808_913248",
+        "US-MA-STATEWIDE-M_244760_913227",
+        "US-MA-STATEWIDE-M_244755_913216",
+        "US-MA-STATEWIDE-M_244788_913188",
+        "US-MA-STATEWIDE-M_244731_913290",
+        "US-MA-STATEWIDE-M_244780_913268",
+        "US-MA-STATEWIDE-M_244799_913225",
+        "US-MA-STATEWIDE-M_244829_913225",
+        "US-MA-STATEWIDE-M_244796_913314",
+        "US-MA-STATEWIDE-M_244755_913260",
+        "US-MA-STATEWIDE-M_244769_913249",
+        "US-MA-STATEWIDE-M_244772_913284",
+        "US-MA-STATEWIDE-M_244737_913304",
+        "US-MA-STATEWIDE-M_244830_913300",
+        "US-MA-STATEWIDE-M_244821_913240"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -70.955,
+        42.468,
+        -70.954,
+        42.469
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "US-MA-STATEWIDE-M_244888_913181",
+        "US-MA-STATEWIDE-M_244861_913303",
+        "US-MA-STATEWIDE-M_244835_913210",
+        "US-MA-STATEWIDE-M_244876_913298",
+        "US-MA-STATEWIDE-M_244842_913295",
+        "US-MA-STATEWIDE-M_244835_913314",
+        "US-MA-STATEWIDE-M_244849_913308",
+        "US-MA-STATEWIDE-M_244823_913286",
+        "US-MA-STATEWIDE-M_244863_913289",
+        "US-MA-STATEWIDE-M_244902_913263",
+        "US-MA-STATEWIDE-M_244823_913193",
+        "US-MA-STATEWIDE-M_244808_913248",
+        "US-MA-STATEWIDE-M_244915_913292",
+        "US-MA-STATEWIDE-M_244835_913277",
+        "US-MA-STATEWIDE-M_244911_913234",
+        "US-MA-STATEWIDE-M_244873_913312",
+        "US-MA-STATEWIDE-M_244829_913225",
+        "US-MA-STATEWIDE-M_244871_913199",
+        "US-MA-STATEWIDE-M_244854_913269",
+        "US-MA-STATEWIDE-M_244830_913300",
+        "US-MA-STATEWIDE-M_244908_913278",
+        "US-MA-STATEWIDE-M_244821_913240"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -70.957,
+        42.469,
+        -70.956,
+        42.47
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "US-MA-STATEWIDE-M_244666_913353",
+        "US-MA-STATEWIDE-M_244646_913443",
+        "US-MA-STATEWIDE-M_244703_913410",
+        "US-MA-STATEWIDE-M_244686_913332",
+        "US-MA-STATEWIDE-M_244706_913295",
+        "US-MA-STATEWIDE-M_244720_913313",
+        "US-MA-STATEWIDE-M_244754_913377",
+        "US-MA-STATEWIDE-M_244737_913361",
+        "US-MA-STATEWIDE-M_244737_913384",
+        "US-MA-STATEWIDE-M_244721_913393",
+        "US-MA-STATEWIDE-M_244714_913421",
+        "US-MA-STATEWIDE-M_244656_913301",
+        "US-MA-STATEWIDE-M_244666_913312",
+        "US-MA-STATEWIDE-M_244707_913401",
+        "US-MA-STATEWIDE-M_244724_913411",
+        "US-MA-STATEWIDE-M_244733_913430",
+        "US-MA-STATEWIDE-M_244696_913344",
+        "US-MA-STATEWIDE-M_244771_913355",
+        "US-MA-STATEWIDE-M_244721_913372",
+        "US-MA-STATEWIDE-M_244645_913331",
+        "US-MA-STATEWIDE-M_244677_913321",
+        "US-MA-STATEWIDE-M_244737_913304",
+        "US-MA-STATEWIDE-M_244708_913379",
+        "US-MA-STATEWIDE-M_244690_913393"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -70.956,
+        42.469,
+        -70.955,
+        42.47
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "US-MA-STATEWIDE-M_244757_913421",
+        "US-MA-STATEWIDE-M_244720_913313",
+        "US-MA-STATEWIDE-M_244754_913377",
+        "US-MA-STATEWIDE-M_244737_913361",
+        "US-MA-STATEWIDE-M_244737_913384",
+        "US-MA-STATEWIDE-M_244809_913353",
+        "US-MA-STATEWIDE-M_244721_913393",
+        "US-MA-STATEWIDE-M_244748_913301",
+        "US-MA-STATEWIDE-M_244796_913385",
+        "US-MA-STATEWIDE-M_244803_913343",
+        "US-MA-STATEWIDE-M_244807_913375",
+        "US-MA-STATEWIDE-M_244783_913327",
+        "US-MA-STATEWIDE-M_244777_913404",
+        "US-MA-STATEWIDE-M_244733_913430",
+        "US-MA-STATEWIDE-M_244771_913355",
+        "US-MA-STATEWIDE-M_244796_913314",
+        "US-MA-STATEWIDE-M_244820_913364",
+        "US-MA-STATEWIDE-M_244737_913304",
+        "US-MA-STATEWIDE-M_244816_913404"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -70.955,
+        42.469,
+        -70.954,
+        42.47
+      ],
+      "complete": true,
+      "featureCount": 31,
+      "ids": [
+        "US-MA-STATEWIDE-M_244842_913436",
+        "US-MA-STATEWIDE-M_244861_913303",
+        "US-MA-STATEWIDE-M_244876_913298",
+        "US-MA-STATEWIDE-M_244809_913353",
+        "US-MA-STATEWIDE-M_244841_913327",
+        "US-MA-STATEWIDE-M_244835_913314",
+        "US-MA-STATEWIDE-M_244854_913321",
+        "US-MA-STATEWIDE-M_244887_913413",
+        "US-MA-STATEWIDE-M_244861_913361",
+        "US-MA-STATEWIDE-M_244876_913402",
+        "US-MA-STATEWIDE-M_244914_913391",
+        "US-MA-STATEWIDE-M_244849_913308",
+        "US-MA-STATEWIDE-M_244851_913340",
+        "US-MA-STATEWIDE-M_244879_913390",
+        "US-MA-STATEWIDE-M_244900_913367",
+        "US-MA-STATEWIDE-M_244882_913335",
+        "US-MA-STATEWIDE-M_244878_913421",
+        "US-MA-STATEWIDE-M_244857_913351",
+        "US-MA-STATEWIDE-M_244877_913323",
+        "US-MA-STATEWIDE-M_244876_913365",
+        "US-MA-STATEWIDE-M_244887_913345",
+        "US-MA-STATEWIDE-M_244895_913355",
+        "US-MA-STATEWIDE-M_244902_913397",
+        "US-MA-STATEWIDE-M_244873_913312",
+        "US-MA-STATEWIDE-M_244820_913364",
+        "US-MA-STATEWIDE-M_244894_913405",
+        "US-MA-STATEWIDE-M_244816_913404",
+        "US-MA-STATEWIDE-M_244860_913373",
+        "US-MA-STATEWIDE-M_244874_913380",
+        "US-MA-STATEWIDE-M_244830_913300",
+        "US-MA-STATEWIDE-M_244905_913379"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -70.957,
+        42.47,
+        -70.956,
+        42.471
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-MA-STATEWIDE-M_244693_913465",
+        "US-MA-STATEWIDE-M_244646_913443",
+        "US-MA-STATEWIDE-M_244703_913410",
+        "US-MA-STATEWIDE-M_244748_913448",
+        "US-MA-STATEWIDE-M_244714_913421",
+        "US-MA-STATEWIDE-M_244743_913532",
+        "US-MA-STATEWIDE-M_244719_913501",
+        "US-MA-STATEWIDE-M_244724_913411",
+        "US-MA-STATEWIDE-M_244681_913595",
+        "US-MA-STATEWIDE-M_244680_913447",
+        "US-MA-STATEWIDE-M_244733_913430",
+        "US-MA-STATEWIDE-M_244726_913511",
+        "US-MA-STATEWIDE-M_244710_913485",
+        "US-MA-STATEWIDE-M_244671_913438",
+        "US-MA-STATEWIDE-M_244745_913441"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -70.956,
+        42.47,
+        -70.955,
+        42.471
+      ],
+      "complete": true,
+      "featureCount": 28,
+      "ids": [
+        "US-MA-STATEWIDE-M_244757_913421",
+        "US-MA-STATEWIDE-M_244808_913507",
+        "US-MA-STATEWIDE-M_244748_913448",
+        "US-MA-STATEWIDE-M_244764_913474",
+        "US-MA-STATEWIDE-M_244721_913393",
+        "US-MA-STATEWIDE-M_244751_913466",
+        "US-MA-STATEWIDE-M_244820_913433",
+        "US-MA-STATEWIDE-M_244743_913532",
+        "US-MA-STATEWIDE-M_244824_913470",
+        "US-MA-STATEWIDE-M_244781_913437",
+        "US-MA-STATEWIDE-M_244795_913494",
+        "US-MA-STATEWIDE-M_244783_913479",
+        "US-MA-STATEWIDE-M_244719_913501",
+        "US-MA-STATEWIDE-M_244812_913484",
+        "US-MA-STATEWIDE-M_244825_913484",
+        "US-MA-STATEWIDE-M_244777_913404",
+        "US-MA-STATEWIDE-M_244733_913430",
+        "US-MA-STATEWIDE-M_244765_913450",
+        "US-MA-STATEWIDE-M_244829_913444",
+        "US-MA-STATEWIDE-M_244777_913459",
+        "US-MA-STATEWIDE-M_244787_913505",
+        "US-MA-STATEWIDE-M_244726_913511",
+        "US-MA-STATEWIDE-M_244817_913498",
+        "US-MA-STATEWIDE-M_244816_913404",
+        "US-MA-STATEWIDE-M_244800_913520",
+        "US-MA-STATEWIDE-M_244804_913457",
+        "US-MA-STATEWIDE-M_244795_913448",
+        "US-MA-STATEWIDE-M_244745_913441"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -70.955,
+        42.47,
+        -70.954,
+        42.471
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "US-MA-STATEWIDE-M_244842_913436",
+        "US-MA-STATEWIDE-M_244853_913535",
+        "US-MA-STATEWIDE-M_244808_913507",
+        "US-MA-STATEWIDE-M_244887_913413",
+        "US-MA-STATEWIDE-M_244820_913433",
+        "US-MA-STATEWIDE-M_244909_913447",
+        "US-MA-STATEWIDE-M_244824_913470",
+        "US-MA-STATEWIDE-M_244877_913484",
+        "US-MA-STATEWIDE-M_244887_913521",
+        "US-MA-STATEWIDE-M_244888_913471",
+        "US-MA-STATEWIDE-M_244812_913484",
+        "US-MA-STATEWIDE-M_244825_913484",
+        "US-MA-STATEWIDE-M_244878_913421",
+        "US-MA-STATEWIDE-M_244898_913458",
+        "US-MA-STATEWIDE-M_244829_913444",
+        "US-MA-STATEWIDE-M_244857_913504",
+        "US-MA-STATEWIDE-M_244910_913492",
+        "US-MA-STATEWIDE-M_244817_913498",
+        "US-MA-STATEWIDE-M_244845_913514",
+        "US-MA-STATEWIDE-M_244816_913404",
+        "US-MA-STATEWIDE-M_244837_913527",
+        "US-MA-STATEWIDE-M_244858_913520"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -70.956,
+        42.467,
+        -70.955,
+        42.468
+      ],
+      "complete": true,
+      "featureCount": 25,
+      "ids": [
+        "US-MA-STATEWIDE-M_244796_913203",
+        "US-MA-STATEWIDE-M_244836_913107",
+        "US-MA-STATEWIDE-M_244730_913166",
+        "US-MA-STATEWIDE-M_244778_913108",
+        "US-MA-STATEWIDE-M_244749_913205",
+        "US-MA-STATEWIDE-M_244825_913093",
+        "US-MA-STATEWIDE-M_244819_913176",
+        "US-MA-STATEWIDE-M_244739_913186",
+        "US-MA-STATEWIDE-M_244791_913100",
+        "US-MA-STATEWIDE-M_244722_913151",
+        "US-MA-STATEWIDE-M_244819_913082",
+        "US-MA-STATEWIDE-M_244823_913193",
+        "US-MA-STATEWIDE-M_244758_913078",
+        "US-MA-STATEWIDE-M_244778_913167",
+        "US-MA-STATEWIDE-M_244788_913188",
+        "US-MA-STATEWIDE-M_244762_913130",
+        "US-MA-STATEWIDE-M_244786_913124",
+        "US-MA-STATEWIDE-M_244815_913164",
+        "US-MA-STATEWIDE-M_244798_913132",
+        "US-MA-STATEWIDE-M_244802_913144",
+        "US-MA-STATEWIDE-M_244799_913116",
+        "US-MA-STATEWIDE-M_244772_913071",
+        "US-MA-STATEWIDE-M_244807_913155",
+        "US-MA-STATEWIDE-M_244741_913089",
+        "US-MA-STATEWIDE-M_244806_913174"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -70.956,
+        42.471,
+        -70.955,
+        42.472
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "US-MA-STATEWIDE-M_244823_913624",
+        "US-MA-STATEWIDE-M_244799_913595",
+        "US-MA-STATEWIDE-M_244781_913574",
+        "US-MA-STATEWIDE-M_244829_913546",
+        "US-MA-STATEWIDE-M_244743_913532",
+        "US-MA-STATEWIDE-M_244681_913595",
+        "US-MA-STATEWIDE-M_244819_913618",
+        "US-MA-STATEWIDE-M_244809_913606",
+        "US-MA-STATEWIDE-M_244763_913554",
+        "US-MA-STATEWIDE-M_244792_913588",
+        "US-MA-STATEWIDE-M_244800_913520",
+        "US-MA-STATEWIDE-M_244821_913641"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -70.958,
+        42.469,
+        -70.957,
+        42.47
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "US-MA-STATEWIDE-M_244666_913353",
+        "US-MA-STATEWIDE-M_244646_913443",
+        "US-MA-STATEWIDE-M_244535_913402",
+        "US-MA-STATEWIDE-M_244656_913301",
+        "US-MA-STATEWIDE-M_244646_913290",
+        "US-MA-STATEWIDE-M_244666_913312",
+        "US-MA-STATEWIDE-M_244625_913308",
+        "US-MA-STATEWIDE-M_244636_913319",
+        "US-MA-STATEWIDE-M_244645_913331",
+        "US-MA-STATEWIDE-M_244615_913297"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -70.954,
+        42.469,
+        -70.953,
+        42.47
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "US-MA-STATEWIDE-M_244997_913383",
+        "US-MA-STATEWIDE-M_244963_913324",
+        "US-MA-STATEWIDE-M_244982_913391",
+        "US-MA-STATEWIDE-M_244941_913350",
+        "US-MA-STATEWIDE-M_244929_913426",
+        "US-MA-STATEWIDE-M_244935_913336",
+        "US-MA-STATEWIDE-M_244914_913391",
+        "US-MA-STATEWIDE-M_244967_913427",
+        "US-MA-STATEWIDE-M_244957_913363",
+        "US-MA-STATEWIDE-M_244928_913305",
+        "US-MA-STATEWIDE-M_244900_913367",
+        "US-MA-STATEWIDE-M_244968_913397",
+        "US-MA-STATEWIDE-M_244988_913414",
+        "US-MA-STATEWIDE-M_244887_913345",
+        "US-MA-STATEWIDE-M_244895_913355",
+        "US-MA-STATEWIDE-M_244902_913397",
+        "US-MA-STATEWIDE-M_244978_913354",
+        "US-MA-STATEWIDE-M_244894_913405",
+        "US-MA-STATEWIDE-M_244941_913369",
+        "US-MA-STATEWIDE-M_244969_913340",
+        "US-MA-STATEWIDE-M_244955_913404",
+        "US-MA-STATEWIDE-M_244929_913321",
+        "US-MA-STATEWIDE-M_244905_913379",
+        "US-MA-STATEWIDE-M_244957_913310"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 44,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:06.818Z",
+      "queryHash": "c2c0fae6f2dd55da6c9cf2cbd7ef1122cadebf838ee9ff2b2dad7965bf88b239",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 4783
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:11.617Z",
+      "queryHash": "c2c0fae6f2dd55da6c9cf2cbd7ef1122cadebf838ee9ff2b2dad7965bf88b239",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 132
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:11.751Z",
+      "queryHash": "b02f272e6d54241759bb30a723338b1fc72f31cd154fb073f0dbcff0bcf5eabf",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6167
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:17.922Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 308
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:18.236Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:18.576Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 312
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:18.889Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 365
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:19.257Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 326
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:19.590Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 297
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:19.893Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 321
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:20.216Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 321
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:20.540Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 284
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:20.826Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 308
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:21.136Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 320
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:21.457Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:21.741Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 298
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:22.043Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 281
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:22.325Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:22.610Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 312
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:22.923Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 310
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:23.241Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 315
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:23.558Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 288
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:23.848Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 312
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:24.161Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 281
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:24.444Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 292
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:24.738Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 304
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:25.043Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 299
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:25.343Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 286
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:25.631Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 299
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:25.934Z",
+      "queryHash": "816c1fc219ec2ca07fd2e3ebffb3ab1505b1d78343cb4d671290fac23da90889",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2133
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:28.071Z",
+      "queryHash": "91850655e0a1f684f1b1dd1b77c1fc36de831903b7e9593711dee010fa5ef4de",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 2236
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:30.310Z",
+      "queryHash": "bec95ef6650e45a982d53612770fab8ac332a0303c32e1d5f70a0fba2b91189e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2436
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:32.784Z",
+      "queryHash": "7d725e21d49d3b87bef0202eb437a38744f3ff9da7153b90de72d42dfaf783e4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 2496
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:35.281Z",
+      "queryHash": "c42a7cd57ffa521f05aa335eee44d99c85325b33f91fe77be62a2dc40f532305",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3340
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:38.621Z",
+      "queryHash": "8881fc4743c6376515423447dc02a409a7d46e0622097cfe6b1bb8a4f2d36702",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 2369
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:40.991Z",
+      "queryHash": "8238e07da0a5d7e012a02ee56007b5b42491a44bb9878888070b7b96b90c68fa",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2380
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:43.372Z",
+      "queryHash": "76b4fc065ed92703018fa0333a2ab4a929b361be6277bee806eb51d491a57060",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 2853
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:46.225Z",
+      "queryHash": "8327282af7eeaad0abda837adce3f90b9e27af3301c1ad643008865cb68cb3c2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3485
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:49.711Z",
+      "queryHash": "a1275aec973b4a143433c396098fa7b7f8ba0d0819a24a936ba5cd3aa1171609",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 4354
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:54.069Z",
+      "queryHash": "c2c0fae6f2dd55da6c9cf2cbd7ef1122cadebf838ee9ff2b2dad7965bf88b239",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 287
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:16:54.384Z",
+      "queryHash": "84966131bbf5badf515003f1861b53ea5e88f95b3968922acd73ec186f54c079",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 341
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services1.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:16:54.768Z",
+      "queryHash": "74fa32556b943ba9b21b632e19a36440b6758be58a229991a509878c5ae3faec",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5571
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services1.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:17:00.345Z",
+      "queryHash": "8b203c07a590c986410224837dfcc6ad25bdc7f4469f22c9db4d6e486967a94b",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6681
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:17:07.029Z",
+      "queryHash": "16f0063b8d4da91b14eea19011d2d6ec638b5a8eca2cbe551b16c289c7e43eeb",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 4583
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

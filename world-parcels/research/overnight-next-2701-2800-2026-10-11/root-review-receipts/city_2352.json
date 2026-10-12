@@ -1,0 +1,39 @@
+{
+  "taskId": "city:2352",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:44:38Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-2352-juma.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/juma-service-review.json"
+  ],
+  "identityCheck": {
+    "queueRank": 2769,
+    "cityCode": 2352,
+    "name": "Juma",
+    "country": "Uzbekistan",
+    "point": [
+      39.6869211238872,
+      66.6995596285629
+    ],
+    "populationPersons": 214035,
+    "matchesImmutableQueueAndRoster": true
+  },
+  "bilingualSearchesRecorded": true,
+  "retainedFullPolygons": 0,
+  "registryFound": null,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "National Cadastre Agency / geoinformation portal description is a service lead. Juma-specific public parcel response, native ID, schema, CRS, and full polygon were not obtained; portal and reported REST host timed out. Keep local custody and geometry unresolved, never infer citywide absence.",
+  "firstPartySourceReferences": [
+    "https://dgov.uz/en/solution/detail/52/"
+  ],
+  "integrationDisposition": "held; no runtime, catalog, registry, or generated coverage/report admission edit"
+}

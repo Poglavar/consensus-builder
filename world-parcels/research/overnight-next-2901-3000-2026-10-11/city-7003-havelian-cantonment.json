@@ -1,0 +1,43 @@
+{
+  "cityCode": 7003,
+  "queueRank": 2902,
+  "name": "Havelian Cantonment",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [34.0431596496854, 73.1315576194639],
+  "population2025": 205608,
+  "population2025k": 205.608,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakistan official cadastral map parcel Havelian Cantonment land records GIS",
+        "result": "First-party results identified Military Lands and Cantonments (ML&C), the KP Revenue Department land-record program, Pakistan Bureau of Statistics GIS material, and a Punjab-only cadastral viewer. No city-specific public Havelian parcel API was identified.",
+        "actualResultUrls": [
+          "https://mlc.gov.pk/",
+          "https://revenue.kp.gov.pk/director-land-record/",
+          "https://www.pbs.gov.pk/gis/",
+          "https://lis.pulse.gop.pk/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Pakistan Urdu Havelian Cantonment land records cadastral map official",
+        "result": "No city-specific first-party public parcel viewer or vector endpoint was found. Official/general evidence pointed to cantonment land administration and KP land-record modernization, but not an anonymous Havelian geometry service.",
+        "actualResultUrls": [
+          "https://mlc.gov.pk/assets/media/cantonment-land-administration-rules1937-in-legal-framework.pdf",
+          "https://sdlr.kp.gov.pk/",
+          "https://www.pbs.gov.pk/gis/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "ML&C is evidenced as the federal cantonment custodian, and the Cantonment Land Administration Rules refer to General Land Register maps. This is general national/federal custody evidence, not evidence of a local Havelian public registry or open parcel service.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "sampleGeojson": null,
+  "uncertainty": "A local Cantonment Board, Military Estate Office, or KP land-record office may maintain operational cadastral records not exposed anonymously on the public web. No absence inference is made from failed, blocked, or out-of-scope requests."
+}

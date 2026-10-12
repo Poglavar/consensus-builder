@@ -1,0 +1,19 @@
+{
+  "taskId": "city:4064",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-4064-vitoria-gasteiz.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/vitoria-gasteiz-service-review.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/vitoria-gasteiz-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T10:31:22Z",
+  "reviewFindings": {
+    "identity": "WUP roster and packet agree: Vitoria-Gasteiz, Spain, rank 2369, point [42.8514034740593, -2.68419501807099], population 246663 persons.",
+    "research": "English and Spanish/Basque executed searches are recorded. Original municipal ArcGIS layer metadata confirms polygon Feature Layer 7, Parcelario Catastral, EPSG:25830 and string CODIGO. Original point response contains exactly one feature with CODIGO 590081000002; the saved sample ring exactly matches its source rings. A separate DGC national-provider probe returned HTTP 403 and does not establish local municipal-layer absence.",
+    "custody": "registryFound=true is grounded in the official municipal ArcGIS layer and provincial Catastro de Álava viewer, without claiming legal or citywide completeness.",
+    "geometry": "One full polygon retained with only properties.id=590081000002; source ring exactly matches the sample. Independent metric GEOS check of this one sample: valid polygon, area 347.20 m² in EPSG:25830, covers the WUP point. One sample cannot prove cross-parcel overlap or coverage.",
+    "admission": "No independently qualified live adapter, fresh exact-ID read and forced paging, 13 bounded cells, multi-parcel metric GEOS overlap/operation checks, source binding or headed details-panel verification. Keep discovery positive but runtime excluded and held."
+  }
+}

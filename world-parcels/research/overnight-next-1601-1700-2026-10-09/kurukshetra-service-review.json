@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-7952-kurukshetra.json",
+  "cityCode": 7952,
+  "queueRank": 1619,
+  "name": "Kurukshetra",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "Kurukshetra's official district Hindi information-system page evidences local revenue and cadastral-map services. Haryana Web-HALRIS and state/urban GIS routes were inspected. No anonymous safe parcel feature response was verified.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official district directory, Web-HALRIS, State GIS and Urban Local Bodies GIS routes found.",
+    "localLanguageDiscovery": "Completed in Hindi; official district page found with Jamabandi and cadastral-map links.",
+    "exactPoint": [29.9674026272771, 76.8569110935626],
+    "returned": null,
+    "ids": [],
+    "geometry": "No machine-readable parcel geometry returned; no GeoJSON retained.",
+    "mapExtentOrPointMiss": false
+  },
+  "requestOutcomes": "Official district and Web-HALRIS pages returned HTTP 200. The urban GIS viewer returned HTTP 200 and its current JavaScript was inspected; it presents OTP login and references a WMS plus a POST revenue endpoint whose rendered fields include owner/address/mobile, so that endpoint was not called. WMS capabilities returned 403. The state GIS portal was not queried past the default TLS-verification failure. No login, credentials, CAPTCHA bypass, unsafe field request, or TLS exception was used.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "District service references are not proof of a citywide open parcel layer.",
+    "No native parcel identity, CRS, or full polygon was verified, so no sample GeoJSON was written.",
+    "A login wall, forbidden WMS, skipped unsafe endpoint, or TLS verification failure is not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, legal-description, or value fields were requested or retained.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "The official pages evidence a local revenue/map custodian and cadastral-map service references, but not anonymous parcel API access, native schema/CRS, or complete Kurukshetra coverage. No claim is made about parcel absence, ownership, title, tax records, or completeness of Haryana systems.",
+  "runtimeReadiness": "held_serial_review"
+}

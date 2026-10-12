@@ -1,0 +1,25 @@
+{
+  "taskId": "city:995",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-995-phitsanulok.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/phitsanulok-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T04:37:37Z",
+  "finding": "Phitsanulok: UN row, immutable roster, pending queue, packet and review agree on rank 3171, code 995, Thailand, point [16.812077346364,100.254071434807], and 189643 persons. English and Thai executed search records are present. Department of Lands office and public-land NSL viewer are identified, but private-parcel custody remains unresolved (registryFound null). Exact-point 404 and bounded NSL zero are route- and layer-specific, not citywide absence. No native-ID polygon, city sample or independent adapter qualification exists.",
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": [
+    "fresh exact native-ID reads",
+    "forced paging and stable complete manifest",
+    "13 aligned bounded cells",
+    "independent metric GEOS full-polygon validity, duplicate and overlap checks",
+    "full-parcel source binding",
+    "headed pointer and Details-panel verification"
+  ]
+}

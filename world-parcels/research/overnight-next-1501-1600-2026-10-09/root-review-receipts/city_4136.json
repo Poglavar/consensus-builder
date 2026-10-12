@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4136",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-4136-bengkulu.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/bengkulu-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:24:32.971752Z",
+  "reason": "Official ATR/BPN city office and BHUMI material support registry custody. The observed Persil layer has no verified anonymous native-ID plus complete-polygon response; fresh reads, paging, 13 cells, metric GEOS checks, binding and headed Details remain unproved. No parcel sample retained.",
+  "independentlyCheckedCustodyUrl": "https://kot-bengkulu.atrbpn.go.id/berita/kantah-kota-bengkulu-ikuti-pembahasan-verifikasi-usulan-lp2b-pada-lahan-baku-sawah",
+  "sourceAdmission": "not_admitted"
+}

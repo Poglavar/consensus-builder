@@ -1,0 +1,25 @@
+{
+  "taskId": "city:9098",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-9098-xingyi.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/xingyi-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-11T17:48:42Z",
+  "reason": "The packet and paired review identify provincial/local custodial context but no qualified anonymous Xingyi parcel endpoint, native ID, or full polygon. The reported HTTP failures and unavailable legacy viewer do not establish parcel absence; registry custody remains unresolved.",
+  "identity": "Official 2025 WUP source archive, ranked roster, pending queue and packet agree on code, rank, country, point and population persons.",
+  "bilingualResearch": "English and local-language executed searches with URLs are recorded in the packet and paired review.",
+  "qualification": {
+    "fullPolygonsRetained": 0,
+    "freshAdapterNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

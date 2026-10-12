@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9651",
+  "cityCode": 9651,
+  "wupCityCode": 9651,
+  "name": "Yavatmal",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1570,
+  "queueRank": 1570,
+  "point": [20.3888007479135, 78.1221595260603],
+  "centerLatLon": [20.3888007479135, 78.1221595260603],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 363908,
+  "population2025k": 363.908,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Yavatmal District Administration land-record page identifies the District Collector Office in Yavatmal and links Maharashtra's Mahabhulekh service. The Maharashtra Land Records department contact page separately identifies the Yavatmal Deputy Superintendent of Land Records and District Superintendent office. This establishes local service custody only, not public parcel geometry or ownership evidence.",
+  "registryEvidenceUrls": [
+    "https://yavatmal.gov.in/en/service/land-records-and-village-form-7-12/",
+    "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact",
+    "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Maharashtra Bhu-Naksha viewer was identified, but bounded direct retrieval timed out. No safe anonymous native parcel ID plus complete polygon response was verified, so schema, CRS, request shape, and city coverage remain unverified. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Yavatmal District Administration and Maharashtra Land Records service custody, plus the official Maharashtra Bhu-Naksha route.",
+    "verifiedOpenScope": "No anonymous complete parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yavatmal Maharashtra official cadastral map land records GIS parcel Bhu Naksha site:gov.in",
+        "scope": "Identify local registry custody and a safe public parcel geometry route.",
+        "result": "Located the official Yavatmal District land-record service page, Maharashtra Land Records department, and Maharashtra Bhu-Naksha viewer. Local service custody was verified; no safe anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://yavatmal.gov.in/en/service/land-records-and-village-form-7-12/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Marathi",
+        "query": "यवतमाळ महाराष्ट्र अधिकृत भू नकाशा जमिनीचा नकाशा महाभूलेख",
+        "scope": "Independent local-language search for local registry custody and public cadastral geometry.",
+        "result": "Located the official Maharashtra Land Records pages, Yavatmal district contact/service information, and the Bhu-Naksha route. The official material describes survey-number maps and land-record services, but no safe anonymous complete-polygon response was verified.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/?districtId=37",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/"
+        ],
+        "executionMethod": "Separate Marathi-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was not shifted. Public parcel-layer availability, urban versus rural coverage, request parameters, schema, CRS, stable native identity, and citywide completeness remain unverified. A timeout or unusable viewer is not treated as evidence of parcel absence.",
+  "nextStep": "Serial reviewer should independently validate the current first-party Bhu-Naksha configuration and a bounded Yavatmal-area anonymous native-ID-plus-geometry response before any adapter qualification; keep runtime held."
+}

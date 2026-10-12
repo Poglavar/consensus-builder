@@ -1,0 +1,92 @@
+{
+  "cityCode": 4521,
+  "queueRank": 2566,
+  "name": "Mollar Char",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [25.3531800220274, 89.7724438906983],
+  "population2025": 228869,
+  "population2025k": 228.869,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bangladesh official cadastral parcel map land records map API Mollar Char Gaibandha",
+        "result": "First-party discovery identified the Bangladesh Department of Land Records and Surveys settlement map viewer, the official integrated map-purchase portal, the DLRS site, and an official Gaibandha government judiciary page. The official LGED Gaibandha Sadar map also labels Mollar Char. The settlement viewer was reachable for JavaScript/configuration and bounded anonymous JSON inspection; no parcel geometry was obtained for the target locality.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://dlrs.gov.bd/",
+          "https://gaibandha.judiciary.gov.bd/bn/servicve-box-detail/mouza-rate",
+          "https://oldweb.lged.gov.bd/uploadeddocument/Map/RANGPUR/gaibandha/gaibandha-s/gaibandha-s.pdf"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "বাংলাদেশ সরকারি মৌজা নকশা খতিয়ান মানচিত্র মোল্লার চর গাইবান্ধা",
+        "result": "প্রথম-পক্ষ অনুসন্ধানে ভূমি রেকর্ড ও জরিপ অধিদপ্তরের সরকারি ম্যাপ অনুসন্ধান, ভূমি নকশা পোর্টাল, গাইবান্ধা জেলার সরকারি মৌজা-মূল্যমান পৃষ্ঠা এবং সরকারি গাইবান্ধা সদর উপজেলা মানচিত্র পাওয়া গেছে। সরকারি সেটেলমেন্ট ভিউয়ারের বেনামী JSON পথ পরীক্ষা করা হয়েছে; গাইবান্ধা জেলার পরবর্তী ম্যাপ-স্তরের তালিকা ফাঁকা ফেরত দিয়েছে, তাই নিরাপদ দাগ পরিচয় বা জ্যামিতি নিশ্চিত হয়নি।",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://gaibandha.judiciary.gov.bd/bn/servicve-box-detail/mouza-rate",
+          "https://oldweb.lged.gov.bd/uploadeddocument/Map/RANGPUR/gaibandha/gaibandha-s/gaibandha-s.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Government of Bangladesh Department of Land Records and Surveys settlement viewer; Gaibandha government judiciary page provides district mouza context. The official LGED Gaibandha Sadar map labels Mollar Char but is an administrative/reference map, not a parcel registry.",
+    "publicMapService": "https://settlement.gov.bd/Map/MapSearch",
+    "mapPurchaseService": "https://map.land.gov.bd/",
+    "registryBasis": "A first-party government cadastral/map viewer with live map-search routes is evidenced, plus official Gaibandha/Mollar Char locality context. This supports registryFound=true for source discovery only; it does not establish Mollar Char parcel coverage or runtime qualification.",
+    "registryFoundReason": "The official DLRS settlement map viewer is a public cadastral map service and its current JavaScript exposes map and GeoJSON routes. Local Gaibandha context is separately evidenced; parcel-level access for Mollar Char remains unresolved."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "javascriptUrl": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+    "responseType": "GeoJSON is expected by the viewer for /Khatian/GetSheetJsonBySurvey; no successful sheet response was obtained",
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": "The viewer route identifies a sheet by rsnum, comcod, unitcod, and sheetno; no parcel-level composite key was obtained.",
+    "inspectionNote": "MapSearch.js exposed POST /Map/GetDivisionList, POST /Khatian/getdistrictlistdivisionwise, POST /Khatian/GetSurveyListDistrictWise, POST /Khatian/GetThanaListBySurveyMap, GET /Khatian/GetSheetListBySurveyMap, POST /Khatian/GetSheetJsonBySurvey, and vector tiles at /tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf. Division and district requests succeeded; Gaibandha returned one RS/BRS digital survey marked চলমান, while its thana/map list returned []. No safe ID-plus-geometry response was obtained."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a qualified parcel endpoint; exact WUP point [25.3531800220274, 89.7724438906983] was preserved and not shifted.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS settlement map viewer and official Gaibandha/Mollar Char locality references.",
+    "verifiedOpenScope": "Viewer identity, route structure, Rangpur/Gaibandha administrative lookup, and one ongoing RS/BRS survey listing only; no parcel extent or geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [25.3531800220274, 89.7724438906983] was preserved in latitude/longitude order and was not shifted.",
+    "An empty thana/map list, timeout, or unavailable map host is not evidence of a zero exact-point hit or citywide absence.",
+    "No native parcel identity, CRS, geometry, or citywide extent was obtained; no GeoJSON sample is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "Bangladesh's official DLRS viewer is live and exposes a route that can return GeoJSON by survey/sheet, but the bounded anonymous path stopped at an empty Gaibandha thana list for the ongoing RS/BRS survey. Mollar Char-specific parcel coverage, native identity, CRS, geometry, and citywide completeness remain unverified."
+}

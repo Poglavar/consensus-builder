@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5534-pishva.json",
+  "purpose": "Document first-party Iran cadastre leads, local Pishva registry context, and bounded anonymous parcel-service review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "SSAA and its Shamim cadastre-related service are national first-party leads. Anonymous checks of the main and Shamim hosts timed out, and no public Pishva viewer/API, configuration, schema/CRS, or safe native-ID-plus-geometry response was obtained. The exact-point failure is not evidence of citywide absence.",
+  "registryAssessment": "A national Iranian registration/cadastre custodian is evidenced. A local report describes اداره ثبت اسناد و املاک شهرستان پیشوا and a cadastre unit, but no current official local registry page or public parcel map was independently verified; registryFound remains null.",
+  "officialPrimarySources": [
+    {"url": "https://ssaa.ir", "observation": "National SSAA lead; bounded anonymous request timed out before public map/API inspection."},
+    {"url": "https://shamim.ssaa.ir", "observation": "SSAA Shamim cadastre/positioning lead; bounded anonymous request timed out."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Pishva Iran official cadastral map land parcels cadastre public GIS", "result": "National SSAA/Shamim leads found; no public Pishva parcel service or geometry response identified.", "method": "Separate English web search followed by first-party host checks.", "scope": "Identify local custodian and safe anonymous parcel geometry.", "actualResultUrls": ["https://ssaa.ir", "https://shamim.ssaa.ir", "https://www.pishva.ir/"]},
+    {"language": "Persian (local/native)", "query": "پیشوا نقشه کاداستر املاک قطعات زمین سازمان ثبت اسناد و املاک", "result": "Local registry/cadastre context was found, but no public Pishva parcel map/API or safe geometry response.", "method": "Separate Persian web search followed by first-party host checks.", "scope": "Cross-check native-language discovery for city-specific cadastral service.", "actualResultUrls": ["https://ssaa.ir", "https://shamim.ssaa.ir", "https://t.me/s/pishvast?after=51414"]}
+  ],
+  "attempts": [
+    {"url": "https://ssaa.ir", "method": "HEAD/GET", "httpStatus": null, "result": "15-second anonymous request timeout; no service configuration or response."},
+    {"url": "https://shamim.ssaa.ir", "method": "HEAD/GET", "httpStatus": null, "result": "15-second anonymous request timeout; no service configuration or response."},
+    {"url": "https://map.ssaa.ir", "method": "HEAD", "httpStatus": null, "result": "Bounded anonymous probe did not yield a usable response; no endpoint, schema, CRS, or parcel geometry."}
+  ],
+  "safeFieldAllowlist": ["native parcel/cadastral identity", "geometry", "source CRS", "layer/service name"],
+  "nativeFieldMapping": null,
+  "geometryDecision": "No sample GeoJSON written; no qualifying public geometry response.",
+  "coverageAssessment": {"claimedScope": "Iran national registration/cadastre leads and Pishva local registry context.", "verifiedOpenScope": null, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeDecision": "held",
+  "remainingUncertainty": "The official hosts may expose a public map or API outside the bounded timeout window. No login, CAPTCHA bypass, credential/private-token use, unsafe field request, or TLS exception was used."
+}

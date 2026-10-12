@@ -1,0 +1,26 @@
+{
+  "taskId": "city:6409",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-6409-mathbarer-char.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/mathbarer-char-service-review.json",
+    "tmp/valhalla-parcel-research/6409/settlement.html",
+    "tmp/valhalla-parcel-research/6409/settlement.js",
+    "tmp/valhalla-parcel-research/6409/land.html"
+  ],
+  "checkedAt": "2026-10-12T05:00:07Z",
+  "queueIdentity": {
+    "rank": 3187,
+    "cityCode": 6409,
+    "country": "Bangladesh",
+    "point": [
+      23.4100876935531,
+      90.1989512379327
+    ],
+    "populationPersons": 188871
+  },
+  "finding": "English and Bengali searches were executed. First-party DLRS/Ministry service leads and cached portal code were inspected. Local registry custody remains unresolved (null); bounded search and timeout do not prove absence. No safe native parcel ID or full polygon was obtained.",
+  "admissionGates": "No live native-ID adapter, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification; runtime admission remains held."
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-6516-vladikavkaz.json",
+  "purpose": "Document separate English/Russian discovery, registry custody scope, anonymous request outcomes, safe field limits and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official national cadastral references and an official regional planning-document page were found, but no usable anonymous parcel ID-plus-geometry response or city-local cadastral map/API was verified.",
+  "registryAssessment": "A city-local registry/cadastre map service was not established. Rosreestr/NSPD are national custodial references; the regional ministry source is planning documentation, not accepted as parcel-service evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "operator": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr)",
+      "scope": "National cadastral authority; no current anonymous geometry response retrieved."
+    },
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "operator": "National Spatial Data System",
+      "scope": "National public cadastral-map reference; endpoint timed out in this environment."
+    },
+    {
+      "url": "https://minstroy.alania.gov.ru/pages/3247",
+      "operator": "Ministry of Construction and Architecture of the Republic of North Ossetia-Alania",
+      "scope": "Official Vladikavkaz general-plan, zoning and settlement-boundary documents; no parcel API verified."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at [43.0450057070321, 44.6696157445886]. Unavailability/timeout is unverified, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://rosreestr.gov.ru/",
+        "method": "GET",
+        "httpStatus": "timeout",
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "No response within bounded anonymous request."
+      },
+      {
+        "url": "https://nspd.gov.ru/",
+        "method": "GET",
+        "httpStatus": "timeout",
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "No response within bounded anonymous request."
+      }
+    ]
+  },
+  "attempts": [
+    "English and Russian first-party discovery completed.",
+    "Rosreestr and NSPD anonymous GET checks timed out; no login, token, CAPTCHA bypass or unsafe field request was attempted.",
+    "Official regional planning page inspected; no parcel geometry endpoint or schema exposed.",
+    "No GeoJSON sample retained because no safe native ID-plus-geometry response was obtained."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "sourceFieldMapping": null,
+  "schemaCrs": null,
+  "coverageAssessment": {
+    "verifiedOpenScope": "None for parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": "held_quality_review",
+  "runtimeReadiness": "held",
+  "nextStep": "Recheck a reachable official national or regional geometry-only service and qualify only after bounded response, CRS, polygon quality and stable native identity are independently verified.",
+  "remainingUncertainty": "Timeouts and an absent route are transport/discovery limitations, not evidence of cadastral absence or incomplete city coverage.",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

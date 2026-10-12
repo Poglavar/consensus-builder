@@ -1,0 +1,126 @@
+{
+  "cityCode": 4480,
+  "queueRank": 3031,
+  "name": "Oltiariq",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso3": "UZB",
+  "point": [40.3881830026063, 71.4764690601362],
+  "population2025": 197314,
+  "population2025k": 197.314,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oltiariq Uzbekistan official cadastral parcel map cadastre GIS API; Uzbekistan official cadastral map Oltiariq Fergana parcel",
+        "result": "First-party discovery identified Uzbekistan's National Geoinformation Portal at open.ngis.uz, operated by the Cadastre Agency. The indexed official portal describes coordinate and cadastral-number search and an Esri-backed map. Official Digital Government material describes open real-estate-register information through this portal. No usable anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://open.ngis.uz/",
+          "https://dgov.uz/en/solution/detail/52/",
+          "https://gov.uz/oz/kadastr/pages/about"
+        ]
+      },
+      {
+        "language": "Uzbek (local/native)",
+        "query": "Oltıariq O'zbekiston kadastr xaritasi rasmiy geoportal API; Oltıariq tuman kadastr xaritasi davlat kadastr agentligi",
+        "result": "Uzbek-language discovery again identified the official Milliy geoaxborot portali and the official Oltiariq district hokimlik site. A first-party Kadastr Agency directory/news result lists cadastral offices for Oltiariq district; a public map listing identifies Oltiariq tuman kadastr agentligi. No parcel ID-plus-geometry response was exposed by the accessible pages.",
+        "actualResultUrls": [
+          "https://open.ngis.uz/",
+          "https://oltiariq.uz/",
+          "https://kadastr.uz/ru/news/news-01-14-10-2023",
+          "https://gov.uz/oz/oltiariq"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://open.ngis.uz/",
+      "https://dgov.uz/en/solution/detail/52/",
+      "https://dgov.uz/uz/solution/detail/52/",
+      "https://gov.uz/oz/kadastr/pages/about",
+      "https://kadastr.uz/ru/news/news-01-14-10-2023"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Cadastre Agency of the Republic of Uzbekistan / National Geoinformation Portal",
+    "scope": "National cadastral and real-estate-rights information custodian. Official material describes the National Geoinformation Portal as providing open information from the State Register of Rights to Real Estate; the portal advertises cadastral-number and coordinate search.",
+    "evidence": "https://dgov.uz/en/solution/detail/52/"
+  },
+  "localCustodianContext": {
+    "name": "Oltiariq district cadastral office (Kadastr Agency local office)",
+    "scope": "Local cadastral-office presence in Oltiariq district evidenced by the official regional cadastral-office directory/news page and a public map listing. No local parcel API was qualified.",
+    "evidence": "https://kadastr.uz/ru/news/news-01-14-10-2023"
+  },
+  "service": {
+    "name": "National Geoinformation Portal / open.ngis.uz",
+    "viewerUrl": "https://open.ngis.uz/",
+    "baseUrl": "https://open.ngis.uz/",
+    "viewerConfiguration": "Indexed official portal content shows coordinate and cadastral-number search, map-layer controls, and 'Powered by Esri'. A catalog result identifies the related ArcGIS REST host https://db.ngis.uz/db/rest/services, but live REST inspection timed out from this environment.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://open.ngis.uz/",
+      "status": "timeout",
+      "outcome": "Anonymous direct request exceeded 25 seconds without a response; no viewer JavaScript, service configuration, schema, CRS, or parcel response was obtained. This is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://db.ngis.uz/db/rest/info?f=pjson",
+      "status": "timeout",
+      "outcome": "The related ArcGIS REST service-info request timed out after 20 seconds. No service metadata or schema was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://db.ngis.uz/db/rest/services?f=pjson",
+      "status": "timeout",
+      "outcome": "The related ArcGIS REST service-catalog request timed out; no layer list or parcel endpoint was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://api.dshk.uz/",
+      "status": 403,
+      "outcome": "The official State Urban Cadastre geoportal returned HTTP 403 to the anonymous request. Its indexed page describes public and restricted urban-cadastre data, but no parcel layer was qualified and no access control was bypassed."
+    },
+    {
+      "method": "GET",
+      "url": "https://oltiariq.uz/",
+      "status": 403,
+      "outcome": "The official Oltiariq district site returned HTTP 403 to direct access; indexed discovery established local government context only, not a parcel service."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/4480/ (request headers/errors only; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [40.3881830026063, 71.4764690601362] was preserved in latitude/longitude order and was not shifted.",
+    "The official portal's advertised coordinate/cadastral-number search does not establish that a parcel vector can be retrieved anonymously for this city.",
+    "No exact-point parcel request was submitted because no usable public parcel endpoint or layer configuration was available; this is not evidence of a point miss or citywide absence.",
+    "Parcel schema, native identity field, geometry CRS, and ID-plus-geometry response remain unqualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The live portal and REST host may be network-unreachable from this environment despite indexed official documentation.",
+    "The portal may require user identification or a current client configuration before returning parcel details; no login or private token was attempted.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

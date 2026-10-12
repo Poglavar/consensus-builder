@@ -1,0 +1,137 @@
+{
+  "cityCode": 196,
+  "queueRank": 1725,
+  "city": "Rio Branco",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-9.96802304321607, -67.8225774693582],
+  "population2025": 332810,
+  "population2025k": 332.81,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rio Branco Acre Brazil official cadastral parcel map geoportal cadastro imobiliário prefeitura",
+        "result": "First-party discovery found the Prefeitura de Rio Branco cadastral/real-estate services, the official municipal RBGeo ArcGIS service for Lotes Cadastro Imobiliário - 2023, and the municipal Imóveis_com_geo map service. The public layer metadata was readable; an anonymous feature geometry response for the preserved WUP point was not verified.",
+        "actualResultUrls": [
+          "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+          "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Im%C3%B3veis_com_geo/MapServer",
+          "https://www.riobranco.ac.gov.br/",
+          "https://receita.riobranco.ac.gov.br/"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Rio Branco Acre mapa cadastral parcelas geoportal cadastro imobiliário prefeitura",
+        "result": "A busca em português encontrou o serviço municipal Cadastro Imobiliário/RBGeo, the Prefeitura/Secretaria Municipal de Finanças cadastral service pages, and official municipal descriptions of Cadastro Imobiliário and SitGeo. The public layer schema was available, but the bounded point query could not be completed anonymously from this environment.",
+        "actualResultUrls": [
+          "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+          "https://www.ac.gov.br/servico/cadastramento-de-imovel",
+          "https://receita.riobranco.ac.gov.br/requerimentos",
+          "https://portalcgm.riobranco.ac.gov.br/portal/wp-content/uploads/2015/05/SEFIN-SMC-IN-CONJUNTA-N%C2%BA-001-2018-CADASTRO-IMOBILI%C3%81RIO-DOE.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Prefeitura Municipal de Rio Branco, Secretaria Municipal de Finanças / Divisão de Cadastro Imobiliário / Multifinalitário; RBGeo is the municipality's public geospatial service.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://receita.riobranco.ac.gov.br/",
+    "municipalCadastreUrl": "https://www.ac.gov.br/servico/cadastramento-de-imovel",
+    "publicMapServiceUrl": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+    "evidence": "The official Acre service page identifies Rio Branco's municipal Cadastro Imobiliário as the responsible service for registering properties, and the municipal RBGeo ArcGIS layer is explicitly named Lotes Cadastro Imobiliário - 2023. The 2018 municipal instruction references the municipality's georeferenced SitGeo mapping and Cadastro Imobiliário management."
+  },
+  "sourceReview": {
+    "service": "Prefeitura de Rio Branco RBGeo ArcGIS FeatureServer, Lotes Cadastro Imobiliário - 2023 (layer 0); related Imóveis_com_geo MapServer inspected as a secondary official map route.",
+    "baseUrls": [
+      "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+      "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Im%C3%B3veis_com_geo/MapServer"
+    ],
+    "officialAssetsInspected": [
+      "RBGeo Lotes Cadastro Imobiliário - 2023 layer metadata",
+      "RBGeo Lotes layer Query operation form",
+      "RBGeo Imóveis_com_geo MapServer metadata/search result",
+      "Acre official Cadastro de imóvel service page",
+      "Rio Branco Secretaria Municipal de Finanças / Receita portal",
+      "Municipal Cadastro Imobiliário instruction PDF"
+    ],
+    "nativeFieldMapping": "The official Lotes layer exposes fid as the ArcGIS OID and source fields distrito, setor, quadra, lote, layer, path and id. No source-specific attribute values were retained. The layer description says the lots were extracted from SitGeo and geometry-corrected in November 2023.",
+    "compositeKeyProvenance": "No composite identity was constructed or retained. The source exposes id as a possible stable string identity and fid as an ArcGIS OID, but no returned Rio Branco feature was available to verify feature-level stability.",
+    "crs": "The Lotes layer metadata declares EPSG:3857 / Web Mercator. The related Imóveis_com_geo service metadata declares EPSG:31979. No parcel geometry was retained for independent CRS transformation validation.",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier, only if feature-level stability is independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and coverage metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+      "outcome": "200/readable ArcGIS REST directory page; polygon layer, public query operation, extent, CRS 3857, and safe schema fields were visible; no login used."
+    },
+    {
+      "method": "GET",
+      "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0?f=pjson",
+      "outcome": "Attempted official JSON metadata route; returned an ArcGIS 500 connection-refused message from the backend service. No retry with credentials or private route was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0/query?where=1%3D1&outFields=fid&returnGeometry=true&geometry=-67.8225774693582%2C-9.96802304321607&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson&resultRecordCount=3",
+      "outcome": "Attempted bounded anonymous exact-point query using the preserved longitude/latitude point and requesting only fid plus geometry; the research fetch environment reported the URL as inaccessible. No hit/miss or absence inference was made and no geometry was received."
+    },
+    {
+      "method": "GET",
+      "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0/query",
+      "outcome": "Query operation page was readable and confirmed the public ArcGIS query route and geometry/output controls; no parcel response was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Im%C3%B3veis_com_geo/MapServer?f=pjson",
+      "outcome": "Attempted related official map service metadata route; fetch returned a cache miss/backend unavailable response. Search-visible metadata identified the service and EPSG:31979 extent, but no feature geometry was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.ac.gov.br/servico/cadastramento-de-imovel",
+      "outcome": "200/readable official government service page; identifies Rio Branco municipal Cadastro Imobiliário as the responsible service. No unsafe data requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://receita.riobranco.ac.gov.br/",
+      "outcome": "Official municipal revenue portal discovered; public cadastral/BCI services are described, but individual property lookup was not attempted because it could expose unsafe property or taxpayer data."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": "id (candidate source field; not feature-verified)",
+    "exactWupPointTest": "Attempted against the municipal Lotes layer with exact WUP point [-9.96802304321607,-67.8225774693582] in latitude/longitude record order; request was inaccessible, so no hit/miss inference was made.",
+    "requestEvidence": ["layer metadata and query form readable", "JSON route backend connection refused", "exact-point GeoJSON query inaccessible"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Rio Branco Cadastro Imobiliário / SitGeo-derived lot layer and related municipal property map service",
+    "verifiedOpenScope": "Official municipal custodian/service evidence, polygon layer schema, public query route, layer extent and CRS metadata; no returned feature geometry",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [-9.96802304321607, -67.8225774693582] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A zero exact-point hit, inaccessible query, backend refusal, map extent limitation or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, registration, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained because no Rio Branco feature geometry and stable native identity were verified.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Rio Branco municipal cadastral custodianship and a public lot polygon layer are evidenced. Anonymous feature selection at the WUP point, stable feature-level native identity, current completeness, and citywide geometry coverage remain unresolved.",
+  "retainedSample": null
+}

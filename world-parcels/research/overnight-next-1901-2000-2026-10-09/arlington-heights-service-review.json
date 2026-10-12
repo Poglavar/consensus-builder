@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-7774-arlington-heights.json",
+  "cityCode": 7774,
+  "queueRank": 1934,
+  "city": "Arlington Heights",
+  "country": "United States of America",
+  "countryCode": "US",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Cook County Geographic Information Systems / CookViewer",
+  "serviceUrl": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer",
+  "scope": "Cook County parcel polygons and archive layers; Arlington Heights is a Cook County municipality.",
+  "schemaAndCrs": "Current parcel metadata identifies an esriGeometryPolygon layer with public JSON/GeoJSON/PBF query support. The official 2021 archive metadata reports EPSG:3435; no response reprojection was performed.",
+  "nativeIdentity": "PIN14_dash is the current-viewer parcel identity/display field; PIN10 is the archive identity field; OBJECTID is an ArcGIS OID fallback only. No synthetic identity or composite key was used.",
+  "requestOutcome": "Official discovery metadata and viewer evidence were found. Direct shell GETs to the viewer/REST host timed out; the bounded exact-point query was not completed. No geometry sample is retained and no point hit or miss is claimed.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no bounded native geometry response was obtained.",
+  "safeFieldAllowlist": ["PIN14_dash", "PIN10", "OBJECTID", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, legal-description, mailing, or other unsafe fields were requested or retained.",
+  "officialCustodyEvidence": "Cook County's official GIS agency page describes county parcel-data maintenance and public GIS access; CookViewer and its ArcGIS REST services are first-party public map/service endpoints.",
+  "limits": [
+    "Countywide service scope does not prove every Arlington Heights parcel is covered at all times.",
+    "A timeout and uncompleted query are not evidence of citywide absence.",
+    "No exact WUP-point result is claimed.",
+    "No raw source attribute set or unsafe property data was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm the current viewer configuration, live endpoint continuity, Arlington Heights coverage, CRS transformation, and native PIN identity behavior before adapter admission."
+}

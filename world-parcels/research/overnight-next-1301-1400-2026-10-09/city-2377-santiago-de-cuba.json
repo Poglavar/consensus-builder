@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2377,
+  "cityId": "wup2025:2377",
+  "name": "Santiago de Cuba",
+  "country": "Cuba",
+  "countryCode": "CU",
+  "centerLatLon": [20.0261346415971, -75.8230188819196],
+  "queueRank": 1303,
+  "population2025": 429537,
+  "population2025k": 429.537,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_source",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santiago de Cuba official cadastral map parcels Cuba cadastre property registry GIS",
+        "result": "Search did not identify a Santiago de Cuba-specific official cadastral viewer or anonymous parcel API. It surfaced Cuba's national cadastral legal framework and secondary references to GEOCUBA/Planning Physics, but no usable city-scoped geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.cibercuba.com/s/gacetaoficial/decreto-ley-332-de-2015-de-consejo-de-estado",
+          "https://www.catastro.hacienda.gob.es/documentos/publicaciones/ct/ct28/art6.pdf",
+          "https://www.cepal.org/sites/default/files/presentations/catastro-nacional-inotu-cuba2024.pdf"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Cuba catastro mapa parcelas Santiago de Cuba oficina municipal catastro registro propiedad GIS",
+        "result": "Search did not identify a Santiago de Cuba-specific official public map/API. Results documented the national Catastro Nacional framework and municipal Planning Physics role, but did not provide an anonymous city parcel service or safe parcel geometry.",
+        "actualResultUrls": [
+          "https://www.cibercuba.com/s/gacetaoficial/decreto-ley-332-de-2015-de-consejo-de-estado",
+          "https://www.directoriocubano.com/servicios/gaceta-oficial/norma/goc-2022-1061-o116/",
+          "https://www.catastro.hacienda.gob.es/documentos/publicaciones/ct/ct9/art6.pdf"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.cibercuba.com/s/gacetaoficial/decreto-ley-332-de-2015-de-consejo-de-estado",
+      "operator": "Cuba national cadastral/legal framework (secondary reproduction of official gazette text)",
+      "observation": "The reproduced Decree-Law 332 states that municipal Planning Physics directorates register urban real estate in the cadastral register and issue cadastral certificates; GEOCUBA is identified as the principal cartographic/cadastral data provider. This establishes the national/local institutional model, not a Santiago-specific open service."
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/documentos/publicaciones/ct/ct28/art6.pdf",
+      "operator": "Published technical discussion of Cuba's national cadastre",
+      "observation": "Describes the Cuba national cadastre and GEOCUBA/Planning Physics work, including the historical rural mapping scope and limitations of urban cadastral development. It is not a current Santiago de Cuba parcel endpoint."
+    },
+    {
+      "url": "https://www.geocuba.cu/",
+      "operator": "Potential official GEOCUBA host",
+      "observation": "Direct HTTPS HEAD request reached certificate verification failure; no certificate exception was authorized, so the host was not bypassed or treated as evidence of an available service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.geocuba.cu/",
+      "method": "HEAD",
+      "status": "TLS certificate verification failure",
+      "summary": "Ordinary TLS verification failed. No credentials, bypass, or unsafe retry was used; no service/API/schema was inspected."
+    },
+    {
+      "url": "https://geotech.cu/",
+      "method": "HEAD",
+      "status": "DNS/connection timeout",
+      "summary": "Host did not resolve/reply within the bounded request; no parcel service was verified."
+    },
+    {
+      "url": "https://www.ipf.cu/",
+      "method": "HEAD",
+      "status": "DNS resolution failure",
+      "summary": "No reachable official endpoint was established."
+    },
+    {
+      "url": "https://ipf.cu/",
+      "method": "HEAD",
+      "status": "DNS resolution failure",
+      "summary": "No reachable official endpoint was established."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Cuba's national cadastral framework assigns urban cadastral maintenance to municipal Planning Physics directorates and identifies GEOCUBA as a principal cartographic/cadastral data provider.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_national_cadastral_framework_no_reachable_city_geometry",
+  "sourceFields": null,
+  "crs": null,
+  "safeFieldAllowlist": ["native parcel identifier", "geometry"],
+  "geometryDecision": "No GeoJSON retained. No safe anonymous parcel response was obtained.",
+  "blocker": "No Santiago de Cuba-specific public cadastral viewer/API was found, and candidate Cuban hosts were unavailable by DNS/timeout or failed ordinary TLS verification. National legal/framework evidence cannot be promoted to city geometry coverage.",
+  "remainingUncertainty": "A municipal cadastral dataset or non-public/undiscovered public service may exist; the exact WUP point was not used to infer citywide absence.",
+  "nextStep": "Retry discovery only when a reachable first-party Santiago/municipal Planning Physics or GEOCUBA map/API is identified; then inspect its public JavaScript/configuration, schema/CRS, and a bounded geometry-plus-safe-ID request.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "runtimeEligible": false
+}

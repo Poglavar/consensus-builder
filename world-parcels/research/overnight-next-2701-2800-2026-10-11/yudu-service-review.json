@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-11464-yudu.json",
+  "cityCode": 11464,
+  "queueRank": 2709,
+  "city": "Yudu",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewStatus": "held",
+  "reviewOutcome": "Local Yudu county registration and natural-resources custody is evidenced, but no qualifying public parcel-polygon service or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Chinese discovery was completed. Official Yudu pages identify the Natural Resources Bureau and Yudu Real Estate Registration Center and describe cadastral survey outputs. The official Ganzhou online service was fetched over TLS and its current HTML/JavaScript routes inspected; it exposes registration/property-search workflows but no anonymous safe parcel geometry endpoint. No login or unsafe query was attempted.",
+  "cityOrLocalCustodian": "Yudu County Natural Resources Bureau and Yudu Real Estate Registration Center are evidenced as local custodians. The Ganzhou municipal online real-estate registration service is a general municipal service channel, not by itself evidence of a parcel layer.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": null,
+  "sampleGeojson": null,
+  "scopeLimits": ["No citywide completeness claim.", "No exact-point absence inference.", "WUP point remains exactly [25.9642849776113,115.412511003351].", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.", "No parcel geometry or native parcel identity was retained."],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "An interactive or restricted cadastral route may exist outside the public pages inspected; no safe anonymous parcel geometry was verified.",
+  "integrationDisposition": "Research packet only; no registry/catalog/runtime files changed."
+}

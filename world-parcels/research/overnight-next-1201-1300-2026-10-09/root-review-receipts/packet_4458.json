@@ -1,0 +1,15 @@
+{
+  "taskId": "packet:4458",
+  "decision": "held",
+  "checkedAt": "2026-10-09T13:08:40Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4458-maturin.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/maturin-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T114700-1f790333/stdout.jsonl"
+  ],
+  "reason": "WUP code 4458, rank 1231, Venezuela, exact point [9.73302840745386,-63.1841133113144] and 452835 persons match the immutable roster and pending queue. The worker log confirms executed English and Spanish searches. The cited ordinance is on a document mirror and municipal-office reporting is secondary; no original first-party municipal response was saved, so registryFound=true needs first-party corroboration before reliance. The worker command used curl -k despite the packet's TLS-verification claim; its timeout and DNS failures do not show citywide absence. No parcel feature response, safe native ID, or full polygon was retained. Every live adapter qualification gate remains unproven, so no admission."
+}

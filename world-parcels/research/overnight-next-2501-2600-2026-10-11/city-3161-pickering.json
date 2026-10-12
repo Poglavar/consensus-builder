@@ -1,0 +1,125 @@
+{
+  "cityCode": 3161,
+  "queueRank": 2570,
+  "name": "Pickering",
+  "country": "Canada",
+  "countryCode": "CA",
+  "point": [43.8485415410765, -79.0622115804107],
+  "population2025": 228588,
+  "population2025k": 228.588,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pickering Ontario official GIS parcel map cadastral Durham Region",
+        "result": "Official City of Pickering Maps and Open Data page found the City map portal and open-data portal. The official ArcGIS REST service discovered from first-party search is a general public map service, not a parcel service; its published layer list contains roads, buildings, water, boundaries, and address points but no cadastral parcel layer.",
+        "actualResultUrls": [
+          "https://www.pickering.ca/business-building-development/maps-and-open-data/",
+          "https://maps.pickering.ca/arcgisinter/rest/services/public/General_Map_Public/MapServer",
+          "https://opendata.pickering.ca/"
+        ]
+      },
+      {
+        "language": "French (Canada; local-language check)",
+        "query": "Pickering Ontario carte cadastrale officielle parcelles SIG Durham",
+        "result": "No separate French-language Pickering cadastral viewer or parcel endpoint was found in the bounded first-party discovery. The official English City GIS/open-data page and the same public ArcGIS service remain the relevant local custodial sources.",
+        "actualResultUrls": [
+          "https://www.pickering.ca/business-building-development/maps-and-open-data/",
+          "https://maps.pickering.ca/arcgisinter/rest/services/public/General_Map_Public/MapServer"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "First-party English and French discovery plus bounded inspection of the official City ArcGIS REST service.",
+  "sourceReview": "The City of Pickering is evidenced as the local GIS/map custodian: its official page links the interactive Map Portal and Open Data Portal, and the official ArcGIS REST directory identifies the General Map service with Pickering City Development Department copyright. This establishes local public GIS custody, but not an open cadastral parcel adapter. The published service layers do not include parcels.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH/OPEN",
+      "url": "https://www.pickering.ca/business-building-development/maps-and-open-data/",
+      "httpStatus": 200,
+      "outcome": "Official City page loaded. It links the Pickering Map Portal and Open Data Portal and describes map feature search/identification. No parcel schema or parcel-download URL was embedded in the inspected page."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.pickering.ca/arcgisinter/rest/services/public/General_Map_Public/MapServer",
+      "httpStatus": 200,
+      "outcome": "Official ArcGIS REST directory loaded. Service spatial reference is EPSG:26917; supported query formats include JSON and GeoJSON. Published layers are Pickering road symbols, address points, road labels, pipeline, railroad, road centreline/edge, water courses, surrounding roads, municipal boundary, buildings, 407 right of way, water bodies, and boundary clip. No cadastral parcel layer is listed."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.pickering.ca/arcgisinter/rest/services/public/General_Map_Public/MapServer?f=json",
+      "httpStatus": null,
+      "outcome": "Direct anonymous JSON request from the research environment timed out without a response. No TLS bypass, credentials, private token, login, CAPTCHA, or retry escalation was used. The HTML REST directory inspection above is the authoritative bounded schema observation."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.pickering.ca/arcgisinter/rest/services?f=json",
+      "httpStatus": null,
+      "outcome": "Direct anonymous service-catalog JSON request timed out without a response. No parcel service was inferred from this failure."
+    },
+    {
+      "method": "OPEN",
+      "url": "https://opendata.pickering.ca/",
+      "httpStatus": null,
+      "outcome": "Official open-data portal link was reached by the source page, but the bounded inspection returned no readable page content. No dataset or parcel geometry was inferred from the unusable response."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.durham.ca/discovering-durham/maps/",
+      "httpStatus": 200,
+      "outcome": "Official Durham Region maps page was found as regional context. It did not expose a safe anonymous Pickering parcel feature endpoint in the bounded inspection."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Official Pickering ArcGIS REST directory inspected; no parcel viewer configuration was exposed.",
+    "geometryCrs": "EPSG:26917 observed for the official general-map service; no parcel-layer CRS observed.",
+    "nativeIdentity": "Not observed for a parcel layer.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [43.8485415410765, -79.0622115804107] preserved for qualification; no coordinate shift and no exact-point parcel query used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No safe parcel feature response obtained. The general-map service's published layers do not include parcels; direct JSON service-catalog requests timed out."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if later exposed and source-proven",
+    "full parcel polygon geometry if later exposed",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date",
+    "public administrative codes"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local public GIS custody is evidenced, but no anonymous cadastral parcel layer, safe native parcel identity, or unchanged parcel geometry was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [43.8485415410765, -79.0622115804107] was preserved and not shifted.",
+    "No zero exact-point hit, map extent miss, timeout, empty response, or unusable UI was treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide parcel coverage, update cadence, parcel identity semantics, or parcel-layer CRS was verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "City of Pickering GIS custody is clear from first-party sources. The public general-map service is not cadastral, and direct catalog/JSON requests were unavailable from this environment. A separate authenticated, hidden, or future parcel route may exist; none was used or inferred. Runtime/admission remains held."
+}

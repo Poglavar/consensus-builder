@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 12127,
+  "queueRank": 1855,
+  "cityId": "wup2025:12127",
+  "name": "Yuanlin City",
+  "country": "China, Taiwan Province of China",
+  "countryCode": "TW",
+  "iso3": "TWN",
+  "point": [23.9313794330103, 120.542206563103],
+  "centerLatLon": [23.9313794330103, 120.542206563103],
+  "population2025": 310380,
+  "population2025k": 310.38,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yuanlin City Taiwan official cadastral parcel map GIS land registration service",
+        "result": "Official-source discovery found the National Land Surveying and Mapping Center (NLSC) public cadastral viewer/WFS documentation and the official Yuanlin Land Office. The bounded anonymous cadastral feature request was denied and the viewer exact-point overlay returned no land-number result; no parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://maps.nlsc.gov.tw/T09/mapshow.action",
+          "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_main.jsp",
+          "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
+          "https://landoffice.chcg.gov.tw/yuanlin/01intro/intro03.aspx"
+        ]
+      },
+      {
+        "language": "Chinese (Traditional)",
+        "query": "員林市 地籍圖 地政事務所 圖台 地號 官方",
+        "result": "官方中文查找確認彰化縣員林地政事務所負責土地登記、土地複丈、地籍圖重測及地籍正副圖保管，並提供地籍圖查詢及地籍圖謄本服務；未取得可匿名下載完整地籍多邊形的公開端點。",
+        "actualResultUrls": [
+          "https://landoffice.chcg.gov.tw/yuanlin/01intro/intro03.aspx",
+          "https://landoffice.chcg.gov.tw/yuanlin/07other/main.aspx?main_id=1869",
+          "https://landoffice.chcg.gov.tw/yuanlin/05links/links01.aspx?cate_id=412",
+          "https://maps.nlsc.gov.tw/T09/mapshow.action"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Traditional-Chinese first-party discovery followed by TLS-verified bounded GET requests and inspection of official NLSC WFS/viewer metadata. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NLSC-T09-WFS-CADAS_MERGE",
+    "name": "National Land Surveying and Mapping Center cadastral viewer/WFS; Changhua County Yuanlin Land Office",
+    "url": "https://maps.nlsc.gov.tw/T09/mapshow.action",
+    "operator": "National Land Surveying and Mapping Center, Ministry of the Interior; Changhua County Yuanlin Land Office",
+    "serviceType": "Public cadastral reference viewer and local land-office service portal; anonymous parcel geometry not verified",
+    "layer": "WFS:CADAS_MERGE / 地籍圖",
+    "geometryType": "multiPolygon (schema only)",
+    "outputCrs": "EPSG:3826 (TWD97 / TM2 zone 121) used for bounded point request; no feature geometry returned",
+    "nativeIdField": "CITY + SECT + LANDNO composite (schema evidence only)",
+    "nativeIdEvidence": "DescribeFeatureType exposed CITY, SECT, LANDNO, OFFICE, TOWN and other source fields; no feature row was returned and no identity was retained.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official Yuanlin Land Office pages document local cadastral-map custody and services. No owner, address, title, tax, account or personal fields were requested."
+  },
+  "requests": [
+    {
+      "url": "https://maps.nlsc.gov.tw/T09/mapshow.action",
+      "method": "GET; anonymous",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "result": "Viewer loaded; current viewer route and cadastral overlay request pattern were inspected."
+    },
+    {
+      "url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities",
+      "method": "GET; anonymous",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "result": "Capabilities listed WFS:CADAS_MERGE titled 地籍圖."
+    },
+    {
+      "url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=WFS:CADAS_MERGE",
+      "method": "GET; anonymous",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "result": "Schema exposed CITY, SECT, LANDNO, OFFICE, TOWN, non-retained source attributes, and gml:multiPolygonProperty."
+    },
+    {
+      "url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=WFS:CADAS_MERGE&SRSNAME=EPSG:3826&BBOX=203398.0,2647498.8,203398.7,2647499.5,EPSG:3826&OUTPUTFORMAT=application/json",
+      "method": "GET; anonymous; bounded exact-point-area request using unchanged WUP point transformed to EPSG:3826",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "result": "Permission Denied; no geometry or native ID returned."
+    },
+    {
+      "url": "https://landmaps.nlsc.gov.tw/S_Maps/qryTileMapIndex?type=2&flag=1&city=N01&x=203398.3645&y=2647499.1481&alpah=0.5f",
+      "method": "GET; anonymous; exact unchanged WUP point transformed to EPSG:3826",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "result": "[{\"msg\":\"地號查詢無資料!\"}] ; no geometry or parcel ID retained; not treated as citywide absence."
+    },
+    {
+      "url": "https://landoffice.chcg.gov.tw/yuanlin/01intro/intro03.aspx",
+      "method": "GET; anonymous",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "Official local office page documents registration, land survey, cadastral re-survey and cadastral-map custody duties."
+    },
+    {
+      "url": "https://landoffice.chcg.gov.tw/yuanlin/07other/main.aspx?main_id=1869",
+      "method": "GET; anonymous",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "Official local page documents a Changhua-wide touch-screen cadastral-map query service, but no anonymous vector endpoint was exposed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official NLSC cadastral service and Changhua County Yuanlin Land Office local cadastral administration.",
+    "verifiedOpenScope": "NLSC cadastral layer and schema were verified, but anonymous feature access was denied and the exact-point viewer request returned no land-number result; citywide open geometry coverage is unknown.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official NLSC WFS schema is public, but the bounded anonymous GetFeature request returned Permission Denied. The viewer overlay request returned a no-land-number message and exposed no polygon response.",
+  "remainingUncertainty": "Current access controls, parcel query route, stable native identity semantics, update currency, CRS of any future feature response, and citywide coverage remain unresolved. The exact WUP point was preserved in latitude/longitude order and never shifted. A zero exact-point response or access denial is not evidence of citywide cadastral absence.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [23.9313794330103, 120.542206563103],
+  "publicParcelGeometryFound": false,
+  "sourceIds": ["NLSC-T09-WFS-CADAS_MERGE", "YUANLIN-LAND-OFFICE"],
+  "registryEvidenceUrls": [
+    "https://landoffice.chcg.gov.tw/yuanlin/01intro/intro03.aspx",
+    "https://landoffice.chcg.gov.tw/yuanlin/07other/main.aspx?main_id=1869",
+    "https://maps.nlsc.gov.tw/T09/mapshow.action",
+    "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=WFS:CADAS_MERGE"
+  ],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "cohort": "overnight-next-1801-1900",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

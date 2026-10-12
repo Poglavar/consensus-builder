@@ -1,0 +1,24 @@
+{
+  "taskId": "city:2884",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:18:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-2884-am-timan.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/am-timan-service-review.json"
+  ],
+  "review": "Official Chad national cadastre/land-conservation procedure sources are recorded, but no Am Timan-local registry or parcel ID-plus-geometry response was verified. English and French searches are documented. A TLS failure is an access limitation. Zero sample polygons; registryFound stays null. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent. Held without admission or citywide absence inference.",
+  "identity": {
+    "rank": 2795,
+    "country": "Chad",
+    "point": [
+      11.0422091140526,
+      20.2801739289138
+    ],
+    "populationPersons": 212167,
+    "sourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "samplePolygonCount": 0
+}

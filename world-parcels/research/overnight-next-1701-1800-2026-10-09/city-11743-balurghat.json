@@ -1,0 +1,124 @@
+{
+  "cityCode": 11743,
+  "queueRank": 1798,
+  "city": "Balurghat",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.2294650554093, 88.7796737181144],
+  "population2025": 319934,
+  "population2025k": 319.934,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Balurghat West Bengal official cadastral map parcel land records GIS Bhulekh Banglarbhumi",
+        "result": "First-party discovery identified the Government of West Bengal Land and Land Reforms Department's Banglarbhumi portal, which advertises RS-LR plot information and Plot Map/Mouza Map request services. Official government material also identifies Block Land and Land Reforms Office and District/Sub-Divisional land offices as relevant custodians. No open Balurghat parcel API or downloadable safe parcel geometry was identified.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://wb.gov.in/government-schemes-details-minor-correction-of-land-records.aspx",
+          "https://gisigr.wb.gov.in/dorsrhome/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "বালুরঘাট পশ্চিমবঙ্গ সরকারি জমির মানচিত্র খতিয়ান বাংলা ভূমি",
+        "result": "Native-language discovery resolved to the same first-party Banglarbhumi land-record service and Bengali-language land-record terminology (খতিয়ান, দাগ, মৌজা). Search results did not expose a separate Balurghat cadastral map/API endpoint or safe parcel geometry.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://wb.gov.in/government-schemes-details-minor-correction-of-land-records.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Government of West Bengal Land and Land Reforms Department / Banglarbhumi; local Balurghat BL&LRO and SD&LRO are evidenced in official West Bengal listings.",
+  "registryEvidence": {
+    "portalUrl": "https://banglarbhumi.gov.in/",
+    "localOfficeEvidenceUrl": "https://www.par.wb.gov.in/writereaddata/No%2085%20CS.pdf",
+    "registrationOfficeEvidenceUrl": "https://gisigr.wb.gov.in/dorsrhome/",
+    "serviceEvidence": "Official Banglarbhumi landing-page material lists Plot Info, Plot Map, Mouza Map, RS-LR Information and land-record services. Official Government of West Bengal procedure material states that land-record matters can use the state portal, BL&LRO, DL&LRO and SD&LRO. The official registration GIS page lists ADSR Balurghat.",
+    "locality": "Balurghat, Dakshin Dinajpur, West Bengal"
+  },
+  "sourceReview": {
+    "service": "Banglarbhumi West Bengal public land-record portal",
+    "baseUrl": "https://banglarbhumi.gov.in/",
+    "officialAssetsInspected": [],
+    "nativeFieldMapping": {
+      "plotIdentity": "Official terminology indicates plot/dag number, but no parcel response was returned in this attempt",
+      "khatian": "Official terminology indicates khatian/Record of Rights, but unsafe owner/title fields were not requested",
+      "mouza": "Administrative cadastral unit named by official procedure; no Balurghat mouza selection response was obtained"
+    },
+    "compositeKeyProvenance": "District/block/mouza/plot selection is described by official procedures, but no concrete Balurghat selection codes or parcel identity were returned.",
+    "crs": null,
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and administrative metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://banglarbhumi.gov.in/",
+      "outcome": "Direct curl request timed out after 30 seconds; no page or asset retained. Search discovery exposed official service labels, but this is not a parcel response."
+    },
+    {
+      "method": "GET",
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/Home.action",
+      "outcome": "Public web fetch timed out; no login used and no response schema obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+      "outcome": "Public web fetch returned 502 Bad Gateway; no district/block/mouza or parcel response obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://wb.gov.in/government-schemes-details-minor-correction-of-land-records.aspx",
+      "outcome": "200; official procedure page readable and confirms state portal plus BL&LRO/DL&LRO/SD&LRO routes. Procedure prose only; no geometry or parcel identity."
+    },
+    {
+      "method": "GET",
+      "url": "https://gisigr.wb.gov.in/dorsrhome/",
+      "outcome": "200; official Directorate of Registration and Stamp Revenue page readable and lists ADSR Balurghat. Registration-office jurisdiction is not treated as cadastral geometry evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.par.wb.gov.in/writereaddata/No%2085%20CS.pdf",
+      "outcome": "Search-indexed official West Bengal government document identifies BL&LRO Balurghat, DL&LRO Dakshin Dinajpur and SD&LRO Balurghat; no parcel payload."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel geometry service response; no exact-point hit/miss inference",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "West Bengal state land-record and cadastral-map services, with Balurghat local land-revenue offices",
+    "verifiedOpenScope": "Official service/procedure and local-office evidence only; no open parcel feature response",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [25.2294650554093, 88.7796737181144] was preserved in latitude/longitude order and not shifted.",
+    "A timeout, 502 response, unavailable UI, or no exact-point response is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, deed, tax/account, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, parcel identity, CRS, or GeoJSON sample was retained.",
+    "Packet completion records executed attempts only; runtime adapter qualification and admission remain a separate serial-review decision."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public portal's current parcel routes, Balurghat administrative selection codes, native parcel identity field, CRS, geometry response format and citywide completeness remain unresolved due to timeout/gateway failures.",
+  "retainedSample": null
+}

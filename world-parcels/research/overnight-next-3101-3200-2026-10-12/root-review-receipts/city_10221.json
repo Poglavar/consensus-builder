@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10221",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-10221-akbarpur.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/akbarpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:16:13Z",
+  "finding": "Akbarpur, India; rank 3113; 192841 persons; point [26.4301784845419,82.539479964603]. English and Hindi searches recorded. Government BhuNaksha/Bhulekh and Ambedkarnagar/Akbarpur administrative selections support local record custody. Two urban candidate map extents were zero; no native parcel ID/full polygon was obtained, and zero extents do not prove citywide absence.",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No fresh native-ID full-polygon reads, forced paging, thirteen bounded cells, independent metric GEOS validity/overlap checks, source binding, or headed Details verification. No source integration or runtime admission.",
+  "absenceInference": "None; unavailable viewers, access failures, and zero extents do not establish citywide parcel absence."
+}

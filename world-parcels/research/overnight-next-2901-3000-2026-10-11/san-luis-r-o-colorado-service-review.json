@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-1443-san-luis-r-o-colorado.json",
+  "cityCode": 1443,
+  "queueRank": 3000,
+  "name": "San Luis Río Colorado",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "attempt": 1,
+  "reviewStatus": "complete_research_held",
+  "summary": "Official local municipal Catastro custody and the state ICReSON registry office are evidenced. No safe anonymous native parcel ID plus full geometry response was qualified, so no sample GeoJSON is retained and runtime remains held.",
+  "queryAndRequestOutcomes": "Separate English and Spanish first-party discovery was completed. Municipal Catastro, municipal property/cadastral procedures, the current Lucca online-tramites HTML, ICReSON office evidence, the state cartography procedure, and an official historical value-map PDF were checked; no parcel feature API, schema, CRS, or safe polygon response was obtained.",
+  "registryFound": true,
+  "scopeLimits": [
+    "Exact WUP point [32.4485637631645, -114.764890687057] was preserved in latitude/longitude order and not moved.",
+    "Administrative custody and cadastral procedures do not establish citywide open vector coverage.",
+    "No exact-point hit or miss is inferred from the absence of a qualified parcel endpoint.",
+    "A Cloudflare challenge on the ICReSON page was recorded without bypass; no TLS exception was used.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "No raw source-specific attribute set and no GeoJSON sample were retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "nativeFieldMapping": {"canonicalIdentity": null, "alsoObserved": ["Clave Catastral (UI label only)"], "retainedGeoJSONProperty": null, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identity if source-proven", "full native parcel polygon", "geometry CRS", "public service/layer metadata", "retrieval date"],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Custody is evidenced but no anonymous public parcel ID-plus-geometry response, source schema, CRS, or citywide coverage was qualified."},
+  "uncertainty": ["Current municipal/state cadastral vector service route unresolved", "No safe native parcel identity", "No geometry or CRS", "No citywide coverage qualification", "Independent serial review required"],
+  "cohort": "overnight-next-2901-3000-2026-10-11",
+  "cohortState": "research_complete_pending_root_review"
+}

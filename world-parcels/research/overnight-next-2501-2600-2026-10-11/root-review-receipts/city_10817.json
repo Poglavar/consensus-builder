@@ -1,0 +1,33 @@
+{
+  "taskId": "city:10817",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-10817-ambikapur.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ambikapur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:41:43Z",
+  "reason": "WUP code 10817, rank 2553, India, point [23.1292257727542,83.1869670127607], and 230136 persons match the immutable roster and queue. English and Hindi executed searches are recorded. Official Bhu-Naksha cached responses for Ambikapur village GIS code 390105.028 returned a village extent and plot 1 native opaque ID, supporting local cadastral custody (registryFound true), but no polygon geometry or resolved CRS. The WMS capabilities request failed with HTTP 500; this does not imply citywide absence. No retained polygon or runtime adapter qualification exists.",
+  "registryCustodyReview": "true: official Bhu-Naksha village extent and plot lookup, with official Surguja district service page identified in the paired evidence",
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": true,
+    "polygonGeometryVerified": false
+  },
+  "firstPartyCacheReviewed": {
+    "path": "tmp/valhalla-parcel-research/10817/extent.json",
+    "sha256": "477cb655004de389c1e1022acdbd9cc2466c232d2886affe21acc1c542ded7c3",
+    "plotLookupPath": "tmp/valhalla-parcel-research/10817/plot1.json",
+    "plotLookupSha256": "b19d1fcb7e7908080ee5b425d3557decfc67766f0f2b4ec1a806fc94ff7af635"
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

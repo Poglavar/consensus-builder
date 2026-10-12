@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8406",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:50:30Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-8406-shamli.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/shamli-service-review.json"
+  ],
+  "inspectedCacheFiles": [
+    "tmp/valhalla-parcel-research/shamli-report.html"
+  ],
+  "review": "Official Shamli-tehsil report cache confirms Shamli village 221353 linked to BhuNaksha. English and Hindi searches and immutable WUP identity check passed. The packet records bounded map metadata only, with no full polygon; the observed geometry route required authorization. No independent adapter qualification or headed Details verification. The access wall does not establish citywide absence."
+}

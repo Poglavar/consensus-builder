@@ -1,0 +1,110 @@
+{
+  "cityCode": 1809,
+  "queueRank": 3027,
+  "name": "Jongju",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "point": [39.6924446223847, 125.211749742683],
+  "population2025": 197651,
+  "population2025k": 197.651,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jongju North Korea cadastral map parcel registry official GIS land administration",
+        "result": "No first-party DPRK Jongju cadastral viewer, local registry, or anonymous parcel feature service was identified. Search results were unrelated South Korean cadastral services, general Korean land-information portals, or non-cadastral material.",
+        "actualResultUrls": [
+          "https://www.naenara.com.kp/",
+          "https://www.kcna.kp/"
+        ]
+      },
+      {
+        "language": "Korean (local/native)",
+        "query": "정주 북한 지적도 지적측량 토지정보 지도 공식",
+        "result": "No first-party DPRK Jongju cadastral map or parcel API was found. Returned results primarily described Republic of Korea services (K-GeoP, MOLIT cadastral WMS/WFS) or general DPRK legal/institutional text; these do not evidence Jongju coverage.",
+        "actualResultUrls": [
+          "https://www.kgeop.go.kr/",
+          "https://www.data.go.kr/data/15057570/openapi.do",
+          "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"
+        ]
+      },
+      {
+        "language": "Korean (local/native)",
+        "query": "조선민주주의인민공화국 정주 토지 등록 지적 지도",
+        "result": "No public DPRK city/local cadastral viewer or safe ID-plus-geometry response was identified. The indexed DPRK material referenced land/building registration in a special economic zone, not Jongju parcel coverage.",
+        "actualResultUrls": [
+          "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+          "https://www.nktechlab.org/wp-content/uploads/2025/07/200619-Socialist-Property-Management-Law-%EC%82%AC%ED%9A%8C%EC%A3%BC%EC%9D%98%EC%9E%AC%EC%82%B0%EA%B4%80%EB%A6%AC%EB%B2%95-_KOR.pdf"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+      "https://www.nktechlab.org/wp-content/uploads/2025/07/200619-Socialist-Property-Management-Law-%EC%82%AC%ED%9A%8C%EC%A3%BC%EC%9D%98%EC%9E%AC%산관리법-_KOR.pdf"
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": null,
+  "localCustodianContext": null,
+  "service": {
+    "name": null,
+    "viewerUrl": null,
+    "baseUrl": null,
+    "viewerConfiguration": "No official public Jongju/DPRK cadastral viewer or current JavaScript/configuration exposing a parcel service was located.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": [],
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.naenara.com.kp/",
+      "status": "TLS certificate verification failure / no verified response",
+      "outcome": "The official-looking DPRK information host could not be fetched with normal TLS verification. No TLS bypass was attempted; no viewer, API, schema, CRS, or parcel response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.naenara.com.kp/main/index/en/first",
+      "status": "TLS certificate verification failure / no verified response",
+      "outcome": "A second public route on the same host also failed normal TLS verification. No login, credentials, private token, or certificate exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://kcnawatch.org/",
+      "status": 200,
+      "outcome": "Third-party monitoring site loaded, but it is not a DPRK cadastral custodian and no parcel viewer/API was inferred or queried from it."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/1809/ (bounded HTML/request outcomes only; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [39.6924446223847, 125.211749742683] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel request or map-extent test was treated as evidence of citywide presence or absence.",
+    "No public parcel schema, stable native identity, geometry CRS, city/local registry, or ID-plus-geometry response was qualified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "DPRK cadastral data may be non-public, inaccessible from this network, or exposed through an unindexed/alternate host.",
+    "Search results for Korean cadastral terminology were dominated by Republic of Korea services and cannot establish DPRK coverage.",
+    "Certificate failure and unavailable viewer routes are access/qualification outcomes, not evidence of parcel absence.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

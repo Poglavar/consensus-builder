@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 3332,
+  "wupCityCode": 3332,
+  "queueRank": 2655,
+  "cityId": "wup2025:3332",
+  "name": "Beni Mellal",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "iso2": "MA",
+  "iso3": "MAR",
+  "point": [32.338376282794, -6.35801579784794],
+  "centerLatLon": [32.338376282794, -6.35801579784794],
+  "population2025": 222621,
+  "population2025k": 222.621,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "ANCFCC (Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie), with official Beni Mellal local cadastre-office evidence",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Beni Mellal Morocco cadastral parcel map official land registry geospatial service",
+        "result": "Found the official ANCFCC national cadastral mandate/products pages, the official cadastral-plan request route, the official external-services directory naming the Beni Mellal Cadastre service, and the official cartographic catalogue entry for Beni Mellal.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://www.ancfcc.gov.ma/ProduitsCartographie/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "بني ملال المحافظة العقارية المسح العقاري خريطة القطع الأرضية الموقع الرسمي",
+        "result": "Official Arabic ANCFCC cadastral pages and the Arabic official external-services directory were found. The directory identifies the Beni Mellal local cadastral/conservation network; no public parcel-feature API or downloadable Beni Mellal parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastreAr/",
+          "https://ancfcc.gov.ma/ar",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "operator": "ANCFCC official external-services directory",
+      "scope": "Beni Mellal local Conservation Foncière and Cadastre services",
+      "observation": "The official directory lists Beni Mellal local offices, including the Cadastre service in Quartier Administratif. This is local custodian evidence, not a parcel feed."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/ProduitsCartographie/",
+      "operator": "ANCFCC",
+      "scope": "Beni Mellal cartographic products and local point of sale",
+      "observation": "The official page lists Beni Mellal Service du Cadastre and cartographic products; it does not advertise an open parcel feature service."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/cadastre/",
+      "operator": "ANCFCC national cadastral agency",
+      "scope": "Morocco national cadastre",
+      "observation": "Official national mandate and cadastral product/procedure evidence."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+      "operator": "ANCFCC cartographic catalogue",
+      "scope": "Beni Mellal cartographic product catalogue",
+      "observation": "Official indexed catalogue evidence includes Beni Mellal mapping at 1/10,000, 2018; live retrieval in this environment returned the maintenance page rather than PDF bytes."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.ancfcc.gov.ma/",
+      "method": "GET",
+      "status": "HTTP 200 maintenance page",
+      "summary": "Official site shell returned an ANCFCC maintenance page. No viewer configuration or public map/API endpoint was exposed."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "method": "GET",
+      "status": "HTTP 200 maintenance page",
+      "summary": "Official online cadastral-plan request route returned maintenance HTML instead of the request form/service. No login, CAPTCHA bypass, credentials, private token, or unsafe field request was attempted."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+      "method": "GET",
+      "status": "HTTP 200 maintenance HTML instead of PDF",
+      "summary": "The official catalogue URL resolved to the same maintenance page from the shell; indexed official search evidence was recorded, but no geometry or schema was extracted."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "method": "GET via official indexed page",
+      "status": "official directory evidence available",
+      "summary": "Beni Mellal local Conservation Foncière/Cadastre custodian evidence was identified. No anonymous parcel feature response was obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "ANCFCC national cadastral mandate with Beni Mellal local-office evidence and catalogued Beni Mellal cartographic products.",
+    "verifiedOpenScope": "Official agency/service and local-custodian metadata only; no live parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Beni Mellal local Cadastre service is evidenced by the official ANCFCC directory."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No geometry retained; official service routes were unavailable behind maintenance page.",
+    "crs": "No live service CRS was observed. Official cadastral documentation references Lambert for cadastral map products, but this was not tied to a live feature endpoint.",
+    "identityReadiness": "Not assessed because no parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attributesRequested": "No parcel request with attributes was made; no owner, address, titleholder, contact, tax, account, document, or personal fields were requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify a live public service or safe public geometry source, native identity semantics, CRS/axis handling, coverage, and anonymous query behavior before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [32.338376282794,-6.35801579784794] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss, map-extent miss, timeout, maintenance page, or unusable UI is evidence of citywide absence.",
+    "No retained GeoJSON sample because no safe native parcel feature with geometry and identity was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and any composite-key provenance in city/service-review metadata."
+}

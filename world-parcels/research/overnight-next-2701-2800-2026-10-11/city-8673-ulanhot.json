@@ -1,0 +1,40 @@
+{
+  "cityCode": 8673,
+  "queueRank": 2750,
+  "name": "Ulanhot",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [46.0737176410876, 122.059607832862],
+  "population2025": 214734,
+  "population2025k": 214.734,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ulanhot official cadastral parcel map GIS land registration natural resources",
+        "result": "First-party discovery located the official Xing'an League natural-resources organization page and an official Ulanhot-2000 coordinate-system notice. It did not locate an anonymous Ulanhot parcel-vector endpoint or downloadable safe parcel geometry.",
+        "actualResultUrls": [
+          "https://www.xam.gov.cn/xam/2021-10/25/article_2024053016352057522.html",
+          "https://www.xam.gov.cn/xam/2024-04/22/article_2024042218541819749.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "乌兰浩特 不动产登记 地籍图 GIS 自然资源 官方",
+        "result": "一方检索确认兴安盟自然资源局及兴安盟不动产登记中心在乌兰浩特市办公并承担全盟不动产登记信息平台及登记工作；官方坐标系通告确认乌兰浩特2000坐标系。未确认匿名宗地身份、字段、CRS响应或完整几何接口。",
+        "actualResultUrls": [
+          "https://www.xam.gov.cn/xam/2021-10/25/article_2024053016352057522.html",
+          "https://www.xam.gov.cn/xam/2024-04/22/article_2024042218541819749.html",
+          "https://www.xam.gov.cn/xam/2023-01/17/article_2024041412242033639.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A first-party local/regional registry custodian is evidenced, but no anonymous parcel schema, stable parcel identity, or safe geometry was obtained. This packet records research completion only and is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "resultCategory": "local_registry_custodian_evidenced_no_anonymous_geometry",
+  "sampleGeoJSON": null
+}

@@ -1,0 +1,32 @@
+{
+  "taskId": "city:1778",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-1778-gulu.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/gulu-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T01:22:04.335071Z",
+  "city": "Gulu",
+  "queueRank": 3035,
+  "registryFound": true,
+  "identityCheck": "Packet code, rank, country, 2025 point and population persons match pending queue, ranked roster, and the verified original WUP 2025 source row (bulk SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114).",
+  "searchCheck": "English search is recorded; the query labelled Acholi is itself English, so a native-language executed search is not evidenced.",
+  "polygonCheck": "Zero retained full polygons and zero retained parcel ID attributes; sample count is within the three-polygon limit.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "MLHUD lists a Gulu zonal office and UgNLIS parcel/cadastral functions. Inspected anonymous API routes returned an HTML shell, with no bounded ID-plus-polygon response.",
+  "scopeLimit": "Custody does not establish public parcel-vector access or citywide completeness. Unavailable viewers, HTML shells, TLS failures and untested points do not prove parcel absence. No runtime, catalog or report admission.",
+  "sourceUrls": [
+    "https://mlhud.go.ug/ugnlis/",
+    "https://ugnlis.mlhud.go.ug/"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-12120-dazhuang.json",
+  "cohort": "overnight-next-2401-2500-2026-10-11",
+  "purpose": "Document first-party Taichung cadastral-service discovery and bounded anonymous access review for Dazhuang.",
+  "assessment": "Official Taichung municipal GIS and land-office custody was evidenced. The current viewer's JavaScript/configuration and cadastral layer catalogue were inspected. Section metadata was reachable anonymously, but bounded parcel lookup returned HTML rather than a safe parcel feature response. No geometry was retained; runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by the official Taichung municipal GIS viewer, GIS cloud layer catalogue, and Taichung land-office service page. This evidences local cadastral-map service custody, not a qualified open parcel adapter.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false, "exactPointAbsenceInferred": false},
+  "officialPrimarySources": [
+    {"url": "https://gismap.taichung.gov.tw/address/index.html", "operator": "Taichung City Government", "scope": "Current public spatial map viewer with cadastral positioning."},
+    {"url": "https://giscloud.taichung.gov.tw/embedmap/getLayersDate.cfm", "operator": "Taichung City GIS Cloud", "scope": "Official current layer catalogue listing the cadastral map layer."},
+    {"url": "https://dajialand.land.taichung.gov.tw/content/?parent_id=12978", "operator": "Dajia Land Office, Taichung City", "scope": "Official local land-office description of Taichung cadastral electronic-information services."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Dazhuang Taiwan official cadastral parcel map Taichung GIS", "result": "Official Taichung GIS viewer and cadastral layer catalogue found; no safe anonymous parcel geometry verified.", "resultUrls": ["https://gismap.taichung.gov.tw/address/index.html", "https://giscloud.taichung.gov.tw/embedmap/getLayersDate.cfm"]},
+    {"language": "Chinese (Traditional)", "query": "大庄 臺中 地籍圖 官方 地政 地籍定位", "result": "Official Taichung spatial map and land-office service pages found; section lookup exposed metadata but no safe parcel feature geometry.", "resultUrls": ["https://gismap.taichung.gov.tw/address/index.html", "https://dajialand.land.taichung.gov.tw/content/?parent_id=12978"]}
+  ],
+  "attempts": [
+    {"url": "https://gismap.taichung.gov.tw/address/index.html", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Viewer loaded and exposed cadastral positioning UI."},
+    {"url": "https://gismap.taichung.gov.tw/address/JS/app_parcel.js", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Current configuration exposed getsec.cfm and locate_land.cfm routes, G97_PARCEL_P, section-value lookup, and lot-key construction."},
+    {"url": "https://giscloud.taichung.gov.tw/embedmap/getLayersDate.cfm", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Layer catalogue listed the current 地籍圖 layer GWH/Layers/ORA/G97_B_LNPAR_P."},
+    {"url": "https://gismap.taichung.gov.tw/address/CFM/getsec.cfm", "method": "POST anonymous; TLS verified", "httpStatus": 200, "outcome": "Section JSON returned 大庄段大庄小段(梧棲區) value 145205 and 大庄段火燒橋小段(梧棲區) value 145206 among section metadata."},
+    {"url": "https://gismap.taichung.gov.tw/address/CFM/locate_land.cfm", "method": "POST anonymous; TLS verified", "httpStatus": 200, "outcome": "Bounded requests for 25932800010001, 14520500010001, and 14520600010001 returned HTML/template content; no parseable parcel feature."},
+    {"url": "https://dajialand.land.taichung.gov.tw/content/?parent_id=12978", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Local land-office page corroborated Taichung cadastral electronic-information service custody and procedure context."}
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official Taichung municipal cadastral viewer, GIS cloud catalogue, and bounded anonymous requests.", "verifiedOpenScope": "Viewer/section metadata only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A different lot identifier, viewer interaction path, or future public route may expose safe parcel geometry. Current evidence does not establish absence or completeness.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

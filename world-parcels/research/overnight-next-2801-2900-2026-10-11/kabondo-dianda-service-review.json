@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-5815-kabondo-dianda.json",
+  "cityCode": 5815,
+  "queueRank": 2817,
+  "city": "Kabondo-Dianda",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Ministère des Affaires Foncières de la RDC; official register-consultation procedure names the Conservateur des Titres Immobiliers and Chef de Division du Cadastre, but no Kabondo-Dianda-specific public office endpoint was evidenced.",
+  "publicMapLead": "Official Ministry cadastral digitization project at https://www.affairesfoncieres.gouv.cd/; no public parcel viewer/vector service was exposed.",
+  "queryOutcomes": "Separate English and French discovery queries were executed and recorded in the city record. Official Ministry and public-service catalog sources were found, but no Kabondo-Dianda parcel-vector endpoint was identified.",
+  "requestOutcomes": "The official Ministry homepage and its public content APIs returned HTTP 200 and were inspected for current JavaScript/configuration. The official cadastre.gouv.cd host failed DNS resolution. No bounded anonymous parcel ID-plus-geometry response was available.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [-8.90850556802448, 25.6662900880047] was preserved; no coordinate shift was made.",
+    "No exact-point hit/miss, map extent miss, DNS failure, or unusable public UI was treated as citywide absence.",
+    "No parcel geometry or source-specific raw attributes were retained.",
+    "No unsafe owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No public anonymous parcel ID-plus-geometry response, native identity, schema, CRS, or citywide open coverage was qualified."},
+  "uncertainty": "Official cadastral custody and digitization activity are evidenced, but public parcel-vector access for Kabondo-Dianda remains unresolved.",
+  "admissionDecision": "held",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Research packet complete; hold for serial reviewer retry and independent adapter qualification."
+}

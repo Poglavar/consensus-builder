@@ -1,0 +1,79 @@
+{
+  "descriptor": {
+    "id": "us-nc-onemap-statewide-parcels",
+    "name": "NC OneMap statewide parcels — statewide",
+    "adapter": "arcgis",
+    "countryCode": "US",
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "7969"
+    ],
+    "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+    "operator": "NC OneMap / NC Center for Geographic Information and Analysis; county parcel data",
+    "endpoint": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
+    "idField": "nparno",
+    "objectIdField": "objectid",
+    "idType": "string",
+    "idPattern": ".+",
+    "outFields": [
+      "nparno",
+      "objectid"
+    ],
+    "idPrefix": "US-NC-STATEWIDE-",
+    "metricSrid": 32617,
+    "stateCode": "NC",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "idBatchSize": 5,
+    "scope": "North Carolina statewide parcel polygons, all 100 counties. nparno is the NC OneMap statewide key: five-digit state+county FIPS, an underscore and the county parcel number.",
+    "caveats": [
+      "Native-ID IN predicates on this service take seconds per request (32 IDs: 10.6 s; 10 IDs: up to 3.7 s; 5 IDs: up to 3.9 s on 2026-10-12, Greensboro), so ID reads use batches of 5, matching the existing Wake County entry on the same service.",
+      "Some counties publish exact duplicate rows with identical geometry for one nparno (observed in Mecklenburg County); they collapse to one parcel. Distinct geometries under one nparno fail.",
+      "Same NC1Map_Parcels service as us-nc-wake-raleigh-parcels (served there from services.gis.nc.gov with stcntyfips=37183 and key parno); Wake County parcels would exist under both namespaces.",
+      "Layer also publishes owner, mailing address, sale and value fields, which are not requested."
+    ],
+    "attribution": "NC OneMap, NC Center for Geographic Information and Analysis, and North Carolina counties. Adapted to WGS84.",
+    "catalogueUrl": "https://www.nconemap.gov/",
+    "evidenceFile": "research/statewide-us-2026-10-12/NC.json",
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "US",
+        "admin1": [
+          "US-NC"
+        ],
+        "excludeAdmin1": [],
+        "basis": "NC OneMap publishes NC1Map_Parcels as the statewide parcel layer; all 100 county FIPS codes present on 2026-10-12.",
+        "evidence": [
+          "research/statewide-us-2026-10-12/NC.json",
+          "research/subnational/US/NC.json"
+        ]
+      },
+      "paceMs": 1000
+    }
+  },
+  "city": {
+    "code": "7969",
+    "name": "Greensboro",
+    "point": [
+      -79.7946139332298,
+      36.0643485281769
+    ]
+  },
+  "sampleIds": [
+    "US-NC-STATEWIDE-37081_7864530177-000",
+    "US-NC-STATEWIDE-37081_7864532168-000"
+  ],
+  "absentId": "US-NC-STATEWIDE-99999_9999999999-999",
+  "metricEpsg": "EPSG:32617",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "NC OneMap statewide parcels — statewide",
+      "NC OneMap publishes NC1Map_Parcels as the statewide parcel layer; all 100 county FIPS codes present on 2026-10-12."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

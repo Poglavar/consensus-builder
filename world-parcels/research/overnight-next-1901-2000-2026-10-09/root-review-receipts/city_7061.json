@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7061",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7061-shaistaganj.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/shaistaganj-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:23:43.057162Z",
+  "reason": "First-party DLRS Settlement viewer and Shaistaganj land office support record custody; the recorded Habiganj survey enumeration was empty and the returned boundary was administrative. No parcel feature, native ID, or adapter qualification is evidenced; the empty response is not citywide absence."
+}

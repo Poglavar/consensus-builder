@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1721",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-1721-cheonan-si.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/cheonan-si-service-review.json",
+    "tmp/valhalla-parcel-research/1721/kgeop.html",
+    "tmp/valhalla-parcel-research/1721/odf-config.json",
+    "tmp/valhalla-parcel-research/1721/wfs.headers"
+  ],
+  "checkedAt": "2026-10-09T14:02:49Z",
+  "reason": "Official K-GeoP viewer and cadastral procedure support custody, but the declared WFS route failed DNS and no safe feature response, native ID, or adapter qualification exists."
+}

@@ -1,0 +1,29 @@
+{
+  "taskId": "city:2803",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-2803-foz-do-igua-u.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/foz-do-igua-u-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:42:39Z",
+  "reason": "Foz municipal cadastral custody and GeoPortal municipality selector are evidenced; the anonymous map route looped and yielded no bounded parcel ID plus polygon response. An unavailable viewer is not citywide absence.",
+  "registryFound": true,
+  "discoveryNativeIdsObserved": false,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://sistemas.pmfi.pr.gov.br/RP/SIDPublico/Organograma/Interno"
+  ],
+  "bilingualExecutedSearchesRecorded": true,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

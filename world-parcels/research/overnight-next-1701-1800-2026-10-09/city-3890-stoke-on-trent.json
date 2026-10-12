@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3890,
+  "queueRank": 1728,
+  "name": "Stoke-on-Trent",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "point": [53.0159155643046, -2.17437344168429],
+  "population2025": 332542,
+  "population2025k": 332.542,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAtUtc": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Stoke-on-Trent cadastral map parcel GIS official council land registry",
+        "result": "Found Stoke-on-Trent City Council's official Public Access Mapping Service, the council maps directory, HM Land Registry National Polygon Service guidance, and the HM Land Registry INSPIRE local-authority download page.",
+        "actualResultUrls": [
+          "https://webmaplayers.stoke.gov.uk/webmaplayers8/Map.aspx?MapName=DevelopmentSites",
+          "https://www.stoke.gov.uk/maps",
+          "https://www.gov.uk/guidance/national-polygon-service",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+        ]
+      },
+      {
+        "language": "English (local/native-language route; England has no separate statutory local language for Stoke-on-Trent)",
+        "query": "Stoke-on-Trent map cadastral parcel official land registry property boundaries",
+        "result": "Found the same first-party council map and local-search/land-charges pages, plus HM Land Registry INSPIRE guidance. No distinct Stoke local-language cadastral service was found.",
+        "actualResultUrls": [
+          "https://www.stoke.gov.uk/info/20091/local_searches_and_land_charges",
+          "https://www.stoke.gov.uk/info/20032/our_data/177/property_asset_register",
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "localCustodian": "Stoke-on-Trent City Council Public Access Mapping Service",
+    "localCustodianEvidence": "The council maps directory links to the public GIS, and the viewer identifies itself as Stoke-on-Trent City Council's web-based GIS. Its terms expressly say displayed property boundaries do not relate to land ownership and direct ownership queries to HM Land Registry.",
+    "nationalParcelSource": "HM Land Registry INSPIRE Index Polygons",
+    "nationalSourceEvidence": "Official HM Land Registry guidance says INSPIRE polygons show the indicative position and extent of registered freehold properties, are divided by local authority, published as GML, and carry a unique Land Registry-INSPIRE ID.",
+    "urls": [
+      "https://webmaplayers.stoke.gov.uk/webmaplayers8/Map.aspx?MapName=DevelopmentSites",
+      "https://www.stoke.gov.uk/maps",
+      "https://www.stoke.gov.uk/info/20091/local_searches_and_land_charges",
+      "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "documented_but_not_verified_in_response",
+  "resultCategory": "public_service_known_no_bounded_geometry",
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://webmaplayers.stoke.gov.uk/webmaplayers8/Map.aspx?MapName=DevelopmentSites",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Cadcorp viewer loaded. Current inline configuration exposes EPSG:27700, restricted extent [365000,330000,410000,365000], an OS WMTS basemap, a council GeognoSIS REST overlay, quicksearch.asmx for address search, and WMSGetFeatureInfoEx feature-info wiring. The loaded Development Sites map is not a cadastral ownership layer and no anonymous parcel ID-plus-geometry response was requested or observed."
+    },
+    {
+      "url": "https://www.stoke.gov.uk/maps",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official council map index loaded and linked corporate assets, development sites, open data, planning and other thematic maps; it did not expose a cadastral parcel download."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "httpStatus": 302,
+      "contentType": "text/html",
+      "assessment": "Official HMLR download route redirected to /datasets/inspire and then repeated the redirect; curl stopped after 50 redirects. The search result confirms a Stoke-on-Trent City Council GML entry, but no file URL or geometry was retrieved. This is an access failure, not evidence of parcel absence."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/api/v1/",
+      "method": "GET",
+      "httpStatus": "not attempted",
+      "contentType": null,
+      "assessment": "HMLR documentation says the API requires an account, licence agreement and API key; no account or credentialed route was used."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The council viewer covers Stoke-on-Trent map information; HMLR INSPIRE is published by local-authority area for England and Wales and indicates registered freehold-property extents.",
+    "verifiedOpenScope": "Council thematic GIS access was verified; open cadastral parcel geometry access for Stoke-on-Trent was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, preferably Land Registry-INSPIRE ID",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": {
+    "expectedHmlrIdentity": "Land Registry-INSPIRE ID; not observed in a downloaded feature",
+    "councilViewerFields": "not retained; viewer is thematic and no parcel response was captured"
+  },
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:27700 documented for council viewer; HMLR GML feature CRS not verified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. Exact WUP point was preserved and no hit/miss inference was made.",
+    "requestEvidence": [
+      "Council viewer HTML/configuration inspected; only thematic GeognoSIS overlay and feature-info machinery were exposed.",
+      "HMLR Stoke-on-Trent download listing was found, but the direct download page looped and yielded no feature file."
+    ]
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The council may expose additional thematic layers through its live viewer, and the HMLR monthly Stoke-on-Trent GML may be obtainable through a functioning session or alternate official access path. No claim is made about parcel absence, title, ownership, completeness, legal boundary accuracy, or citywide coverage. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+  "retainedSample": null
+}

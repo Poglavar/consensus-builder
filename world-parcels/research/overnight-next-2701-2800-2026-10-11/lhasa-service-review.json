@@ -1,0 +1,58 @@
+{
+  "cityRecord": "city-3366-lhasa.json",
+  "cityCode": 3366,
+  "queueRank": 2729,
+  "attempt": 1,
+  "reviewStatus": "complete-with-held-runtime",
+  "registryFound": true,
+  "registryScope": "Local official registry/procedure evidenced through the Lhasa Municipal Natural Resources Bureau and its Real Estate Registration Center; no public current parcel API was demonstrated.",
+  "discovery": {
+    "english": {
+      "query": "Lhasa China official cadastral parcel map land registry GIS service",
+      "outcome": "Found official local registration context and a public ArcGIS historical Lhasa parcel service.",
+      "urls": ["https://services2.arcgis.com/8k2PygHqghVevhzy/ArcGIS/rest/services/Historic_Lhasa_GIS_WFL1/FeatureServer", "https://zrzyj.lasa.gov.cn/zrzyj/tjxx/202408/14390e689b9d4b028c232bf0b161191b.shtml"]
+    },
+    "native": {
+      "query": "拉萨 官方 不动产登记 地籍图 地图 服务",
+      "outcome": "Found official Lhasa bureau registration pages and official Xizang public-map portal description; no anonymous current parcel endpoint.",
+      "urls": ["https://zrzyj.lasa.gov.cn/zrzyj/jggk/common_list.shtml", "https://zrzyt.xizang.gov.cn/dt/tttj/202205/t20220519_299151.html"]
+    }
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Official Lhasa Natural Resources Bureau result and service pages",
+      "result": "Reachable public HTML; documents unified real-estate registration and local registration procedures, but not a public parcel geometry API.",
+      "scope": "Local registry/procedure custodian context"
+    },
+    {
+      "route": "Official Xizang natural-resources public-map documentation / Tianditu Xizang",
+      "result": "Reachable public prose identifies a public geographic-information portal and standard map resources; no current cadastral parcel query endpoint was found in this attempt.",
+      "scope": "Regional/general public mapping, not proven cadastral admission"
+    },
+    {
+      "route": "ArcGIS REST FeatureServer Historic_Lhasa_GIS_WFL1 layer 21 Parcel",
+      "result": "Anonymous GET metadata succeeded; schema is polygon, EPSG:3857, OBJECTID native OID, 886 records, Query capability. Anonymous GeoJSON query of first three records succeeded with geometry transformed to EPSG:4326.",
+      "scope": "Public historical map service; not proven current local registry"
+    },
+    {
+      "route": "ArcGIS bounded exact-point window",
+      "result": "Anonymous query returned no object IDs and no error; layer extent is west/east 91.130–91.163, while exact WUP longitude is 91.1204931098001.",
+      "scope": "Extent miss only; not citywide absence"
+    }
+  ],
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "nativeFieldMapping": {
+    "nativeIdentity": "OBJECTID",
+    "availableSourceFields": ["OBJECTID", "DISTRICT", "ID", "Type", "AUFID_cs_2", "PD_ID", "Shapefile_", "name_src", "fName", "Shape__Area", "Shape__Length"],
+    "retainedProperties": "No sample retained; if later admitted, retain only {id: OBJECTID} and full native geometry.",
+    "compositeKeyProvenance": "Not used. OBJECTID is the service-maintained native OID; DISTRICT+ID and other source fields were not substituted."
+  },
+  "scopeLimits": [
+    "Historical circa mid-20th-century urban composition, based on 1949 map and 1966 imagery.",
+    "Service extent does not include the exact WUP point.",
+    "Official local registry evidence is procedural/contextual, not a demonstrated anonymous current parcel geometry feed.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder/tax/account fields, or TLS exception used."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "Do not integrate or admit this source as current citywide cadastre without independent serial review and a current local-service qualification."
+}

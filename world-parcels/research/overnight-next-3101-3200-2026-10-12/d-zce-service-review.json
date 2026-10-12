@@ -1,0 +1,15 @@
+{
+  "cityRecord": "city-4320-d-zce.json",
+  "cityCode": 4320,
+  "queueRank": 3188,
+  "serviceReview": "Düzce Belediyesi Kent Rehberi exposes a public Geoserver WFS parcel layer named duzce:tkgm_parsel. Capabilities report EPSG:4326 and a Düzce-area extent; a bounded anonymous request returned three safe parcel polygons with stable native WFS IDs.",
+  "registryFound": true,
+  "registryCustodian": "TKGM / Düzce Kadastro Müdürlüğü, evidenced locally through the first-party TKGM office listing; Düzce Belediyesi is the municipal map publisher.",
+  "sourceLead": "https://harita.duzce.bel.tr/Map",
+  "requestOutcomes": "See city-4320-d-zce.json requestOutcomes; all executed discovery, viewer, capabilities, bounded WFS, and local-custodian attempts are recorded there.",
+  "scopeAndLimits": ["Exact WUP point [40.8426878836539, 31.1585892461472] was preserved in latitude/longitude order and not shifted.", "Three returned polygons demonstrate usable bounded geometry only; they do not prove citywide completeness.", "HTTPS failed certificate verification and was not bypassed; the successful WFS request used HTTP.", "No unsafe fields were requested or retained. The sample retains only one native identity property and full geometry per feature.", "No raw source-specific attribute set is retained.", "Packet completion is not source integration/admission; runtime readiness remains held pending serial review."],
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata"],
+  "geometry": {"verified": true, "sampleCount": 3, "sampleFile": "d-zce-tkgm-parsel-sample.geojson", "retainedFeatureProperties": {"id": "server-provided WFS feature id"}},
+  "runtimeReadiness": "held_serial_review_required",
+  "uncertainty": "Layer schema and bounded geometry are verified, but citywide coverage, freshness, and production adapter suitability are not independently qualified."
+}

@@ -1,0 +1,20 @@
+{
+  "taskId": "city:5290",
+  "decision": "held",
+  "checkedAt": "2026-10-11T17:36:40Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5290-az-zubayr.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/az-zubayr-service-review.json"
+  ],
+  "identity": "Code 5290, rank 2674, Az Zubayr, Iraq, point [30.3828066320758, 47.7084816820915], 220737 persons agree across ranked roster, pending queue, and packet.",
+  "searchReview": "Paired packet records executed Arabic and English queries with result URLs; paired service review records outcomes.",
+  "sampleReview": "Zero full polygons retained; safe native parcel ID, geometry and metric GEOS checks therefore cannot be qualified.",
+  "firstPartyCheck": "The Iraqi Ministry of Justice directory independently confirms the local Zubayr Real Estate Registration Directorate, but no anonymous parcel feature or safe native ID is evidenced. No adapter qualification or headed Details-panel check.",
+  "firstPartyUrls": [
+    "https://moj.gov.iq/contact_us.php",
+    "https://moj.gov.iq/view.7760/"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held; unavailable services do not prove citywide absence."
+}

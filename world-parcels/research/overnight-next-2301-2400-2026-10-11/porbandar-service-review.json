@@ -1,0 +1,111 @@
+{
+  "cityRecord": "city-2046-porbandar.json",
+  "cityCode": 2046,
+  "queueRank": 2359,
+  "name": "Porbandar",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [21.6425997762946, 69.622982667632],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://porbandar.nic.in/service/land-records/",
+      "httpStatus": "official readable",
+      "outcome": "Official District Porbandar land-records page states that cadastral survey underlies Gujarat land records, identifies e-Dhara/Mamlatdar offices, and links AnyRoR."
+    },
+    {
+      "method": "GET",
+      "url": "https://porbandar.nic.in/service/land-records/",
+      "httpStatus": 200,
+      "outcome": "Current official HTML loaded; AnyRoR link extracted. No parcel geometry endpoint or map JavaScript was exposed on this page."
+    },
+    {
+      "method": "GET",
+      "url": "https://anyror.gujarat.gov.in/",
+      "httpStatus": "timeout",
+      "outcome": "Anonymous TLS GET timed out after 20 seconds; no login, CAPTCHA, unsafe field request, or TLS bypass was attempted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/478",
+      "httpStatus": "official readable via discovery",
+      "outcome": "Official DILRMP page identifies Gujarat, Porbandar district and Porbandar tehsil: 83/83 maps digitized, 77/77 villages spatially verified, 77/77 cadastral maps geo-referenced and linked to RoR, and 80,208 parcels geo-referenced. This is coverage evidence only."
+    },
+    {
+      "method": "GET",
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/478",
+      "httpStatus": "TLS verification failure",
+      "outcome": "Direct curl rejected the host certificate chain; TLS verification was not disabled and no exception was authorized. The indexed official result was used only for the status values above."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "httpStatus": "official indexed page",
+      "outcome": "Official Gujarat Revenue Department page identifies IORA services including View Land Records (7/12), Property Cards, and related revenue services."
+    },
+    {
+      "method": "GET",
+      "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "httpStatus": "timeout",
+      "outcome": "Anonymous GET timed out after 12 seconds; no credentials or unsafe data fields were requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "httpStatus": 200,
+      "outcome": "Official NIC implementation-status page loaded and lists Gujarat under CollabLand, not a public Gujarat parcel viewer/API."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.nic.in/bhunaksha/index.jsp",
+      "httpStatus": "official indexed page",
+      "outcome": "NIC Bhu-Naksha documentation describes the national cadastral software as primarily an authorized state/operator system; no Porbandar public endpoint was identified."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No current public Gujarat/Porbandar viewer JavaScript or configuration was obtained.",
+    "geometryCrs": "Not observed; no parcel geometry response.",
+    "nativeIdentity": "Not observed; no parcel feature response.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "No bounded parcel request could be formed from a verified public endpoint.",
+      "featureCount": 0,
+      "result": "Unavailable; this is not evidence of citywide absence."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID",
+    "full polygon geometry",
+    "source URL",
+    "source/output CRS",
+    "retrieval date",
+    "reproduction administrative codes"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Registry custodian and district coverage are evidenced, but parcel endpoint availability, exact-point membership, native identity semantics, citywide completeness, adapter behavior, and geometry CRS remain unqualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved and not shifted.",
+    "DILRMP coverage totals are district/taluka status, not a parcel hit at the WUP point.",
+    "No citywide absence or map-extent inference is made from timeout or TLS failure.",
+    "No unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample is retained."
+  ],
+  "uncertainty": "Official first-party custodian and Porbandar taluka digitization coverage are verified. Public AnyRoR/IORA retrieval was unavailable in bounded requests, and no safe anonymous parcel ID-plus-geometry response was obtained. Runtime readiness remains held pending serial qualification."
+}

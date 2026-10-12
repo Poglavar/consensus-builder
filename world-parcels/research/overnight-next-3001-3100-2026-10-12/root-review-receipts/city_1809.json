@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1809",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-1809-jongju.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/jongju-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T01:10:53Z",
+  "reason": "Jongju: queue identity matches; English and Korean searches recorded; no verifiable local custodian, first-party parcel schema, native ID or full polygon. TLS failure leaves access unresolved, not parcel absence.",
+  "admissionGates": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification were evidenced; runtime admission remains held."
+}

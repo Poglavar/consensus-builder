@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-5020-sakhakot.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review for WUP cityCode 5020.",
+  "identity": {
+    "cityCode": 5020,
+    "queueRank": 2957,
+    "country": "Pakistan",
+    "countryCode": "PK",
+    "point": [34.4895425430801, 71.9036668827603],
+    "population2025": 201598
+  },
+  "assessment": "Official KP material confirms Sakhakot/Skhakot settlement activity in Malakand/Dargai and provincial GIS/land-record programs. No anonymous parcel geometry service, schema/CRS response, or safe ID+geometry query was verified. Exact-point lookup was not treated as an absence test.",
+  "registryAssessment": "registryFound=true is justified by the official settlement-progress record naming Skhakot and by the KP Revenue & Estate Department's local/provincial land-record and GIS responsibilities. This is registry/settlement evidence, not public parcel geometry or source integration.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/wp-content/uploads/2021/06/Progress-Detail-of-Settlement-Operations.pdf",
+      "observation": "Names Malakand, Dargai and Skhakot and reports GIS-based measurement alongside Khatoni writing under process."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/dlr-msg/",
+      "observation": "Describes provincial GIS-based cadastral mapping, digitization and Service Delivery Centres."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "observation": "Describes the Directorate's statutory GIS cadastral mapping, land-record and settlement responsibilities."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "observation": "Public KP LRMIS service/appointment portal; no anonymous parcel geometry endpoint exposed in the reviewed public content."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "observation": "Identity-linked e-Fard workflow requiring account/biometric and personal identifiers; no request was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sakhakot Pakistan official cadastral parcel map land records GIS Malakand Khyber Pakhtunkhwa",
+      "result": "Found official Sakhakot/Skhakot settlement-progress evidence and KP GIS/land-record pages; no public anonymous parcel geometry service.",
+      "actualResultUrls": [
+        "https://revenue.kp.gov.pk/wp-content/uploads/2021/06/Progress-Detail-of-Settlement-Operations.pdf",
+        "https://revenue.kp.gov.pk/dlr-msg/",
+        "https://revenue.kp.gov.pk/director-land-record/"
+      ]
+    },
+    {
+      "language": "Urdu/Pashto",
+      "query": "سخاکوٹ مالاکنڈ اراضی ریکارڈ نقشہ جی آئی ایس خیبر پختونخوا",
+      "result": "Returned official KP land-record and GIS program pages; no anonymous Sakhakot parcel geometry endpoint.",
+      "actualResultUrls": [
+        "https://kplr.gkp.pk/",
+        "https://efard.kplr.gkp.pk/",
+        "https://sdlr.kp.gov.pk/"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://revenue.kp.gov.pk/wp-content/uploads/2021/06/Progress-Detail-of-Settlement-Operations.pdf",
+      "method": "First-party document discovery/review",
+      "result": "Sakhakot/Skhakot is named in Malakand/Dargai settlement operations; GIS-based measurement is reported, but no public feature endpoint or parcel geometry is provided."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/dlr-msg/",
+      "method": "First-party page review",
+      "result": "Confirms provincial GIS cadastral mapping and digitized land-record program; no safe public geometry service linked."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "method": "First-party page review",
+      "result": "Confirms Directorate responsibility for settlement, land records and GIS cadastral mapping; informational page only."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "method": "Public portal review",
+      "result": "Land-record service/appointment content reviewed; no anonymous ID+geometry response."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "method": "Public portal review only; no form submission",
+      "result": "Identity-linked ownership/e-Fard workflow; not queried because credentials and unsafe personal fields are out of scope."
+    },
+    {
+      "url": "https://sdlr.kp.gov.pk/",
+      "method": "Public portal review",
+      "result": "Describes GIS mapping and digitization in merged districts; no Sakhakot parcel feature service exposed."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/dlr-msg/",
+      "method": "Direct curl GET from the worker environment",
+      "result": "Transport attempt failed before HTTP because DNS resolution for revenue.kp.gov.pk was unavailable in the shell environment; browser/web discovery separately returned the official page. This is an environment limitation, not evidence of source absence."
+    },
+    {
+      "url": "https://kpgis.kp.gov.pk/",
+      "method": "Direct curl GET from the worker environment",
+      "result": "Transport attempt failed before HTTP because DNS resolution was unavailable; no response was treated as evidence of absence."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "publicViewerFound": false,
+    "currentJavascriptOrConfigTrace": "No public current map viewer/configuration exposing an anonymous parcel layer was found in the reviewed official entry points.",
+    "anonymousRequests": 0,
+    "boundedIdGeometryResponse": false,
+    "schema": null,
+    "crs": null,
+    "nativeIdentityField": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "safeFieldAllowlist": ["stable native parcel identifier", "geometry"],
+    "unsafeFieldsRequested": [],
+    "credentialsOrPrivateTokensUsed": false
+  },
+  "geometryDecision": "No full parcel geometry retained because no anonymous safe-field geometry response was verified; no GeoJSON sample file was created.",
+  "coverageAssessment": {
+    "claimedScope": "Official Malakand/Sakhakot settlement activity plus KP provincial land-record/GIS programs.",
+    "verifiedOpenScope": "Registry/settlement evidence only; no open parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "exactPointHitTested": false,
+    "mapExtentMissTreatedAsAbsence": false
+  },
+  "runtimeDecision": {
+    "runtimeReadiness": "held",
+    "reason": "No verified public parcel geometry and no independently qualified adapter.",
+    "sourceIntegrationClaimed": false
+  },
+  "uncertainty": [
+    "The WUP point is a settlement locator and was not shifted to force a parcel hit.",
+    "Sakhakot's settlement GIS may be internal, restricted, incomplete, or not exposed through the public KP portals.",
+    "The official progress document is dated material and supports local registry/settlement existence, not current open-data availability.",
+    "A zero exact-point hit, extent miss, timeout, login wall, or unusable UI would not prove citywide absence."
+  ]
+}

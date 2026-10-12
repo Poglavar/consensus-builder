@@ -1,0 +1,16 @@
+{
+  "taskId": "city:9257",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-9257-datia.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/datia-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T16:37:23.347900Z",
+  "reason": "Official Datia GIS and land-record pages confirm local custody; the GIS portal timed out before a parcel API or native ID/full polygon response could be inspected. This is unresolved access, not citywide absence.",
+  "sourceConfirmationUrl": "https://datia.nic.in/en/datia-gis/",
+  "identityCheck": "City code, queue rank, country, unchanged point and 2025 population in persons agree with both immutable pending queue and ranked roster.",
+  "researchCheck": "English and local-language executed searches are documented in the paired packet; no retained sample polygons were reported.",
+  "admissionGates": "Not independently evidenced: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed Details-panel verification. No runtime admission."
+}

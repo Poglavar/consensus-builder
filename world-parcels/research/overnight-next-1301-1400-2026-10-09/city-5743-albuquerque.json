@@ -1,0 +1,93 @@
+{
+  "cityCode": 5743,
+  "queueRank": 1373,
+  "name": "Albuquerque",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [35.1087162408547, -106.564811229385],
+  "population2025": 410810,
+  "population2025k": 410.81,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The City of Albuquerque's official GIS program exposes a local public parcel source: a citywide parcel-boundary download and an official ArcGIS MapServer used by the Advanced Map Viewer. The city page distinguishes City platted parcels from Bernalillo County Assessor parcels; this is local public GIS evidence, not a claim of complete or current ownership coverage.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:cabq.gov Albuquerque parcel map GIS official",
+        "result": "Found the official City GIS pages, citywide parcel download, Advanced Map Viewer parcel-layer description, and official ArcGIS REST service.",
+        "actualResultUrls": [
+          "https://www.cabq.gov/gis",
+          "https://www.cabq.gov/gis/geographic-information-systems-data",
+          "https://www.cabq.gov/gis/advanced-map-viewer",
+          "https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer"
+        ]
+      },
+      {
+        "language": "English (United States local usage)",
+        "query": "Albuquerque mapa de parcelas GIS oficial",
+        "result": "No distinct Spanish-language local parcel registry was found; the official City of Albuquerque English GIS source was used for this United States locality.",
+        "actualResultUrls": [
+          "https://www.cabq.gov/gis",
+          "https://www.cabq.gov/gis/geographic-information-systems-data",
+          "https://www.bernco.gov/planning/gis.aspx"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.cabq.gov/gis/geographic-information-systems-data",
+      "role": "City of Albuquerque official GIS data-download page",
+      "observation": "Lists Parcels as parcel boundaries with city-wide extent and links City Parcels Shapefile to https://abqgis01.cabq.gov/datadownload/CityParcels.zip. The archive route was attempted but did not complete in this environment."
+    },
+    {
+      "url": "https://www.cabq.gov/gis/advanced-map-viewer",
+      "role": "City of Albuquerque official public map viewer documentation",
+      "observation": "States that the Advanced Map Viewer includes Bernalillo County Assessor Parcels and other map layers."
+    },
+    {
+      "url": "https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer",
+      "role": "Official City ArcGIS REST MapServer",
+      "observation": "Indexed service metadata identifies Platted Parcels (City Maintained), Bernalillo County Assessor Parcels, and Platted Parcels (County Maintained). It reports Web Mercator 3857 service spatial reference and GeoJSON query support. Direct layer/query requests timed out from this environment."
+    },
+    {
+      "url": "https://www.cabq.gov/gis/geographic-information-systems-metadata",
+      "role": "City GIS metadata",
+      "observation": "Identifies the Parcels layer as maintained by City Planning Department AGIS, parcel lots determined by the City, city-wide extent, refreshed continually/daily, in New Mexico State Plane Central feet NAD 83."
+    },
+    {
+      "url": "https://www.bernco.gov/planning/gis.aspx",
+      "role": "Bernalillo County GIS custodian route",
+      "observation": "Official county GIS route was attempted from the City GIS page but returned HTTP 403 in the research tool; no county schema or geometry was retained."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No retained GeoJSON sample. Direct anonymous REST metadata/layer/query requests to abqgis01.cabq.gov timed out, and the city parcel ZIP download was not completed. This is a service-access limitation only; the exact WUP point was preserved and not shifted, and no citywide absence is inferred."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Albuquerque official citywide parcel GIS/download and viewer parcel layers.",
+    "verifiedOpenScope": "Official City pages and indexed REST service metadata establish the published local GIS source and stated citywide parcel scope; this attempt did not independently retrieve a bounded anonymous ID+geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "sourceSchema": {
+    "nativeIdentity": "Not confirmed in a retrieved feature response. Indexed MapServer layer metadata exposed layer names only; no unsafe fields were requested or retained.",
+    "nativeFieldsObserved": [],
+    "safeFieldsRequested": [],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "legal description", "personal data"],
+    "crs": "Official City GIS metadata states New Mexico State Plane Central, feet, NAD 83; indexed REST service metadata states Web Mercator 3857. No feature geometry was retrieved.",
+    "compositeKeyProvenance": null
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

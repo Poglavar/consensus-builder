@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 7625,
+  "queueRank": 1857,
+  "cityId": "queue:1857",
+  "name": "Taubaté",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-23.0183922105621, -45.561567466541],
+  "centerLatLon": [-23.0183922105621, -45.561567466541],
+  "population2025": 310170,
+  "population2025k": 310.17,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Taubate Brazil official cadastral parcel map GIS natural resources real estate registration",
+        "result": "First-party Taubaté results identified SEPLAN na Mão, the municipal Planning and Housing Secretariat, the Municipal Finance page, and an official municipal cadastral-service document. The results establish local cadastral responsibilities and an official property-cadastre service, but did not expose a public anonymous parcel feature endpoint.",
+        "actualResultUrls": [
+          "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao/seplan-na-mao",
+          "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao",
+          "https://www.taubate.sp.gov.br/secretarias-municipais/fazenda",
+          "https://taubate.sp.gov.br/anexos/ouvidoria/Carta_de_Servico_Cadastro_Imobiliario.pdf"
+        ]
+      },
+      {
+        "language": "native/local (Brazilian Portuguese)",
+        "query": "Taubaté mapa cadastral lotes parcelas prefeitura SIG cadastro imobiliário",
+        "result": "First-party Portuguese results identify the Área de Cadastramento Técnico, which validates and monitors areas and lots and updates georeferenced data in the municipal SIG, plus the Divisão de Cadastro Técnico e Imobiliário and the public Ficha cadastral do Imóvel entry. No anonymous parcel geometry/API route was exposed by the indexed pages.",
+        "actualResultUrls": [
+          "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao",
+          "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao/seplan-na-mao",
+          "https://www.taubate.sp.gov.br/secretarias-municipais/fazenda",
+          "https://taubate.sp.gov.br/anexos/ouvidoria/Carta_de_servicos_SEPLAN_COM_DETALHAMENTO_DE_ATIVIDADES_docx.pdf"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GET inspection; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao",
+      "observation": "Official municipal page assigns the Área de Cadastramento Técnico responsibility for cadastral validation/monitoring of municipal areas and lots and for updating georeferenced data in the SIG; local cadastral custody is evidenced, but no public parcel layer is published in the inspected result."
+    },
+    {
+      "url": "https://www.taubate.sp.gov.br/secretarias-municipais/fazenda",
+      "observation": "Official municipal Finance page identifies the Divisão de Cadastro Técnico e Imobiliário and its public-facing service context; it is local registry/cadastre evidence, not an anonymous geometry API."
+    },
+    {
+      "url": "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao/seplan-na-mao",
+      "observation": "Official SEPLAN page advertises maps and a Ficha cadastral do Imóvel. Direct bounded GET returned Cloudflare HTTP 403, so current JavaScript/configuration and service route could not be inspected without bypassing the access control."
+    },
+    {
+      "url": "https://taubate.sp.gov.br/anexos/ouvidoria/Carta_de_servicos_SEPLAN_COM_DETALHAMENTO_DE_ATIVIDADES_docx.pdf",
+      "observation": "Official service document describes the Área de Cadastro Técnico and cadastral/georeferenced municipal work; it does not provide a safe anonymous parcel geometry response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao/seplan-na-mao",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "Cloudflare access wall; no bypass attempted. This is an inspection limitation, not evidence of cadastral absence."
+    },
+    {
+      "url": "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao",
+      "method": "GET via first-party indexed result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Indexed official content was inspected; local cadastral custody was established, but no viewer configuration, service URL, schema, CRS, or parcel geometry response was exposed."
+    },
+    {
+      "url": "https://www.taubate.sp.gov.br/secretarias-municipais/fazenda",
+      "method": "GET via first-party indexed result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Indexed official content was inspected; the municipal cadastral division was identified, but no public parcel geometry endpoint was exposed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal Taubaté cadastral/technical-cadastre custody under the local Planning and Housing and Finance administrations.",
+    "verifiedOpenScope": "Local custodian and service evidence only; anonymous parcel geometry, CRS, stable native identity, and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current public viewer/API route, access controls, layer schema, CRS, stable native parcel identity, update currency, legal status, and citywide coverage remain unresolved. The exact WUP point was preserved in latitude/longitude order and was never shifted; no exact-point hit or miss was inferred. No owner, address, titleholder, contact, tax/account, or other unsafe fields were requested or retained.",
+  "retainedSample": null
+}

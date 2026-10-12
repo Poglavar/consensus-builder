@@ -1,0 +1,102 @@
+{
+  "cityCode": 2267,
+  "queueRank": 2612,
+  "name": "Naqamte",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "point": [9.08965943057125, 36.5572355966274],
+  "population2025": 225503,
+  "population2025k": 225.503,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "researchedAt": "2026-10-11T16:05:37Z",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Naqamte Ethiopia official cadastral parcel map land registry",
+        "result": "Search found Ethiopia's official e-Land cadastral viewer and federal land/cadastre legal material, but no first-party Naqamte parcel viewer or downloadable Naqamte parcel service was identified.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/",
+          "https://www.ffic.gov.et/Portals/0/1381-2017.pdf"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ነቀምት ኢትዮጵያ ካዳስተር የመሬት ምዝገባ ካርታ",
+        "result": "Search returned Ethiopian land/cadastre legal material and the official Addis e-Land viewer, but no first-party Naqamte parcel viewer or downloadable Naqamte parcel service was identified.",
+        "actualResultUrls": [
+          "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8A%93%2B%E1%88%AC%E1%89%B5%2B%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%2B%E1%88%9D%E1%8B%9D%E1%88%88%E1%89%A3%2B%E1%88%A8%E1%8A%AD%E2%80%8B.pdf",
+          "https://eland.addiscadaster.gov.et/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "name": "e-Land / Land Holding Registration and Information Agency",
+      "url": "https://eland.addiscadaster.gov.et/",
+      "scopeEvidence": "The current public viewer configuration identifies the production WFS as an Addis Ababa service: cityCode AA-ADS, cityBrandName Addis, and an Addis Ababa website/configuration. This does not establish coverage in Naqamte or Oromia.",
+      "serviceUrl": "https://geos.addiscadaster.gov.et/geoserver/ows",
+      "serviceType": "OGC WFS 1.0.0 / GeoJSON",
+      "layer": "ncrprs_cadaster:v_1_registered_parcel",
+      "crs": "EPSG:4326"
+    }
+  ],
+  "requests": [
+    {
+      "purpose": "Read official viewer shell",
+      "url": "https://eland.addiscadaster.gov.et/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Viewer loaded. Current JavaScript/configuration references the public GeoServer WFS and Addis-only city configuration."
+    },
+    {
+      "purpose": "Read official viewer runtime configuration",
+      "url": "https://eland.addiscadaster.gov.et/assets/api.config.json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Configuration exposed gsUrl/wfsUrl, layer v_1_registered_parcel, workspace ncrprs_cadaster, cityCode AA-ADS and Addis branding; no Naqamte/Oromia coverage claim."
+    },
+    {
+      "purpose": "Bounded parcel probe at exact WUP point vicinity; bbox is longitude,latitude order for WFS",
+      "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=36.5472356,9.0796594,36.5672356,9.0996594,EPSG:4326&maxFeatures=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "spatialTestArea": "20 km by 20 km approximate bbox centered on [9.08965943057125,36.5572355966274]",
+      "recordCount": 0,
+      "outcome": "Valid GeoJSON FeatureCollection with totalFeatures 0 and numberMatched 0. This is only a zero result for this query; it is not citywide absence evidence."
+    },
+    {
+      "purpose": "Control probe in the service's configured Addis area",
+      "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=38.7369,9.0220,38.7569,9.0420,EPSG:4326&maxFeatures=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "spatialTestArea": "20 km by 20 km approximate Addis control bbox",
+      "recordCount": 1,
+      "totalFeaturesReported": 1503,
+      "outcome": "Service returned a parcel MultiPolygon in EPSG:4326, confirming the endpoint is operational for its configured Addis area. No geometry retained because it is outside this city record."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentity": {
+    "field": "uniqueparcelid",
+    "evidence": "Addis control response contained uniqueparcelid AA000010100005 and also a generated GeoServer feature id. The field is not adopted for Naqamte because no Naqamte feature was returned.",
+    "compositeKey": null
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The official service discovered is explicitly configured for Addis Ababa, not Naqamte.",
+    "The exact-point vicinity returned zero records, which does not establish citywide absence.",
+    "No anonymous Naqamte parcel geometry or stable native parcel identity was evidenced.",
+    "No credentials, login flow, CAPTCHA bypass, unsafe owner/address/title fields, or TLS exceptions were used."
+  ],
+  "sampleGeoJSON": null
+}

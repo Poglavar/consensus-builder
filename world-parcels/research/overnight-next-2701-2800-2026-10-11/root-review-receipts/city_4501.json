@@ -1,0 +1,35 @@
+{
+  "taskId": "city:4501",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:06:52Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-4501-bordj-bou-arreridjj.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/bordj-bou-arreridjj-service-review.json"
+  ],
+  "identityCheck": {
+    "queueRank": 2785,
+    "cityCode": 4501,
+    "name": "Bordj Bou Arreridjj",
+    "country": "Algeria",
+    "point": [
+      36.0755435906404,
+      4.76106784990209
+    ],
+    "populationPersons": 212777,
+    "matchesImmutableQueueAndRoster": true
+  },
+  "bilingualSearchesRecorded": true,
+  "retainedFullPolygons": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "First-party national cadastral and local land-conservation references are cited, but no anonymous parcel feature response or native ID was verified. Timed-out and blocked viewers do not establish absence.",
+  "integrationDisposition": "held; no runtime, catalog, registry, or generated coverage/report admission edit"
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2116",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-2116-sumgayit.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/sumgayit-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:26:07.721081Z",
+  "reason": "First-party State Property Service material supports Sumgayit cadastral database/map custody; the public viewer did not yield an anonymous parcel vector response, safe native ID or full polygon. No independent adapter qualification or headed Details proof. Timeout is unresolved access, not citywide absence.",
+  "firstPartyPagesChecked": [
+    "https://emlak.gov.az/mapmodule",
+    "https://emlak.gov.az/az/news/view/161-Az%C9%99rbaycanda-Torpaqlar%C4%B1n-Elektron-Kadastr--U%C3%A7otu-Sistemi-yarad%C4%B1l%C4%B1r"
+  ],
+  "admissionGates": "No verified full parcel geometry or native ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details-panel verification are not evidenced."
+}

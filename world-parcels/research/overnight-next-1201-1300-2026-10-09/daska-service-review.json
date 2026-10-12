@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8133-daska.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official MC Daska publishes a 2023-24 city basemap whose legend explicitly includes Parcel Boundary. The official Punjab PULSE viewer advertises cadastral maps, but its configured Punjab_Cdastral_Maps ArcGIS service returned code 499 Token Required for anonymous metadata and feature requests. No safe polygon, parcel ID, schema, or CRS was retained.",
+  "registryAssessment": "Local registry/map evidence is present through MC Daska's official parcel-boundary basemap; Sialkot's official district portal identifies Revenue Department Daska. This is registry/map evidence, not proof of legal title scope or complete citywide vector coverage.",
+  "officialPrimarySources": [
+    {"url": "https://mcdaska.lgpunjab.org.pk/map/", "observation": "Official municipal services-map index."},
+    {"url": "https://www.mcdaska.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Daska_2023-24.pdf", "observation": "Official rendered city basemap; legend includes Parcel Boundary."},
+    {"url": "https://sialkot.punjab.gov.pk/Revenue_Department_Daska", "observation": "Official district revenue page for Daska."},
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official/public PULSE cadastral viewer; page says complete parcel details require login and boundaries are indicative."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Daska Pakistan official cadastral map land records parcel GIS Punjab", "result": "Found official Daska municipal basemap with parcel-boundary legend, district Revenue Department Daska, and Punjab PULSE/PLRA services."},
+    {"language": "Urdu", "query": "ڈسکہ پاکستان سرکاری کادستر نقشہ اراضی ریکارڈ GIS پارسل", "result": "Found official Punjab cadastral/land-record services and Daska municipal map page; no anonymous safe Daska polygon response."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run because anonymous ArcGIS service access was token-gated; WUP point was not moved.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Official Daska municipal basemap and Punjab PULSE cadastral viewer.", "verifiedOpenScope": "Rendered parcel-boundary map only; no anonymous vector feature response.", "citywideVerified": false, "countrywideVerified": false},
+  "attempts": [
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson", "method": "GET", "httpStatus": 200, "result": "ArcGIS error code 499 Token Required."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&resultRecordCount=3&f=geojson", "method": "GET", "httpStatus": 200, "result": "ArcGIS error code 499 Token Required; no feature response."},
+    {"url": "https://sialkot.punjab.gov.pk/Revenue_Department_Daska", "method": "GET", "httpStatus": null, "result": "Bounded anonymous request timed out; no absence inference."},
+    {"url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx/AccessibilityOptions.aspx", "method": "GET", "httpStatus": null, "result": "Host resolution failed in this environment; no absence inference."}
+  ],
+  "safeFieldAllowlist": ["OBJECTID", "safe parcel/cadastral identifier", "geometry"],
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "No anonymous safe feature response was available; the PDF may be generalized/rendered, and PULSE coverage, currency, legal status, schema, CRS, and native IDs remain unverified."
+}

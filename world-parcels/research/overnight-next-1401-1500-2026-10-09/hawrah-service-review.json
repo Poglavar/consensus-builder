@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4844-hawrah.json",
+  "purpose": "Document first-party Yemeni registry context and bounded anonymous parcel-geometry access review for Hawrah.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "GALSUP is evidenced as Yemen's national land, survey, and urban-planning authority, and official registry-law material describes local registration offices and survey maps. No public Hawrah parcel service, schema/CRS, safe native identity, or anonymous geometry was verified.",
+  "registryAssessment": "National custodian evidenced; Hawrah-specific local registry/cadastre access was not evidenced. registryFound remains null.",
+  "officialPrimarySources": [
+    {"url": "https://galsup.gov.ye/", "observation": "Official GALSUP website loaded; no public map/API configuration or parcel layer was exposed."},
+    {"url": "https://agoye.gov.ye/page.php?id=374", "observation": "Official registry-law material describes property records, local offices, and general/special maps; it publishes no open geometry service."},
+    {"url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/", "observation": "Official GIS-center description gives spatial-data context but no Hawrah parcel endpoint."},
+    {"url": "https://aqaralyemen.com/index.php", "observation": "Commercial real-estate listing map; not treated as cadastral evidence."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Yemen Hawrah cadastral parcel map GIS land registry official", "result": "Official national custodian and registry-law sources found; no Hawrah open parcel service or geometry.", "actualResultUrls": ["https://galsup.gov.ye/", "https://agoye.gov.ye/page.php?id=374"]},
+    {"language": "Arabic (local/native)", "query": "اليمن حورة حورة عمران خريطة عقارية سجل الأراضي مسح عقاري", "result": "Official GALSUP and registry-law sources found; commercial map is not cadastral; no safe Hawrah geometry.", "actualResultUrls": ["https://galsup.gov.ye/", "https://agoye.gov.ye/page.php?id=374", "https://aqaralyemen.com/index.php"]}
+  ],
+  "attempts": [
+    {"url": "https://galsup.gov.ye/", "method": "GET", "httpStatus": 200, "result": "Official site loaded; no public viewer, WMS/WFS, ArcGIS, schema, CRS, or parcel response exposed."},
+    {"url": "https://galsup.gov.ye/wp-json/wp/v2/search?search=%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9&per_page=20", "method": "GET", "httpStatus": "404-like", "result": "WordPress resource-not-found response; not treated as source absence."},
+    {"url": "https://agoye.gov.ye/page.php?id=374", "method": "GET", "httpStatus": 200, "result": "Registry-law page loaded; procedural map requirements only."},
+    {"url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/", "method": "GET", "httpStatus": 200, "result": "Official GIS-center description; no parcel endpoint."},
+    {"url": "https://aqaralyemen.com/index.php", "method": "GET", "httpStatus": 200, "result": "Commercial listing map; not a cadastral source."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry", "source CRS", "service layer name"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against a public feature service; no exact-point absence inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Yemen national land/survey authority and registry framework relevant to Hawrah.", "verifiedOpenScope": "National custodian and legal framework verified, but anonymous parcel geometry, schema/CRS, local coverage, and citywide completeness were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "Operational viewer/API, local registry custodian, native parcel identity, schema/CRS, and public access policy remain unknown.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

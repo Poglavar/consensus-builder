@@ -1,0 +1,53 @@
+{
+  "taskId": "city:11832",
+  "decision": "held",
+  "checkedAt": "2026-10-12T06:07:04Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-11832-haiyan.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/haiyan-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/valhalla-parcel-research/11832/zj-platform.html",
+    "tmp/valhalla-parcel-research/11832/areaSystem.js"
+  ],
+  "identityCheck": {
+    "queueRank": 3231,
+    "cityCode": 11832,
+    "country": "China",
+    "pointLatLon": [
+      30.5279096337097,
+      120.93591002564
+    ],
+    "populationPersons": 186884,
+    "matchedImmutableRoster": true
+  },
+  "researchCheck": {
+    "separateEnglishAndLocalLanguageQueries": true,
+    "durableFullParcelPolygons": 0,
+    "safeNativeParcelIdAndPolygonResponse": false,
+    "custodyValue": true
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "originalCacheSha256": {
+    "tmp/valhalla-parcel-research/11832/zj-platform.html": "e9f6176d92578022503f5da3c4399a5ff4a2ae7f32b277ca0f408ac81954e01d",
+    "tmp/valhalla-parcel-research/11832/areaSystem.js": "8c9c5fcbb103fe46fbaf7b1471e9ec3f8d7001184f4499d022f81f639e6e0591"
+  },
+  "reason": "Official Zhejiang platform cache is a general geospatial landing page; the inspected areaSystem route cache is a 502 HTML page. The county bureau/registration custody evidence in the packet supports true, but no anonymous parcel ID plus full polygon response or adapter qualification is evidenced.",
+  "scopeLimit": "A missing public response, point feature, timeout, 404, 502, or unavailable viewer does not establish citywide parcel absence. No runtime or coverage admission.",
+  "custodyBasis": {
+    "value": true,
+    "basis": "First-party Haiyan county natural-resources material describes county real-estate registration and rights-survey duties; the original Zhejiang platform landing-page cache confirms a government geospatial service, not parcel vector access. The cited county PDF was indexed and inspected via web retrieval; direct re-fetch failed DNS during this review.",
+    "firstPartyUrls": [
+      "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3018/site/attach/0/c6b80b9945dc4d7c98d72bc62eb2fb97.pdf",
+      "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+    ]
+  }
+}

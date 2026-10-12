@@ -1,0 +1,91 @@
+{
+  "cityCode": 2630,
+  "queueRank": 1353,
+  "name": "Kafr Al Sheikh",
+  "aliases": ["kafr al sheikh"],
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [31.0916615432164, 30.9366826585025],
+  "population2025": 415494,
+  "population2025k": 415.494,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "The official Kafr El-Sheikh governorate portal documents a local spatial-services workflow and an interactive governorate map. The spatial service requires account login, and no anonymous public cadastral parcel response with a safe native ID and geometry was verified. Egypt's Survey Authority is the national mapping/cadastre custodian and documents cadastral, real-estate-registry, digital-map and topographic-map programs, but no anonymous city parcel-vector endpoint was exposed.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kafr El Sheikh Egypt official cadastral parcel map GIS land registry",
+        "result": "Found the official Kafr El-Sheikh governorate interactive map, governorate spatial-services page, and Egyptian Survey Authority service/project pages. The governorate spatial service is an authenticated submission workflow; Survey Authority pages describe map/cadastre services and procurement, not an anonymous parcel API. No safe Kafr El-Sheikh parcel ID plus geometry response was verified.",
+        "actualResultUrls": [
+          "https://kfs.gov.eg/interactive-map",
+          "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/NewsContent2.aspx?id=1520"
+        ]
+      },
+      {
+        "language": "Arabic/local",
+        "query": "كفر الشيخ مصر خريطة كادسترية قطع الأراضي السجل العيني GIS",
+        "result": "Found the official governorate interactive map and المكاني spatial-services page, which describes geospatial property/building-position services but requires تسجيل الدخول. Egyptian Survey Authority Arabic pages document السجل العيني, الخرائط الرقمية, الخرائط الطبوغرافية, and Kafr El-Sheikh state-property GIS work; no anonymous parcel feature service or safe parcel geometry was found.",
+        "actualResultUrls": [
+          "https://kfs.gov.eg/interactive-map",
+          "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/amlak.aspx",
+          "https://www.esa.gov.eg/ImagesList.aspx"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://kfs.gov.eg/interactive-map",
+      "role": "Official Kafr El-Sheikh Governorate interactive map",
+      "observation": "Search/open discovery identifies a governorate interactive map with public place, project, service and investment points and Esri basemap attribution. The page timed out during a direct anonymous GET attempt; no parcel layer or parcel schema was verified."
+    },
+    {
+      "url": "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+      "role": "Official Kafr El-Sheikh Governorate spatial-services page",
+      "observation": "Describes digital property-positioning/spatial services and direct linkage to the spatial-variables center; the submission form explicitly requires login. It is local service/procedure evidence, not an open parcel-vector API."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main2.aspx",
+      "role": "Egyptian Survey Authority official project/service portal",
+      "observation": "Lists the national urban real-estate-register project (السجل العيني), agricultural holding and property-inventory projects, and mapping services. No public anonymous parcel query endpoint is exposed in the page."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "role": "Egyptian Survey Authority official digital-map service",
+      "observation": "States that digital GIS maps can be requested by location, scale, layers, format and projection through a paid/request workflow. This is not an anonymous downloadable parcel service."
+    },
+    {
+      "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1520",
+      "role": "Egyptian Survey Authority official Kafr El-Sheikh state-property GIS announcement",
+      "observation": "Describes a digital unified state-property register based on GIS and survey-map metadata, including a Kafr El-Sheikh project phase; no public parcel response or native parcel identity was exposed."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The governorate spatial service is login-gated, the interactive-map direct request timed out, and Survey Authority map/cadastre pages describe request/procurement or program context rather than an open parcel endpoint. The exact WUP point was preserved and not shifted; no exact-point parcel test was claimed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kafr El-Sheikh governorate official interactive map and spatial-services portal, plus Egyptian Survey Authority official cadastral/real-estate-register, digital-map, topographic-map and Kafr El-Sheikh GIS materials.",
+    "verifiedOpenScope": "Official local service existence and national custodian/program context were verified; citywide parcel-vector access, native parcel identity, parcel schema, parcel CRS response, and exact-point containment remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

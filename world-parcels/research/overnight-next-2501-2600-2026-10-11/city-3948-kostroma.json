@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 3948,
+  "queueRank": 2596,
+  "name": "Kostroma",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [57.7622396967271, 40.9478276135375],
+  "population2025": 226622,
+  "population2025k": 226.622,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kostroma official cadastral map GIS parcel public map Rosreestr NSPD",
+        "result": "Found official Kostroma regional geoinformation portal documentation and an official Kostroma city reference to the Rosreestr public cadastral map. No separate open municipal parcel-feature API was established. The official federal map routes timed out on bounded anonymous requests.",
+        "actualResultUrls": [
+          "https://eks.kostroma.gov.ru/app_oopt/portal/default/page?id=1",
+          "https://gradkostroma.ru/qa/list.aspx?id=4",
+          "https://pkk.rosreestr.ru",
+          "https://nspd.gov.ru"
+        ]
+      },
+      {
+        "language": "Russian (native/local)",
+        "query": "Кострома официальная публичная кадастровая карта Росреестр НСПД кадастровые участки",
+        "result": "Найдены официальный геоинформационный портал Костромской области и официальный материал администрации города Костромы со ссылкой на публичную кадастровую карту Росреестра. Отдельный открытый муниципальный API объектов недвижимости не подтверждён. Прямые анонимные запросы официальных федеральных картографических маршрутов завершились тайм-аутом.",
+        "actualResultUrls": [
+          "https://eks.kostroma.gov.ru/app_oopt/portal/default/page?id=1",
+          "https://gradkostroma.ru/qa/list.aspx?id=4",
+          "https://pkk.rosreestr.ru",
+          "https://nspd.gov.ru"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://eks.kostroma.gov.ru/app_oopt/portal/default/page?id=1",
+      "operator": "Kostroma Oblast unified cartographic-service geoinformation portal",
+      "evidence": "Official regional portal describes open access to regional spatial-data services and metadata catalogues. The inspected project page did not expose a parcel layer or feature endpoint. Its map page points to a Yandex embedded map, not a cadastral parcel service."
+    },
+    {
+      "url": "https://gradkostroma.ru/qa/list.aspx?id=4",
+      "operator": "Kostroma city administration",
+      "evidence": "Official city page identifies the Rosreestr public cadastral map as the public resource where formed land parcels are published and gives a Kostroma cadastral number example. This is local custodial/procedure evidence, not a returned parcel API response."
+    },
+    {
+      "url": "https://pkk.rosreestr.ru",
+      "operator": "Rosreestr public cadastral map",
+      "evidence": "Official federal cadastral-map route identified by first-party/local-government references; the route was not retrievable by bounded anonymous HTTPS request from this workspace."
+    },
+    {
+      "url": "https://nspd.gov.ru",
+      "operator": "Rosreestr / National Spatial Data System",
+      "evidence": "Current official federal spatial-data route considered as the successor/current public map context; direct request timed out before configuration or feature data could be inspected."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://eks.kostroma.gov.ru/app_oopt/portal/default/page?id=1",
+      "method": "GET",
+      "status": "200",
+      "summary": "Official regional geoinformation-portal project page retrieved. No cadastral parcel schema, CRS, native ID field, or parcel feature service was exposed in the inspected HTML."
+    },
+    {
+      "url": "https://eks.kostroma.gov.ru/app_oopt/portal/default/page?id=2",
+      "method": "GET",
+      "status": "200",
+      "summary": "Official portal map page retrieved; it contains an embedded Yandex map and no parcel-feature endpoint. It is not treated as cadastral evidence."
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Anonymous HTTPS request with normal TLS timed out after 20 seconds; no current JavaScript/configuration, schema, CRS, native ID, or geometry returned."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "status": "timeout_or_unavailable",
+      "summary": "Bounded anonymous request did not return a usable response before timeout. No speculative API route was called after viewer/configuration access failed."
+    },
+    {
+      "url": "https://gradkostroma.ru/qa/list.aspx?id=4",
+      "method": "GET via first-party web discovery/index",
+      "status": "200",
+      "summary": "Official city page inspected for local registry/map custody evidence; it confirms public cadastral-map use but does not provide a machine-readable parcel response."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no bounded anonymous parcel feature response returned.",
+      "native identity": "Not available: official viewer/API schema was not retrieved.",
+      "source attributes": "Not requested or retained."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rosreestr public cadastral map is the relevant federal cadastral viewer, with official Kostroma city and regional portal references; no citywide parcel completeness was verified.",
+    "verifiedOpenScope": "Local official map/procedure evidence only; no Kostroma parcel geometry or native-ID coverage verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point result was obtained because official map routes timed out. This is an access limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details", "ownership/encumbrances", "personal data"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_map_evidence_geometry_unverified",
+  "remainingUncertainty": "The official federal cadastral viewer could not be followed through current JavaScript/configuration, so CRS, schema, stable native parcel identity, geometry response, and citywide coverage remain unverified. The regional portal is documented but does not expose a verified parcel service in the inspected pages.",
+  "nextStep": "Serial reviewer should retry the official Rosreestr/NSPD viewer from an eligible network, follow its current first-party configuration, and issue a tiny safe ID-plus-geometry request before considering adapter qualification."
+}

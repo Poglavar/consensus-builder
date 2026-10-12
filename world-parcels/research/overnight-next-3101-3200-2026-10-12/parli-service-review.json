@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-9357-parli.json",
+  "cityCode": 9357,
+  "queueRank": 3175,
+  "city": "Parli",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "registryFound": true,
+  "summary": "Separate English and Marathi first-party discovery evidenced Maharashtra Bhumi Abhilekh/Mahabhumi services, the public Bhu-Naksha viewer, and the Deputy Superintendent Land Records, Parli Vaijnath local custodian. Bounded anonymous parcel ID-plus-geometry access was not qualified after direct requests timed out; no GeoJSON sample is retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, actual first-party URLs, request methods and outcomes, scope limits, safe field allowlist, and uncertainty are recorded in city-9357-parli.json. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe-field request, or TLS exception was used.",
+  "custodian": "Deputy Superintendent Land Records, Parli Vaijnath / Maharashtra Bhumi Abhilekh Department; local custodianship is evidenced, but open parcel-vector access is not qualified.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": null, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [18.8502895774339, 76.5241343803141] and population 189364 persons are preserved.", "Timeouts and viewer limitations are not evidence of citywide absence.", "Official service existence and local-custodian evidence do not establish citywide completeness, a safe native ID, schema, CRS, or parcel geometry.", "No unsafe land-record fields were requested or retained.", "Packet completion is not source integration/admission."],
+  "runtimeReadiness": "held",
+  "admissionDecision": "held",
+  "uncertainty": "A supported interactive client or currently undiscovered public route may expose more data, but no anonymous safe parcel response was available in this attempt. Independent serial adapter review remains required."
+}

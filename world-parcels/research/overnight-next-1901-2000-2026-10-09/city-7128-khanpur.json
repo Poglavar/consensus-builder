@@ -1,0 +1,58 @@
+{
+  "cityCode": 7128,
+  "queueRank": 1970,
+  "city": "Khanpur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [28.6478778686212, 70.6559557664644],
+  "population2025": 294821,
+  "population2025k": 294.821,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakistan official Khanpur Punjab cadastral land records map parcel GIS",
+        "result": "Found the official Punjab Urban Land Systems Enhancement (PULSE) GIS portal and Punjab Land Records Authority (PLRA). PULSE describes a parcel map linked to provincial land records; the public viewer exposes a Rahim Yar Khan cadastral layer through ArcGIS REST.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "site:punjab-zameen.gov.pk خانپور اراضی ریکارڈ نقشہ کادستر",
+        "result": "Found the official Urdu/English PLRA Registry of Deeds login portal and Punjab land-record service references. The result is a login/CAPTCHA-gated records service, not an anonymous parcel-geometry endpoint; no login or CAPTCHA interaction was attempted.",
+        "actualResultUrls": [
+          "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2F",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "provider": "Punjab Urban Land Systems Enhancement (PULSE), Punjab Land Records Authority / Government of Punjab",
+    "serviceUrl": "https://lis.pulse.gop.pk/",
+    "parcelServiceUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/27",
+    "custody": "Punjab provincial cadastral/land-record mapping service; the inspected layer is Rahim Yar Khan district, which contains Khanpur.",
+    "evidence": "The official PULSE viewer configuration names Punjab_Cdastral_Maps and its Rahim Yar Khan layer; the official PULSE site states that it provides GIS mapping of parcels linked to Punjab land records."
+  },
+  "parcelEvidence": {
+    "layer": "Rahim Yar Khan",
+    "layerId": 27,
+    "geometryType": "esriGeometryPolygon",
+    "sourceSpatialReference": { "wkid": 102100, "latestWkid": 3857 },
+    "responseSpatialReference": { "wkid": 4326 },
+    "nativeIdentity": "OBJECTID",
+    "exactPointHits": 0,
+    "boundedExtent": [70.6359557664644, 28.6278778686212, 70.6759557664644, 28.6678778686212],
+    "boundedExtentHits": 3,
+    "retainedSample": "khanpur-parcels-sample.geojson",
+    "sampleQualification": "Three polygons returned by the official layer for the bounded extent; they are not asserted to contain the exact WUP point."
+  },
+  "runtimeReadiness": "held"
+}

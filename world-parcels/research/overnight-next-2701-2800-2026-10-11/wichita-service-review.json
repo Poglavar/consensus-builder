@@ -1,0 +1,15 @@
+{
+  "cityRecord": "city-6740-wichita.json",
+  "cityCode": 6740,
+  "queueRank": 2760,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": "Sedgwick County GIS is the evidenced local/regional parcel-map custodian for Wichita; the City of Wichita page corroborates the public GIS viewer route. National agencies were not used as custodian evidence.",
+  "officialSources": ["https://www.sedgwickcounty.org/gis/", "https://www.sedgwickcounty.org/gis/data-layers/", "https://www.wichita.gov/553/Map-Search---GIS", "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4?f=pjson"],
+  "queryAndRequestOutcome": "See city record requests. Official ArcGIS parcel-layer schema was read successfully. The safe exact-point query timed out before a feature response, so no parcel polygon or native ID sample is retained.",
+  "nativeSchema": {"geometry": "esriGeometryPolygon; service/output spatial reference EPSG:3857, source WKID 102678/latest 3420", "nativeIdentityCandidates": ["PIN", "GEOCODE", "AIN", "GlobalID", "OBJECTID"], "identityQualification": "Pending a successful bounded feature response; OBJECTID is a service OID and was not promoted as canonical identity without corroboration", "sourceFieldsInspected": ["OBJECTID", "PIN", "GEOCODE", "AIN", "GlobalID", "Shape"], "safeAllowlist": ["verified stable parcel ID", "geometry", "geometry CRS", "source layer", "bounded query metadata"], "compositeKeyProvenance": "No composite key used or established."},
+  "scopeLimits": ["Bounded anonymous requests only; no citywide enumeration or completeness claim.", "The exact WUP point was not shifted and the timeout is not evidence of absence.", "No GeoJSON sample was retained because no feature response was obtained.", "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used."],
+  "retainedSample": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "The service and local custodian are evidenced, but a serial reviewer must qualify any adapter and identity mapping after a successful bounded geometry response. Packet completion is not source integration/admission."
+}

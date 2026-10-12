@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-3792-longueuil.json",
+  "cityCode": 3792,
+  "queueRank": 1629,
+  "name": "Longueuil",
+  "country": "Canada",
+  "countryCode": "CA",
+  "reviewedAt": "2026-10-10",
+  "service": {
+    "officialViewer": "https://geohub.longueuil.quebec/",
+    "serviceUrl": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0",
+    "route": "GeoHub discovery -> municipal ArcGIS FeatureServer layer metadata -> bounded anonymous point query",
+    "observedCrs": "EPSG:32188",
+    "observedGeometry": "esriGeometryPolygon",
+    "safeFieldAllowlist": ["NUMERO"],
+    "nativeFieldsObserved": ["OBJECTID", "NUMERO", "STATUT"],
+    "identityDecision": "Retain NUMERO as the canonical native identity; do not retain raw source attributes or OBJECTID in the sample."
+  },
+  "attempts": [
+    {"kind":"English discovery","outcome":"Official municipal GeoHub and Cadastre service found."},
+    {"kind":"French discovery","outcome":"Official Ville de Longueuil GéoHub, interactive maps, and Québec Infolot guidance found."},
+    {"kind":"schema GET","outcome":"HTTP 200; polygon layer and EPSG:32188 schema verified."},
+    {"kind":"bounded point query","outcome":"HTTP 200; one polygon intersected the exact supplied point; native lot number 2 798 557; GeoJSON output EPSG:4326."}
+  ],
+  "scopeAndUncertainty": {
+    "registryCustodian": "Ville de Longueuil municipal geomatics/open-data service evidenced; Québec Infolot is a separate provincial cadastral reference.",
+    "citywideAbsenceInference": false,
+    "coverageClaim": "No citywide completeness or update-latency claim made.",
+    "transferLimit": "Response included exceededTransferLimit; only one bounded feature was retained.",
+    "unsafeData": "No owner, address, contact, titleholder, tax, assessment, or personal fields requested, logged, or retained."
+  },
+  "runtimeReadiness": "held_pending_serial_qualification",
+  "packetStatus": "complete"
+}

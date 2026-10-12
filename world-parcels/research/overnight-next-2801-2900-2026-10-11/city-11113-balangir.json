@@ -1,0 +1,71 @@
+{
+  "cityCode": 11113,
+  "queueRank": 2884,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [20.7017701724146, 83.4822544975625],
+  "population2025": 206728,
+  "population2025k": 206.728,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Balangir Odisha official cadastral parcel map land records GIS",
+        "result": "Found official Odisha Bhulekh plot-map UI and Odisha 4K GEO cadastral Web-GIS; the official 4K viewer exposes a public cadastral result route.",
+        "actualResultUrls": [
+          "https://bhulekh.ori.nic.in/frmmapview.aspx",
+          "https://odisha4kgeo.in/",
+          "https://odisha4kgeo.in/index.php/mapview/LulcView"
+        ]
+      },
+      {
+        "language": "Odia",
+        "query": "ବଲାଙ୍ଗିର ଓଡ଼ିଶା ଭୂମି ରେକର୍ଡ ମାନଚିତ୍ର କ୍ୟାଡାଷ୍ଟ୍ରାଲ",
+        "result": "Search identified the official Balangir district site and the official Odisha Bhulekh/4K GEO services; no separate Balangir-local cadastral host was identified.",
+        "actualResultUrls": [
+          "https://balangir.odisha.gov.in/en",
+          "https://bhulekh.ori.nic.in/frmmapview.aspx",
+          "https://odisha4kgeo.in/"
+        ]
+      }
+    ],
+    "source": {
+      "name": "Odisha 4K GEO Services",
+      "custodian": "Odisha state geospatial service / ORSAC-linked public portal",
+      "serviceUrl": "https://odisha4kgeo.in/index.php/mapview/LulcView",
+      "resultUrl": "https://odisha4kgeo.in/index.php/mapview/viewCadistrialResult",
+      "request": {
+        "method": "POST",
+        "body": {
+          "district": "Bolangir",
+          "block": "Bolangir",
+          "value": "0201",
+          "field": "block_code"
+        },
+        "scope": "bounded block-level anonymous request"
+      },
+      "response": {
+        "format": "GeoJSON FeatureCollection",
+        "crs": "EPSG:3857",
+        "featureCount": 139734,
+        "nativeIdentityField": "revenue_plot",
+        "geometryTypesObserved": ["Polygon", "GeometryCollection"],
+        "sampleFile": "balangir-sample.geojson"
+      },
+      "safeFieldAllowlist": ["revenue_plot", "geometry"],
+      "fieldMapping": {
+        "revenue_plot": "stable native plot identifier exposed by the cadastral response",
+        "geometry": "native parcel geometry; retained in source CRS EPSG:3857"
+      }
+    }
+  },
+  "registryFound": true,
+  "runtimeReadiness": "held_serial_review_no_adapter_qualification",
+  "uncertainty": [
+    "The official public service is state-level and the response was bounded to the Bolangir block; it does not by itself prove complete citywide coverage.",
+    "The WUP point was preserved exactly and was not used to force a parcel hit.",
+    "No owner, tenant, address, title, contact, tax, or other unsafe fields were requested or retained."
+  ]
+}

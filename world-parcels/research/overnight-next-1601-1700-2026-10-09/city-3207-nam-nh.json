@@ -1,0 +1,100 @@
+{
+  "cityCode": 3207,
+  "queueRank": 1620,
+  "name": "Nam Định",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso3": "VNM",
+  "locId": 704,
+  "point": [20.438526903149, 106.173923306667],
+  "population2025": 353044,
+  "population2025k": 353.044,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nam Dinh Vietnam official cadastral parcel map GIS land registration map API",
+        "result": "Search found official Vietnamese government land-information procedures and the Nam Định provincial environment portal, but no anonymous Nam Định parcel map/API or city-bounded ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://sotnmt.namdinh.gov.vn/vi-vn/van-ban/tai-nguyen-dat-68/bc-ket-qua-cong-tac-thong-ke-dat-dai-nam-dinh/3132",
+          "https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-hanh-chinh.html?ma_thu_tuc=1.002171",
+          "https://vnsdi.mae.gov.vn/infomation"
+        ]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Nam Định bản đồ địa chính thửa đất cổng thông tin chính thức",
+        "result": "Search found the official Nam Định provincial land/environment portal, a provincial land-data management regulation, and official records describing the provincial land-registration office; no public anonymous parcel geometry service was exposed.",
+        "actualResultUrls": [
+          "https://sotnmt.namdinh.gov.vn/vi-vn/van-ban/tai-nguyen-dat/68?page=61",
+          "https://vbpl.vn/namdinh/Pages/vbpq-print.aspx?ItemID=137218",
+          "https://namdinh.gov.vn/portal/VanBan/2022-06/9c8df9f9213badcd1_QDi_chuc_nang_cua_VPDKDD.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://sotnmt.namdinh.gov.vn/vi-vn/van-ban/tai-nguyen-dat/68?page=61",
+      "observation": "Official provincial Department of Natural Resources and Environment portal; its footer identifies the Nam Định provincial authority and its land-resource section publishes cadastral/land documents. Direct GET from this environment failed TLS certificate-chain verification; no exception was used."
+    },
+    {
+      "url": "https://namdinh.gov.vn/portal/VanBan/2022-06/9c8df9f9213badcd1_QDi_chuc_nang_cua_VPDKDD.pdf",
+      "observation": "Official provincial decision describing the Văn phòng đăng ký đất đai (land registration office) as responsible for land registration, cadastral records, cadastral-map correction and land-information management. This is local custodian evidence, not an open parcel API."
+    },
+    {
+      "url": "https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-hanh-chinh.html?ma_thu_tuc=1.002171",
+      "observation": "Official national public-service procedure for requesting surveying/mapping information through the national surveying and mapping data center; procedure evidence only, not city-bounded open parcel geometry."
+    },
+    {
+      "url": "https://vnsdi.mae.gov.vn/infomation",
+      "observation": "Official national geospatial portal information page. General national geospatial prose does not establish Nam Định cadastral coverage or an anonymous parcel endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sotnmt.namdinh.gov.vn/vi-vn/van-ban/tai-nguyen-dat-68/bc-ket-qua-cong-tac-thong-ke-dat-dai-nam-2022-tren-dia-ban-tinh-nam-dinh/3132",
+      "method": "GET",
+      "httpStatus": "TLS verification failure",
+      "outcome": "Server certificate chain contained an untrusted/self-signed certificate from this environment. TLS verification was not disabled and no content was used as fetched evidence."
+    },
+    {
+      "url": "https://bandovn.vn/",
+      "method": "GET",
+      "httpStatus": "timeout after 15 seconds",
+      "outcome": "Official national surveying/mapping data-request route did not return within the bounded anonymous request. No retry escalation, login, or certificate bypass."
+    },
+    {
+      "url": "https://gis.vn/api",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Non-government GIS provider API page loaded; it advertises coordinate-based cadastral lookup, but it is not evidenced as the Nam Định registry custodian and no parcel request was made or retained."
+    },
+    {
+      "url": "https://namdinh.gov.vn/portal/VanBan/2022-06/9c8df9f9213badcd1_QDi_chuc_nang_cua_VPDKDD.pdf",
+      "method": "GET via first-party search/open",
+      "httpStatus": "official document found",
+      "outcome": "Documented the provincial land-registration office mandate; no machine-readable parcel response."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local Nam Định land-registration office and provincial land/environment custodian are evidenced by official provincial documents and portal pages. Anonymous public parcel geometry, schema, CRS and city scope were not verified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_land_registry_custodian_open_parcel_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Nam Định provincial land/environment portal, provincial land-registration-office mandate, and national surveying/geospatial information procedures.",
+    "verifiedOpenScope": "No city-bounded Nam Định parcel record, stable native parcel identity, safe schema, CRS or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The local cadastral database may exist and may be available through an authenticated or request-based workflow, but endpoint, access policy, schema, CRS and city coverage remain unknown. Zero exact-point hits, timeout and TLS failure are not evidence of citywide absence.",
+  "identityPolicy": "No native parcel identity was observed; no synthetic identity was created. Future retained samples may contain only one stable native parcel ID plus full native geometry, with source field mapping documented in the review."
+}

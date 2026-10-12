@@ -187,3 +187,67 @@ test('accepts a provider jurisdiction basis backed by evidence as source-purpose
     packetScope.providerReuse.scopeEvidence = [{ basis: 'National parcel lookup.', countryCode: 'PL', evidence: ['research/countries/PL.json'] }];
     assert.equal((await prepareCandidate(packetScope, { repoRoot, sourceRoot })).status, 'prepared');
 });
+
+test('statewide ArcGIS: host case is not a conflict, composite absent IDs keep their escapes, no all-nines placeholder', async t => {
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'parcel-preparer-statewide-'));
+    t.after(() => fs.rm(sourceRoot, { recursive: true, force: true }));
+    await fs.writeFile(path.join(sourceRoot, 'proof.json'), JSON.stringify({ status: 'verified' }));
+    const prepare = async (sourceId, id, descriptorOverrides = {}) => {
+        const entry = parcelSourceCatalog.sources.find(row => row.id === sourceId);
+        await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection', features: [
+            { type: 'Feature', properties: { id }, geometry: polygon(-120) }
+        ] }));
+        return prepareCandidate({ cityCode: '9001', cityName: 'Example', point: [38.5, -120], sampleFiles: [{ path: 'sample.geojson' }],
+            providerReuse: { descriptor: { id: entry.id, adapter: entry.adapter, idPrefix: entry.idPrefix, endpoint: entry.endpoint,
+                idFields: entry.idFields, idField: entry.idField, outFields: entry.outFields, ...descriptorOverrides },
+            sourceEvidenceFiles: [{ path: 'proof.json' }] } }, { repoRoot, sourceRoot });
+    };
+    const ca = parcelSourceCatalog.sources.find(row => row.id === 'us-ca-calfire-statewide-parcels');
+    const lowered = new URL(ca.endpoint).href;
+    assert.notEqual(lowered, ca.endpoint);
+    const caResult = await prepare(ca.id, '06067~001-0010-001-0000', { endpoint: lowered });
+    assert.equal(caResult.status, 'prepared', caResult.reason);
+    assert.equal(caResult.candidate.descriptor.endpoint, ca.endpoint);
+    assert.equal(caResult.candidate.absentId, 'US-CA-STATEWIDE-99998~999-9999-999-9998');
+    const moved = await prepare(ca.id, '06067~001-0010-001-0000', { endpoint: ca.endpoint.replace('/FeatureServer/0', '/FeatureServer/1') });
+    assert.match(moved.reason, /conflicts with catalog identity field endpoint/);
+
+    const ak = await prepare('us-ak-statewide-parcels-agol', 'Anchorage%20Municipality~00415417000');
+    assert.equal(ak.status, 'prepared', ak.reason);
+    assert.equal(ak.candidate.absentId, 'US-AK-STATEWIDE-Zzzzzzzzz%20Zzzzzzzzzzzz~99999999998');
+
+    // A packet's descriptor snapshot predates later catalog fixes; production's descriptor is tested.
+    const montana = parcelSourceCatalog.sources.find(row => row.id === 'us-mt-helena-parcels');
+    const stale = await prepare(montana.id, '03092705211220000', { idField: montana.idField, idPattern: '^[0-9]{17}$' });
+    assert.equal(stale.status, 'prepared', stale.reason);
+    assert.equal(stale.candidate.descriptor.idPattern, montana.idPattern);
+    assert.notEqual(montana.idPattern, '^[0-9]{17}$');
+
+    const indiana = await prepare('us-in-indianamap-statewide-parcels', '491234567890123456');
+    assert.equal(indiana.status, 'prepared', indiana.reason);
+    assert.equal(indiana.candidate.absentId, 'US-IN-STATEWIDE-999999999999999998');
+});
+
+test('absent IDs keep the fixed parts of an ID format, whether the catalog or only the adapter knows it; the smallest sample goes first', async t => {
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'parcel-preparer-anchored-'));
+    t.after(() => fs.rm(sourceRoot, { recursive: true, force: true }));
+    await fs.writeFile(path.join(sourceRoot, 'proof.json'), JSON.stringify({ status: 'verified' }));
+    const box = (x, size) => ({ type: 'Polygon', coordinates: [[[x, 48], [x + size, 48], [x + size, 48 + size], [x, 48 + size], [x, 48]]] });
+    const prepare = async (sourceId, samples) => {
+        const entry = parcelSourceCatalog.sources.find(row => row.id === sourceId);
+        await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection',
+            features: samples.map(([id, geometry]) => ({ type: 'Feature', properties: { id }, geometry })) }));
+        return prepareCandidate({ cityCode: '9002', cityName: 'Example', point: [48.0, 9.0], sampleFiles: [{ path: 'sample.geojson' }],
+            providerReuse: { descriptor: { id: entry.id, adapter: entry.adapter, idPrefix: entry.idPrefix, endpoint: entry.endpoint },
+                sourceEvidenceFiles: [{ path: 'proof.json' }] } }, { repoRoot, sourceRoot });
+    };
+    // Baden-Württemberg's catalog pattern ^08[0-9]{18}$ keeps the leading 08.
+    const bw = await prepare('de-bw-lgl-alkis-flurstueck', [['08331000004152000504', box(9.0, 0.004)], ['08331000004340000100', box(9.01, 0.0005)]]);
+    assert.equal(bw.status, 'prepared', bw.reason);
+    assert.equal(bw.candidate.absentId, 'DE-BW-ALKIS-08999999999999999998');
+    assert.deepEqual(bw.candidate.sampleIds, ['DE-BW-ALKIS-08331000004340000100', 'DE-BW-ALKIS-08331000004152000504']);
+    // Hessen's DEHE…FL rule lives only in the adapter's GML profile.
+    const hessen = await prepare('hessen-alkis-vereinfacht-wfs', [['DEHE06180000x0pPFL', box(8.6, 0.0005)]]);
+    assert.equal(hessen.status, 'prepared', hessen.reason);
+    assert.equal(hessen.candidate.absentId, 'DE-HE-DEHE99999999z8zZFL');
+});

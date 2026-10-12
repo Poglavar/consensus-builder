@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-453-ganja.json",
+  "purpose": "Document first-party Azerbaijani discovery and bounded anonymous cadastral/map-service review for Ganja.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Azerbaijani sources evidence a Ganja-specific cadastral and real-estate registration project, an electronic land-cadastre system, and an official interactive property map. The official map and agency pages were requested anonymously from this environment but timed out. No parcel response, native ID, schema, CRS, or geometry was obtained, and no GeoJSON sample is retained.",
+  "registryAssessment": "A first-party official report specifically covering Ganja cadastral mapping and the official agency's interactive map establish a local/city-specific cadastral source, so registryFound=true. This is not evidence of current endpoint availability, citywide completeness, or adapter admission.",
+  "officialPrimarySources": [
+    {
+      "url": "https://emlak.gov.az/mapmodule",
+      "observation": "Official ƏMDX interactive map entry; the page was identified in first-party search but direct retrieval timed out during this attempt."
+    },
+    {
+      "url": "https://emlak.gov.az/az/page/view/32",
+      "observation": "Official page for the electronic land-cadastre accounting information system (TEKUİS), describing cadastral maps and land-accounting functions; direct retrieval timed out during this attempt."
+    },
+    {
+      "url": "https://emlak.gov.az/az/news/view/265-%E2%80%9CKadastr-v%C9%99-Da%C5%9F%C4%B1nmaz-%C6%8Em%C9%99lak%C4%B1n-Qeydiyyat%C4%B1-Layih%C9%99si%E2%80%9Dnin--%28G%C9%99nc%C9%99-v%C9%99-%C5%9E%C9%99ki-%C5%9F%C9%99h%C9%99rl%C9%99ri-%C3%BCzr%C9%99%29-yekun-%C4%B0ctimai-T%C9%99qdimat%C4%B1-ke%C3%A7irilib",
+      "observation": "Official Azerbaijani report specifically describes the Ganja and Shaki cadastral and real-estate registration project and digital cadastral mapping."
+    },
+    {
+      "url": "https://dedkr.gov.az/az/news/view/80",
+      "observation": "Official DEDKR report describes the Ganja and Shaki project as creating an electronic cadastral database and digital cadastral maps; direct agency retrieval timed out during this attempt."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ganja Azerbaijan official cadastral parcel map GIS cadastre",
+      "result": "Official map, TEKUİS, and Ganja-specific cadastral-project sources found; no parcel response could be verified after direct requests timed out.",
+      "actualResultUrls": ["https://emlak.gov.az/mapmodule", "https://emlak.gov.az/az/page/view/32", "https://emlak.gov.az/az/news/view/265-%E2%80%9CKadastr-v%C9%99-Da%C5%9F%C4%B1nmaz-%C6%8Em%C9%99lak%C4%B1n-Qeydiyyat%C4%B1-Layih%C9%99si%E2%80%9Dnin--%28G%C9%99nc%C9%99-v%C9%99-%C5%9E%C9%99ki-%C5%9F%C9%99h%C9%99rl%C9%99ri-%C3%BCzr%C9%99%29-yekun-%C4%B0ctimai-T%C9%99qdimat%C4%B1-ke%C3%A7irilib"]
+    },
+    {
+      "language": "Azerbaijani",
+      "query": "Gəncə Azərbaycan rəsmi kadastr xəritəsi daşınmaz əmlak xəritə",
+      "result": "Official Azerbaijani cadastral-map and Ganja-project sources found; no parcel response, native identity, schema, CRS, or geometry was obtained.",
+      "actualResultUrls": ["https://emlak.gov.az/mapmodule", "https://emlak.gov.az/az/page/view/32", "https://dedkr.gov.az/az/news/view/80"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://emlak.gov.az/mapmodule",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "TLS GET timed out after 20 seconds from the research environment; no HTML, JavaScript, configuration, API route, or response body was obtained."
+    },
+    {
+      "url": "https://emlak.gov.az/az/page/view/32",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "TLS GET timed out after 15 seconds; no response body was obtained."
+    },
+    {
+      "url": "https://dedkr.gov.az/az/",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "TLS GET timed out after 15 seconds; no response body was obtained."
+    },
+    {
+      "url": "https://kadastr.az/",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "Request was attempted as a possible official cadastral portal; no usable response was recorded before the bounded request window ended. It is not treated as evidence of a parcel service."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed because the official map/API was unreachable within bounded anonymous requests. The exact WUP point [40.6870715860686, 46.3454287780589] was not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ganja-specific cadastral project and official Azerbaijani cadastral/property-map systems, as described by first-party sources.",
+    "verifiedOpenScope": "First-party project and map existence only; no current anonymous service endpoint or parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "Current map availability, JavaScript/configuration, API route, authentication behavior, native field schema, safe parcel identity, CRS, exact-point hit behavior, full polygon retrieval, freshness, and bulk/citywide coverage remain unverified. Timeout is not evidence of absence.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

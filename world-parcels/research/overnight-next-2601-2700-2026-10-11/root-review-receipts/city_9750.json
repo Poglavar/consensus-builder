@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9750",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-9750-changyuan.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/changyuan-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T16:08:49Z",
+  "reason": "Official Changyuan procurement notice establishes the local natural-resources/registration custodian; no safe native ID plus full parcel polygon or public feature service was verified. Direct portal access failed with 403. No live adapter, paging, 13-cell, metric GEOS, source-binding, or headed details proof."
+}

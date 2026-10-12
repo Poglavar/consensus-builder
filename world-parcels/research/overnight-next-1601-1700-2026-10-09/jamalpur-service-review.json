@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-5377-jamalpur.json",
+  "schemaVersion": "1.0",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "cityCode": 5377,
+  "queueRank": 1659,
+  "city": "Jamalpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The official DLRS settlement map service is a real first-party cadastral/map service and returned Jamalpur district, BDS survey metadata, Jamalpur Sadar, and mouza-sheet metadata. Bounded anonymous sheet geometry requests returned HTTP 500/empty bodies, so no parcel polygon or native parcel ID was retained.",
+  "queryOutcomes": "Separate English and Bengali discovery queries are recorded in the city record. Search found official DLRS, settlement.gov.bd, map.land.gov.bd, and Jamalpur district pages. General national agency prose was not treated as local geometry evidence; the live DLRS administrative cascade is the registry/map evidence.",
+  "requestOutcomes": "GET https://settlement.gov.bd/Map/MapSearch returned HTTP 200. GET https://map.land.gov.bd/ returned HTTP 200 and exposed the current JavaScript/configuration, including the public map service route. POST /Map/GetDivisionList returned division metadata; POST /Khatian/getdistrictlistdivisionwise with divid=070000000 returned Jamalpur district; POST /Khatian/GetSurveyListDistrictWise with districtid=071000000 and comcod=4176 returned BDS survey 201901; POST /Khatian/GetThanaListBySurveyMap returned Jamalpur Sadar; POST /Khatian/GetMouzaListBySurveyMap returned three mouza-sheet entries. GET /Khatian/GetSheetListBySurveyMap for mouza 071001055 returned a sheet list. POST /Khatian/GetSheetJsonBySurvey with the returned parameters for attempted sheets returned HTTP 500 and empty response bodies. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS-disable action was used.",
+  "attemptedRoutes": [
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "method": "GET", "httpStatus": 200, "outcome": "Official map-search viewer loaded."},
+    {"url": "https://map.land.gov.bd/", "method": "GET", "httpStatus": 200, "outcome": "Official land-map viewer loaded; current JS/configuration inspected."},
+    {"url": "https://settlement.gov.bd/Map/GetDivisionList", "method": "POST", "httpStatus": 200, "outcome": "Returned divisions including Mymensingh."},
+    {"url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise", "method": "POST", "httpStatus": 200, "outcome": "Returned Jamalpur district unitcod 071000000 and comcod 4176."},
+    {"url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "method": "POST", "httpStatus": 200, "outcome": "Returned BDS digital survey rsnum 201901."},
+    {"url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "method": "POST", "httpStatus": 200, "outcome": "Returned Jamalpur Sadar upazila."},
+    {"url": "https://settlement.gov.bd/Khatian/GetMouzaListBySurveyMap", "method": "POST", "httpStatus": 200, "outcome": "Returned three Jamalpur Sadar mouza-sheet entries."},
+    {"url": "https://settlement.gov.bd/Khatian/GetSheetListBySurveyMap?rsnum=201901&comcod=4176&unitcod=071001055", "method": "GET", "httpStatus": 200, "outcome": "Returned the sheet list for the returned Beltiya mouza record."},
+    {"url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey", "method": "POST", "httpStatus": 500, "outcome": "Attempted returned mouza/sheet combinations; empty response body, no geometry."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [24.9209921555422, 89.9461779185304] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "The service metadata path was exercised for Jamalpur district and Jamalpur Sadar, but the returned mouza list is not evidence of complete city coverage.",
+    "HTTP 500/empty geometry responses are treated as unavailable/failed requests, not as parcel absence.",
+    "No owner, address, titleholder, contact, tax/account, or personal fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel geometry/identity was returned."
+  ],
+  "safeFieldAllowlist": ["native dag/plot identifier if returned", "full parcel polygon geometry if returned", "survey/mouza/sheet identifiers", "public service and CRS metadata"],
+  "nativeFieldMapping": {"parcelIdentity": "native dag/plot number was expected from the sheet feature response; not observed", "geometry": "GeoJSON sheet response; not observed"},
+  "geometryQuality": "No geometry returned; no sample retained.",
+  "runtimeReadiness": "held_no_geometry_and_serial_review_required",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The source is first-party and locally evidenced as a cadastral/map service, but geometry availability, CRS, citywide completeness, legal status of the digital survey, and adapter suitability remain unresolved."
+}

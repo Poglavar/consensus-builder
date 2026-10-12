@@ -1,0 +1,38 @@
+{
+  "taskId": "city:1460",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-1460-diourbel.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/diourbel-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:32:37Z",
+  "reason": "DGID cadastral/NICAD procedure is first-party custody evidence; saved ONDDL catalog has nine administrative resources and no parcel feature or safe native parcel ID. Diourbel geometry and all adapter gates remain unverified.",
+  "identityCheck": {
+    "queueRank": 2461,
+    "country": "Senegal",
+    "pointLatLon": [
+      14.6532998914477,
+      -16.2297341855647
+    ],
+    "populationPersons": 237795,
+    "matchedOriginalWup2025Row": true
+  },
+  "sourceResponseCheck": {
+    "savedFirstPartyResponse": "tmp/valhalla-parcel-research/1460/resources.json",
+    "observed": "total=9; seven administrative datasets and two maps in saved response; no cadastral parcel dataset",
+    "parcelFeatureCount": null
+  },
+  "qualificationGates": {
+    "freshNativeIdReads": null,
+    "forcedPaging": null,
+    "thirteenBoundedCells": null,
+    "metricGeosValidityOverlap": null,
+    "sourceBinding": null,
+    "headedDetailsPanel": null
+  },
+  "geometryRetained": 0,
+  "runtimeAdmission": "held",
+  "qualificationGateStatus": "unverified; no qualifying parcel response, so adapter checks could not be run"
+}

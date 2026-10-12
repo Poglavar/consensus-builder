@@ -1,0 +1,39 @@
+{
+  "taskId": "city:2453",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:13:55Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-2453-coro.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/coro-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "tmp/valhalla-parcel-research/2453/alcaldia.html",
+    "tmp/valhalla-parcel-research/2453/sigat.html",
+    "tmp/valhalla-parcel-research/2453/servicio_api_mapoteca.html",
+    "tmp/valhalla-parcel-research/2453/mapas.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 2453,
+    "rank": 3069,
+    "country": "Venezuela (Bolivarian Republic of)",
+    "point": [
+      11.4020516898788,
+      -69.6719085761861
+    ],
+    "populationPersons": 195549
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": null,
+  "reason": "Municipal portal and SIGAT tax platform do not prove a cadastral registry; IGVSB mapoteca advertises general maps and its saved GET response requires POST. No Coro parcel layer, native ID or full polygon is evidenced. Registry custody remains unresolved, not false absence; runtime qualification gates are missing."
+}

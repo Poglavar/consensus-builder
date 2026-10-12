@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6980",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6980-memphis.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/memphis-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6980-memphis-sample.geojson",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/memphis/state-layer-pjson.json",
+    "tmp/valhalla-parcel-research/memphis/exact-point.geojson",
+    "tmp/valhalla-parcel-research/memphis/bounded.geojson"
+  ],
+  "checkedAt": "2026-10-10T10:41:00.905556Z",
+  "reason": "Immutable rank 1597, United States of America, point and 356215 persons match both queue sources. Separate English local/English searches are recorded. Original state ArcGIS metadata gives Shelby polygon layer, PARCELID field and pagination support; original exact-point response contains one polygon with PARCELID 058068  00001, matching the one safe retained sample. The three-feature bounded response reports exceededTransferLimit=true. No fresh adapter exact-ID read, forced complete paging, 13 cells, metric GEOS checks, source binding, or headed Details check is evidenced; county-wide scope is not municipal completeness.",
+  "sourceAdmission": "not_admitted"
+}

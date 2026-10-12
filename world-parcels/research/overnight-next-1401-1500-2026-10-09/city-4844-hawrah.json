@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4844,
+  "cityId": "wup2025:4844",
+  "name": "Hawrah",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "iso3": "YEM",
+  "centerLatLon": [13.3285761394378, 44.1740489530728],
+  "point": [13.3285761394378, 44.1740489530728],
+  "queueRank": 1462,
+  "population2025": 389641,
+  "population2025k": 389.641,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yemen Hawrah cadastral parcel map GIS land registry official",
+        "result": "Found the official General Authority for Land, Survey and Urban Planning (GALSUP) website and official Yemeni land-registration-law material. No Hawrah-specific public parcel viewer, service URL, schema, CRS, or anonymous parcel geometry was identified.",
+        "actualResultUrls": ["https://galsup.gov.ye/", "https://agoye.gov.ye/page.php?id=374"]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "اليمن حورة حورة عمران خريطة عقارية سجل الأراضي مسح عقاري",
+        "result": "Results identified the official GALSUP site and official Arabic registry-law material. A commercial real-estate listing map was also found, but it is not a cadastral registry and did not expose safe parcel geometry for Hawrah.",
+        "actualResultUrls": ["https://galsup.gov.ye/", "https://agoye.gov.ye/page.php?id=374", "https://aqaralyemen.com/index.php"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Yemen's national land, survey, and urban-planning custodian is evidenced, and registry law describes local registry offices and survey maps. No Hawrah-specific local registry office, public cadastral map, or open parcel service was independently evidenced.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://galsup.gov.ye/",
+      "operator": "General Authority for Land, Survey and Urban Planning (GALSUP), Yemen",
+      "observation": "Official authority website loaded over HTTPS. It contains institutional and planning material, but no public parcel viewer or concrete map/API service was exposed in the inspected page/configuration."
+    },
+    {
+      "url": "https://agoye.gov.ye/page.php?id=374",
+      "operator": "Public Prosecution, Yemen",
+      "observation": "Official registry-law page describes the in-kind registry, local registry offices, and general/special property maps. It is legal/procedural evidence, not a public parcel geometry service."
+    },
+    {
+      "url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/",
+      "operator": "Central Statistical Organization, Yemen GIS Center",
+      "observation": "Official GIS-center description discusses national/statistical spatial data and mapping responsibilities; it does not publish a Hawrah cadastral layer or anonymous parcel endpoint."
+    },
+    {
+      "url": "https://aqaralyemen.com/index.php",
+      "operator": "Aqar Al-Yemen commercial real-estate platform",
+      "observation": "Public Arabic listing map and property advertisements were visible. This is general real-estate market content, not evidence of a government cadastral registry or safe native parcel identity."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://galsup.gov.ye/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official site loaded. HTML inspection found ordinary WordPress assets and no public map/viewer JavaScript, WMS/WFS URL, ArcGIS service, parcel schema, or geometry response."
+    },
+    {
+      "url": "https://galsup.gov.ye/wp-json/wp/v2/search?search=%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9&per_page=20",
+      "method": "GET",
+      "status": "HTTP 404-like WordPress response",
+      "summary": "Anonymous REST search route returned the site's resource-not-found response; no parcel service or map configuration was exposed."
+    },
+    {
+      "url": "https://agoye.gov.ye/page.php?id=374",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official registry-law page loaded; registry and survey-map procedures were documented, with no public geometry endpoint."
+    },
+    {
+      "url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official GIS-center description loaded; it provides institutional context only and no Hawrah parcel response."
+    },
+    {
+      "url": "https://aqaralyemen.com/index.php",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Commercial listing map loaded; not treated as cadastral evidence and no parcel geometry was retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Yemen national land/survey authority, registry-law framework, and relevant public mapping leads for Hawrah.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No safe anonymous native parcel ID-plus-geometry response was available from an official Hawrah service; the exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or survey identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "The current GALSUP operational map/service endpoints, Hawrah or governorate registry custodian, parcel-layer schema/CRS, native parcel identity, exact-point inclusion, and citywide coverage remain unknown. No credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+  "nextStep": "A serial reviewer should independently check whether GALSUP, the relevant governorate land office, or a current official viewer exposes an anonymous geometry-only parcel endpoint, then qualify a small sample before any adapter consideration."
+}

@@ -1,0 +1,26 @@
+{
+  "taskId": "city:6549",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-6549-ziway.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ziway-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T205539-e56664af/stdout.jsonl",
+    "tmp/valhalla-parcel-research/6549/oromialand.html",
+    "tmp/valhalla-parcel-research/6549/api.js"
+  ],
+  "checkedAt": "2026-10-11T20:59:22Z",
+  "reason": "Queue identity and executed English/Amharic-Afaan Oromo searches checked. First-party Oromia Bureau HTML and API configuration are general regional context; Addis viewer is outside Ziway scope. No Ziway native-ID parcel polygon or independent qualification is evidenced. Registry custody remains unresolved (null), without a citywide absence inference.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

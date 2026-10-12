@@ -1,0 +1,101 @@
+{
+  "cityCode": 5493,
+  "name": "Cuautla",
+  "country": "Mexico",
+  "iso2": "MX",
+  "iso3": "MEX",
+  "countryCode": "MX",
+  "point": [18.8303019116445, -98.9436945278123],
+  "population2025": 216531,
+  "population2025k": 216.531,
+  "populationUnit": "persons",
+  "rank": 2725,
+  "queueRank": 2725,
+  "wupCityCode": 5493,
+  "cityName": "Cuautla",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "discoveryMethod": "first-party-discovery-attempt-1",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cuautla Morelos cadastral map parcel service official",
+        "result": "Search found the official Morelos Institute of Registry and Cadastral Services page, which states that the institute maintains the state cadastral information system and a property visualizer, but the page exposed no public viewer/API URL. It also found the official Cuautla municipal site.",
+        "actualResultUrls": [
+          "https://www.morelos.gob.mx/inicio/instituto-de-servicios-registrales-y-catastrales",
+          "https://cuautla.gob.mx/"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Cuautla Morelos catastro plano catastral visor mapa parcelario sitio oficial",
+        "result": "Search found the official municipal transparency procedure for a certified cadastral plan verified in the field. It identifies the Dirección de Catastro as responsible and provides the municipal address, phone, email, requirements, and 72-hour service window. No anonymous parcel download or map/API endpoint was exposed.",
+        "actualResultUrls": [
+          "https://transparenciamorelos.mx/sites/default/files/Ayuntamientos/Cuautla/oti2/copia_certificada_de_plano_catastral_verificado_en_campo.pdf",
+          "https://marcojuridico.morelos.gob.mx/archivos/reglamentos_municipales/pdf/Reg00279.pdf",
+          "https://cuautla.gob.mx/wp-content/uploads/2025/06/01.-PMD-2025-2027_FINAL.pdf"
+        ]
+      }
+    ]
+  },
+  "sourceReview": {
+    "localCustodian": {
+      "name": "Dirección de Catastro del Municipio de Cuautla",
+      "evidenceUrl": "https://transparenciamorelos.mx/sites/default/files/Ayuntamientos/Cuautla/oti2/copia_certificada_de_plano_catastral_verificado_en_campo.pdf",
+      "scope": "Municipal cadastral plan verification and cadastral administration; procedure is owner/authorized-representative mediated and not an anonymous parcel API."
+    },
+    "stateAgency": {
+      "name": "Instituto de Servicios Registrales y Catastrales del Estado de Morelos",
+      "evidenceUrl": "https://www.morelos.gob.mx/inicio/instituto-de-servicios-registrales-y-catastrales",
+      "scope": "State cadastral information system and property visualizer are described, but no public service endpoint was discoverable in this attempt."
+    },
+    "safeFieldAllowlist": ["id", "geometry"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "sampleFile": null,
+    "scopeLimits": [
+      "No full parcel polygon was retained.",
+      "No exact-point hit or citywide absence inference was made.",
+      "Owner, address, contact, titleholder, tax/account, and other unsafe fields were not requested."
+    ]
+  },
+  "attempts": [
+    {
+      "stage": "official-state-custodian-page",
+      "method": "GET/search open",
+      "url": "https://www.morelos.gob.mx/inicio/instituto-de-servicios-registrales-y-catastrales",
+      "outcome": "HTTP page available; custodian and stated state cadastral-system/property-visualizer responsibilities found; no viewer/API URL or schema exposed."
+    },
+    {
+      "stage": "official-municipal-site",
+      "method": "GET",
+      "url": "https://cuautla.gob.mx/",
+      "outcome": "HTTP page available; municipal official site exposed general services but no cadastral map/API endpoint."
+    },
+    {
+      "stage": "official-local-cadastral-procedure",
+      "method": "GET/PDF",
+      "url": "https://transparenciamorelos.mx/sites/default/files/Ayuntamientos/Cuautla/oti2/copia_certificada_de_plano_catastral_verificado_en_campo.pdf",
+      "outcome": "HTTP PDF available; local Dirección de Catastro and certified-plan procedure evidenced. It requires a request, predial receipt, identification, and possibly power of attorney; no anonymous geometry response."
+    },
+    {
+      "stage": "official-local-cadastre-regulation",
+      "method": "GET/PDF",
+      "url": "https://marcojuridico.morelos.gob.mx/archivos/reglamentos_municipales/pdf/Reg00279.pdf",
+      "outcome": "HTTP PDF available; regulation establishes the municipal cadastre administration. No service endpoint or parcel schema."
+    },
+    {
+      "stage": "public-map/API-follow-up",
+      "method": "GET/source inspection",
+      "url": "https://www.morelos.gob.mx/inicio/instituto-de-servicios-registrales-y-catastrales",
+      "outcome": "No public JavaScript/configuration reference to a cadastral viewer or anonymous parcel API was found; no bounded ID+geometry request was possible without inventing an endpoint."
+    }
+  ],
+  "uncertainty": "A local cadastral custodian and procedure are evidenced, but this attempt did not qualify a public machine-readable parcel source, native parcel identity, CRS/schema, or geometry. This is not evidence of citywide parcel absence."
+}

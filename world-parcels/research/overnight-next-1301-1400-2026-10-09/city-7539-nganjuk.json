@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityId": "wup2025:7539",
+  "cityCode": 7539,
+  "wupCityCode": 7539,
+  "queueRank": 1378,
+  "rank": 1378,
+  "name": "Nganjuk",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso2": "ID",
+  "iso3": "IDN",
+  "point": [-7.63022516432905, 111.903552010308],
+  "centerLatLon": [-7.63022516432905, 111.903552010308],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 409447,
+  "population2025k": 409.447,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["nganjuk"],
+  "status": "complete",
+  "resultCategory": "local_registry_evidenced_no_public_safe_parcel_geometry_verified",
+  "registryFound": true,
+  "registryBasis": "Official Nganjuk government reporting identifies Kantor Pertanahan Kabupaten Nganjuk as the local ATR/BPN land-registration custodian and documents its PTSL/GEMAPULDADIS work. This establishes the local registry custodian, but not an anonymous parcel geometry endpoint.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official municipal geoportal route did not return within the bounded request, and the official LokaGeo catalog exposed administrative, hazard, road, planning, and facility datasets but no parcel/field layer. ATR/BPN/Sentuh Tanahku references describe property-specific lookup workflows, not a safe anonymous geometry-plus-stable-ID feed.",
+  "source": {
+    "sourceId": null,
+    "name": "Kantor Pertanahan Kabupaten Nganjuk / ATR-BPN",
+    "operator": "Kementerian Agraria dan Tata Ruang/Badan Pertanahan Nasional; Kantor Pertanahan Kabupaten Nganjuk",
+    "url": "https://api-nsc.nganjukkab.go.id/detail_berita/NTUwMw%3D%3D",
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeCrs": null,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Local land registration and systematic registration activity is evidenced for Kabupaten Nganjuk; public parcel-layer coverage is not established.",
+    "verifiedOpenScope": "Official local-government reporting, official municipal smart-city directory, official LokaGeo catalog page, and bounded anonymous route checks.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nganjuk Indonesia official cadastral parcel map GIS geoportal parcel land registry",
+        "result": "Found the official Nganjuk Smart City directory linking the municipal GEOPORTAL, the official LokaGeo Kabupaten Nganjuk spatial catalog, and official local reporting identifying Kantah Nganjuk land-registration activity. No safe public parcel geometry endpoint or parcel schema was verified.",
+        "actualResultUrls": [
+          "https://api-nsc.nganjukkab.go.id/",
+          "https://lokageonganjuk.org/index.html",
+          "https://lokageonganjuk.org/katalog-data.html",
+          "https://api-nsc.nganjukkab.go.id/detail_berita/NTUwMw%3D%3D",
+          "https://api-nsc.nganjukkab.go.id/detail_berita/NTcyOQ%3D%3D"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kantor Pertanahan Kabupaten Nganjuk resmi peta bidang tanah GIS geoportal",
+        "result": "Sumber resmi Nganjuk menyebut Kantor Pertanahan Kabupaten Nganjuk dalam program PTSL dan GEMAPULDADIS, serta menyebut Sentuh Tanahku untuk pencarian bidang tertentu. Katalog LokaGeo yang ditinjau tidak mempublikasikan layer bidang tanah; tidak ditemukan endpoint anonim yang aman.",
+        "actualResultUrls": [
+          "https://api-nsc.nganjukkab.go.id/detail_berita/NTUwMw%3D%3D",
+          "https://api-nsc.nganjukkab.go.id/detail_berita/NTcyOQ%3D%3D",
+          "https://api-nsc.nganjukkab.go.id/detail_berita/NTU0OQ%3D%3D",
+          "https://lokageonganjuk.org/katalog-data.html",
+          "https://geoportal.nganjukkab.go.id/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://api-nsc.nganjukkab.go.id/detail_berita/NTUwMw%3D%3D",
+        "observation": "Official Nganjuk Smart City report dated 2025-10-06 documents Kantah Kabupaten Nganjuk handing over PTSL certificates in Desa Setren and identifies the local land office as the implementing custodian."
+      },
+      {
+        "url": "https://api-nsc.nganjukkab.go.id/detail_berita/NTcyOQ%3D%3D",
+        "observation": "Official Nganjuk Smart City report documents Kantor Pertanahan Kabupaten Nganjuk launching GEMAPULDADIS for PTSL 2026 and describes the goal of complete and accurate land-field mapping."
+      },
+      {
+        "url": "https://api-nsc.nganjukkab.go.id/detail_berita/NTU0OQ%3D%3D",
+        "observation": "Official local report describes ATR/BPN Sentuh Tanahku's Cek Bidang workflow as a property-specific lookup requiring certificate/office/village identifiers or NIBEL; no public bulk geometry feed is provided."
+      },
+      {
+        "url": "https://lokageonganjuk.org/katalog-data.html",
+        "observation": "Official-presented LokaGeo catalog page lists village boundaries, hazard zones, roads, RDTR zoning, and health facilities; no parcel or bidang tanah dataset was listed in the accessible catalog."
+      },
+      {
+        "url": "https://api-nsc.nganjukkab.go.id/",
+        "observation": "Official municipal directory links to GEOPORTAL, but the linked route was not available within the bounded anonymous request."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geoportal.nganjukkab.go.id/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Timed out after 15 seconds with no response bytes; this is an unavailable route outcome, not evidence of citywide parcel absence."
+      },
+      {
+        "url": "http://geoportal.nganjukkab.go.id/",
+        "method": "GET; anonymous",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Bounded request did not produce a usable response before timeout; no redirect or service configuration was inferred."
+      },
+      {
+        "url": "https://lokageonganjuk.org/katalog-data.html",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Catalog page returned and listed non-parcel datasets; no public parcel geometry layer, native parcel ID schema, CRS, or bounded feature query was exposed."
+      },
+      {
+        "url": "https://api-nsc.nganjukkab.go.id/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Municipal service directory returned and linked GEOPORTAL and Sentuh Tanahku; it did not expose a parcel API."
+      }
+    ],
+    "safeFieldAllowlist": ["stable native parcel identity if documented", "geometry"],
+    "scopeLimits": [
+      "No exact-point parcel query was made because no verified safe parcel endpoint/schema was found; the immutable WUP point remains unchanged.",
+      "No owner, address, contact, titleholder, personal, tax/account, certificate, NIBEL, or other unsafe field was requested or retained.",
+      "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+      "A timeout, unavailable viewer, or absent public layer is not evidence of citywide cadastral absence.",
+      "Local registry evidence does not establish citywide public parcel coverage or runtime adapter suitability."
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "No public anonymous parcel geometry-plus-stable-ID route was verified; serial reviewer qualification remains required."
+  },
+  "rootReview": "pending",
+  "point": [-7.63022516432905, 111.903552010308]
+}

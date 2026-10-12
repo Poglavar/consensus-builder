@@ -1,0 +1,143 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence and executed public requests.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 948,
+  "queueRank": 1848,
+  "cityId": "948:RO:cluj-napoca",
+  "name": "Cluj-Napoca",
+  "country": "Romania",
+  "countryCode": "RO",
+  "iso3": "ROU",
+  "locId": 642,
+  "point": [46.7713200763012, 23.5921055625956],
+  "population2025": 310650,
+  "population2025k": 310.65,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "aliases": ["cluj napoca"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cluj-Napoca official cadastral parcel GIS map API ANCPI geoportal parcels",
+        "result": "Search identified the official ANCPI Geoportal CP/CP_View Cadastral Parcel layer, OCPI/BCPI Cluj-Napoca custody pages, and the Cluj-Napoca municipal GIS page.",
+        "actualResultUrls": [
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://cj.ancpi.ro/b-c-p-i-cluj-napoca/",
+          "https://primariaclujnapoca.ro/informatii-publice/comunicate/eliberarea-automata-a-certificatelor-de-urbanism-de-informare-gis/"
+        ]
+      },
+      {
+        "language": "Romanian",
+        "query": "Cluj-Napoca cadastru parcele hartă GIS oficial geoportal cadastral OCPI Cluj",
+        "result": "Search identified the official ANCPI Cadastral Parcel service, OCPI/BCPI Cluj-Napoca, the municipal GIS using cadastral numbers for urban-planning information, and the ANCPI cadastral-sector publication source.",
+        "actualResultUrls": [
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://www.ocpicluj.ro/contact-bcpi-cluj-napoca.php",
+          "https://gis.primariaclujnapoca.ro/Public/",
+          "https://www.ancpi.ro/pnccf_docs2/Cluj/Tabel%20sectoare%20CJ%2030.12.2025.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "custodian": "Agenția Națională de Cadastru și Publicitate Imobiliară (ANCPI)",
+      "observation": "First-party indexed service metadata identifies a public Cadastral Parcel polygon layer with JSON/GeoJSON query formats, extent covering Romania, spatial reference EPSG:4258, and safe technical fields including OBJECTID, IFCID, INSPIRE identifiers, and nationalCadastralRef. Live direct access was not available during this attempt."
+    },
+    {
+      "url": "https://cj.ancpi.ro/b-c-p-i-cluj-napoca/",
+      "custodian": "OCPI Cluj / BCPI Cluj-Napoca",
+      "observation": "First-party indexed page identifies the Biroul de Cadastru și Publicitate Imobiliară Cluj-Napoca and links the ANCPI Geoportal; it evidences the local cadastral custodian, not an anonymous citywide parcel API."
+    },
+    {
+      "url": "https://primariaclujnapoca.ro/informatii-publice/comunicate/eliberarea-automata-a-certificatelor-de-urbanism-de-informare-gis/",
+      "custodian": "Municipiul Cluj-Napoca",
+      "observation": "Official municipal page states that its GIS accepts a cadastral number for urban-planning/PUG/PUZ information and links the public GIS viewer. It does not expose a verified anonymous parcel-geometry endpoint in the observed page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json",
+      "method": "GET",
+      "outcome": "TLS-verified curl attempt failed locally with DNS resolution error (curl error 6); no metadata response retrieved or retained."
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query",
+      "method": "GET",
+      "params": {
+        "geometry": "{\"xmin\":23.587,\"ymin\":46.768,\"xmax\":23.597,\"ymax\":46.775}",
+        "geometryType": "esriGeometryEnvelope",
+        "spatialRel": "esriSpatialRelIntersects",
+        "inSR": 4326,
+        "outSR": 4326,
+        "outFields": "OBJECTID,IFCID,id_namespace,id_localId,id_versionId,nationalCadastralRef",
+        "returnGeometry": true,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "outcome": "TLS-verified bounded anonymous request failed locally with DNS resolution error (curl error 6); no exact-point or bounded hit/miss inference made."
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "method": "web search/open",
+      "outcome": "First-party search result exposed layer metadata, but direct web inspection returned HTTP 502 Bad Gateway."
+    },
+    {
+      "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/exts/InspireView/domainInfo/layers",
+      "method": "web open",
+      "outcome": "Alternate official endpoint was readable and confirmed the INSPIRE Cadastral Parcel layer name and CadastralParcels application schema; it did not return parcel geometries."
+    },
+    {
+      "url": "https://cj.ancpi.ro/b-c-p-i-cluj-napoca/",
+      "method": "web open",
+      "outcome": "Official page inspection returned HTTP 502; search metadata still identified the Cluj-Napoca cadastral office and Geoportal link."
+    },
+    {
+      "url": "https://primariaclujnapoca.ro/informatii-publice/comunicate/eliberarea-automata-a-certificatelor-de-urbanism-de-informare-gis/",
+      "method": "web open",
+      "outcome": "Official municipal page was readable and documented the public GIS and cadastral-number urban-planning lookup; no parcel geometry API was verified."
+    },
+    {
+      "url": "https://gis.primariaclujnapoca.ro/Public/",
+      "method": "discovery link only",
+      "outcome": "Public viewer URL was identified from the municipal page; no login, CAPTCHA, or private-token route was attempted and no service configuration was retained."
+    },
+    {
+      "url": "https://www.ancpi.ro/pnccf_docs2/Cluj/Tabel%20sectoare%20CJ%2030.12.2025.pdf",
+      "method": "web open",
+      "outcome": "Official Cluj cadastral-sector document URL returned HTTP 404; this was not treated as evidence of absence."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "First-party ANCPI parcel-layer metadata, OCPI/BCPI Cluj-Napoca custody evidence, and the Cluj-Napoca municipal GIS documentation establish national and local cadastral/map custodians. Anonymous parcel geometry and stable native identity were not verified.",
+  "registryEvidenceUrls": [
+    "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+    "https://cj.ancpi.ro/b-c-p-i-cluj-napoca/",
+    "https://primariaclujnapoca.ro/informatii-publice/comunicate/eliberarea-automata-a-certificatelor-de-urbanism-de-informare-gis/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "ANCPI national cadastral parcel layer, with OCPI/BCPI Cluj-Napoca and municipal GIS custody evidence.",
+    "verifiedOpenScope": "Institutional custody and candidate layer metadata only; anonymous parcel geometry, Cluj-Napoca filtering, current dataset vintage, and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "pointBasis": "Exact WUP queue point preserved; no coordinate shift and no exact-point hit/miss inference.",
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "source layer metadata", "CRS metadata"],
+  "uncertainty": "A public layer may be available when the service is reachable, but the current viewer/API route, Cluj-Napoca coverage, schema, CRS response, stable native identity semantics, update currency, and anonymous runtime behavior remain unresolved. No owner, address, contact, titleholder, tax/account, personal, or unsafe fields were requested or retained.",
+  "researchGroup": "europe"
+}

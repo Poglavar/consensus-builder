@@ -1,0 +1,100 @@
+{
+  "cityCode": 8617,
+  "queueRank": 1232,
+  "name": "Jiangyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1232,
+  "point": [28.9293929790689, 105.441729966685],
+  "population2025": 452500,
+  "population2025k": 452.5,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jiangyang Luzhou China official cadastral parcel map GIS natural resources bureau land registration",
+        "result": "First-party discovery identified official Luzhou government material describing the Luzhou Natural Resources and Planning Bureau and Luzhou Real Estate Registration Center, plus an official Sichuan government approval for Jiangyang District's territorial spatial plan. Direct municipal pages were then requested anonymously but returned CloudWAF HTTP 418. No anonymous parcel geometry service was verified.",
+        "actualResultUrls": [
+          "https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf",
+          "https://www.sc.gov.cn/10462/zfwjts/2024/5/29/c647d4d899654659a9788d882eec018d/files/%E5%B7%9D%E5%BA%9C%E5%87%BD139%E5%8F%B7%E5%85%AC%E5%BC%80%E7%89%88.pdf",
+          "https://www.luzhou.gov.cn/",
+          "https://www.jiangyang.gov.cn/"
+        ],
+        "scope": "Identify Jiangyang/Luzhou local cadastral or registration custody and a public anonymous parcel-geometry service without requesting owner, address, title, contact, tax, account, or certificate data."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "泸州市 江阳区 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "Simplified-Chinese discovery found official Luzhou government-service material naming the municipal natural-resources and real-estate-registration custodians and an official answer describing online registration-information access as requiring identity/facial authentication. That route was not used. No public anonymous cadastral geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf",
+          "https://wen.lzep.cn/talk/403.html",
+          "https://www.luzhou.gov.cn/",
+          "https://www.jiangyang.gov.cn/"
+        ],
+        "method": "Independent Simplified-Chinese discovery followed by first-party government source review and anonymous direct GET attempts.",
+        "scope": "Find safe public geometry and stable native parcel IDs only; do not use identity-authenticated or record-specific registration queries."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Luzhou/Jiangyang natural-resources and real-estate-registration channels",
+    "url": "https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf",
+    "operator": "Luzhou Natural Resources and Planning Bureau; Luzhou Real Estate Registration Center; Jiangyang District local natural-resources/planning authority",
+    "serviceType": "Official registration/procedure and government information routes reviewed; no anonymous source-native full parcel polygon endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official material evidences local registration custody and identity-gated registration-information access, but no safe anonymous cadastral geometry route was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Luzhou government-service and government-information sources relevant to Jiangyang, plus anonymous direct GET attempts to the municipal and district sites.",
+    "verifiedOpenScope": "Local registry/procedure custody is evidenced; anonymous source-native parcel geometry, schema, CRS, native ID, exact-point hit, and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymously accessible cadastral geometry endpoint was identified. Direct GET requests to https://www.luzhou.gov.cn/ and https://www.jiangyang.gov.cn/ returned HTTP 418 from CloudWAF; the official registration-information route describes identity/facial authentication and was not accessed.",
+  "remainingUncertainty": "A separately published municipal or provincial map service may exist, but its current public service URL/configuration and access model were not verified. No exact-point query or absence conclusion was made.",
+  "nextStep": "Continue bounded discovery from an official Luzhou/Jiangyang map or natural-resources portal if a public anonymous service URL is published; do not use authenticated registration lookups or personal/property-record fields.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8617,
+  "cityId": "wup2025:8617",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [28.9293929790689, 105.441729966685],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Luzhou government-service material names municipal natural-resources and real-estate-registration custodians, while official Luzhou information states that online registration-information access requires identity/facial authentication. These sources establish institutional custody/procedure, not public anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://lzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=e78205bb1bf04f7da39b43d7300f2b5b.pdf",
+    "https://wen.lzep.cn/talk/403.html",
+    "https://www.sc.gov.cn/10462/zfwjts/2024/5/29/c647d4d899654659a9788d882eec018d/files/%E5%B7%9D%E5%BA%9C%E5%87%BD139%E5%8F%B7%E5%85%AC%E5%BC%80%E7%89%88.pdf",
+    "https://www.luzhou.gov.cn/",
+    "https://www.jiangyang.gov.cn/"
+  ],
+  "runtimeAssessment": {
+    "status": "unknown_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry endpoint was verified or queried at the exact WUP point. Municipal direct requests were blocked by CloudWAF and the identity-gated route was not used; no absence claim is made."
+  },
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

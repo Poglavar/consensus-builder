@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2926",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-2926-temuco.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/temuco-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:23:02Z",
+  "reason": "Official municipal cadastral custody and parcel geocoder are supported, but the public route is a geocoder, CATASTRO requires a token, and no native parcel ID or full polygon was verified.",
+  "admissionGates": "No parcel polygon or native ID response; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not evidenced. No runtime admission."
+}

@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-944-ko-ice.json",
+  "cityCode": 944,
+  "queueRank": 2724,
+  "city": "Košice",
+  "country": "Slovakia",
+  "countryCode": "SK",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "routes": [
+    {
+      "route": "City of Košice GISPLAN cadastral viewer",
+      "url": "https://gisplan.kosice.sk/mapa/katastralna-mapa/",
+      "method": "public GET",
+      "outcome": "Public viewer found; page identifies cadastral map and credits Kataster/ÚGKK SR. Viewer is usable for human inspection, but its JavaScript API/configuration was not promoted as a stable adapter contract in this packet."
+    },
+    {
+      "route": "Slovak INSPIRE C-register WFS GetCapabilities",
+      "url": "https://inspirews.skgeodesy.sk/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "public GET",
+      "outcome": "HTTP 200; WFS 2.0.0; layer cp:CP.CadastralParcel; default CRS EPSG:4258; provider VÚGK; C-register scope covers Slovakia; application/json supported; no authentication."
+    },
+    {
+      "route": "Slovak INSPIRE C-register WFS bounded city-area query",
+      "url": "https://inspirews.skgeodesy.sk/geoserver/cp/ows?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=cp%3ACP.CadastralParcel&COUNT=3&OUTPUTFORMAT=application%2Fjson&BBOX=21.245,48.708,21.265,48.728,EPSG%3A4326",
+      "method": "public GET",
+      "outcome": "HTTP 200 anonymous JSON; 9,556 matched, three returned due to COUNT=3; full Polygon geometries and safe cadastral identities returned."
+    },
+    {
+      "route": "Slovak INSPIRE C-register WFS exact-point neighborhood query",
+      "url": "https://inspirews.skgeodesy.sk/geoserver/cp/ows?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=cp%3ACP.CadastralParcel&COUNT=10&OUTPUTFORMAT=application%2Fjson&BBOX=21.2550,48.7180,21.2552,48.7184,EPSG%3A4326",
+      "method": "public GET",
+      "outcome": "HTTP 200 anonymous JSON; polygons returned near the exact WUP point. No coordinate shift or exact-hit inference was used."
+    }
+  ],
+  "schemaAndIdentity": {
+    "crs": "EPSG:4258 (ETRS89 geographic; GeoJSON response observed with longitude/latitude coordinate order)",
+    "nativeIdentity": "Preferred stable identity is inspireId.localId / nationalCadastralReference, with WFS feature id CP.<number> retained as a source feature identity. Example localId 827118_1862/5.C, label 1862/5.",
+    "fieldMapping": {
+      "native id": "inspireId.localId, nationalCadastralReference, or WFS feature id",
+      "geometry": "GeoJSON geometry from WFS feature",
+      "optional safe facts": "label, areaValue.value, areaValue.@uom, referencePoint, validFrom, validTo, administrativeUnit.@href"
+    },
+    "unsafeFieldsExcluded": ["owners", "titleholders", "addresses", "contacts", "tax/account data", "personal data", "ownership and title records"]
+  },
+  "scopeLimits": [
+    "Bounded requests are qualification evidence only and do not establish complete Košice coverage.",
+    "The exact WUP point [48.7182343856836, 21.2550572326794] was preserved; no point-in-polygon claim is made.",
+    "The viewer and national WFS are source evidence, not runtime adapter admission.",
+    "No retained GeoJSON sample was written; therefore no source-specific attribute set was retained."
+  ],
+  "runtimeReadiness": "held",
+  "completionSummary": {
+    "packetComplete": true,
+    "registryEvidence": "local viewer plus first-party national WFS",
+    "geometryEvidence": "bounded anonymous WFS polygons returned",
+    "adapterQualified": false,
+    "samplePolygonCount": 0
+  }
+}

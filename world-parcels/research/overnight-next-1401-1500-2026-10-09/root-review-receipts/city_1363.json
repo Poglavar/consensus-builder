@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1363",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-1363-sikasso.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/sikasso-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:17:27Z",
+  "reason": "Immutable WUP identity and English/French searches match the cohort record. The first-party regional directory supports DRDC/Sikasso custody, while the cached six-layer public catalog has only Bamako/Kati bounds. No Sikasso native-ID polygon or independent runtime qualification is evidenced; the bounded empty read on a Bamako layer is not citywide absence."
+}

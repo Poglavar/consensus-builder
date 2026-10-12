@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4900-ilesa.json",
+  "purpose": "Document first-party local/state/federal cadastral discovery and bounded anonymous requests for Ilesa.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Osun and federal land/survey sources were found, but no public Ilesa cadastral parcel map or safe ID-plus-geometry response was verified. The Osun service is a CofO/survey-plan document verifier, not a parcel viewer.",
+  "registryAssessment": "registryFound=null is appropriate: state and federal agency pages establish custodians and procedures, not an Ilesa-local public parcel registry or map service.",
+  "officialPrimarySources": [
+    {"url": "https://www.osunstate.gov.ng/ilesa/", "observation": "Official Osun State page for Ilesa; no parcel map/API exposed."},
+    {"url": "https://www.osunstate.gov.ng/about/major-towns/ilesa/", "observation": "Official Osun description of Ilesa and its local-government context; no parcel endpoint."},
+    {"url": "https://www.cofo.onegov.os.gov.ng/", "observation": "Official Osun Ministry of Lands and Physical Planning CofO/survey-plan verification service; document verification only."},
+    {"url": "https://osgof.gov.ng/", "observation": "Official federal Office of the Surveyor-General site advertising map, coordinate, and cadastral-survey requests; no public Ilesa parcel layer verified."},
+    {"url": "https://3uj5gmztd2.eu-west-2.awsapprunner.com/api/v1", "observation": "Current client-discovered public API host returned a welcome response; no parcel service evidenced."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Ilesa Nigeria official cadastral parcel map land registry GIS", "result": "Official Osun Ilesa page, Osun land-document verifier, and OSGOF found; no public Ilesa parcel layer."},
+    {"language": "Yoruba", "query": "Iléṣà Nàìjíríà àwòrán cadastral ilẹ̀ registry map osise", "result": "No Yoruba-language first-party public Ilesa parcel map or anonymous parcel geometry endpoint found."}
+  ],
+  "safeFieldAllowlist": [],
+  "geometryDecision": "No parcel geometry retained; no parcel feature response was obtained.",
+  "attempts": [
+    {"route": "Osun Ilesa official page", "method": "GET", "outcome": "Retrieved; city/state context only."},
+    {"route": "Osun CofO service page", "method": "GET", "outcome": "Retrieved; document/survey-plan verification workflow, no map."},
+    {"route": "CofO current JavaScript/configuration", "method": "GET", "outcome": "Verified POST /api/v1/verify route and encrypted document input contract; no parcel route."},
+    {"route": "CofO API root", "method": "GET", "outcome": "Returned public welcome response."},
+    {"route": "CofO verify endpoint", "method": "GET", "outcome": "Returned 404 because route is POST-only; no document-verification POST attempted."},
+    {"route": "OSGOF official site", "method": "GET", "outcome": "Retrieved; general cadastral-survey request information, no Ilesa parcel API."}
+  ],
+  "coverageAssessment": {"citywideVerified": false, "countrywideVerified": false, "geometryVerified": false, "note": "No Ilesa parcel layer was identified; non-discovery and document-service results are not evidence of citywide parcel absence."},
+  "remainingUncertainty": "Unpublished, offline, paid, or authenticated Osun/Ilesa cadastral data may exist.",
+  "runtimeReadiness": "held_pending_independent_serial_review"
+}

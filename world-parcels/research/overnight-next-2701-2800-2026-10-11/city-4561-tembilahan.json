@@ -1,0 +1,102 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Tembilahan, Indonesia; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 4561,
+  "queueRank": 2710,
+  "name": "Tembilahan",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-0.321883867103769, 103.153174414403],
+  "population2025": 218371,
+  "population2025k": 218.371,
+  "populationUnit": "persons",
+  "aliases": ["tembilahan"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tembilahan cadastral parcel map official Indonesia BPN geoportal",
+        "result": "Search did not establish a Tembilahan-specific public parcel-polygon endpoint. The official BHUMI ATR/BPN viewer was reached and its current iframe/JavaScript entry points were inspected.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/konsolbhumi.html", "https://konsolbhumi.atrbpn.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Tembilahan peta bidang tanah pertanahan resmi ATR BPN geoportal",
+        "result": "Search did not establish a Tembilahan-specific public parcel-polygon endpoint or local first-party vector service. The national BHUMI ATR/BPN viewer remained the only confirmed official map entry point inspected.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/konsolbhumi.html", "https://konsolbhumi.atrbpn.go.id/"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "observation": "Official BHUMI ATR/BPN landing page describes an integrated interactive land map containing geospatial data from ATR/BPN work units and embeds the current console entry point. This evidences a national official viewer, not Tembilahan-specific coverage or an exposed parcel API by itself."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/konsolbhumi.html",
+      "observation": "Current page HTML embeds https://konsolbhumi.atrbpn.go.id; no parcel service URL or schema was present in this wrapper."
+    },
+    {
+      "url": "https://konsolbhumi.atrbpn.go.id/",
+      "observation": "Current JavaScript console application loaded anonymously. Static bundle inspection identified a generic React application and no verifiable public parcel FeatureServer/WFS/GeoJSON endpoint or safe parcel schema for Tembilahan."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET landing page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Reached anonymously over TLS. The page embeds the official console iframe; no direct parcel response was returned."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/konsolbhumi.html",
+      "method": "GET current viewer wrapper",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Reached anonymously. Wrapper delegates to https://konsolbhumi.atrbpn.go.id."
+    },
+    {
+      "url": "https://konsolbhumi.atrbpn.go.id/",
+      "method": "GET public console",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Reached anonymously; loaded static JavaScript bundles. No login was attempted. Bundle/config inspection did not yield a qualifying public parcel API, schema, CRS, bounded ID+geometry response, or stable native parcel identity."
+    },
+    {
+      "url": "https://www.google.com/search?q=Tembilahan+cadastral+parcel+map+official+Indonesia+BPN+geoportal",
+      "method": "GET discovery search",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Search response was protected by an interstitial/challenge and did not provide usable result links; this is recorded as a discovery limitation, not source absence."
+    },
+    {
+      "url": "https://www.google.com/search?q=Tembilahan+peta+bidang+tanah+pertanahan+resmi+ATR+BPN+geoportal",
+      "method": "GET discovery search",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Search response was protected by an interstitial/challenge and did not provide usable result links; no bypass was attempted."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "The inspected official source is a national ATR/BPN viewer. No Tembilahan or Kabupaten Indragiri Hilir local registry/cadastre custodian page or procedure was independently evidenced in this bounded attempt.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National BHUMI ATR/BPN interactive land-map entry point.",
+    "verifiedOpenScope": "No Tembilahan-bounded public parcel polygon response, schema, CRS, or safe native parcel ID was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "asia",
+  "remainingUncertainty": "The official viewer may expose map services only through runtime interactions or routes not discoverable from the anonymously fetched wrapper and static bundles. No exact-point hit or UI/API miss is evidence of citywide absence. No owner, address, contact, titleholder, tax/account, registration, or personal fields were requested."
+}

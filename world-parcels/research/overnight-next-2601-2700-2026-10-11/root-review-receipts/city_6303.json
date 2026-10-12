@@ -1,0 +1,20 @@
+{
+  "taskId": "city:6303",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-6303-netrokona.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/netrokona-service-review.json",
+    "tmp/valhalla-parcel-research/netrokona/settlement.html",
+    "tmp/valhalla-parcel-research/netrokona/divisions.json",
+    "tmp/valhalla-parcel-research/netrokona/forDist_division_code_70.json",
+    "tmp/valhalla-parcel-research/netrokona/geoserver.headers"
+  ],
+  "reason": "WUP source and immutable queue agree on Netrokona code 6303, rank 2621, Bangladesh, point [24.8791599755252,90.7265243738965], and 225001 persons. English and Bengali searches are recorded. First-party DLRS settlement/map evidence supports institutional land-record custody, but the anonymous division response omitted Mymensingh, a bounded district probe was empty, WMS capabilities returned HTTP 503, and no Netrokona native parcel ID or polygon was obtained. These bounded failures do not establish citywide absence. No fresh native-ID read, forced paging, 13 bounded cells, independent metric GEOS checks, source binding, or headed Details verification is evidenced; hold without runtime admission.",
+  "custodyFinding": "true: first-party Bangladesh DLRS land-record/survey service establishes institutional custody; city parcel geometry remains unverified",
+  "retainedFullPolygons": 0,
+  "checkedAt": "2026-10-11T16:21:26Z",
+  "runtimeAdmitted": false
+}

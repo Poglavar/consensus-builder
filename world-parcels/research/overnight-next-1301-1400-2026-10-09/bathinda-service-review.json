@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5845-bathinda.json",
+  "cityCode": 5845,
+  "purpose": "Document first-party discovery, current public map/API routes, bounded anonymous access review, safe-field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Punjab's official BhuNaksha viewer is publicly reachable and its current JavaScript/configuration was inspected. Anonymous hierarchy calls resolved Bathinda district 04 and tehsil 039, and extent calls returned projected map bounds and a composite gisCode for two Bathinda-tehsil villages. Exact-point plot-identification calls returned empty bodies for both tested extents because the WUP point was outside those bounded village extents. No parcel polygon or safe native ID is retained.",
+  "registryAssessment": "A local/state cadastral map service is directly evidenced by the Punjab Government BhuNaksha viewer and Bathinda-specific DILRMP status page; registryFound is true for service existence, while geometry integration remains unverified.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS or coordinate-system metadata", "non-personal layer/schema metadata", "administrative hierarchy codes and names"],
+  "queries": [
+    {"language":"English","query":"Bathinda Punjab official cadastral parcel map Bhu Naksha land records","outcome":"Official Punjab BhuNaksha, DILRMP Bathinda status, and District Bathinda property-registration routes found.","actualResultUrls":["https://gisbhunaksha.punjab.gov.in/","https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/46","https://bathinda.nic.in/service/property-registration-online/"]},
+    {"language":"Punjabi","query":"ਬਠਿੰਡਾ ਪੰਜਾਬ ਅਧਿਕਾਰਤ ਭੂ ਨਕਸ਼ਾ ਖਸਰਾ ਪਲਾਟ ਨਕਸ਼ਾ","outcome":"Official Punjabi Punjab Land Records and District Bathinda portals found; Punjab BhuNaksha hierarchy exposed Bathinda codes but no exact-point parcel feature.","actualResultUrls":["https://jamabandi.punjab.gov.in/","https://bathinda.nic.in/pa/","https://gisbhunaksha.punjab.gov.in/"]}
+  ],
+  "attempts": [
+    {"url":"https://gisbhunaksha.punjab.gov.in/","method":"GET","httpStatus":200,"result":"Viewer HTML loaded; current assets were fetched and inspected."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/rest/Levels/count","method":"POST state=03","httpStatus":200,"result":"Returned levelCount 5."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/village_selector.jsp","method":"POST state=03","httpStatus":200,"result":"Returned District/Tehsil/Kanungo/Patwar/Village selector HTML."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/rest/Levels/ListsAfterLevel","method":"POST state=03 level=1 codes=04 hasmap=true","httpStatus":200,"result":"Returned Bathinda tehsil 039 and subordinate hierarchy entries."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/ScalarDatahandler","method":"POST OP=2 state=03 level=5 selections=04,039,010,040","httpStatus":200,"result":"Returned village 35785 ਨਰੂਆਣਾ."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getVVVVExtentGeoref","method":"POST state=03 gisLevels=04,039,010,040,35785 srs=0","httpStatus":200,"result":"Returned gisCode 0403901004035785 and projected extent xmin 486230.1542, ymin 3334603.514, xmax 492049.3919, ymax 3338933.9737; viewer attribution identifies Punjab Director, Land Records and says data is provisional."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getVVVVExtentGeoref","method":"POST state=03 gisLevels=04,039,010,023,35790 srs=0","httpStatus":200,"result":"Returned gisCode 0403901002335790 and projected extent xmin 482045.6580, ymin 3331393.338, xmax 488205.0839, ymax 3335925.2777."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getPlotAtXY","method":"POST state=03 giscode=0403901004035785 x=494648.77 y=3342286.98","httpStatus":200,"result":"Empty response; exact WUP point transformed only for bounded projected-coordinate testing and was not shifted."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getPlotAtXY","method":"POST state=03 giscode=0403901002335790 x=494648.77 y=3342286.98","httpStatus":200,"result":"Empty response; bounded village extent miss, not citywide absence."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/ScalarDatahandler?OP=4&state=03&levels=04,039,010,040,35785&x=494648.77&y=3342286.98","method":"GET","httpStatus":200,"result":"Empty response for the bounded exact-point test."},
+    {"url":"https://gisbhunaksha.punjab.gov.in/WMS?service=WMS&request=GetCapabilities","method":"GET","httpStatus":200,"result":"No useful capabilities document was exposed in the bounded response; WMS route is used by the official client for VILLAGE_MAP/PLOT_LIST rendering."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":"punjab-bhunaksha","nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Tested the exact WUP point [30.2120777898521,74.9443981502469] after a local projected-coordinate conversion against two returned Bathinda village extents; no plot ID or geometry was returned. The coordinate was not shifted."},
+  "remainingUncertainty": "The urban Bathinda municipal area may be represented outside the two rural village extents tested, and the viewer's authoritative CRS definition and vector geometry serialization remain unverified. A future attempt should identify the correct urban/local map unit or additional Bathinda village extent, then request only safe ID+geometry fields. No owner, address, titleholder, tax, contact, or personal fields were requested.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "requestCache": "tmp/valhalla-parcel-research/bathinda/"
+}

@@ -1,0 +1,49 @@
+{
+  "taskId": "city:1648",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-1648-san-fernando-del-valle-de-catamarca.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/san-fernando-del-valle-de-catamarca-service-review.json",
+    "tmp/valhalla-parcel-research/1648/geoservicios.html",
+    "tmp/valhalla-parcel-research/1648/municipal-cadastre.html"
+  ],
+  "checkedAt": "2026-10-11T23:11:28Z",
+  "city": "San Fernando del Valle de Catamarca",
+  "identityCheck": {
+    "officialArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueRank": 2935,
+    "country": "Argentina",
+    "pointLatLon": [
+      -28.4648163034575,
+      -65.7743953824605
+    ],
+    "populationPersons": 203169,
+    "queueRosterPacketMatch": true
+  },
+  "searchLanguages": [
+    "English",
+    "Spanish"
+  ],
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "safeNativeParcelIdAndFullPolygonVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "The first-party municipal geoservices page advertises Parcelario and a WFS link; the original cached page confirms its parcel WMS route and advertised EPSG:22183. The cached cadastral application is a login form, and bounded WFS/WMS probes yielded no feature response. No schema, native ID, or full polygon was qualified. Timeouts and login do not establish absence.",
+  "sourceChecks": [
+    {
+      "url": "https://www.catamarcaciudad.gob.ar/geoservicios/",
+      "observation": "Independently opened first-party municipal geoservices page; Parcelario is advertised, but a live parcel feature response is not shown."
+    }
+  ],
+  "absenceInference": false
+}

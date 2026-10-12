@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1915,
+      "cityCode": 2775,
+      "name": "Merca",
+      "country": "Somalia",
+      "iso2": "SO",
+      "pop2025k": 299.906,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-merca.json",
+          "cityId": "wup2025:2775",
+          "cityName": "Merca",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-merca.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1940,
+      "cityCode": 2154,
+      "name": "Siguiri",
+      "country": "Guinea",
+      "iso2": "GN",
+      "pop2025k": 297.453,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-2154.json",
+          "cityId": "wup2025:2154",
+          "cityName": "Siguiri",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-2154.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1973,
+      "cityCode": 6743,
+      "name": "Kasumbalesa",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "pop2025k": 294.623,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-6743.json",
+          "cityId": "wup2025:6743",
+          "cityName": "Kasumbalesa",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-6743.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1996,
+      "cityCode": 7594,
+      "name": "Louisville",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 291.103,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/US/KY.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

@@ -1,0 +1,62 @@
+{
+  "cityRecord": "city-11334-heshan.json",
+  "cityCode": 11334,
+  "queueRank": 2690,
+  "city": "Heshan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "held_for_serial_qualification",
+  "registryFound": true,
+  "summary": "Official Heshan government pages identify the local Natural Resources Bureau and Real Estate Registration Center as cadastral/real-estate-registration custodians. The current Guangdong Tianditu portal was inspected anonymously through its public JavaScript, but no Heshan parcel layer or safe ID-plus-geometry endpoint was exposed. No sample was retained.",
+  "discovery": {
+    "english": {
+      "query": "Heshan China official cadastral parcel map GIS land registry Natural Resources Bureau",
+      "outcome": "Official local custodian pages, Guangdong public map platform, and an indexed parcel-map notice found; no anonymous Heshan parcel service or citywide download verified.",
+      "urls": [
+        "https://www.heshan.gov.cn/jmhszrj/gkmlpt/content/3/3489/post_3489290.html",
+        "https://guangdong.tianditu.gov.cn/",
+        "https://www.heshan.gov.cn/attachment/0/373/373308/3472729.pdf"
+      ]
+    },
+    "native": {
+      "language": "Chinese (中文)",
+      "query": "鹤山市 自然资源局 不动产登记 地籍图 宗地 GIS 官方",
+      "outcome": "官方资料确认鹤山市自然资源局承担确权登记、权籍调查、不动产测绘及登记信息管理职责；未发现可匿名访问的鹤山市宗地要素服务或安全的宗地标识加几何响应。",
+      "urls": [
+        "https://www.heshan.gov.cn/jmhszrj/gkmlpt/content/3/3489/post_3489290.html",
+        "https://www.heshan.gov.cn/jmhszrzyj/gkmlpt/guide",
+        "https://guangdong.tianditu.gov.cn/",
+        "https://www.heshan.gov.cn/attachment/0/365/365898/3278636.pdf"
+      ]
+    }
+  },
+  "requestLog": "See city-11334-heshan.json requestsAndEndpointChecks. Official local bureau GETs returned HTTP 200; Guangdong Tianditu portal and current map.js returned HTTP 200 and exposed general WMTS map infrastructure only; an indexed official Heshan parcel-map PDF URL returned HTTP 404. No parcel query was fabricated.",
+  "custodianAssessment": {
+    "localCustodian": "鹤山市自然资源局 / Heshan Municipal Natural Resources Bureau, with 鹤山市不动产登记中心 / Heshan Real Estate Registration Center evidenced by official Heshan government publications.",
+    "nationalOrProvincialContext": "Guangdong Tianditu is provincial general geographic-information infrastructure operated in the natural-resources context; it is not treated as evidence of a Heshan cadastral layer.",
+    "distinction": "Local official responsibilities establish registry/custodian existence, while provincial/general map infrastructure and indexed notices do not establish anonymous citywide parcel access."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "parcel geometry",
+    "source layer/year",
+    "source CRS if declared",
+    "retrieval timestamp"
+  ],
+  "fieldMapping": "No live native parcel schema was observed. No owner, address, contact, titleholder, personal, tax, account, or document fields were requested, logged, or retained.",
+  "coverageAndUncertainty": [
+    "No citywide or countrywide parcel coverage was verified.",
+    "Exact WUP point [22.7705491848799,112.953062433317] was preserved and not shifted; no exact-point inference was made.",
+    "The 404 indexed notice route and absence of a parcel layer in the inspected public portal are bounded observations, not evidence of cadastral absence.",
+    "No CRS, axis order, geometry validity, native identity stability, or sample polygon could be assessed.",
+    "Packet completion is research evidence only and does not admit a runtime source."
+  ],
+  "sample": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "serialReviewerRequirements": [
+    "Independently find and qualify a live anonymous Heshan parcel service or documented public data download.",
+    "Verify stable native parcel identity, CRS/axis behavior, city coverage, safe fields, and valid polygon geometry before any adapter work."
+  ]
+}

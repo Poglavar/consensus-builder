@@ -1,0 +1,120 @@
+{
+  "cityCode": 11482,
+  "queueRank": 3019,
+  "name": "Jaingbian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [28.2477961827556, 117.044676478918],
+  "population2025": 198342,
+  "population2025k": 198.342,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jaingbian China Jiangxi Yingtan official natural resources bureau cadastral map parcel GIS",
+        "result": "Search identified Jaingbian/Jiangbian as a locality in Yingtan, Jiangxi and returned no current first-party parcel viewer, cadastral API, or safe anonymous parcel-vector response. A search result described Digital Yingtan/Tianditu·Yingtan as a public geospatial-platform project, but the result was not the official platform endpoint.",
+        "actualResultUrls": [
+          "https://mapcarta.com/N3896630876",
+          "https://www.jianyu360.cn/jycms/detail/20221118_1998445.html"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "鹰潭市自然资源局 不动产登记中心 官方；鹰潭市月湖区 江边街道 官方；鹰潭 地理信息 公共服务平台 天地图",
+        "result": "Search identified 江边街道 as a subdistrict of Yuehu District and returned a report that Yingtan Natural Resources Bureau procured Digital Yingtan/Tianditu·Yingtan maintenance. No official Yingtan or Yuehu public parcel viewer/API, schema, CRS, stable parcel identity, or anonymous polygon response was exposed by the results.",
+        "actualResultUrls": [
+          "https://www.xzqh.org/show/china/2024/36/360602.html",
+          "https://www.jianyu360.cn/jycms/detail/20221118_1998445.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": null,
+    "scope": "A local Yingtan/Yuehu cadastral or real-estate registry custodian was not directly evidenced on a reachable first-party page during this attempt.",
+    "evidenceUrls": [],
+    "scopeNote": "The reported Digital Yingtan geospatial platform is general geospatial-platform evidence from a non-first-party procurement report, not proof of a reachable local parcel registry or public cadastral API. National/provincial general agency material was not treated as local custody."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://www.yingtan.gov.cn/",
+        "httpStatus": 0,
+        "outcome": "Connection timed out after 12 seconds from the research host; no TLS bypass was used and no absence inference was made."
+      },
+      {
+        "method": "GET",
+        "url": "https://zrzyj.yingtan.gov.cn/",
+        "httpStatus": 0,
+        "outcome": "Connection timed out after 12 seconds from the research host; no official natural-resources viewer or configuration could be inspected."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.yuehudistrict.gov.cn/",
+        "httpStatus": 0,
+        "outcome": "DNS resolution failed for the guessed district-government hostname; this was not treated as evidence of registry or parcel absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.yujiang.gov.cn/",
+        "httpStatus": 0,
+        "outcome": "No usable response was obtained before the bounded request window; no parcel route was inferred."
+      }
+    ],
+    "note": "The exact WUP point [28.2477961827556, 117.044676478918] was preserved in latitude/longitude order and was not shifted or used as an absence test. No exact-point hit/miss, map-extent miss, login wall, timeout, or unusable UI was used to claim citywide absence."
+  },
+  "schemaAndCrs": {
+    "viewerConfig": "Not exposed",
+    "geometryCrs": "Not observed",
+    "nativeIdentity": "Not observed",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if later exposed and source-proven",
+    "full parcel polygon geometry if later exposed anonymously",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No safe anonymous public parcel response with a source-proven native identity, unchanged polygon geometry, schema, and CRS was retrieved."
+  },
+  "scopeLimits": [
+    "This packet records research completion only and is not source integration or admission.",
+    "First-party Yingtan and district routes were bounded and unreachable from this host; no login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or global TLS-disable action was used.",
+    "No raw source-specific attribute set was retained and no GeoJSON sample was created.",
+    "The exact WUP point and population fields were preserved exactly as supplied.",
+    "A future attempt should locate the current official Yingtan or Yuehu natural-resources/real-estate registration portal and inspect its public JavaScript/configuration before any parcel request."
+  ],
+  "uncertainty": "The locality identity and existence of a reported Digital Yingtan platform are indicated by discovery results, but local registry custody, current public endpoint reachability, parcel coverage, schema, CRS, stable native identity semantics, and update cadence remain unresolved."
+}

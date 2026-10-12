@@ -1,0 +1,104 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 7924,
+  "queueRank": 3203,
+  "name": "Chittorgarh",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [24.8917833656152, 74.6260154652401],
+  "population2025": 188409,
+  "population2025k": 188.409,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chittorgarh Rajasthan official cadastral parcel map land records BhuNaksha",
+        "result": "First-party discovery identified Rajasthan Apna Khata, Rajasthan BhuNaksha, Rajdharaa Urban GIS, and an official Chittorgarh municipal cadastral/map PDF. The public viewers expose map/search functionality, but discovery did not expose an anonymous parcel JSON/API response.",
+        "actualResultUrls": [
+          "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx",
+          "https://www.bhunaksha.rajasthan.gov.in/",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://lsg.urban.rajasthan.gov.in/content/dam/raj/udh/lsgs/lsg-jaipur/pdf/New%20Order%20PDF/Demarcation/FinalMaps/CHITTORGARH.pdf"
+        ]
+      },
+      {
+        "language": "Hindi (native/local-language discovery)",
+        "query": "चित्तौड़गढ़ राजस्थान भू नक्शा आधिकारिक खसरा नक्शा जमाबंदी",
+        "result": "First-party Hindi-language discovery identified the Rajasthan Government Revenue Board Apna Khata portal and its Bhu Naksha link. The indexed portal states that Rajasthan agricultural land-record copies are available online and links to e-Dharti and Bhu Naksha; no bounded anonymous parcel feature response was exposed.",
+        "actualResultUrls": [
+          "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx",
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Rajasthan Government Revenue Board's official Apna Khata portal links Bhu Naksha and describes the state's e-Dharti land-record programme. Rajasthan's official BhuNaksha viewer is a cadastral map service, and the Rajasthan Urban GIS portal states that its khasra and village boundaries come from the Settlement Department. An official Rajasthan urban-local-body Chittorgarh PDF visibly contains a cadastral/map sheet. This evidences a state/local cadastral-map custodian and public map leads, not a qualified parcel API response.",
+  "officialSources": [
+    {
+      "url": "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx",
+      "observation": "Official Rajasthan Revenue Board Apna Khata page; links e-Dharti and Bhu Naksha and states that online agricultural land-record copies are available for information use."
+    },
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/",
+      "observation": "Official Rajasthan/NIC BhuNaksha entry page; public cadastral map viewer lead. Direct workspace retrieval timed out before JavaScript/configuration inspection."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+      "observation": "Official Rajasthan Urban GIS page exposes District, Tehsil, Village, Khasra No., View On Map and View Khasra Info controls. Its disclaimer attributes khasra/village boundaries to the Settlement Department and says final authentication rests with the concerned local body/town-planning records."
+    },
+    {
+      "url": "https://lsg.urban.rajasthan.gov.in/content/dam/raj/udh/lsgs/lsg-jaipur/pdf/New%20Order%20PDF/Demarcation/FinalMaps/CHITTORGARH.pdf",
+      "observation": "Official Rajasthan urban local-government PDF titled M.C. CHITTORGARH; indexed visual evidence shows a cadastral/map sheet with parcel outlines and numbered areas. It is a static map document, not a machine-readable parcel API."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Rajasthan Revenue Board Apna Khata / NIC BhuNaksha / Rajdharaa Urban GIS (public cadastral-map leads; direct parcel API not verified)",
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.bhunaksha.rajasthan.gov.in/",
+      "outcome": "TLS-default curl request timed out after 30 seconds with no response body. No JavaScript bundle, configuration, schema, CRS, native parcel ID, or geometry was observed; no TLS exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "outcome": "Official route identified by first-party search, but web retrieval returned 502 Bad Gateway. No parcel request was attempted without viewer configuration."
+    },
+    {
+      "method": "GET",
+      "url": "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx",
+      "outcome": "First-party page available through web discovery; page exposed official links and general land-record programme text, but no bounded anonymous parcel ID-plus-geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+      "outcome": "First-party page available through web discovery; public controls for district/tehsil/village/khasra map lookup were visible, but no anonymous parcel feature response, schema, CRS, or endpoint configuration was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://lsg.urban.rajasthan.gov.in/content/dam/raj/udh/lsgs/lsg-jaipur/pdf/New%20Order%20PDF/Demarcation/FinalMaps/CHITTORGARH.pdf",
+      "outcome": "First-party static Chittorgarh cadastral/map PDF discovered; it provides visual map evidence only. No raw parcel attributes or synthetic identity was extracted or retained."
+    }
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_registry_and_public_cadastral_map_verified_but_parcel_api_unavailable",
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan state Apna Khata/BhuNaksha and Urban GIS cadastral services, with official Chittorgarh map evidence.",
+    "verifiedOpenScope": "Official public cadastral-map leads and local map evidence are verified, but no anonymous bounded native-ID-plus-geometry response, source schema, CRS, or citywide open parcel coverage was qualified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The Rajasthan viewers may expose parcel data interactively when reachable and after ordinary public selection steps, but this attempt could not inspect current JavaScript/configuration or complete a bounded parcel request. The exact WUP point was preserved and not used as an absence test. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe owner/address/contact/titleholder/tax/account field, or TLS-disabling exception was used. No GeoJSON sample is retained because no safe native parcel identity and full polygon were observed. This packet is research evidence only and is not source integration or admission."
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:3599",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-3599-santander.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/santander-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:26:05Z",
+  "reason": "The Spanish Cadastre documents cadastral parcels and public INSPIRE WFS/ATOM routes, but the packet tested unsuccessful WMS requests and retained no parcel response or polygon. The documented vector routes remain an unqualified lead. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent.",
+  "firstPartyUrlsChecked": [
+    "https://www.catastro.hacienda.gob.es/webinspire/"
+  ]
+}

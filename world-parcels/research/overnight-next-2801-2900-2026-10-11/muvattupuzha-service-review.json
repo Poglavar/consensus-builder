@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-9855-muvattupuzha.json",
+  "cityCode": 9855,
+  "queueRank": 2834,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": "Kerala Revenue/Survey and Registration portals are state-level custodial leads; Muvattupuzha Municipality was verified as a local government portal, but no local cadastral registry or open parcel-vector service was qualified.",
+  "publicMapLead": "Kerala Bhu-Naksha and Ente Bhoomi official portals; Muvattupuzha Municipality map page and KMAP viewer were also inspected.",
+  "queryOutcomes": "Separate English and Malayalam first-party discovery queries were performed. Official Kerala cadastral/digital-land-record leads and an official Muvattupuzha municipal map page were found, but no safe anonymous parcel ID-plus-geometry response was qualified.",
+  "requestOutcomes": "Bhu-Naksha failed TLS certificate verification and no exception was used. Ente Bhoomi returned HTTP 200 and exposed a CAPTCHA-gated survey-number workflow without parcel geometry. Muvattupuzha Municipality returned HTTP 200 with a map PDF/link but no vector parcel service. KMAP returned HTTP 200 and its current JavaScript exposed a permit Plot_Licensee ArcGIS layer; its bounded geometry-free query returned zero features by design. No credentials, login, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or global TLS disable was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [9.99455430126789, 76.5792956470536] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss, map extent miss, timeout, TLS failure, or permit-layer empty response was treated as citywide cadastral absence.",
+    "General Kerala state-agency prose does not establish Muvattupuzha-local registry coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No Muvattupuzha-local public anonymous parcel ID-plus-geometry response, native identity, schema, CRS, or citywide open coverage was qualified."},
+  "uncertainty": "A usable cadastral map may exist behind Bhu-Naksha administrative selection or a browser-rendered/state workflow, but its current anonymous public API, coverage, identity semantics, geometry endpoint, and CRS were not safely established during this bounded attempt.",
+  "admissionDecision": "held",
+  "doNotInfer": ["A TLS failure is not cadastral absence", "A CAPTCHA-gated workflow is not cadastral absence", "A permit-layer empty query is not parcel absence", "Packet completion is not source integration or admission"]
+}

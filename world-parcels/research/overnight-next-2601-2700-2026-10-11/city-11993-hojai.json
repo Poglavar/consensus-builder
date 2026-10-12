@@ -1,0 +1,139 @@
+{
+  "cityCode": 11993,
+  "queueRank": 2614,
+  "name": "Hojai",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.0129016904701, 92.8606371053738],
+  "population2025": 225254,
+  "population2025k": 225.254,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hojai Assam cadastral parcel map GIS official land records map",
+        "result": "Located official Hojai District land-revenue documentation, Assam ILRMS/Dharitree, and the Assam Bhunaksha parcel viewer. The Hojai District page documents land-holding trace maps and ILRMS; Bhunaksha exposes parcel geometry through its public viewer backend.",
+        "actualResultUrls": [
+          "https://hojai.assam.gov.in/index.php/information-and-services/land-revenue-services",
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://bhunaksha.assam.gov.in/"
+        ]
+      },
+      {
+        "language": "Assamese",
+        "query": "হোজাই অসম ভূমি মানচিত্ৰ দাগ নক্সা চৰকাৰী GIS",
+        "result": "Located the official Assam ILRMS/Dharitree service listing Hojai (হোজাই), and the official Bhunaksha viewer. The Assamese-language search did not by itself establish a separate local municipal service; the verified parcel route is the Assam state service bounded to Hojai Town No. 1.",
+        "actualResultUrls": [
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://bhunaksha.assam.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Assam Bhunaksha viewer returned parcel geometries for Hojai district, Hojai circle, Hojai Town No. 1 using a public backend route. The Hojai District government page independently documents ILRMS land records and land-holding trace maps.",
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.assam.gov.in/",
+      "observation": "Official NIC Assam Bhunaksha viewer; shipped JavaScript points to the public bhunakshaBackEnd service and identifies parcel, location-code, dag-number, and CRS handling."
+    },
+    {
+      "url": "https://hojai.assam.gov.in/index.php/information-and-services/land-revenue-services",
+      "observation": "Official Hojai District page says Assam ILRMS handles land records and lists land-holding trace maps as a citizen service."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+      "observation": "Official Assam Dharitree selection page lists Hojai district and the district/circle/village-town hierarchy."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.assam.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer HTML fetched; current JavaScript asset identified as /assets/index-qVUqnX9k.js."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/assets/index-qVUqnX9k.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current first-party JavaScript inspected. It revealed backend routes for districts, circles, villages, getAllDagsFromDharitree, and parcel_info; it also revealed parcel CRS handling as EPSG:32646."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned Assam districts; Hojai was identified as district code 36."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/circles",
+      "method": "POST",
+      "requestBodyAllowlist": {"dist_code": "36"},
+      "httpStatus": 200,
+      "outcome": "Returned Hojai, Lanka, and Dabaka circles; Hojai circle code 360109 selected."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages",
+      "method": "POST",
+      "requestBodyAllowlist": {"circle_code": "360109"},
+      "httpStatus": 200,
+      "outcome": "Returned 101 villages/towns; Hojai Town No. 1 code 360109010520001, Hojai Town No. 2 code 360109010520002, and Hojai Town No. 3 code 360109010520003 were identified."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/getAllDagsFromDharitree",
+      "method": "POST",
+      "requestBodyAllowlist": {"location": "360109010520001", "dist_code": "36"},
+      "httpStatus": 200,
+      "outcome": "Returned the Hojai Town No. 1 dag catalogue. Only the dag numbers needed for the bounded three-feature sample were followed up."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/parcel_info",
+      "method": "POST",
+      "requestBodyAllowlist": {"village_code": "360109010520001", "layer_code": "ASSAM_PARCEL", "dag_no": "1, 2, 3", "crs": "32646"},
+      "httpStatus": 200,
+      "outcome": "Three HTTP 200 parcel responses returned MultiPolygon geometries and native stable uniqueId values. Raw responses are retained only in ignored scratch under tmp/valhalla-parcel-research/11993/."
+    }
+  ],
+  "source": {
+    "sourceId": "assam-bhunaksha-public-backend",
+    "name": "Assam Bhunaksha parcel viewer/backend",
+    "operator": "National Informatics Centre, Assam / Government of Assam",
+    "endpoint": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/parcel_info",
+    "method": "POST",
+    "responseFormat": "JSON containing parcel records with geometry text and native identifiers",
+    "sourceCrs": "EPSG:32646",
+    "retainedCrs": "EPSG:4326",
+    "nativeIdentity": "uniqueId, observed in the parcel_info response; locationCode and dag_no retained as provenance metadata only",
+    "fieldMapping": {"uniqueId": "properties.id", "geom": "GeoJSON geometry after EPSG:32646 to EPSG:4326 conversion"},
+    "scope": "Verified only for three parcels in Hojai Town No. 1, Hojai circle, Hojai district. Wider Hojai town/district coverage, update cadence, and service stability remain unverified."
+  },
+  "verifiedParcelResponse": {
+    "requestUrl": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/parcel_info",
+    "method": "POST",
+    "locationCode": "360109010520001",
+    "town": "Hojai Town No. 1",
+    "layerCode": "ASSAM_PARCEL",
+    "queryPointLatLon": [26.0129016904701, 92.8606371053738],
+    "queryPointUse": "WUP locator only; no coordinate shift or exact-point hit claim",
+    "parcelRecordCount": 3,
+    "retainedSampleCount": 3,
+    "geometryType": "MultiPolygon",
+    "sourceCrs": "EPSG:32646",
+    "responseFile": "city-11993-hojai-sample.geojson",
+    "nativeIds": ["84094JE6QBR8H0", "84092FE6QC1KH0", "8408UYE6QC5HH0"]
+  },
+  "retainedPolygonSampleFile": "city-11993-hojai-sample.geojson",
+  "coverageAssessment": {
+    "claimedScope": "Assam state parcel viewer with Hojai district land-record integration.",
+    "verifiedOpenScope": "Three public parcel geometries in Hojai Town No. 1 only; no citywide completeness claim.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["uniqueId", "locationCode", "dag_no", "geometry", "sourceCrs", "town/circle/district codes"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "resultCategory": "verified_public_city_parcel_geometry",
+  "remainingUncertainty": "The exact WUP point lies away from the sampled Hojai Town No. 1 polygons; that is not an absence finding. The sample does not establish coverage for Hojai Town Nos. 2 or 3, the full municipality, or the district. Raw response attributes included unsafe owner/deed-related fields and were not retained or queried for use.",
+  "sourceIds": ["assam-bhunaksha-public-backend"]
+}

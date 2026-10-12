@@ -1,0 +1,115 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Santa Ana, El Salvador; access failures and general service evidence are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 491,
+  "queueRank": 2756,
+  "name": "Santa Ana",
+  "country": "El Salvador",
+  "countryCode": "SV",
+  "iso3": "SLV",
+  "point": [13.9831921209792, -89.5627945029106],
+  "population2025": 214624,
+  "population2025k": 214.624,
+  "populationUnit": "persons",
+  "aliases": ["santa ana"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santa Ana El Salvador official cadastral parcel map catastro municipal GIS",
+        "result": "Found the official Santa Ana municipal Jefatura de Catastro service page, official CNR cadastral-service documentation, the CNR Santa Ana office directory, and an official Salvadoran geoportal REST layer named SantaAna. No public parcel layer or safe parcel response was established.",
+        "actualResultUrls": [
+          "https://prensa.santaana.gob.sv/servicios-tramites/",
+          "https://www.cnr.gob.sv/servicios/detalle-de-servicios-del-instituto-geografico-y-del-catastro-nacional/",
+          "https://www.cnr.gob.sv/directorio-2/",
+          "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer/10"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Santa Ana El Salvador catastro mapa parcelas registro oficial",
+        "result": "The official Spanish-language results identify the municipal Jefatura de Catastro, its cadastral-map update and certification functions, CNR map/listing/clave-catastral products, and a Santa Ana departmental CNR office. No anonymous public parcel polygon response was found.",
+        "actualResultUrls": [
+          "https://prensa.santaana.gob.sv/servicios-tramites/",
+          "https://www.cnr.gob.sv/servicios/detalle-de-servicios-del-instituto-geografico-y-del-catastro-nacional/",
+          "https://www.e.cnr.gob.sv/ServiciosOL/portada/igcn.htm",
+          "https://www.cnr.gob.sv/directorio-2/"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://prensa.santaana.gob.sv/servicios-tramites/",
+      "observation": "Official municipal page identifies the Jefatura de Catastro, which administers the municipal cadastral register and offers cadastral-data updates, certifications, field inspections, surveys, and municipal cadastral-map updates; contact/location are recorded as custodian evidence only."
+    },
+    {
+      "url": "https://www.cnr.gob.sv/servicios/detalle-de-servicios-del-instituto-geografico-y-del-catastro-nacional/",
+      "observation": "Official CNR page documents cadastral location/clave, parcel listings, cadastral maps, certifications, and cadastral plans. The map product is described as a paid DXF parcel perimeter product requiring cadastral identification; no open parcel API is exposed in the inspected page."
+    },
+    {
+      "url": "https://www.cnr.gob.sv/directorio-2/",
+      "observation": "Official CNR directory lists a Santa Ana departmental Registro de la Propiedad Raíz e Hipotecas / Oficina de Mantenimiento Catastral."
+    },
+    {
+      "url": "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer/10",
+      "observation": "Official Salvadoran geoportal REST metadata exposes a SantaAna feature layer, polygon geometry, WGS84 (EPSG:4326), and CABECERA as display field. Its extent covers Santa Ana municipality/cabecera context; this is not a parcel layer and has no safe parcel identity."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 522,
+      "outcome": "Bounded anonymous request returned the gateway body 'error code: 522'; service root configuration and layer list were not retrieved. TLS verification remained enabled."
+    },
+    {
+      "url": "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer/10",
+      "method": "web.run open",
+      "httpStatus": 200,
+      "outcome": "REST metadata was inspected: layer SantaAna, polygon geometry, supported JSON/GeoJSON, WGS84 extent [west -89.60618213238166, south 13.952287945477565, east -89.51722454075379, north 14.034914886488266]. It is not a parcel layer."
+    },
+    {
+      "url": "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer/10/query?where=1%3D1&outFields=CABECERA&returnGeometry=true&outSR=4326&f=geojson",
+      "method": "GET",
+      "httpStatus": 522,
+      "outcome": "Bounded anonymous query returned gateway error before a response body; no geometry or native identity was retained."
+    },
+    {
+      "url": "https://www.e.cnr.gob.sv/ServiciosOL/portada/igcn.htm",
+      "method": "web.run open",
+      "httpStatus": 200,
+      "outcome": "Official CNR service page exposed cadastral products and an account/OTP login wall. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe lookup was attempted."
+    },
+    {
+      "url": "https://prensa.santaana.gob.sv/servicios-tramites/",
+      "method": "web.run open",
+      "httpStatus": 200,
+      "outcome": "Official municipal page opened and documented the local Jefatura de Catastro and its cadastral-map services; no public map/API endpoint was linked."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official municipality explicitly identifies a Jefatura de Catastro administering Santa Ana's municipal cadastral register and updating its cadastral map. This establishes a local cadastral custodian, but not an open parcel-geometry endpoint.",
+  "registryEvidenceUrls": ["https://prensa.santaana.gob.sv/servicios-tramites/"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Official Santa Ana municipal custodian, El Salvador CNR cadastral services, and bounded public geoportal inspection.",
+    "verifiedOpenScope": "Municipal and national service documentation plus one non-parcel SantaAna polygon layer; no anonymous parcel geometry, native parcel ID, parcel schema, or parcel CRS response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "central-america",
+  "remainingUncertainty": "The municipal cadastral register and CNR Santa Ana office are evidenced, but their parcel data may require an authenticated or paid workflow. The geoportal REST layer's anonymous query was unavailable with a 522 gateway error and was not a parcel layer in any event. The exact WUP point was preserved without shifting it; no exact-point miss or timeout is treated as citywide absence."
+}

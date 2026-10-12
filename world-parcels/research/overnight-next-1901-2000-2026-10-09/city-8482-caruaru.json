@@ -1,0 +1,143 @@
+{
+  "cityCode": 8482,
+  "queueRank": 1916,
+  "name": "Caruaru",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "point": [-8.28267201513391, -35.9712887605926],
+  "population2025": 299805,
+  "population2025k": 299.805,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Caruaru official cadastral map parcel GIS land registry cadastro imobiliário Prefeitura Caruaru Pernambuco",
+        "result": "First-party discovery identified the official Prefeitura de Caruaru portal, the municipal citizen-services portal, the official SEFAZ SisCONSEF system, and municipal legislative records describing Cadastro Imobiliário Fiscal/Territorial as the department responsible for urban property cadastral maintenance. No anonymous public parcel map, feature service, or downloadable parcel geometry was found in the bounded discovery.",
+        "actualResultUrls": [
+          "https://caruaru.pe.gov.br/",
+          "https://servicos.caruaru.pe.gov.br/",
+          "https://sisconsef.caruaru.pe.gov.br/views/login/",
+          "https://sapl.caruaru.pe.leg.br/materia/35084"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Caruaru mapa cadastral parcelas cadastro imobiliário geoprocessamento prefeitura oficial",
+        "result": "A pesquisa em português confirmou, em fontes oficiais municipais, o Cadastro Imobiliário Fiscal/Territorial as the local custodian for urban property records and street registration. Official search results also referenced the municipal Sistema Gestor do Cadastro Imobiliário and SIRGAS 2000/UTM mapping in a technical cadastral document, but no public anonymous parcel layer or safe parcel-geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://sapl.caruaru.pe.leg.br/materia/35084",
+          "https://sapl.caruaru.pe.leg.br/materia/31256",
+          "https://sapl.caruaru.pe.leg.br/media/sapl/public/documentoacessorio/2025/10182/oficio_no_9_2026_-_10.265_2025_sapl.pdf",
+          "https://avisosdelicitacoes.caruaru.pe.gov.br/?page=1"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://sapl.caruaru.pe.leg.br/materia/35084",
+      "observation": "Official municipal legislative record quoting the Prefeitura Cadastro Imobiliário as the department responsible for maintaining urban territorial property records and registering streets within the urban perimeter. This establishes a local municipal cadastral custodian, not an open parcel API."
+    },
+    {
+      "url": "https://sapl.caruaru.pe.leg.br/materia/31256",
+      "observation": "Official municipal record describing the Cadastro Imobiliário Fiscal department and its statutory role in urban-property cadastral maintenance and street registration."
+    },
+    {
+      "url": "https://sapl.caruaru.pe.leg.br/media/sapl/public/documentoacessorio/2025/10182/oficio_no_9_2026_-_10.265_2025_sapl.pdf",
+      "observation": "Official technical cadastral document references the municipal Sistema Gestor do Cadastro Imobiliário, geoprocessing, and SIRGAS 2000 UTM zone 25 coordinates. It does not publish a parcel feature collection or safe parcel identity."
+    },
+    {
+      "url": "https://servicos.caruaru.pe.gov.br/",
+      "observation": "Official municipal citizen-services portal loaded, but its public service directory did not expose an anonymous parcel-map or cadastral-feature route in the bounded inspection."
+    },
+    {
+      "url": "https://sisconsef.caruaru.pe.gov.br/views/login/",
+      "observation": "Official municipal SEFAZ system is a login-gated management interface. No login was attempted and no private or unsafe data was requested."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://caruaru.pe.gov.br/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official Prefeitura portal loaded. Bounded HTML inspection exposed no public cadastral viewer or parcel API configuration."
+    },
+    {
+      "url": "https://servicos.caruaru.pe.gov.br/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official citizen-services portal loaded. Current JavaScript/HTML shell was inspected; no anonymous parcel geometry route was identified."
+    },
+    {
+      "url": "https://sisconsef.caruaru.pe.gov.br/views/login/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official SEFAZ SisCONSEF login wall loaded. Access was not pursued; no credentials, private tokens, CAPTCHA bypass, owner, address, tax, or account fields were requested."
+    },
+    {
+      "url": "https://sapl.caruaru.pe.leg.br/materia/35084",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official municipal legislative record loaded and confirmed the local Cadastro Imobiliário department and its urban-property cadastral remit. No parcel geometry response was present."
+    },
+    {
+      "url": "https://sapl.caruaru.pe.leg.br/media/sapl/public/documentoacessorio/2025/10182/oficio_no_9_2026_-_10.265_2025_sapl.pdf",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official technical cadastral PDF loaded. It referenced geoprocessing, the municipal cadastral system, and SIRGAS 2000 UTM zone 25, but returned no anonymous parcel feature service or safe native parcel identity."
+    },
+    {
+      "url": "https://avisosdelicitacoes.caruaru.pe.gov.br/?page=1",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official procurement portal loaded. A current notice described procurement of an integrated municipal tax/real-estate-cadastre management solution; this is evidence of an administrative system, not evidence of a public parcel endpoint."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Caruaru municipal records identify the Cadastro Imobiliário Fiscal/Territorial as the local department responsible for urban territorial property cadastral maintenance and street registration. The public bounded routes did not establish an anonymous parcel geometry feed.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "SIRGAS 2000 / UTM zone 25 was referenced by an official technical document, but no parcel feature response was retrieved and no parcel geometry was retained.",
+  "geometryQuality": "not evaluated; no safe parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "caruaru-municipal-cadastro-imobiliario",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Municipal Cadastro Imobiliário Fiscal/Territorial and related SEFAZ cadastral systems for Caruaru urban properties.",
+    "verifiedOpenScope": "Local custodian was evidenced, but no anonymous city-bounded parcel record, stable native parcel identity, schema, or geometry was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details",
+    "personal information",
+    "credentials and private tokens"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-8.28267201513391, -35.9712887605926] was not used for a shifted lookup; the immutable exact point is preserved above as [-8.28267201513391, -35.9712887605926].",
+    "No exact-point parcel hit or miss was inferred because no public parcel endpoint was available.",
+    "A login wall, absent map route, or unavailable public endpoint is not evidence of citywide parcel absence.",
+    "No raw source-specific attribute sets, unsafe fields, or synthetic identity were retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending independent serial review."
+  ],
+  "uncertainty": "The municipal custodian and administrative cadastral system are evidenced, and an official document references SIRGAS 2000 UTM zone 25, but the public services inspected do not expose a bounded anonymous parcel geometry response. The underlying system may be authenticated, restricted, or not publicly published.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "retainedSample": null
+}

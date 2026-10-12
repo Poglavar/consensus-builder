@@ -1,0 +1,90 @@
+{
+  "cityRecord": "city-6303-netrokona.json",
+  "cityCode": 6303,
+  "queueRank": 2621,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "route": "https://netrokona.gov.bd/pages/static-pages/6970a1d0a31054345f161bc7",
+      "method": "GET (first-party discovery)",
+      "outcome": "HTTP page found. Official Netrokona district map/administrative page; it is not a cadastral parcel service."
+    },
+    {
+      "route": "https://dr.netrokona.gov.bd/",
+      "method": "GET (first-party discovery)",
+      "outcome": "HTTP page found. Official Netrokona District Registrar portal; establishes local registration-office context, but no public parcel geometry endpoint was identified."
+    },
+    {
+      "route": "https://settlement.gov.bd/",
+      "method": "GET",
+      "outcome": "HTTP 200. Official DLRS settlement site says it displays survey mouza khatians through survey-publication stages and links to record/map services. No Netrokona-specific anonymous geometry response was obtained."
+    },
+    {
+      "route": "https://map.settlement.gov.bd/",
+      "method": "GET (first-party discovery)",
+      "outcome": "Official DLRS Integrated Online Map Purchase System page found. It describes CS, SA, RS, BRS and BDS mouza-map/document search and purchase, but no parcel feature API was exposed in the inspected page."
+    },
+    {
+      "route": "https://map.land.gov.bd/",
+      "method": "GET",
+      "outcome": "HTTP 200. Current public JavaScript viewer loaded. The bundle documents POST routes /getAdminByCode and /getGeomByCode and WKT geometry fields for selected plots, plus an advertised GeoServer WMS host."
+    },
+    {
+      "route": "https://map.land.gov.bd/getAdminByCode",
+      "method": "POST",
+      "payload": "level=forDiv&column=division_n",
+      "outcome": "HTTP 200 JSON. Returned seven divisions (Barishal, Chattogram, Dhaka, Khulna, Rajshahi, Rangpur, Sylhet); Mymensingh was absent from the current anonymous dropdown response."
+    },
+    {
+      "route": "https://map.land.gov.bd/getAdminByCode",
+      "method": "POST",
+      "payload": "level=forDist&division_code=70",
+      "outcome": "HTTP 200 JSON [] for a bounded probe of the expected Mymensingh division code. This was not treated as evidence of citywide cadastral absence."
+    },
+    {
+      "route": "https://map.land.gov.bd/getAdminByCode",
+      "method": "POST",
+      "payload": "level=forDist&division_code=60",
+      "outcome": "HTTP 200 JSON returned Habiganj and Sylhet, confirming the route is live but not producing Netrokona/Mymensingh coverage in the tested response."
+    },
+    {
+      "route": "https://map.land.gov.bd/getAdminByCode",
+      "method": "POST",
+      "payload": "level=forThana&division_code=70&district_code=72; level=forMauza&division_code=70&district_code=72&thana_code=7201",
+      "outcome": "HTTP 200 JSON [] for bounded guessed administrative probes; codes were not accepted as a verified Netrokona identity and no geometry was requested from them."
+    },
+    {
+      "route": "https://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "HTTP 503 Service Unavailable. No WMS layer schema, CRS, or parcel response was obtained."
+    }
+  ],
+  "schemaCrs": {
+    "status": "partially observed, not qualified",
+    "observed": "The current map.land.gov.bd JavaScript parses selected parcel geometry as WKT with dataProjection EPSG:4326 and uses native response fields including gid, m_code, plot_no_en, label, jl_no_en and sht_no_en.",
+    "qualificationFailure": "No Netrokona parcel response was obtained, and the current anonymous division response omitted Mymensingh. Therefore no native ID-plus-geometry pair, Netrokona coverage, pagination, or service admission was verified."
+  },
+  "nativeFieldMapping": {
+    "observedOnly": ["gid", "m_code", "plot_no_en", "label", "jl_no_en", "sht_no_en", "geom"],
+    "retained": false,
+    "note": "These names were read from current first-party JavaScript only; no raw source attribute set or parcel record is retained. A future sample should use exactly one stable native identity, preferably gid only if response semantics confirm it."
+  },
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS only when explicitly returned"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [24.8791599755252, 90.7265243738965] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, map extent miss, empty administrative response, HTTP 503, or unavailable viewer is evidence of citywide parcel absence.",
+    "The official national map/settlement services and local Netrokona registrar context are evidenced, but no qualified anonymous Netrokona parcel ID-plus-geometry service was found.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity plus full polygon was obtained.",
+    "Packet completion records research attempts only; it is not source integration or admission. runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "The national map viewer may have incomplete anonymous coverage, may exclude Mymensingh from the current public configuration, or may expose Netrokona through a separate controlled map-purchase/record workflow. The route probes establish only current bounded responses and do not establish cadastral absence."
+}

@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2098-vinnytsia.json",
+  "purpose": "Document separate English/Ukrainian discovery, local and national cadastral custody, anonymous request outcomes, safe field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Vinnytsia City Council's architecture and urban-planning department states that it organizes and maintains urban-cadastre and land-cadastre information. The regional StateGeoCadastre office and the national public cadastral-map documentation evidence the national cadastral custodian and public search route. No safe anonymous parcel geometry response was verified.",
+  "registryAssessment": "Local registry/cadastre custody is evidenced by official Vinnytsia City Council pages and the regional StateGeoCadastre office. This is evidence of custodial responsibility and public procedures, not successful source integration.",
+  "officialPrimarySources": [
+    {
+      "url": "https://vmr.gov.ua/departament-arkhitektury-ta-mitobuduvannia-vinnytskoi-miskoi-rady",
+      "operator": "Vinnytsia City Council, Department of Architecture and Urban Planning",
+      "scope": "Official duties include organizing and maintaining urban-cadastre and land-cadastre information."
+    },
+    {
+      "url": "https://new.vmr.gov.ua/map",
+      "operator": "Vinnytsia City Council",
+      "scope": "Official page describes the Vinnytsia community geoportal and links to https://map.vmr.gov.ua/. It describes thematic city maps and public map interaction; it did not provide a verified parcel feature response here."
+    },
+    {
+      "url": "https://vinnytska.land.gov.ua/kadastr/",
+      "operator": "State Service of Ukraine for Geodesy, Cartography and Cadastre, Vinnytsia regional office",
+      "scope": "Official regional cadastral information and links to State Land Cadastre material."
+    },
+    {
+      "url": "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+      "operator": "National Spatial Data Infrastructure of Ukraine",
+      "scope": "Official documentation says the national geoportal can search land parcels by cadastral number and display the cadastral-division layer; this is documentation, not a retained geometry response."
+    },
+    {
+      "url": "https://www.vmr.gov.ua/perelik-posluh-tsnap",
+      "operator": "Vinnytsia City Council administrative-services registry",
+      "scope": "Official service list includes State Land Cadastre extracts and identifies city and regional cadastral service offices."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Vinnytsia official cadastral map parcel GIS land registry Ukraine",
+      "result": "Found official national cadastral/NSDI documentation and an official municipal geoportal reference; no verified anonymous parcel endpoint.",
+      "actualResultUrls": [
+        "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+        "https://new.vmr.gov.ua/map",
+        "https://e.land.gov.ua/"
+      ]
+    },
+    {
+      "language": "Ukrainian",
+      "query": "Вінниця офіційна кадастрова карта земельний кадастр геопортал ділянки",
+      "result": "Found official municipal urban-cadastre responsibility, regional cadastral office, and local cadastral-extract procedures; no verified anonymous parcel geometry endpoint.",
+      "actualResultUrls": [
+        "https://vmr.gov.ua/departament-arkhitektury-ta-mitobuduvannia-vinnytskoi-miskoi-rady",
+        "https://vinnytska.land.gov.ua/kadastr/",
+        "https://www.vmr.gov.ua/perelik-posluh-tsnap",
+        "https://map.land.gov.ua/"
+      ]
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service/layer metadata", "response status", "content type"],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "The unchanged WUP point [49.2323486254212, 28.4788953191052] was preserved, but no exact-point parcel query returned a verifiable response. This is not evidence of citywide absence.",
+    "requestEvidence": [
+      {
+        "url": "https://map.land.gov.ua/",
+        "method": "Anonymous read-only HTTPS GET, standard TLS",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": 0,
+        "assessment": "Timed out after 12 seconds in the bounded request."
+      },
+      {
+        "url": "https://newmap.land.gov.ua/",
+        "method": "Anonymous read-only HTTPS GET, standard TLS",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": 0,
+        "assessment": "DNS resolution failed in the bounded request."
+      },
+      {
+        "url": "https://map.vmr.gov.ua/",
+        "method": "Anonymous read-only HTTPS GET, standard TLS",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": 0,
+        "assessment": "Timed out after 20 seconds in the bounded request."
+      },
+      {
+        "url": "https://e.land.gov.ua/",
+        "method": "Anonymous read-only HTTPS GET, standard TLS",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 17088,
+        "assessment": "Official electronic-services portal loaded and linked to the public cadastral map at map.land.gov.ua; no parcel geometry was returned by this landing page."
+      },
+      {
+        "url": "https://kadastr.gov.ua/",
+        "method": "Anonymous read-only HTTPS GET, standard TLS",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytesRead": 82080,
+        "assessment": "Official national urban-cadastre portal loaded; no parcel geometry endpoint was identified from the landing page."
+      }
+    ]
+  },
+  "attempts": [
+    "English discovery and first-party source review completed.",
+    "Ukrainian discovery and first-party source review completed.",
+    "Official electronic portal checked; public cadastral-map link identified but map.land.gov.ua timed out.",
+    "Official national urban-cadastre landing page checked; no parcel feature service identified.",
+    "Official municipal geoportal landing page checked through new.vmr.gov.ua/map; linked map.vmr.gov.ua timed out.",
+    "Official map attempts did not return a bounded ID-plus-geometry response; no credentials, private tokens, owner, address, titleholder, tax, account, or contact fields were requested."
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official municipal and national sources establish custodial/procedural scope for urban and land cadastral information and public parcel-map searching.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with a stable native identity was verified. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "Viewer configuration, service layers, CRS, native ID field, and exact-point semantics remain unverified because the public map endpoints were unavailable or timed out. A map extent miss, timeout, DNS failure, or unusable UI cannot establish absence.",
+  "nextStep": "Revisit official map JavaScript/configuration and advertised service endpoints when reachable; qualify an anonymous safe-ID plus geometry response and CRS before any adapter review.",
+  "runtimeAssessment": "held_not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "cohortState": "research_complete_pending_serial_review",
+  "integrationState": "not_integrated",
+  "wupIdentity": {
+    "cityCode": 2098,
+    "queueRank": 1572,
+    "country": "Ukraine",
+    "countryCode": "UA",
+    "point": [49.2323486254212, 28.4788953191052],
+    "population2025": 363466,
+    "population2025k": 363.466,
+    "populationUnit": "persons"
+  }
+}

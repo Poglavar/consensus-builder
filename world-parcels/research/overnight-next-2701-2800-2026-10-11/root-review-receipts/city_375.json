@@ -1,0 +1,17 @@
+{
+  "taskId": "city:375",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:00:46Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-375-almada.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/almada-service-review.json"
+  ],
+  "identityCheck": "Rank 2782; Almada, Portugal; [38.6511212877191,-9.16702585153014]; 213171 persons. Matches queue, ranked roster, and SHA-256-verified UN 2025 archive.",
+  "discoveryCheck": "English and Portuguese executed queries recorded. Official SNIC config exposed a São Brás de Alportel layer, not an Almada layer; WFS connection reset and municipal portal configuration was unavailable. No ID-plus-polygon response or retained sample (0 of 3).",
+  "registryFound": null,
+  "admissionCheck": "No Almada source or independent live adapter qualification: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent.",
+  "runtimeDisposition": "Held from admission; no registry, source catalog, runtime city configuration, or generated report changed. Access failures are not citywide absence."
+}

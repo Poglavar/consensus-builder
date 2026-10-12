@@ -1,0 +1,34 @@
+{
+  "taskId": "city:5331",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:56:17Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-5331-federal-way.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/federal-way-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/root-review-receipts/source-evidence/city_5331-root-review.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 5331,
+    "rank": 3020,
+    "country": "United States of America",
+    "point": [
+      47.3433562107519,
+      -122.331287833192
+    ],
+    "populationPersons": 198137
+  },
+  "checks": {
+    "twoExecutedSearchesRecorded": true,
+    "fullPolygonsObservedInOriginalCache": 3,
+    "safeIdAttributesObserved": true,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "First-party King County cache shows three safe PIN polygons but exceededTransferLimit=true. The existing Seattle adapter uses a different endpoint and extent. Federal Way lacks independent city-specific adapter, topology, binding, and headed panel proof."
+}

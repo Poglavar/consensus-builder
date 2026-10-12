@@ -1,0 +1,17 @@
+{
+  "taskId": "city:8208",
+  "checkedAt": "2026-10-11T13:17:24Z",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-8208-juazeiro-do-norte.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/juazeiro-do-norte-service-review.json",
+    "tmp/valhalla-parcel-research/8208/dadosabertos.html",
+    "tmp/valhalla-parcel-research/8208/servicos.html"
+  ],
+  "reviewFinding": "Queue identity, 234710 persons and English/Brazilian Portuguese searches checked. Official municipal service catalogue identifies Cadastro de Imóvel and Cadastro de Loteamento; cached first-party open-data and services pages contain no verified parcel-vector route. No safe native ID-plus-full-polygon response or sample exists. Public parcel geometry remains unresolved, not absent.",
+  "registryFound": true,
+  "publicGeometryVerified": false,
+  "runtimeAdmitted": false,
+  "sourceUrl": "https://juazeirodonorte.ce.gov.br/cartaservicos.php?sec=12"
+}

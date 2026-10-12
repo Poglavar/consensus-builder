@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:4900",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4900-ilesa.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ilesa-service-review.json",
+    "tmp/valhalla-parcel-research/ilesa/cofo.html",
+    "tmp/valhalla-parcel-research/ilesa/519-a2e2c8402cad9c41.js",
+    "tmp/valhalla-parcel-research/ilesa/resp-ae58160e.txt",
+    "tmp/valhalla-parcel-research/ilesa/resp-d9da9d61.txt"
+  ],
+  "checkedAt": "2026-10-09T13:13:29Z",
+  "reason": "Ilesa code 4900, rank 1235, Nigeria/NG, unchanged WUP point and 450464 persons match the immutable queue. English and Yoruba searches are recorded. Original Osun page and client bundle identify a CofO/survey-plan document verification workflow; original API responses are a welcome body and GET route-not-found for /api/v1/verify. These do not establish an Ilesa-local parcel registry or geometry. registryFound remains unresolved (null), not false absence; no polygon was retained.",
+  "qualificationCheck": "No native-ID parcel response, forced pagination, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification. Keep held and unenabled; document-only public access is not evidence of citywide absence."
+}

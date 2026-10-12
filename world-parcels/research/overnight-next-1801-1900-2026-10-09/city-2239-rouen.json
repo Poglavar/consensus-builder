@@ -1,0 +1,66 @@
+{
+  "cityCode": 2239,
+  "queueRank": 1844,
+  "name": "Rouen",
+  "country": "France",
+  "countryCode": "FR",
+  "point": [49.4334014958952, 1.08426580718412],
+  "population2025": 311071,
+  "population2025k": 311.071,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rouen France cadastral parcel map official public GIS API cadastre",
+        "result": "Found the official City of Rouen cadastre page, the French cadastral viewer, and the open IGN API Carto cadastre service.",
+        "actualResultUrls": [
+          "https://www.rouen.fr/fr/cadastre",
+          "https://dev.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://apicarto.ign.fr/api/cadastre/commune?code_insee=76540"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Rouen cadastre parcelles carte officielle service public",
+        "result": "Found the City of Rouen page stating that the cadastre is consultable at city hall and online at cadastre.gouv.fr, with parcel situation, cadastral reference, and area; local urbanism contact is listed.",
+        "actualResultUrls": [
+          "https://www.rouen.fr/fr/cadastre",
+          "https://www.service-public.gouv.fr/particuliers/vosdroits/F14226",
+          "https://cadastre.gouv.fr/scpc/afficherServiceWMS.do"
+        ]
+      }
+    ],
+    "researchedAt": "2026-10-10",
+    "localCommuneCode": "76540"
+  },
+  "registryFound": true,
+  "registry": {
+    "kind": "official national cadastral service with Rouen municipal custodian guidance",
+    "custodian": "Ville de Rouen / Direction de l’Urbanisme réglementaire; cadastral source service by IGN / French public data infrastructure",
+    "serviceUrls": [
+      "https://www.rouen.fr/fr/cadastre",
+      "https://apicarto.ign.fr/api/cadastre"
+    ],
+    "parcelEndpoint": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=76540&section=IK&numero=0110",
+    "communeEndpoint": "https://apicarto.ign.fr/api/cadastre/commune?code_insee=76540",
+    "sourceFormat": "GeoJSON",
+    "sourceCrs": "WGS84; API documentation states coordinates are longitude,latitude",
+    "nativeIdentity": "idu",
+    "nativeFieldsObserved": ["gid", "numero", "feuille", "section", "code_dep", "nom_com", "code_com", "com_abs", "code_arr", "idu", "contenance", "code_insee"],
+    "fieldMapping": {"idu": "safe stable parcel identity", "geometry": "full parcel polygon", "contenance": "parcel area in source attribute; not retained in sample properties"},
+    "compositeKeyProvenance": "idu observed as concatenated cadastral identity 76540000IK0110; section IK and numero 0110 were used only to retrieve and verify it.",
+    "safeFieldAllowlist": ["id", "geometry"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax", "account", "property-matrix details"]
+  },
+  "sampleGeoJSON": {
+    "path": "rouen-parcel-sample.geojson",
+    "featureCount": 1,
+    "identity": "76540000IK0110",
+    "selectionNote": "Bounded safe sample from the public API; one full MultiPolygon retained. No owner or address data retained."
+  },
+  "runtimeReadiness": "held",
+  "attempt": 1,
+  "notes": "Public API returned a bounded commune response capped at 1000 features and a successful one-parcel filtered response. An exact-point request and a broad polygon query were attempted; the point form returned zero and the broad query remained capped, so neither is treated as evidence of absence or complete city coverage. Packet completion is source research only, not source integration or adapter admission."
+}

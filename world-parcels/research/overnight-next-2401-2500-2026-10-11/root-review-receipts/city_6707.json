@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6707",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-6707-shenmu.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/shenmu-service-review.json",
+    "tmp/valhalla-parcel-research/6707/shaanxi-app.js"
+  ],
+  "checkedAt": "2026-10-11T12:54:04Z",
+  "reason": "WUP queue/ranked roster and packet agree on Shenmu, China, code 6707, rank 2477, point [38.83164073715,110.494899998938], and 236840 persons. English and Chinese executed searches are recorded. The official Shaanxi procurement page independently confirms the Shenmu registration center, supporting registryFound true; the cached provincial viewer bundle and review provide no Shenmu parcel service, native ID, CRS, or full polygon. No fresh native-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification exists. Public coverage remains unresolved; no runtime admission."
+}

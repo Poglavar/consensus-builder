@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7339",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7339-jianyang.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/jianyang-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/runs/20261010T132917-720dea41/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T13:33:03Z",
+  "registryFound": null,
+  "reason": "The government procurement notice confirms a local planning/natural-resources bureau and forest monitoring project, but does not establish cadastral record custody; registryFound remains null. The municipal site returned HTTP 412 and no native parcel ID or full polygon was retrieved. The challenge is not evidence of citywide absence.",
+  "admission": "Held: no verified public full parcel polygon or safe native ID; independent fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details-panel verification are absent. No runtime, catalog, configuration, or coverage admission."
+}

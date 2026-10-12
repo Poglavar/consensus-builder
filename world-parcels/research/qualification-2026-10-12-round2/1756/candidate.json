@@ -1,0 +1,82 @@
+{
+  "descriptor": {
+    "id": "de-nrw-lika-flurstueck",
+    "name": "Geobasis NRW ALKIS parcels",
+    "adapter": "ogc-api",
+    "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+    "idField": "flstkennz",
+    "idFromFeatureId": true,
+    "idType": "string",
+    "idPattern": "^[0-9_]{20}$",
+    "idPrefix": "DE-NRW-",
+    "pagination": "offset",
+    "profile": "rfc7946",
+    "outFields": [
+      "flstkennz"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "DE",
+    "metricSrid": 32632,
+    "scope": "North Rhine-Westphalia ALKIS cadastral-reference map; bounded Essen, Cologne, Dortmund, Düsseldorf and Bonn globe entries enabled. Native flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata. Wider municipal completeness and legal survey accuracy remain unverified.",
+    "evidenceFile": "research/dortmund-live-2026-10-03.json",
+    "attribution": "Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
+    "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
+    "catalogueUrl": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json",
+    "cityIds": [
+      "essen",
+      "cologne",
+      "dortmund",
+      "dusseldorf",
+      "bonn",
+      "wuppertal",
+      "1756"
+    ],
+    "additionalCityEvidence": {
+      "dusseldorf": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-acceptance.json",
+      "bonn": "research/overnight-cities-2026-10-08/bonn-nrw-root-acceptance.json",
+      "wuppertal": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-acceptance.json"
+    },
+    "cityScopes": {
+      "dusseldorf": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "bonn": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified."
+    },
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "DE",
+        "admin1": [
+          "DE-NW"
+        ],
+        "basis": "North Rhine-Westphalia statewide ALKIS cadastral parcels.",
+        "evidence": [
+          "research/europe/DE.json",
+          "research/dortmund-live-2026-10-03.json"
+        ]
+      }
+    }
+  },
+  "city": {
+    "code": "1756",
+    "name": "Remscheid",
+    "point": [
+      7.2043470437967,
+      51.1817871834151
+    ]
+  },
+  "sampleIds": [
+    "DE-NRW-05326610700732______",
+    "DE-NRW-05326610700733______",
+    "DE-NRW-05326610700180______"
+  ],
+  "absentId": "DE-NRW-99999999999999______",
+  "metricEpsg": "EPSG:32632",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Geobasis NRW ALKIS parcels",
+      "North Rhine-Westphalia statewide ALKIS cadastral parcels."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

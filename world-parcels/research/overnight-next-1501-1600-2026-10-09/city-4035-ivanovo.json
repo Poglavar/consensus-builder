@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4035",
+  "cityCode": 4035,
+  "wupCityCode": 4035,
+  "name": "Ivanovo",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "rank": 1532,
+  "queueRank": 1532,
+  "point": [56.9977924087308, 40.9792230450806],
+  "centerLatLon": [56.9977924087308, 40.9792230450806],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 372200,
+  "population2025k": 372.2,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Ivanovo regional sources identify the Ivanovo regional Rosreestr office and the Roskadastr regional branch as the cadastral-registration custodians, and document cadastral-registration services and complex cadastral work involving the Ivanovo urban district. This establishes regional/local custody and procedure, not anonymous citywide geometry.",
+  "registryEvidenceUrls": [
+    "https://dui.ivanovoobl.ru/deyatelnost/gosudarstvennye-uslugi/predostavlenie-zemelnogo-uchastka-nakhodyashchegosya-v-sobstvennosti-ivanovskoy-oblasti-na-kotorom-r/",
+    "https://mfc.ivanovoobl.ru/services/detail.php?ELEMENT_ID=41818&target_id=6_0",
+    "https://dui.ivanovoobl.ru/deyatelnost/podvedomstvennye-organizatsii/gbu-io-tsentr-kadastrovoy-otsenki/",
+    "https://nspd.gov.ru/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current first-party public-map route is NSPD. Bounded anonymous HTTPS retrieval of NSPD and Rosreestr timed out in this environment. No safe anonymous ID-plus-complete-polygon response, viewer JavaScript/configuration, layer schema, or CRS was verified. No parcel sample was retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Ivanovo regional cadastral-registration custody and property/cadastral procedures; NSPD national public map channel.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ivanovo Russia official cadastral map parcel public viewer Rosreestr",
+        "scope": "Identify first-party regional/local cadastral custody and the current public parcel-map route.",
+        "result": "Search identified the official Ivanovo regional property department, the regional cadastral-evaluation institution, and the current NSPD public-map route. Non-first-party map mirrors were excluded from evidence.",
+        "actualResultUrls": [
+          "https://dui.ivanovoobl.ru/",
+          "https://37cko.ru/",
+          "https://nspd.gov.ru/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Иваново официальный кадастр публичная кадастровая карта земельные участки Росреестр",
+        "scope": "Independent Russian-language discovery of local cadastral custody, services, and public parcel geometry.",
+        "result": "Russian-language search located official Ivanovo regional pages documenting Rosreestr/Roskadastr custody, cadastral-registration services, cadastral evaluation, and complex cadastral work in the Ivanovo urban district. No safe anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://dui.ivanovoobl.ru/deyatelnost/gosudarstvennye-uslugi/predostavlenie-zemelnogo-uchastka-nakhodyashchegosya-v-sobstvennosti-ivanovskoy-oblasti-na-kotorom-r/",
+          "https://mfc.ivanovoobl.ru/services/detail.php?ELEMENT_ID=41818&target_id=6_0",
+          "https://dui.ivanovoobl.ru/deyatelnost/podvedomstvennye-organizatsii/gbu-io-tsentr-kadastrovoy-otsenki/",
+          "https://nspd.gov.ru/"
+        ],
+        "executionMethod": "Separate Russian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact NSPD viewer configuration, parcel layer, native identity, schema, CRS, anonymous query shape, parcel coverage, and citywide completeness remain unverified. The exact WUP point was preserved; no point-hit, map-extent miss, timeout, or unavailable UI was treated as evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently qualify the NSPD/Rosreestr route; do not enable runtime from this packet alone."
+}

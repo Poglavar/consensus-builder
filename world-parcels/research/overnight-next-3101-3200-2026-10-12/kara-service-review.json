@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-1263-kara.json",
+  "cityCode": 1263,
+  "queueRank": 3124,
+  "city": "Kara",
+  "country": "Togo",
+  "countryCode": "TG",
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "requests": [
+    {"route": "GET https://www.dadc.gouv.tg/index.php/services-dccfe.html", "outcome": "HTTP 200; official DCCFE service page exposes Cadastre and Conservation foncière sections, but no anonymous parcel layer."},
+    {"route": "GET https://dadc.gouv.tg/index.php/direction/actualites/51-cadastre/les-missions-du-cadastre/119-missions-du-cadastre.html", "outcome": "HTTP 200; first-party cadastral mission text states that DCCFE establishes/updates cadastral plans and provides public information on the cadastral plan; no geometry endpoint."},
+    {"route": "GET https://www.dadc.gouv.tg/index.php/documents-juridiques.html", "outcome": "HTTP 200; official legal-documents page lists Arrêté n°330/2019/MEF/CAB appointing the regional Kara land-property conservator; local custodian evidence, not parcel data."},
+    {"route": "GET https://otr.tg/index.php/fr/blog/avis-communiques/1342-communique-n-021-2024-otr-cg-ci-dccf-relatif-au-numero-unique-parcellaire-nup.html", "outcome": "HTTP/search-accessible first-party OTR notice; establishes the Numéro Unique Parcellaire (NUP) policy from 2024, but publishes no parcel geometry or anonymous lookup."},
+    {"route": "GET https://geodata.gouv.tg/", "outcome": "HTTP 200; official national geodata portal shell. Inspected JavaScript points to api.geodata.gouv.tg and geoserver.geoportail.gouv.tg; visible portal content was thematic infrastructure data, not a verified parcel layer."},
+    {"route": "GET https://dccfe.otr.tg/", "outcome": "Returned a web-application firewall blocked page; no bypass attempted and no credentials used."},
+    {"route": "GET https://api.geodata.gouv.tg/app/1/get_couche_metadata", "outcome": "HTTP 404 for unauthenticated GET; no public metadata response."},
+    {"route": "POST https://api.geodata.gouv.tg/app/1/get_couche_metadata with {}", "outcome": "HTTP 404 Not found."},
+    {"route": "POST https://api.geodata.gouv.tg/app/1/get_couche_data with {}", "outcome": "HTTP 403 in response: data access not authorized; no dataset, schema, CRS, ID, or geometry disclosed."},
+    {"route": "POST https://api.geodata.gouv.tg/app/1/get_couche_file with {}", "outcome": "HTTP 403 in response: data access not authorized; no file requested or retained."},
+    {"route": "GET https://geoserver.geoportail.gouv.tg/geoserver/rest/getcapabilities", "outcome": "HTTP 401 Unauthorized; no credentials supplied and no protected endpoint accessed further."}
+  ],
+  "scopeLimits": [
+    "Research was limited to anonymous public first-party discovery and bounded GET/POST endpoint inspection.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare/WAF bypass, or unsafe landholder/owner/address/contact/titleholder/tax/account fields were requested or retained.",
+    "One diagnostic curl used a narrow TLS certificate-validation exception while checking the two official geodata service hosts; no global TLS disable was used. This was not used to authenticate or bypass access controls.",
+    "No exact-point parcel query was attempted because no public parcel endpoint was identified; this is not evidence of citywide absence.",
+    "No GeoJSON sample was retained because no safe native parcel identity plus full polygon was publicly verified."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "uncertainty": [
+    "DCCFE/OTR is evidenced as the official custodian, with specific regional Kara conservation evidence, but no anonymous parcel-level publication was verified.",
+    "The Geodata portal's public application and protected GeoServer host indicate a national geospatial platform, but do not by themselves prove cadastral coverage or a usable parcel API for Kara.",
+    "A WAF block, authentication response, or lack of a public viewer is not evidence that Kara lacks cadastral coverage.",
+    "runtimeReadiness remains held pending independent serial qualification of a real adapter and safe public parcel geometry."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "evidenceCache": "tmp/valhalla-parcel-research/kara-1263/"
+}

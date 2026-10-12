@@ -1,0 +1,18 @@
+{
+  "taskId": "city:6062",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6062-kadi.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/kadi-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T07:59:14Z",
+  "findings": {
+    "identity": "Original SHA-256-matching UN WUP 2025 compressed archive, immutable ranked roster, pending queue and city packet agree: rank 3281, Kadi, India, point [23.2912184971047, 72.3575487248706], 183747 persons.",
+    "searches": "Packet records separate executed English and Gujarati queries, result URLs and request outcomes.",
+    "custody": "registryFound=true is supported by the first-party DoLR Gujarat AnyRoR listing and Mehsana district SLR/city-survey office page; Kadi Municipality is corroborated by the district page. Live DoLR, SLR and Kadi municipality pages returned HTTP 200 during root review. Gujarat Revenue page timed out on root retry; AnyRoR/e-Milkat access failures do not establish parcel absence.",
+    "geometry": "No retained parcel polygon, native parcel ID, schema or CRS; zero samples. No original first-party parcel response/cache artifact supports acceptance metrics.",
+    "admission": "Held: no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details-panel proof. No registry/catalog/runtime/report admission."
+  }
+}

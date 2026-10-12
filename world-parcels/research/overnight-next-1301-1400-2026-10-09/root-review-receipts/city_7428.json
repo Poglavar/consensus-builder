@@ -1,0 +1,23 @@
+{
+  "taskId": "city:7428",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7428-bharuch.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/bharuch-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T15:24:25.933794Z",
+  "reason": "Official local land-record administration is described, but no safe anonymous parcel ID and full-polygon response was retained. Service timeouts and TLS failure do not establish absence.",
+  "searchCheck": "English and Gujarati query strings and outcomes are recorded in both paired files.",
+  "identityCheck": "Exact WUP city code, rank, country, point, and 2025 population persons match both immutable roster and pending queue.",
+  "geometryCheck": "Zero full polygons retained in the paired files; no safe native parcel ID plus full source polygon demonstrated.",
+  "missingAdmissionGates": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed details-panel verification"
+  ]
+}

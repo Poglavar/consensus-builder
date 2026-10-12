@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-8207-buffalo.json",
+  "schemaVersion": "1.0",
+  "cityCode": 8207,
+  "queueRank": 1779,
+  "city": "Buffalo",
+  "country": "United States of America",
+  "countryCode": "US",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official City of Buffalo and Erie County GIS sources were verified. The current Erie County ArcGIS parcel layer returned bounded full polygon geometry with native OBJECTID identifiers, including one exact WUP-point response and a separate two-feature retained sample. Runtime remains held pending serial reviewer qualification.",
+  "queryOutcomes": "Separate English and native/local-language discovery query text, outcomes and actual result URLs are recorded in city-8207-buffalo.json.",
+  "requestOutcomes": "Layer metadata, ID-only probe, bounded 100-foot service-space geometry probe, and exact WUP-point query all completed over TLS-verified public GET requests. No credentials, private tokens, owner, address, titleholder, contact, tax/account or personal fields were requested.",
+  "attemptedRoutes": [
+    {"route": "City of Buffalo GIS Maps", "url": "https://www.buffalony.gov/543/GIS-Maps", "outcome": "Official page links city and Erie County parcel viewers"},
+    {"route": "Erie County GIS Internet Mapping", "url": "https://www3.erie.gov/gis/internet-mapping", "outcome": "Official page identifies public parcel layer, current to 2025"},
+    {"route": "Erie County OGIS Parcels layer metadata", "url": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0?f=pjson", "outcome": "HTTP 200; Polygon layer, supported GeoJSON, source CRS 102717/2262"},
+    {"route": "Bounded ID-only query", "url": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0/query", "outcome": "HTTP 200; safe OBJECTID-only bounded response"},
+    {"route": "Bounded parcel geometry query", "url": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0/query", "outcome": "HTTP 200; two full polygons, native OBJECTID 56840 and 56842; retained after reducing properties to canonical id only"},
+    {"route": "Exact WUP point query", "url": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0/query", "outcome": "HTTP 200; one polygon, native OBJECTID 335243; exact-point observation only"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [42.9359928509233, -78.8390421008214] was preserved; query payload used longitude/latitude order only for the service API and did not shift the point.",
+    "A responsive parcel service and exact-point hit do not prove citywide coverage or completeness.",
+    "Erie County tax parcel boundaries are not a legal survey and may have varying update/accuracy conditions.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native OBJECTID", "full parcel polygon geometry", "source/output CRS", "public service metadata"],
+  "nativeFieldMapping": {"nativeIdField": "OBJECTID", "geometryField": "Shape", "ignoredUnsafeFields": ["SBL", "OWNER1", "OWNER2", "ADDRESS", "CALCACRES", "PROP_TYPE"]},
+  "compositeKeyProvenance": "No composite key. OBJECTID is the native service identifier used for retained sample features.",
+  "crs": "Source EPSG:2262 (wkid 102717/latestWkid 2262); retained GeoJSON output EPSG:4326",
+  "geometryQuality": "Two full Polygon features, no simplification; retained file contains no raw source attribute set.",
+  "geometryDecision": {"verified": true, "sourceId": "56840", "nativeId": "56840", "nativeIdField": "OBJECTID", "sampleCount": 2, "sampleFile": "buffalo-parcels-sample.geojson", "exactWupPointTest": "one hit, no citywide inference", "requestEvidence": ["bounded geometry query returned OBJECTID 56840 and 56842", "exact-point query returned OBJECTID 335243"]},
+  "coverageAssessment": {"claimedScope": "Erie County public parcel layer current to 2025 per official GIS page", "verifiedOpenScope": "Bounded public parcel ID plus polygon geometry", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "runtimeReadiness": "held_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "City boundary filtering, complete municipal coverage, update cadence for the returned features, legal accuracy, and adapter suitability remain unresolved.",
+  "retainedSample": {"file": "buffalo-parcels-sample.geojson", "featureCount": 2, "nativeIdField": "OBJECTID"}
+}

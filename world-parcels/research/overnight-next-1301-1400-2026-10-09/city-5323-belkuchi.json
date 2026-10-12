@@ -1,0 +1,82 @@
+{
+  "cityCode": 5323,
+  "queueRank": 1372,
+  "name": "Belkuchi",
+  "aliases": ["belkuchi"],
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [24.1558909100762, 89.6088819200885],
+  "population2025": 410861,
+  "population2025k": 410.861,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Bangladesh's official Department of Land Records and Surveys (DLRS) / Settlement portal is evidenced as the national land-record and survey custodian, and the official Belkuchi Upazila portal provides local geography and land-service context. The public map viewer is accessible anonymously, but no bounded Belkuchi parcel response with a safe native identity and full geometry was obtained; registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Belkuchi Bangladesh official cadastral parcel map land records GIS service",
+        "result": "Found the official Bangladesh DLRS/Settlement online land-record and survey portal, its public map-search route, the official DLRS site, and the official Belkuchi Upazila portal. The map viewer's public hierarchy was inspected; no safe anonymous Belkuchi parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://dlrs.gov.bd/",
+          "https://belkuchi.sirajganj.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "বেলকুচি বাংলাদেশ সরকারি ভূমি রেকর্ড ক্যাডাস্ট্রাল পার্সেল মানচিত্র জিআইএস",
+        "result": "Bengali-language discovery found the official Settlement/DLRS portal, its map display page, and the official Belkuchi Upazila portal. The local portal confirms land-service links and official geographic context; no separate anonymous Belkuchi parcel API was found.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://belkuchi.sirajganj.gov.bd/",
+          "https://belkuchi.sirajganj.gov.bd/pages/static-pages/697fbb1335ce18e1c06cbe5f"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://settlement.gov.bd/",
+      "role": "Official DLRS/Ministry of Land online land-record and survey portal",
+      "observation": "The portal states that it displays ongoing survey mouza khatians and links to record search and map display; it identifies DLRS under the Ministry of Land as planner/implementer. It cautions that displayed khatians are draft survey records where applicable."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "role": "Official public map viewer",
+      "observation": "Anonymous map-search page loaded and exposed division, district, survey, upazila/thana, mouza, sheet, and dag selectors. The current JavaScript configuration uses public POST routes and a GeoJSON sheet route, but no safe Belkuchi parcel feature response was obtained."
+    },
+    {
+      "url": "https://dlrs.gov.bd/",
+      "role": "Official Department of Land Records and Surveys site",
+      "observation": "Identifies DLRS and links to current survey map/khatian information, online mouza-map purchase, and record/map search services."
+    },
+    {
+      "url": "https://belkuchi.sirajganj.gov.bd/pages/static-pages/697fbb1335ce18e1c06cbe5f",
+      "role": "Official Belkuchi Upazila geography page",
+      "observation": "Official page records Belkuchi's geographic extent as approximately 24°13'–24°22' N and 89°37'–89°47' E and identifies the local upazila context."
+    }
+  ],
+  "requestAttempts": [
+    {"url":"https://settlement.gov.bd/Map/MapSearch","method":"GET","httpStatus":200,"result":"Public viewer HTML loaded; TLS verification remained enabled. The page referenced /js/MapSearch.js and Leaflet. No login or credentials were used."},
+    {"url":"https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ","method":"GET","httpStatus":200,"result":"Current viewer JavaScript inspected. It exposes POST routes /Map/GetDivisionList, /Khatian/getdistrictlistdivisionwise, /Khatian/GetSurveyListDistrictWise, /Khatian/GetThanaListBySurveyMap, /Khatian/GetMouzaListBySurveyMap, /Khatian/GetMouzaListBySurveyMapForshet, and /Khatian/GetSheetJsonBySurvey. The sheet response is parsed as GeoJSON with source properties including Dag_No; no response was retained."},
+    {"url":"https://settlement.gov.bd/Map/GetDivisionList","method":"POST","httpStatus":200,"result":"Returned the public division list. Rajshahi division was identified as unit code 030000000."},
+    {"url":"https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise","method":"POST","httpStatus":200,"result":"With divid=030000000, returned district metadata including Sirajganj unit code 031000000 and comcod 4156."},
+    {"url":"https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise","method":"POST","httpStatus":200,"result":"With districtid=031000000 and comcod=4156, returned the BDS digital survey rsnum=201901."},
+    {"url":"https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap","method":"POST","httpStatus":200,"result":"Bounded anonymous requests using the current viewer's parameters (comcod=4156, rsno1=201901, districtid=031000000, including a Bengali-numeral variant) returned an empty list. No Belkuchi upazila code was available to continue to mouza/sheet/parcel geometry."},
+    {"url":"https://belkuchi.sirajganj.gov.bd/pages/static-pages/697fbb1335ce18e1c06cbe5f","method":"GET","httpStatus":200,"result":"Official geography page loaded. Only safe geographic extent text was used; no parcel or personal fields were requested."}
+  ],
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe anonymous native parcel ID plus full polygon response was obtained. The empty upazila-list response and lack of a parcel query path are access/scope limits, not evidence of citywide parcel absence. The exact WUP point was preserved and not shifted."},
+  "coverageAssessment": {"claimedScope":"Official Bangladesh DLRS/Settlement public map viewer and official Belkuchi Upazila pages.","verifiedOpenScope":"Portal existence, viewer route configuration, administrative hierarchy metadata, and Belkuchi official geographic context only; parcel schema, native identity, CRS, exact-point containment, and citywide open coverage were not verified.","exactWupPointParcelSample":false,"citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "sourceFieldMapping": {"nativeIdentity": null, "nativeIdentityEvidence": "No parcel feature response obtained.", "geometryField": null, "sourceCrs": null, "compositeKey": null},
+  "safeFieldAllowlist": ["safe native parcel/dag ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

@@ -1,0 +1,99 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10864,
+  "queueRank": 3151,
+  "name": "Ganyu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [34.8482253843674, 119.144994022057],
+  "population2025": 190593,
+  "population2025k": 190.593,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ganyu District cadastral parcel map official China GIS natural resources",
+        "result": "Search found the official Ganyu District government site and local immovable-property registration context, but no Ganyu-specific first-party public cadastral viewer, parcel API, schema, CRS, or anonymous parcel ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://www.ganyu.gov.cn/",
+          "https://www.lyg.gov.cn/zglygzfmhwz/zffw1/content/5f5e08d5-3079-4957-aeb1-f2752d0c04e9.html"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "赣榆区 不动产登记 地籍 地图 官方 自然资源",
+        "result": "Search found an official Lianyungang government notice from the Ganyu District Natural Resources and Planning Bureau describing immovable-property registration information queries and an on-site self-service query machine. It did not expose a public parcel map/API or safe parcel geometry.",
+        "actualResultUrls": [
+          "https://www.lyg.gov.cn/zglygzfmhwz/zffw1/content/5f5e08d5-3079-4957-aeb1-f2752d0c04e9.html",
+          "https://www.ganyu.gov.cn/gyqzf/zwgk/zwgk.html"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "赣榆区 自然资源和规划局 不动产登记 网上地图",
+        "result": "Search identified the official district government information portal and local bureau responsibility context, but no public cadastral viewer/API route or anonymous parcel response.",
+        "actualResultUrls": [
+          "https://www.ganyu.gov.cn/",
+          "https://www.ganyu.gov.cn/gyqzf/zwgk/zwgk.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "The official Lianyungang government notice is sourced from the Ganyu District Natural Resources and Planning Bureau and documents immovable-property registration information queries. This establishes local custodian/service context, not a verified public cadastral map or anonymous parcel API; registryFound therefore remains null.",
+  "officialSources": [
+    {
+      "url": "https://www.ganyu.gov.cn/",
+      "role": "official Ganyu District government homepage",
+      "access": "public HTTPS GET returned HTTP 200; bounded HTML inspection found no cadastral, land-registration map, GIS, or parcel API route"
+    },
+    {
+      "url": "https://www.ganyu.gov.cn/gyqzf/zwgk/zwgk.html",
+      "role": "official Ganyu District government information page",
+      "access": "public page opened; government notices include natural-resources and land-use material, but no public parcel viewer/API was exposed"
+    },
+    {
+      "url": "https://www.lyg.gov.cn/zglygzfmhwz/zffw1/content/5f5e08d5-3079-4957-aeb1-f2752d0c04e9.html",
+      "role": "official Lianyungang government notice from the Ganyu District Natural Resources and Planning Bureau",
+      "access": "public HTTPS GET returned HTTP 200; describes registration-information queries and an on-site self-service machine, with no parcel geometry endpoint"
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "route": "https://www.ganyu.gov.cn/",
+      "method": "HEAD/GET",
+      "outcome": "HTTPS succeeded; HTTP 200 and official homepage HTML received. Bounded inspection found no cadastral viewer, map service, or parcel API route."
+    },
+    {
+      "route": "https://www.ganyu.gov.cn/gyqzf/zwgk/zwgk.html",
+      "method": "GET",
+      "outcome": "Official information page opened; public notices were inspected for a parcel service lead, but no anonymous parcel endpoint was exposed."
+    },
+    {
+      "route": "https://www.lyg.gov.cn/zglygzfmhwz/zffw1/content/5f5e08d5-3079-4957-aeb1-f2752d0c04e9.html",
+      "method": "GET",
+      "outcome": "HTTP 200 official notice received; it documents registration-information query services and an on-site self-service machine, not public parcel geometry."
+    },
+    {
+      "route": "https://www.ganyu.gov.cn/gyqzf/search/search.html",
+      "method": "GET with bounded query attempts",
+      "outcome": "HTTP 404 for the guessed search route; no result page or service metadata. This was not treated as evidence of citywide absence."
+    }
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_custodian_context_found_no_verified_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel query was attempted because no public parcel endpoint was identified. The exact WUP point was preserved and not shifted. A map miss, unavailable endpoint, or unusable public route would not establish citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current Ganyu parcel viewer/API, native parcel identity field, safe field schema, CRS, query semantics, and citywide coverage remain unverified. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only, not source integration or admission."
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2496",
+  "decision": "held",
+  "reason": "Ramadi rank 1240, Iraq, immutable point and 449183 persons match the hashed WUP roster. The packet records English and Arabic searches with result URLs. The original Ministry of Justice directory supports Anbar real-estate registry custody (registryFound=true); the original Iraqi geospatial service page describes state/institutional land, not an anonymous parcel feature service. No native parcel ID or polygon was obtained. Fresh ID reads, forced paging, 13 bounded cells, metric topology checks, source binding and headed Details verification are unevidenced; no admission and no citywide absence inference.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2496-ramadi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ramadi-service-review.json",
+    "tmp/valhalla-parcel-research/ramadi/moj-contact.html",
+    "tmp/valhalla-parcel-research/ramadi/services.html"
+  ],
+  "checkedAt": "2026-10-09T12:04:22.939084Z"
+}

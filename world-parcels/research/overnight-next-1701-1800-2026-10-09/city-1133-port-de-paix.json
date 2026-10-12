@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 1133,
+  "cityCode": 1133,
+  "cityId": "wup2025:1133",
+  "name": "Port-de-Paix",
+  "country": "Haiti",
+  "countryCode": "HT",
+  "iso2": "HT",
+  "iso3": "HTI",
+  "centerLatLon": [19.9413175024373, -72.7770244434136],
+  "point": [19.9413175024373, -72.7770244434136],
+  "population2025": 326041,
+  "population2025k": 326.041,
+  "populationUnit": "persons",
+  "queuePriority": 1761,
+  "queueRank": 1761,
+  "cohorts": ["overnight-next-1701-1800-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haiti official cadastre parcel map Port-de-Paix parcelles cadastre",
+        "result": "First-party discovery found the official CIAT land/cadastre institutional page, the official IHSI geographic-data page, the official DGI site map, the official SIA Haiti map, and the official Port-de-Paix municipal site. No public parcel viewer or open parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://ciat.gouv.ht/legislation-institutions-foncier/",
+          "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique",
+          "https://dgi.gouv.ht/plan-du-site/",
+          "https://sia-haiti.ht/geo/carte/",
+          "https://mairiedeportdepaix.com/"
+        ]
+      },
+      {
+        "language": "French / Haitian Creole",
+        "query": "Haïti cadastre officiel parcelles Port-de-Paix / Ayiti kadas peyi Pòdepè kat tè",
+        "result": "French and Haitian-Creole discovery reached the same official CIAT, IHSI, DGI, SIA Haiti, and municipal sources. The SIA viewer's exposed layers are administrative and environmental (department, commune, section, watersheds, rivers, cities), not cadastral parcels; no safe parcel ID or polygon endpoint was found.",
+        "actualResultUrls": [
+          "https://ciat.gouv.ht/legislation-institutions-foncier/",
+          "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique",
+          "https://dgi.gouv.ht/plan-du-site/",
+          "https://sia-haiti.ht/geo/carte/",
+          "https://mairiedeportdepaix.com/"
+        ]
+      }
+    ],
+    "officialViewer": {
+      "url": "https://sia-haiti.ht/geo/carte/",
+      "operator": "Ministère de l'Agriculture, des Ressources Naturelles et du Développement Rural with CNIGS/CNSA branding",
+      "inspection": "Browser-like TLS-verified GET returned HTTP 200. Inline JavaScript loads /geo/geojson/departement, /geo/geojson/commune, /geo/geojson/section and static watershed/river/city GeoJSON. No parcel layer, parcel service, native parcel ID field, or parcel schema was exposed.",
+      "crs": "Leaflet map configured EPSG:3857; no cadastral service CRS exists to record."
+    },
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://ciat.gouv.ht/legislation-institutions-foncier/",
+        "status": 503,
+        "contentType": "text/html",
+        "headersUsed": "Chrome-like User-Agent, Accept text/html/xhtml, Accept-Language fr-HT,fr,ht,en, cookies, TLS verification enabled",
+        "outcome": "Official CIAT land/cadastre page was unavailable during direct fetch. Search discovery exposed institutional cadastre material, but no endpoint could be inspected. Unavailability is not evidence of citywide absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique",
+        "status": 200,
+        "contentType": "text/html",
+        "headersUsed": "Chrome-like User-Agent, Accept text/html/xhtml, Accept-Language fr-HT,fr,ht,en, cookies, TLS verification enabled",
+        "outcome": "Official geographic-data page loaded and exposed departmental/urban map materials, not parcel polygons or a parcel API. No parcel request was issued because no parcel route was advertised."
+      },
+      {
+        "method": "GET",
+        "url": "https://dgi.gouv.ht/plan-du-site/",
+        "status": 200,
+        "contentType": "text/html",
+        "headersUsed": "Chrome-like User-Agent, Accept text/html/xhtml, Accept-Language fr-HT,fr,ht,en, cookies, TLS verification enabled",
+        "outcome": "Official DGI site map loaded. Inspection found no public cadastral viewer, parcel download, or safe parcel-geometry endpoint. No login or credentialed route was attempted."
+      },
+      {
+        "method": "GET",
+        "url": "https://sia-haiti.ht/geo/carte/",
+        "status": 200,
+        "contentType": "text/html",
+        "headersUsed": "Chrome-like User-Agent, Accept text/html/xhtml, Accept-Language fr-HT,fr,ht,en, cookies, TLS verification enabled",
+        "outcome": "Official public map loaded. JavaScript configuration was followed to the advertised public GeoJSON routes; all exposed layers are administrative/environmental, not cadastral parcels."
+      },
+      {
+        "method": "GET",
+        "url": "https://sia-haiti.ht/geo/geojson/commune",
+        "status": 200,
+        "contentType": "application/geo+json",
+        "headersUsed": "Chrome-like User-Agent, Accept application/geo+json, application/json, Accept-Language fr-HT,fr,ht,en, Referer https://sia-haiti.ht/geo/carte/, TLS verification enabled",
+        "outcome": "Public GeoJSON route returned commune boundary data, not parcel records; no native parcel identity or parcel geometry retained."
+      },
+      {
+        "method": "GET",
+        "url": "https://mairiedeportdepaix.com/",
+        "status": 200,
+        "contentType": "text/html",
+        "headersUsed": "Chrome-like User-Agent, Accept text/html/xhtml, Accept-Language fr-HT,fr,ht,en, cookies, TLS verification enabled",
+        "outcome": "Official municipal site loaded; inspection found municipal information but no public cadastral map/API."
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "No Port-de-Paix local registry/cadastre map, procedure, or public parcel service was directly evidenced. National institutional references are not enough to assert a local registry source.",
+  "verifiedParcelResponse": null,
+  "statusDetail": "official_sources_inspected_no_verified_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official Haitian land/cadastre institutions and public geographic services relevant to Port-de-Paix.",
+    "verifiedOpenScope": "Administrative/environmental map layers only; no parcel geometry or parcel schema verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_open_parcel_endpoint_after_attempts",
+  "sourceIds": [],
+  "technicalBlocker": "No public cadastral viewer, anonymous parcel endpoint, or open parcel vector service was exposed by the inspected first-party sources. The CIAT request was 503; the SIA viewer has no parcel layer; DGI and the municipal site expose no safe parcel route.",
+  "remainingUncertainty": "The WUP point was preserved and never used to force a parcel query. Public availability, current update currency, legal boundary status, municipal coverage, parcel identifiers, geometry access, and any local cadastral custodian remain unresolved. A zero exact-point hit, unavailable page, timeout, login wall, or absent public endpoint is not evidence of citywide cadastral absence.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "sampleGeojson": null
+}

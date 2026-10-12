@@ -1,0 +1,15 @@
+{
+  "taskId": "city:9767",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9767-nizamabad.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/nizamabad-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:25:33Z",
+  "identityReview": "Immutable roster and queue match rank 1258, code 9767, India/IN/IND, point [18.6760713100723, 78.0987992055297], and 442690 persons.",
+  "searchReview": "Paired packet and service review record executed English and Telugu searches with first-party result URLs.",
+  "sourceReview": "The TGRAC Nizamabad cadastral project and public polygon-layer schema support registry custody, but the exact-point feature read timed out and the GeoJSON request failed; no feature ID or polygon was returned.",
+  "admissionReview": "Zero full parcel polygons retained, so safe feature ID attributes cannot be demonstrated. No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap checks, source binding, or headed Details-panel verification. Runtime and catalog remain unadmitted; unresolved access is not citywide absence."
+}

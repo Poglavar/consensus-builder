@@ -1,0 +1,47 @@
+{
+  "cityCode": 243,
+  "queueRank": 1355,
+  "name": "Moçâmedes",
+  "country": "Angola",
+  "countryCode": "AO",
+  "iso3": "AGO",
+  "point": [-15.2064827640758, 12.1564980141967],
+  "population2025": 415361,
+  "population2025k": 415.361,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Angola's IGCA is evidenced as the national cartography and cadastre authority. The official Moçâmedes municipal plan is evidenced as planning material, but no city/local cadastral registry custodian or anonymous public parcel-vector service was established.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Moçâmedes Angola cadastral map parcel official",
+        "result": "Found the official IGCA national cadastre authority and official national property/tax portals, but no public Moçâmedes parcel viewer or downloadable parcel API.",
+        "actualResultUrls": ["https://www.igca.gov.ao/home", "https://inscrevaja.minfin.gov.ao/", "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03"]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Moçâmedes Angola cadastro predial mapa parcelas registro oficial",
+        "result": "Found official IGCA cadastral-authority material, the national Inscreva Já/SIGT property-registration workflows, and the ratified Plano Director Municipal de Moçâmedes; no anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": ["https://www.igca.gov.ao/home", "https://inscrevaja.minfin.gov.ao/", "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03", "https://lex.ao/docs/presidente-da-republica/2024/decreto-presidencial-n-o-177-24-de-29-de-julho/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://www.igca.gov.ao/home", "role": "Instituto Geográfico e Cadastral de Angola", "observation": "Official national cartography/cadastre authority; the page describes IGCA's mandate and lists cadastral/geographic services. Direct curl was blocked by a hostname certificate mismatch, so no TLS exception was used."},
+    {"url": "https://inscrevaja.minfin.gov.ao/", "role": "Ministry of Finance property-registration portal", "observation": "Public landing page describes property inscription and a national property database, but exposes no anonymous parcel-vector download or query."},
+    {"url": "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03", "role": "SIGT property-registration workflow", "observation": "Public form requires property/registrant information and location fields; it is a registration workflow, not a public parcel geometry service. No login, credentials, owner, address, or unsafe fields were requested."},
+    {"url": "https://lex.ao/docs/presidente-da-republica/2024/decreto-presidencial-n-o-177-24-de-29-de-julho/", "role": "Officially published legal reference for Moçâmedes municipal planning", "observation": "Ratifies the Plano Director Municipal de Moçâmedes and describes municipal land-use planning scope; it does not establish open cadastral parcel data."}
+  ],
+  "serviceReview": "mo-medes-service-review.json",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe anonymous parcel geometry response was obtained; no GeoJSON sample retained."},
+  "coverageAssessment": {"claimedScope": "Official national Angola cadastre/property portals and Moçâmedes planning reference.", "verifiedOpenScope": "No open parcel-vector scope verified.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "sourceFieldMapping": {"nativeIdentity": null, "nativeIdentityEvidence": null, "geometryField": null, "sourceCrs": null, "compositeKey": null},
+  "safeFieldAllowlist": ["native parcel identity if later exposed", "geometry if later exposed", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

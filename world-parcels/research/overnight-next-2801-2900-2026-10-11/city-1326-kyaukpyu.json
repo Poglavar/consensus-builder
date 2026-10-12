@@ -1,0 +1,141 @@
+{
+  "cityCode": 1326,
+  "queueRank": 2809,
+  "name": "Kyaukpyu",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "iso2": "MM",
+  "iso3": "MMR",
+  "point": [19.4256588638842, 93.5472947778845],
+  "population2025": 211359,
+  "population2025k": 211.359,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kyaukpyu Myanmar official cadastral parcel map land registry GIS viewer",
+        "result": "Discovery found the official Myanmar Settlement and Land Records Department (SLRD) site and Survey Department site, but no Kyaukpyu-specific public cadastral viewer, parcel API, or map-service endpoint.",
+        "actualResultUrls": [
+          "https://slrd.gov.mm/en",
+          "https://surveydepartment.gov.mm/",
+          "https://myanmar.gov.mm/home"
+        ]
+      },
+      {
+        "language": "Burmese (local/native)",
+        "query": "ကျောက်ဖြူ မြေစာရင်း မြေပုံ မြေကွက် တရားဝင် GIS",
+        "result": "Burmese-language discovery identified the official SLRD site and general government land-form information, but no Kyaukpyu parcel map, anonymous ID-plus-geometry service, or local registry procedure page was exposed. The Yangon online land-form system lists only 33 Yangon townships and is not evidence for Kyaukpyu.",
+        "actualResultUrls": [
+          "https://slrd.gov.mm/en",
+          "https://cplad.ycdc.gov.mm/index.php",
+          "https://www.ycdc.gov.mm/frontend_service/13"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "nationalCustodian": "Myanmar Settlement and Land Records Department (SLRD), whose official site describes the department and reports work based on its records and maps; this is national-agency evidence, not Kyaukpyu-local registry coverage.",
+    "surveyAgency": "Myanmar Survey Department official site was identified as a national surveying source, but its public page did not yield a Kyaukpyu parcel service in this bounded review.",
+    "localCustodian": null,
+    "registryEvidence": "No Kyaukpyu-specific local registry, cadastral map, public map viewer, or parcel procedure was evidenced. Therefore registryFound remains null.",
+    "registryEvidenceUrls": [
+      "https://slrd.gov.mm/en",
+      "https://surveydepartment.gov.mm/"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://slrd.gov.mm/en",
+      "httpStatus": 200,
+      "outcome": "Official SLRD page was found through discovery. It identifies the Settlement and Land Records Department and references department records/maps and geodatabase analysis, but no Kyaukpyu parcel viewer or public parcel schema was exposed in the accessible page content. Direct curl received a Cloudflare challenge; no challenge was bypassed."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://surveydepartment.gov.mm/",
+      "httpStatus": null,
+      "outcome": "Official national Survey Department lead was found. A bounded anonymous GET timed out after 15 seconds from this environment; no retry escalation, login, CAPTCHA/Cloudflare bypass, credentials, private token, or TLS exception was attempted. This is not evidence of service absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://cplad.ycdc.gov.mm/index.php",
+      "httpStatus": 200,
+      "outcome": "Official Yangon City Development Committee online land-form page was retrieved in Burmese. It lists map-copy and survey procedures but explicitly limits online availability to 33 Yangon townships; it does not cover Kyaukpyu and was not treated as a Kyaukpyu registry."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.ycdc.gov.mm/frontend_service/13",
+      "httpStatus": null,
+      "outcome": "Official Yangon service lead identified during Burmese-language discovery; no Kyaukpyu-local coverage or public parcel-vector endpoint was established."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://myanmar.gov.mm/home",
+      "httpStatus": null,
+      "outcome": "Myanmar National Portal appeared in English discovery with a Kyauk Phyu administrative contact listing, but no cadastral map, parcel API, or local land-record endpoint was exposed."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [19.4256588638842, 93.5472947778845] was preserved in latitude/longitude order; no coordinate shift or geometry-forcing query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No usable Kyaukpyu public parcel-vector response was obtained; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public source layer and service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Myanmar national SLRD and Survey Department public web sources, plus a Yangon-only land-form service checked as a scope control.",
+    "verifiedOpenScope": "National cadastral/survey agency leads were identified, but no Kyaukpyu-local open parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point and population values were preserved; the coordinate was not shifted to force a parcel hit.",
+    "A Cloudflare challenge, timeout, limited Yangon portal, or absent exact-point response was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No Kyaukpyu local custodian, parcel schema, CRS, stable parcel identity semantics, or citywide open coverage was verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Myanmar's official SLRD and Survey Department are credible national source leads, but the review did not establish an accessible Kyaukpyu-local public map/API. SLRD was Cloudflare-gated to direct requests, Survey Department timed out, and the Yangon land-form portal is geographically inapplicable. Further research may require a local office or a separate public service, but no credentials or unsafe fields were used."
+}

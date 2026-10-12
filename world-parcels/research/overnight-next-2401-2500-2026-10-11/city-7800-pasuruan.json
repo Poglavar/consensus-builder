@@ -1,0 +1,57 @@
+{
+  "cityCode": 7800,
+  "queueRank": 2424,
+  "name": "Pasuruan",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso2": "ID",
+  "iso3": "IDN",
+  "point": [-7.65908681106045, 112.897873679759],
+  "population2025": 241959,
+  "population2025k": 241.959,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pasuruan Indonesia official cadastral parcel map land registry ATR BPN",
+        "result": "Search identified the official national ATR/BPN BHUMI and ATLAS portals and an ATR/BPN Pasuruan land-office reference. No safe anonymous Pasuruan parcel feature response was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/", "https://dpmptsp.pasuruankab.go.id/link"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Pasuruan peta bidang tanah kadaster resmi ATR BPN",
+        "result": "Search identified BHUMI/ATLAS official map guidance and Pasuruan government evidence that BPN performs land mapping, but no safe anonymous native parcel ID plus polygon endpoint was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/landing", "https://www.pasuruankab.go.id/isiberita/per-mei-bpn-kabupaten-pasuruan-gunakan-drone-untuk-pemetaan-tanah-dan-ruang"]
+      }
+    ]
+  },
+  "requestOutcomes": [
+    {"route": "BHUMI landing", "url": "https://bhumi.atrbpn.go.id/", "method": "GET", "outcome": "HTTP 200; official landing page embeds the current public console. No parcel feature response was returned by the landing page."},
+    {"route": "BHUMI map", "url": "https://bhumi.atrbpn.go.id/peta", "method": "GET", "outcome": "HTTP 200; current JavaScript/configuration was inspected. The bundle names the public parcel layer `umum:Persil` at `/bhumigs/umum`, but the parcel fetch path is mediated by an internal proxy and an auth/token flow."},
+    {"route": "BHUMI help", "url": "https://bhumi.atrbpn.go.id/bantuan/peta", "method": "GET", "outcome": "Official guidance confirms BHUMI is an interactive ATR/BPN geospatial map platform; no Pasuruan-specific safe feature response was exposed."},
+    {"route": "ATLAS portal", "url": "https://atlas.atrbpn.go.id/", "method": "GET", "outcome": "HTTP 200 official ATR/BPN geospatial catalog; no Pasuruan parcel geometry response was obtained."},
+    {"route": "Direct BHUMI geoservice capability probes", "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities and WFS equivalent", "method": "GET", "outcome": "HTTP 404 HTML responses, not WMS/WFS capabilities. This route failure is not evidence of citywide absence."},
+    {"route": "BHUMI public proxy probe", "url": "https://bhumi.atrbpn.go.id/api/proksi", "method": "POST", "outcome": "A bounded public proxy request returned a JSON error indicating the upstream response was HTML, not a parcel service response. No geometry or schema was retained."},
+    {"route": "Pasuruan government/BPN mapping evidence", "url": "https://www.pasuruankab.go.id/isiberita/per-mei-bpn-kabupaten-pasuruan-gunakan-drone-untuk-pemetaan-tanah-dan-ruang", "method": "GET via public search result", "outcome": "Government report evidences BPN Kabupaten Pasuruan as a local cadastral/mapping custodian and describes mapping work, but not an open anonymous parcel geometry service."},
+    {"route": "Pasuruan ATR/BPN link reference", "url": "https://dpmptsp.pasuruankab.go.id/link", "method": "GET via public search result", "outcome": "Government link directory identifies the ATR/BPN Kabupaten Pasuruan site; no parcel API or safe feature response was verified."}
+  ],
+  "runtimeReadiness": "held",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe anonymous native parcel ID plus complete polygon response was verified."},
+  "scopeLimits": [
+    "The exact WUP point [-7.65908681106045, 112.897873679759] is preserved in latitude/longitude order; no coordinate was shifted.",
+    "National ATR/BPN custody and Pasuruan government mapping evidence do not establish an open, citywide Pasuruan parcel geometry service.",
+    "A zero exact-point hit, direct 404, proxy error, map extent miss, timeout, login/auth boundary, or unusable UI is not evidence of citywide cadastral absence.",
+    "The viewer's token/login flow was not used; no credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe property fields, or TLS-verification bypass was used.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "qualificationDecision": "hold",
+  "uncertainty": "A restricted, browser-only, authenticated, unpublished, or currently unavailable ATR/BPN/local parcel service may exist. Stable parcel identity, schema, CRS, anonymous geometry access, and citywide coverage remain unresolved."
+}

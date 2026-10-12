@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6465",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6465-mulongo.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/mulongo-service-review.json",
+    "tmp/valhalla-parcel-research/mulongo/circonscriptions.html",
+    "tmp/valhalla-parcel-research/mulongo/supabase-tls.headers",
+    "tmp/valhalla-parcel-research/mulongo/supabase-tls.body"
+  ],
+  "reason": "Queue identity and English/French searches checked. First-party directory is jurisdictional evidence only; original TLS-verified Supabase response is HTTP 401 requiring a key. No native parcel ID or full geometry response and no adapter qualification; access wall is not absence.",
+  "checkedAt": "2026-10-10T15:08:11.271019Z"
+}

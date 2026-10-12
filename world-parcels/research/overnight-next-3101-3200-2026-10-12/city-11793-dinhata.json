@@ -1,0 +1,39 @@
+{
+  "cityCode": 11793,
+  "queueRank": 3189,
+  "name": "Dinhata",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.1312782894123, 89.4622366453413],
+  "population2025": 188805,
+  "population2025k": 188.805,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dinhata West Bengal official cadastral parcel map land records government",
+        "result": "Found the official West Bengal BanglarBhumi land-records portal, which advertises RS-LR plot information, plot maps, mouza maps, and mouza-map availability. Official Cooch Behar district pages identify the Dinhata Sub-Divisional Land & Land Reforms Office and Dinhata land-administration hierarchy. Direct anonymous retrieval of the official portal timed out during this attempt; no parcel API response or geometry was obtained.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://coochbehar.gov.in/departmental-phones/",
+          "https://coochbehar.gov.in/sub-division/",
+          "https://coochbehar.gov.in/notice/sub-divisional-land-land-reforms-office-dinhata-invites-tender-for-settlement-of-vested-water-body-i-e-jalkar-of-binanai-river-s-t-no-02-2/"
+        ]
+      },
+      {
+        "language": "Bengali/local",
+        "query": "দিনহাটা পশ্চিমবঙ্গ সরকারি দাগ খতিয়ান মানচিত্র ভূমি রেকর্ড",
+        "result": "Search surfaced the official BanglarBhumi portal's Bengali/English land-record service surface and its plot/mouza map services, but did not produce a Dinhata-specific public parcel response. No geometry or native parcel identity was obtained.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Official Cooch Behar district sources identify the Sub-Divisional Land & Land Reforms Officer, Dinhata, and a Dinhata office notice refers to Kamtapur Mouza in Dinhata-I Block. The official BanglarBhumi portal identifies the state land-record custodian and offers plot and mouza map services. This evidences a local registry/custodian and procedure, not open parcel geometry coverage.",
+  "runtimeReadiness": "held_quality_review"
+}

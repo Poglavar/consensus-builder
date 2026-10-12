@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11486",
+  "cityCode": 11486,
+  "wupCityCode": 11486,
+  "name": "Liyang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1574,
+  "queueRank": 1574,
+  "point": [31.4241113479571, 119.47393834065],
+  "centerLatLon": [31.4241113479571, 119.47393834065],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 363285,
+  "population2025k": 363.285,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Liyang government material identifies the Liyang Real-Estate Registration and Trading Center as the municipal body handling unified registration, cadastral/measurement technical services, maintenance of the real-estate registration information platform, and lawful public registration-information queries. A current official Liyang government article also documents the center's public self-service registration facilities.",
+  "registryEvidenceUrls": [
+    "https://www.liyang.gov.cn/html/czly/2015/AQQKAIBE_1216/11115.html",
+    "https://www.liyang.gov.cn/html/czly/2023/AQQKAIBE_1016/31544.html",
+    "https://www.liyang.gov.cn/html/czly/2026/IQKAQDDQ_0113/234818.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Tianditu·Liyang public viewer was reachable and its current JavaScript/configuration was inspected. It exposed general map resources and a Changzhou backend/vector resource reference, but no parcel/cadastre feature service, safe parcel field schema, CRS for parcel features, or anonymous bounded ID-plus-complete-polygon response. The backend request redirected to the Tianditu OAuth login/interception page and the exposed vector URL returned 404. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_viewer_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The local registration center has municipal unified-registration and cadastral/measurement responsibilities; the official Tianditu·Liyang viewer is a public geospatial platform.",
+    "verifiedOpenScope": "Local registry custody and a reachable official public viewer were verified; current parcel layer, schema, CRS, native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Liyang China official cadastral parcel map GIS land registration public service",
+        "scope": "Identify the local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search results located official Liyang government pages for the municipal real-estate registration center and the Liyang government information portal. Follow-up inspection found the official Jiangsu Natural Resources Liyang bureau site and the official Tianditu·Liyang viewer; no anonymous parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.liyang.gov.cn/html/czly/2015/AQQKAIBE_1216/11115.html",
+          "https://www.liyang.gov.cn/html/czly/2026/IQKAQDDQ_0113/234818.html",
+          "https://zrzy.jiangsu.gov.cn/czly/",
+          "https://jiangsu.tianditu.gov.cn/liyang/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page and viewer inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "溧阳市 自然资源和规划局 不动产登记 地籍图 宗地 地图 官方",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search located official Liyang government material identifying the real-estate registration center and official references to the Liyang natural-resources information system and Tianditu·Liyang. Current viewer JavaScript exposed no parcel/cadastre feature response or safe anonymous parcel query.",
+        "actualResultUrls": [
+          "https://www.liyang.gov.cn/html/czly/2023/AQQKAIBE_1016/31544.html",
+          "https://www.liyang.gov.cn/class/CLMDAIJM/232?template=templates%2Fczly%2Fzwgk_class_min.html",
+          "https://zrzy.jiangsu.gov.cn/czly/",
+          "https://jiangsu.tianditu.gov.cn/liyang/"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page and viewer inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The reachable viewer and failed backend/vector requests are route/access findings only and do not support citywide absence. Parcel-layer existence, current parcel endpoint, schema, CRS, stable native identity, geometry availability, safe fields and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Liyang/Jiangsu cadastral or Tianditu service. Do not enable runtime from this packet alone."
+}

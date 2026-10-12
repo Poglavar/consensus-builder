@@ -1,0 +1,34 @@
+{
+  "taskId": "city:9879",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:18:10.842Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-9879-mavelikkara.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/mavelikkara-service-review.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 9879,
+    "rank": 2753,
+    "name": "Mavelikkara",
+    "country": "India",
+    "point": [
+      9.26388660057773,
+      76.5451954696035
+    ],
+    "populationPersons": 214688
+  },
+  "researchChecks": {
+    "bilingualExecutedSearches": "English and Malayalam",
+    "verifiedFullPolygonCount": 0,
+    "safeNativeParcelIdResponse": false,
+    "sourceBinding": false,
+    "freshLiveAdapterReads": false,
+    "forcedPaging": false,
+    "boundedCellCount": 0,
+    "metricGeosValidityAndOverlap": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "First-party Kerala revenue/survey material identifies the Mavelikkara custodian and the saved administrative cascade reaches Mavelikkara village and blocks. No native parcel ID or full polygon was returned; CAPTCHA, expired viewer TLS, and administrative zero parcel counters are not citywide absence."
+}

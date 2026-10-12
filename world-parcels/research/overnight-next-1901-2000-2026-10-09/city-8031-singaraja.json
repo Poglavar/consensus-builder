@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 8031,
+  "queueRank": 1908,
+  "name": "Singaraja",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-8.1157425628613, 115.098181606982],
+  "population2025": 300490,
+  "population2025k": 300.49,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Singaraja Bali official cadastral parcel map BPN ATR geoportal",
+        "result": "Found the official ATR/BPN BHUMI interactive map, ATLAS geospatial portal, and the published Bidang Tanah layer metadata. The layer is national ATR/BPN coverage; no Singaraja-specific local custodian page was found.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/peta", "https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/katalog_data"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Singaraja Bali peta bidang tanah resmi ATR BPN",
+        "result": "Search returned the same official ATR/BPN BHUMI/ATLAS map and cadastral-layer documentation; no separate public Kantor Pertanahan Buleleng parcel API was identified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/landing", "https://bali.atrbpn.go.id/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+      "evidence": "Official interactive BHUMI map route. Current page JavaScript initializes published layers through /panel/items/layers and identifies the cadastral map as Bidang Tanah."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+      "operator": "ATR/BPN",
+      "evidence": "Official catalog documentation says BHUMI publishes geospatial datasets including bidang tanah (land parcels), and ATLAS is the centralized ATR/BPN geospatial platform."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "operator": "ATR/BPN",
+      "evidence": "Official map help page states BHUMI is integrated with the ATLAS geoportal."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official BHUMI landing HTML retrieved over verified TLS."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official public map HTML and current JavaScript configuration retrieved."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter[default][_eq]=true&filter[status][_eq]=published&fields=*,fields.*",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous published-layer metadata retrieved. Bidang Tanah is configured as map_service_vendor=Geoserver, map_service_url=/bhumigs/umum, map_service_layer_name=umum:Persil; safe display fields listed by the service are penggunaan, tipehak, luas, nib, akurasibidang."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "method": "GET",
+      "status": "unusable",
+      "summary": "Attempted public WFS capabilities route returned the BHUMI web application HTML rather than a WFS capabilities document; no geometry or schema response was retained."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=umum:Persil&outputFormat=application%2Fjson&bbox=115.09,-8.12,115.11,-8.10,EPSG:4326&propertyName=OBJECTID",
+      "method": "GET",
+      "status": "unusable",
+      "summary": "Bounded anonymous geometry attempt did not produce a WFS feature response; no parcel hit or citywide absence is inferred."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "nib",
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "nib": "Native Nomor Identifikasi Bidang field documented by the published Bidang Tanah layer; not retrieved in a feature response.",
+      "geometry": "Parcel polygon geometry expected from the configured umum:Persil layer; no usable geometry response was obtained."
+    },
+    "crs": "Not confirmed from a usable feature response; no CRS transformation was applied.",
+    "geometryType": "Not confirmed from a usable feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Published ATR/BPN Bidang Tanah layer with national map extent metadata; the configured extent includes Bali and therefore may include Singaraja.",
+    "verifiedOpenScope": "National ATR/BPN layer metadata only; Singaraja parcel coverage was not independently verified by feature geometry.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable point or feature response was obtained. This is an endpoint/UI limitation, not evidence of parcel absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "status-of-rights details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_national_cadastral_map_metadata_geometry_unverified",
+  "remainingUncertainty": "The public map exposes layer metadata but the discovered service route did not yield anonymous WFS schema or geometry. Local Kantor Pertanahan Buleleng custody and native identity stability were not separately evidenced. No owner or title data were accessed.",
+  "nextStep": "Serial reviewer should independently test the current BHUMI map/API route, CRS, Singaraja coverage, and NIB-safe feature response before any adapter admission."
+}

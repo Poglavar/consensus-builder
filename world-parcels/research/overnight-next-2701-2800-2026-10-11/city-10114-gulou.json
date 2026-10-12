@@ -1,0 +1,89 @@
+{
+  "cityCode": 10114,
+  "queueRank": 2791,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.5653999619376, 116.821694386807],
+  "population2025": 212569,
+  "population2025k": 212.569,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gulou Jining Shandong China cadastral parcel map official public service",
+        "result": "First-party discovery found the Jining Municipal Natural Resources and Planning Bureau notice describing an online cadastral-map query route and the official Shandong geographic-information public-service portal. No anonymous current parcel feature endpoint was exposed by the public pages inspected.",
+        "actualResultUrls": [
+          "https://nrp.jining.gov.cn/art/2020/9/16/art_73989_2709097.html",
+          "https://lbs.sdmap.gov.cn/",
+          "https://nrp.jining.gov.cn/col/col60885/index.html"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "济宁 鼓楼 地籍图 宗地 官方 地图 服务",
+        "result": "First-party Chinese discovery found the Jining bureau notice stating that the Tian地图·山东 module includes a “济宁市地籍” thematic layer for cadastral districts/subdistricts, and that the local real-estate registration query can return parcel-map information after a location lookup. The notice does not publish an anonymous parcel geometry API.",
+        "actualResultUrls": [
+          "https://nrp.jining.gov.cn/art/2020/9/16/art_73989_2709097.html",
+          "https://nrp.jining.gov.cn/art/2024/2/1/art_60570_2725228.html",
+          "https://nrp.jining.gov.cn/col/col60885/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Jining Municipal Natural Resources and Planning Bureau / Jining real-estate registration service",
+    "evidence": "The official bureau notice documents the local cadastral-map and real-estate-registration query procedure, including the Jining cadastral thematic layer and parcel-map query service. This establishes a local registry/procedure, not an open downloadable parcel dataset.",
+    "urls": [
+      "https://nrp.jining.gov.cn/art/2020/9/16/art_73989_2709097.html",
+      "https://nrp.jining.gov.cn/art/2024/2/1/art_60570_2725228.html"
+    ]
+  },
+  "sourceAssessment": {
+    "service": "Tian地图·山东 / Shandong geographic-information public-service portal; Jining cadastral thematic layer referenced by official Jining notice",
+    "serviceUrl": "https://lbs.sdmap.gov.cn/",
+    "serviceDescription": "Official Shandong public map portal. Its current landing page loads a JavaScript application and Config_url.v002.js; the inspected public configuration exposed general map/service links but no anonymous parcel FeatureServer or bounded parcel-query contract.",
+    "schema": "Unverified: no parcel feature response returned.",
+    "crs": "Unverified for parcel data. The inspected portal page displayed map coordinates but no parcel-service schema/CRS response.",
+    "nativeIdentity": null,
+    "extent": null,
+    "exactPointHit": null,
+    "boundedPointRequest": {
+      "request": "No parcel request was issued because the current public configuration did not expose a verified parcel layer URL or safe query schema.",
+      "result": "Not performed against a verified parcel endpoint.",
+      "interpretation": "No inference about parcel presence or absence at the exact WUP point."
+    },
+    "routesAttempted": [
+      {
+        "url": "https://nrp.jining.gov.cn/art/2020/9/16/art_73989_2709097.html",
+        "method": "GET",
+        "outcome": "HTTP 200; official procedure confirms Jining cadastral thematic layer and local parcel-map query route; no anonymous geometry API URL published."
+      },
+      {
+        "url": "https://nrp.jining.gov.cn/col/col60885/index.html",
+        "method": "GET",
+        "outcome": "HTTP 200; official Jining map-services page links the Shandong public map portal."
+      },
+      {
+        "url": "https://lbs.sdmap.gov.cn/",
+        "method": "GET",
+        "outcome": "HTTP 200; current JavaScript portal loaded. Config_url.v002.js and the current index bundle were inspected; no verified public parcel feature endpoint was found."
+      },
+      {
+        "url": "http://bzdt.shandongmap.cn/standard-map",
+        "method": "GET",
+        "outcome": "Timed out after 15 seconds; no response or parcel schema. This is an access limitation, not evidence of absence."
+      }
+    ],
+    "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+    "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"]
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The local official procedure establishes a registry/cadastral custodian but not an anonymously downloadable current parcel dataset.",
+    "The current public portal and configuration were inspected without login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification disablement; no parcel schema, CRS, native ID, or geometry response was verified.",
+    "The exact WUP point was preserved and was not shifted. No exact-point or citywide absence inference was made."
+  ]
+}

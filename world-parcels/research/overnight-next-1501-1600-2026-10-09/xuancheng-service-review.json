@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11442-xuancheng.json",
+  "cohort": "overnight-next-1501-1600",
+  "purpose": "Review official Xuancheng cadastral/registration custody and public geographic-information channels for safe anonymous parcel geometry and stable parcel identity.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Xuancheng Natural Resources and Planning Bureau and its municipal Real Estate Registration Center are evidenced local registry/cadastral custodians. The bureau's 2025 notice documents a public Xuancheng Tianditu natural-resource platform with thematic layers, but no current safe anonymous parcel vector response, native identity, CRS or geometry was qualified.",
+  "registryAssessment": "The official Real Estate Registration Center page assigns city-district unified registration, query-service, data-archive and basic-information-platform functions. The official Tianditu notice describes public thematic geospatial information, not an open parcel layer.",
+  "officialPrimarySources": [
+    {"url": "https://zrzyghj.xuancheng.gov.cn/News/show/1061899.html", "operator": "Xuancheng Natural Resources and Planning Bureau / Municipal Real Estate Registration Center", "scope": "Official local registration-center functions and custody."},
+    {"url": "https://zrzyghj.xuancheng.gov.cn/News/show/1679350.html", "operator": "Xuancheng Natural Resources and Planning Bureau", "scope": "Official 2025 notice describing Xuancheng Tianditu natural-resource thematic layers."},
+    {"url": "https://gxs.xuancheng.gov.cn/News/show/1506144.html", "operator": "Xuancheng Natural Resources and Planning Bureau", "scope": "Official notice for the municipal internet-plus real-estate-registration platform; appointment/service workflow, not parcel geometry."},
+    {"url": "https://zrzyghj.xuancheng.gov.cn/News/show/1415518.html", "operator": "Xuancheng Natural Resources and Planning Bureau", "scope": "Official standard-map publication page; downloadable map archive, not a parcel feature service."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Xuancheng China official cadastral parcel map GIS land registration natural resources bureau", "result": "First-party registry and Tianditu sources found; no safe anonymous polygon verified.", "actualResultUrls": ["https://zrzyghj.xuancheng.gov.cn/News/show/1061899.html", "https://zrzyghj.xuancheng.gov.cn/News/show/1679350.html", "https://gxs.xuancheng.gov.cn/News/show/1506144.html"]},
+    {"language": "Chinese", "query": "宣城 官方 不动产登记 地籍图 宗地 地图 自然资源局", "result": "检索到官方登记中心、自然资源局和天地图专题公告；未验证安全匿名宗地要素响应。", "actualResultUrls": ["https://zrzyghj.xuancheng.gov.cn/News/show/1061899.html", "https://zrzyghj.xuancheng.gov.cn/News/show/1679350.html", "https://zrzyghj.xuancheng.gov.cn/News/show/1415518.html"]}
+  ],
+  "attempts": [
+    "Ran separate English and Chinese first-party discovery searches and recorded actual result URLs.",
+    "Requested the official Real Estate Registration Center page anonymously over verified TLS; HTTP 200 HTML returned local registration functions, with no parcel geometry endpoint.",
+    "Requested the official Xuancheng Tianditu announcement anonymously over verified TLS; HTTP 200 HTML returned the description of public thematic layers, but no current viewer configuration or service URL.",
+    "Requested the official registration appointment notice and standard-map page anonymously over verified TLS; pages returned service/map-publication information, not a safe parcel feature response.",
+    "Requested the national Tianditu map host anonymously over verified TLS; HTTP 418 edge response, no parcel response.",
+    "Inspected the official Tianditu announcement HTML and linked script/image references; no map API, layer schema, CRS or parcel service URL was exposed.",
+    "No exact-point parcel feature query completed. No login, credentials, CAPTCHA/Cloudflare bypass, private token, owner/address/titleholder/tax/contact field, or unsafe attribute was requested.",
+    "Did not shift the exact WUP point and did not infer citywide absence from the HTTP 418, public-page scope, or lack of a public feature response."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No exact-point parcel feature query completed; no public parcel endpoint was exposed by the inspected official routes.", "requestEvidence": [
+    {"url": "https://zrzyghj.xuancheng.gov.cn/News/show/1061899.html", "method": "GET", "httpStatus": 200, "result": "Official local registration-center page; no parcel geometry."},
+    {"url": "https://zrzyghj.xuancheng.gov.cn/News/show/1679350.html", "method": "GET", "httpStatus": 200, "result": "Official Tianditu thematic-layer notice; no service endpoint or parcel geometry."},
+    {"url": "https://map.tianditu.gov.cn/", "method": "GET", "httpStatus": 418, "result": "National map host edge response; no parcel geometry."}
+  ]},
+  "coverageAssessment": {"claimedScope": "Official local custodian pages, official Tianditu notice, official map-publication page and bounded anonymous public map-host request reviewed.", "verifiedOpenScope": "Registry custody and public thematic-map existence evidenced; parcel geometry, native identity, CRS and schema unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "nextStep": "Serial reviewer may independently re-check only a public anonymous network flow and qualify safe ID plus geometry if actually returned; preserve held runtime state.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned; bounded inspection does not prove cadastral absence or citywide noncoverage.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

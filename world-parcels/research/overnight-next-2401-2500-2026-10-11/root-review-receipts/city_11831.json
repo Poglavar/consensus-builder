@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11831",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-11831-kamarda.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/kamarda-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T11:56:27Z",
+  "reason": "First-party West Bengal land-record custody and Kamarda/Khejuri-I administrative context are documented, while the bounded Banglarbhumi request timed out. No parcel identity, geometry, schema, CRS, or live adapter qualification was obtained; forced paging, 13-cell, metric geometry, source-binding, and headed Details gates remain absent. Timeout does not prove citywide absence.",
+  "bilingualSearches": [
+    "English",
+    "Bengali/native"
+  ],
+  "retainedFullPolygons": 0,
+  "independentLiveAdapterQualified": false
+}

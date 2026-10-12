@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3546-granada.json",
+  "purpose": "Document first-party Spanish cadastral discovery and bounded anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official DGC documentation confirms public INSPIRE cadastral-parcel WFS and WMS services. Granada municipal first-party records confirm cadastral parcel use in planning documents and reference the municipal GeoGranada viewer. Anonymous requests from this environment did not return a usable schema or parcel geometry, so no sample was retained.",
+  "registryAssessment": "National registry/service custodian evidenced: Dirección General del Catastro. Local municipal map/planning custodian evidenced: Ayuntamiento de Granada. No separate Granada cadastral registry API was verified.",
+  "officialPrimarySources": [
+    {"url": "https://www.catastro.hacienda.gob.es/webinspire/index.html", "observation": "DGC documents INSPIRE cadastral-parcel dataset, WMS, WFS, and municipal ATOM services."},
+    {"url": "https://www.catastro.hacienda.gob.es/es-ES/wms.html", "observation": "DGC documents public WMS and GETFEATUREINFO for cadastral parcel references."},
+    {"url": "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf", "observation": "DGC WFS specification documents CP.CadastralParcel BBOX requests, EPSG:25830 examples, and service limits."},
+    {"url": "https://www.granada.org/intranet/bolcalles.nsf/wenviados/2158C66F6ADA93A1C125882A003BAD5E", "observation": "Ayuntamiento de Granada references a municipal GeoGranada viewer and cadastral parcel identity in an official street-numbering record."},
+    {"url": "https://www.granada.org/urbanismo.nsf/c3abb01dbb6ecb39c125812100281f63/5d5354c666b7294dc12582ac0035faa0/$FILE/INF-08.1-A1.pdf", "observation": "Official municipal planning PDF includes Granada parcel/cadastral mapping; it is not a live parcel API."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Granada Spain official cadastral map parcel viewer Catastro parcelas mapa oficial", "resultUrls": ["https://www.sedecatastro.gob.es/", "https://www.catastro.hacienda.gob.es/webinspire/index_eng.html"], "result": "Official DGC parcel viewer and INSPIRE services found; no live Granada feature endpoint established."},
+    {"language": "Spanish", "query": "Granada España visor catastral parcelas cartografía oficial Catastro Sede Electrónica", "resultUrls": ["https://www.catastro.hacienda.gob.es/es-es/acceso_infocat.html", "https://www.granada.org/intranet/bolcalles.nsf/wenviados/2158C66F6ADA93A1C125882A003BAD5E"], "result": "DGC national custody and Ayuntamiento GeoGranada/planning references found; no safe live parcel response established."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&request=GetCapabilities", "method": "GET", "httpStatus": 400, "result": "HTML portal error: No se puede procesar su petición."},
+    {"url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&request=getfeature&Typenames=cp.cadastralparcel&SRSname=EPSG::25830&bbox=445800,4113900,446050,4114200", "method": "GET", "httpStatus": 400, "result": "Bounded anonymous BBOX around the exact WUP point after EPSG:4326→25830 conversion; HTML portal processing error and no feature response."},
+    {"url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2.0.0&request=getfeature&STOREDQUERIE_ID=GetParcel&refcat=18100A00100001&srsname=EPSG::25830", "method": "GET", "httpStatus": 400, "result": "Documentation-shaped stored-query probe; HTML portal processing error. The reference was not treated as a Granada parcel identity."},
+    {"url": "https://ovc.catastro.meh.es/cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities", "method": "GET", "httpStatus": 400, "result": "HTML portal processing error."},
+    {"url": "https://www1.sedecatastro.gob.es/Cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities", "method": "GET", "httpStatus": 503, "result": "Service unavailable from this environment."},
+    {"url": "https://www.sedecatastro.gob.es/Cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities", "method": "GET", "httpStatus": 404, "result": "Current host/path did not expose the documented WMS endpoint."}
+  ],
+  "schemaAndCrs": {"documented": true, "nativeGeometry": "INSPIRE CP CadastralParcel geometry", "documentedCrs": "EPSG:25830", "observedFeatureSchema": false, "safeFieldAllowlist": ["native parcel identity (if returned)", "geometry"]},
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable feature response; zero-hit or service failure is not evidence of absence.", "requestEvidence": []},
+  "fieldPolicy": {"safeFieldsRequestedOrIntended": ["geometry", "native parcel identity"], "excludedFields": ["owner", "address", "contact", "titleholder", "tax/account", "personal data"], "compositeKeyProvenance": null},
+  "remainingUncertainty": "No public response proved whether the WUP point lies within a returned parcel. The documented national service may require a currently valid route or service availability; municipal planning PDFs are static evidence only.",
+  "nextStep": "A later reviewer may retry the documented DGC INSPIRE route and retain at most three full polygons only after confirming geometry, CRS, Granada location, and a stable native identity.",
+  "runtimeEligible": false
+}

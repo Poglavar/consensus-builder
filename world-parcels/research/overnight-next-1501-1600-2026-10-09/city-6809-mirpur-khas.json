@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:6809",
+  "cityCode": 6809,
+  "wupCityCode": 6809,
+  "name": "Mirpur Khas",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso2": "PK",
+  "iso3": "PAK",
+  "rank": 1507,
+  "queueRank": 1507,
+  "point": [25.5238391224717, 69.0143011789933],
+  "centerLatLon": [25.5238391224717, 69.0143011789933],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 376343,
+  "population2025k": 376.343,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Board of Revenue Sindh Sindh Zameen portal exposes land-record, Deh Maps and public service-centre routes; its official active-centres page lists a Mirpurkhas district centre. This establishes provincial/local custodial service evidence, not anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.sindhzameen.gos.pk/Default.aspx",
+    "https://www.sindhzameen.gos.pk/Centers.aspx",
+    "https://www.sindhzameen.gos.pk/FAQs.aspx"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official portal advertises Deh Maps at map.sindhzameen.gos.pk and a name-search route with district, taluka and deh selectors. The map hostname did not resolve from this environment. The official HTTPS hostname failed normal TLS hostname verification, so no certificate exception was used. The search route exposed CAPTCHA and was not submitted or bypassed. No anonymous safe ID-plus-complete-polygon response was verified.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Board of Revenue Sindh's public Sindh Zameen service covers digitised Sindh land records and advertises Deh Maps; the official centres page lists Mirpurkhas district service custody.",
+    "verifiedOpenScope": "Official portal and service-centre evidence verified, but no anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:sindhzameen.gos.pk Mirpur Khas land record cadastral map official",
+        "scope": "Identify the official provincial land-record custodian and a public cadastral/map route.",
+        "result": "Search located the official Board of Revenue Sindh Sindh Zameen portal, its FAQ describing available Sindh land-record coverage and its Deh Maps service, and the official Mirpurkhas service-centre listing. No safe anonymous parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx",
+          "https://www.sindhzameen.gos.pk/FAQs.aspx",
+          "https://www.sindhzameen.gos.pk/Centers.aspx",
+          "https://www.sindhzameen.gos.pk/map/SindhMaps.aspx"
+        ],
+        "executionMethod": "Separate English web search followed by first-party portal inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "میرپور خاص زمین ریکارڈ نقشہ سرکاری سندھ; ميرپورخاص زمين رڪارڊ نقشو سرڪاري سنڌ",
+        "scope": "Independent Urdu and Sindhi discovery for a local-language official registry or cadastral-map route.",
+        "result": "The native-language search also led to the official Sindh Zameen portal and official Sindh map pages. The portal's Urdu/Sindhi labels confirm public Maps and land-record services, but no anonymous safe parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx",
+          "https://www.sindhzameen.gos.pk/map/SindhMaps.aspx",
+          "https://www.sindhzameen.gos.pk/FAQs.aspx"
+        ],
+        "executionMethod": "Separate Urdu/Sindhi web search followed by first-party portal inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. A map-host DNS failure, HTTPS certificate mismatch, CAPTCHA wall, and absence of a verified feature response are access limitations only and do not support a citywide-absence claim. Deh coverage, CRS, schema, stable native parcel identity, polygon availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify the Sindh Zameen Deh Maps route or an official Sindh cadastral adapter; do not enable runtime from this packet alone."
+}

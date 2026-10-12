@@ -1,0 +1,43 @@
+{
+  "taskId": "city:9327",
+  "decision": "held",
+  "checkedAt": "2026-10-12T01:06:14Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-9327-ambajogai.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ambajogai-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 9327,
+    "rank": 3024,
+    "country": "India",
+    "point": [
+      18.730190680489,
+      76.3870304382002
+    ],
+    "populationPersons": 197735
+  },
+  "checks": {
+    "bilingualExecutedSearches": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": true,
+  "firstPartyEvidence": {
+    "cacheDirectory": "tmp/valhalla-parcel-research/9327/",
+    "cacheFileCount": 0,
+    "officialSourceUrls": [
+      "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS"
+    ]
+  },
+  "reason": "Official Maharashtra land-record and map procedure is evidenced, but direct routes timed out and no Ambajogai ID-plus-full-polygon response, schema, or CRS was obtained.",
+  "absenceConclusion": null
+}

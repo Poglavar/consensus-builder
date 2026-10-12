@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "cityCode": 11351,
+  "queueRank": 1530,
+  "name": "Khagaria",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.513406575929, 86.4909768703624],
+  "population2025": 372707,
+  "population2025k": 372.707,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khagaria Bihar official cadastral map land parcel GIS Bhulekh Bihar",
+        "result": "Search identified the official Bihar Department of Revenue and Land Reforms portal and its BhuNaksha Bihar cadastral viewer. The viewer is a public map application, but the bounded pass did not resolve a specific village/sheet or return a parcel polygon at the WUP point.",
+        "actualResultUrls": [
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "खगड़िया बिहार सरकारी भू नक्शा खसरा प्लॉट मानचित्र",
+        "result": "Native-language search identified the official Bihar land portal, the official BhuNaksha viewer, and the official Khagaria district map page. The search results establish public cadastral-map availability in Bihar but do not establish a parcel hit or citywide Khagaria geometry coverage.",
+        "actualResultUrls": [
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://khagaria.nic.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%87-%E0%A4%95%E0%A5%87-%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "BhuNaksha Bihar",
+        "operator": "Directorate of Land Records & Survey, Government of Bihar / NIC",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "observation": "Official public cadastral mapping application. Its current viewer configuration uses state code 10 and exposes district, subdivision, circle, mauza, survey type, map instance and sheet selectors. Khagaria is district code 21; the returned public selector data includes Khagaria subdivision and Khagaria circle."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "httpStatus": 200,
+        "assessment": "Official viewer shell loaded and identified its current JavaScript/configuration."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "body": "state=10",
+        "httpStatus": 200,
+        "assessment": "Official map UI loaded; current source shows seven location levels and anonymous map/plot endpoints."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+        "body": "OP=2&level=2&selections=21&state=10",
+        "httpStatus": 200,
+        "assessment": "Anonymous selector response returned Khagaria subdivision (01) and Gogri subdivision (02)."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+        "body": "OP=2&level=3&selections=21,01&state=10",
+        "httpStatus": 200,
+        "assessment": "Anonymous selector response returned circles including Khagaria (01); this is administrative selector metadata, not parcel geometry."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+        "body": "OP=2&level=4&selections=21,01,01&state=10",
+        "httpStatus": 200,
+        "assessment": "Anonymous selector response returned the Khagaria-circle mauza list. The WUP coordinate was not shifted to force selection of a mauza, and no parcel geometry was requested without a verified village/sheet context."
+      },
+      {
+        "method": "GET",
+        "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+        "body": "OP=5&state=10&levels=<selected-levels>&plotno=<plot-number>",
+        "httpStatus": null,
+        "assessment": "Current JavaScript identifies this as the plot-info endpoint, but no plot number was invented or queried; therefore no parcel identity or geometry response was retained."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.bihar.gov.in/10/rest/MapInfo/getPlotAtXY",
+        "body": "state=10&giscode=<resolved-gis-code>&x=86.4909768703624&y=25.513406575929",
+        "httpStatus": null,
+        "assessment": "Current JavaScript identifies this as the point lookup route, but it requires a resolved village/sheet GIS code. No exact-point hit or absence conclusion was asserted."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official Bihar public cadastral-map viewer and Khagaria administrative selector coverage.",
+    "verifiedOpenScope": "The official viewer is publicly reachable and exposes Khagaria selector metadata; parcel geometry, exact WUP-point inclusion, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_registry_no_verified_sample",
+  "runtimeReadiness": "technical-hold",
+  "technicalBlocker": "The viewer requires a specific mauza, survey type, map instance and sheet to resolve a GIS code before its point/plot lookup routes can operate. The bounded pass did not establish which cadastral village contains the WUP point, and no safe geometry-only response was obtained.",
+  "remainingUncertainty": "Khagaria municipal limits may span multiple revenue villages and survey products. A map extent miss, unresolved village context, or absence of a returned exact-point feature would not prove citywide absence.",
+  "nextStep": "Resolve the WUP point to an official mauza/sheet through the public viewer, then make a bounded anonymous point lookup and retain at most three polygons only if each has a stable native plot identity."
+}

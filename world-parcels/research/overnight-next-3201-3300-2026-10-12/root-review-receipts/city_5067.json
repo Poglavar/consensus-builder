@@ -1,0 +1,21 @@
+{
+  "taskId": "city:5067",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-5067-sunderland.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/sunderland-service-review.json",
+    "tmp/valhalla-parcel-research/sunderland/wms.xml",
+    "tmp/valhalla-parcel-research/sunderland/download-headers.txt"
+  ],
+  "checkedAt": "2026-10-12T08:23:12Z",
+  "findings": {
+    "identity": "WUP 2025 source gzip SHA-256 matches the handoff. Its 2025 Pop row, rank 3295 roster, pending queue and packet agree on Sunderland, United Kingdom, point [54.9022790588835,-1.40594484606918] and 182966 persons.",
+    "searches": "Paired packet and review record English and English local-language executed searches with first-party result URLs. HM Land Registry's official INSPIRE guidance supports registryFound=true for England and Wales; Sunderland council says its own ownership records cover council land only.",
+    "sourceAndGeometry": "Original WMS capabilities advertise inspire:CP.CadastralParcel with queryable=0. The paired review records disabled WFS, a non-queryable GetFeatureInfo response and a download redirect loop; original download headers confirm the self-redirect. These access limits do not establish citywide absence. No sample polygon is retained, so the three-polygon and safe-attribute limits are met.",
+    "admission": "Held: no usable native ID plus full geometry, fresh exact-ID reads, forced pagination, 13 bounded cells, metric GEOS checks, source binding or headed Details verification. No runtime, catalog or coverage admission was made."
+  }
+}

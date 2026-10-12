@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9006-changping.json",
+  "purpose": "Document first-party Beijing registry context and bounded anonymous parcel-geometry access review for Changping.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Beijing's official planning and natural-resources authority documents municipal cadastral-map and parcel-map query services, and the official Beijing Tianditu portal provides public geospatial service resources. The local registry entry point timed out for bounded anonymous GET requests; no safe Changping parcel geometry, schema, CRS, or native ID was verified.",
+  "registryAssessment": "Local/municipal registry custodian verified: 北京市规划和自然资源委员会 (Beijing Municipal Commission of Planning and Natural Resources), with its official real-estate registration platform and cadastral-map query procedures evidenced. Changping-specific anonymous parcel coverage remains unverified.",
+  "officialPrimarySources": [
+    {"url": "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240529_3697872.html", "observation": "Official Chinese notice says anyone may query Beijing cadastral districts/sub-districts and that parcel-map lookup can return parcel code, real-estate unit number, location, area, rights type, and attached map; owner/interest-holder inquiry is separately controlled."},
+    {"url": "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240521_3689773.html", "observation": "Official Chinese announcement describes the visual real-estate/cadastral-map query platform and identifies the official online service entry; visual lookup uses identity verification routes."},
+    {"url": "https://english.beijing.gov.cn/government/policytoolkittwo/INV_Policy_Text/202411/t20241127_3951281.html", "observation": "Official English government translation corroborates the Beijing cadastral-map visualization service and its access method."},
+    {"url": "https://beijing.tianditu.gov.cn/bjtdt-main/service.html", "observation": "Official Beijing Tianditu service-resource page, operated by the Beijing planning/natural-resources authority and Beijing Institute of Surveying and Mapping; public map/API resources were visible, but no verified parcel feature service was established."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Changping Beijing official cadastral parcel map land registration map service API", "result": "First-party Beijing government and official Tianditu sources identified; no anonymous safe parcel geometry endpoint verified.", "actualResultUrls": ["https://english.beijing.gov.cn/government/policytoolkittwo/INV_Policy_Text/202411/t20241127_3951281.html", "https://beijing.tianditu.gov.cn/bjtdt-main/service.html", "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go"]},
+    {"language": "Chinese", "query": "昌平区 不动产登记 地图 地籍图 官方", "result": "Official Chinese Beijing notices identified the cadastral-map and parcel-map query procedures and municipal custodian; no anonymous Changping parcel geometry verified.", "actualResultUrls": ["https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240529_3697872.html", "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240521_3689773.html", "https://beijing.tianditu.gov.cn/bjtdt-main/service.html"]}
+  ],
+  "attempts": [
+    {"method": "GET", "url": "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240529_3697872.html", "result": "Official Chinese policy page fetched through search discovery; cadastral query procedure confirmed."},
+    {"method": "GET", "url": "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240521_3689773.html", "result": "Official Chinese service announcement fetched through search discovery; visual query and identity-verification route confirmed."},
+    {"method": "GET", "url": "https://english.beijing.gov.cn/government/policytoolkittwo/INV_Policy_Text/202411/t20241127_3951281.html", "result": "Official English government page found; it corroborates the cadastral-map visualization service."},
+    {"method": "GET", "url": "https://beijing.tianditu.gov.cn/bjtdt-main/service.html", "httpStatus": 200, "result": "Official Tianditu service page fetched. Public resources were listed, but no parcel layer, feature endpoint, schema, CRS, or native ID was verified."},
+    {"method": "GET", "url": "http://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go", "result": "Bounded anonymous request timed out after 25 seconds; no retry with credentials or TLS weakening."},
+    {"method": "GET", "url": "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go", "result": "Bounded anonymous request timed out after 20 seconds; no retry with credentials or TLS weakening."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against a public feature service. The timeouts and access requirements are not evidence of citywide absence.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Beijing municipal cadastral and real-estate-registration administration, including cadastral districts/sub-districts and parcel-map query procedures.", "verifiedOpenScope": "Custodian and procedures verified, but anonymous parcel geometry, schema/CRS, native identity, and Changping citywide completeness were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The current registry application's configuration and endpoint behavior, Changping coverage, schema, CRS, and stable native parcel identity remain unknown without responsive anonymous access or authorized use.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

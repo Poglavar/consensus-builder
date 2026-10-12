@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1907",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/provenance.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-1907-barinas.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/barinas-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:41:59.203872Z",
+  "reason": "National general cartography only; local custody and parcel endpoint remain unresolved. No parcel polygon/native ID response, qualified adapter, or headed details check exists."
+}

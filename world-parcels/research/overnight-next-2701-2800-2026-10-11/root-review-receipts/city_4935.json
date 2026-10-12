@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4935",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:29:08Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-4935-okitipupa.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/okitipupa-service-review.json",
+    "tmp/valhalla-parcel-research/4935-okitipupa/official-land-registration.pdf",
+    "tmp/valhalla-parcel-research/4935-okitipupa/ondolandportal.html",
+    "tmp/valhalla-parcel-research/4935-okitipupa/map.html",
+    "tmp/valhalla-parcel-research/4935-okitipupa/api-2f66e6df.txt"
+  ],
+  "review": "WUP 2025 code 4935, rank 2713, Nigeria, point [6.49814824791005,4.77776024390833], and 218097 persons match the source archive, roster, queue, packet and paired review. English and Yoruba/local searches are recorded. The saved first-party Ondo State registration PDF names an Okitipupa Area Lands Office and digitization work, grounding registryFound true. The saved portal advertises a Property Map, but the saved map HTML title says 500 Server Error (the worker review says 404); saved API HTML says 404. This response discrepancy does not alter the hold or prove absence. No safe native parcel ID or full polygon was retained. No live adapter qualification, forced paging, 13 bounded cells, metric geometry/overlap checks, source binding or headed Details check. No admission."
+}

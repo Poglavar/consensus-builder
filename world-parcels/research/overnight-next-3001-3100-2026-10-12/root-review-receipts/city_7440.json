@@ -1,0 +1,36 @@
+{
+  "taskId": "city:7440",
+  "decision": "held",
+  "checkedAt": "2026-10-12T01:00:00Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-7440-jhunjhunu.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/jhunjhunu-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 7440,
+    "rank": 3021,
+    "country": "India",
+    "point": [28.1198887898694, 75.3915488181953],
+    "populationPersons": 198109
+  },
+  "checks": {
+    "wup2025SourceAndQueueMatch": true,
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+    "https://bhunaksha.rajasthan.gov.in/"
+  ],
+  "reason": "Rajasthan's official cadastral-map program and BhuNaksha viewer support institutional record custody. The paired packet records English and Hindi searches, but no bounded anonymous parcel geometry, source-proven native identifier, or qualified adapter response. Viewer timeouts and a removed GIS route do not establish citywide absence; runtime remains held."
+}

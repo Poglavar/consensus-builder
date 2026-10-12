@@ -1,0 +1,119 @@
+{
+  "cityCode": 3247,
+  "queueRank": 1861,
+  "name": "Moshi",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "iso3": "TZA",
+  "point": [-3.35251428743016, 37.3439049969071],
+  "population2025": 309202,
+  "population2025k": 309.202,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Moshi Tanzania official cadastral parcel map GIS land registry",
+        "result": "First-party results identified the Ministry of Lands e-Ardhi portal, its public GeoServer map service, the Moshi Municipal Council urban-planning page, and national survey/cadastral guidance. The official e-Ardhi WFS exposed Moshi-area parcel-like layers and bounded geometry responses.",
+        "actualResultUrls": [
+          "https://eardhi.lands.go.tz/",
+          "https://moshimc.go.tz/urban-planning-commitee",
+          "https://www.lands.go.tz/landrent/",
+          "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf"
+        ]
+      },
+      {
+        "language": "Swahili (local/native administrative language)",
+        "query": "Moshi Tanzania ramani ya viwanja cadastral ardhi rasmi",
+        "result": "First-party Swahili results identified the official Ministry land-rent/e-Ardhi services, the Moshi Municipal Council urban-planning page, and Ministry cadastral-survey guidance. The public e-Ardhi WFS was then inspected for current layer, schema, CRS, and bounded parcel geometry.",
+        "actualResultUrls": [
+          "https://www.lands.go.tz/landrent/",
+          "https://eardhi.lands.go.tz/",
+          "https://moshimc.go.tz/urban-planning-commitee",
+          "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Moshi Municipal Council urban-planning/land-development authority is evidenced by its official urban-planning committee page; parcel geometry itself is served by the Ministry of Lands e-Ardhi GeoServer.",
+    "nationalService": "https://eardhi.lands.go.tz/",
+    "basis": "A first-party public map service returned parcel-like Moshi-area features in bounded anonymous WFS requests. This establishes an open map/cadastre service with Moshi coverage, not ownership or title records.",
+    "urls": [
+      "https://eardhi.lands.go.tz/",
+      "https://moshimc.go.tz/urban-planning-commitee"
+    ]
+  },
+  "requests": [
+    {
+      "route": "https://eardhi.lands.go.tz/",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official e-Ardhi landing page returned HTML and described surveying/mapping, land administration, registration, and related services. No login was attempted. The current JavaScript/configuration was inspected and exposed SERVER_URL=https://eardhi.lands.go.tz/gw, GRAPHQL_API=https://eardhi.lands.go.tz/api, and GEOSERVER_API=https://eardhi.lands.go.tz/map/geoserver/taspro."
+    },
+    {
+      "route": "https://www.lands.go.tz/landrent/",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official Ministry land-rent page returned HTML. It directs some regional land services through e-Ardhi and exposes owner/title/plot search fields; those unsafe fields were not submitted or retained."
+    },
+    {
+      "route": "https://moshimc.go.tz/urban-planning-commitee",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official Moshi Municipal Council page returned HTML describing the municipal urban-planning and land-development remit. It is local administrative evidence, not itself a parcel geometry endpoint."
+    },
+    {
+      "route": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Current public WFS capabilities returned. Parcel-like layers included taspro:spatial_units, taspro:tp_spatial_units, taspro:survey_spatial_units, and related spatial-unit layers. WFS advertised application/json output and EPSG:4326 for the relevant layers."
+    },
+    {
+      "route": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=taspro:spatial_units",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Schema returned id (xsd:long), uid (xsd:string), many source attributes, and geom (gml:MultiSurfacePropertyType). Only id/uid/geom were considered safe for research."
+    },
+    {
+      "route": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=taspro:spatial_units&outputFormat=application/json&srsName=EPSG:4326&propertyName=id,uid,geom&bbox=37.3339049969,-3.3625142874,37.3539049969,-3.3425142874,EPSG:4326&count=3",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Anonymous bounded Moshi-area request returned HTTP 200 but zero features. This exact-point/near-point miss is not treated as citywide absence."
+    },
+    {
+      "route": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=taspro:tp_spatial_units&outputFormat=application/json&srsName=EPSG:4326&propertyName=id,uid,geom&bbox=37.2939049969,-3.4025142874,37.3939049969,-3.3025142874,EPSG:4326&count=3",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Anonymous bounded ~10 km Moshi-area request returned 3 features (totalFeatures 1360), each with id, UUID uid, and MultiPolygon geometry. Three full geometries were retained in moshi-parcel-samples.geojson with uid as the sole canonical native identity."
+    },
+    {
+      "route": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=taspro:survey_spatial_units&outputFormat=application/json&srsName=EPSG:4326&propertyName=id,uid,geom&bbox=37.2939049969,-3.4025142874,37.3939049969,-3.3025142874,EPSG:4326&count=3",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Anonymous bounded ~10 km Moshi-area request returned 3 features (totalFeatures 807), each with id, UUID uid, and Polygon geometry. These were inspected but not retained to avoid mixing layer semantics in the sample."
+    },
+    {
+      "route": "https://eardhi.lands.go.tz/api/graphql",
+      "method": "POST",
+      "status": 500,
+      "outcome": "Unauthenticated introspection attempt returned context-creation error; no credentials, tokens, or private fields were used. No GraphQL data was retained."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel id/uid", "full polygon or multipolygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"sourceLayer": "taspro:tp_spatial_units", "sourceIdField": "uid", "sourceNumericIdFieldObserved": "id", "geometryField": "geom", "retainedProperties": {"id": "uid"}},
+  "compositeKeyProvenance": null,
+  "crs": {"source": "EPSG:4326 (WFS DefaultCRS and request srsName)", "retainedSample": "EPSG:4326; GeoJSON coordinate order longitude/latitude"},
+  "verifiedSample": {"count": 3, "sampleFile": "moshi-parcel-samples.geojson", "exactWupPointQuery": false, "result": "Three full parcel-like multipolygons were returned from a bounded Moshi-area request. The exact WUP point was preserved and not shifted; the narrower spatial_units request returned zero."},
+  "publicParcelGeometryFound": true,
+  "coverageAssessment": {"claimedScope": "Ministry e-Ardhi public GeoServer land/spatial-unit service.", "verifiedOpenScope": "A bounded ~10 km Moshi-area query returned 1360 tp_spatial_units features and three sampled full geometries; citywide completeness, update currency, and semantic equivalence to legal cadastral parcels remain unverified.", "citywideVerified": false, "countrywideVerified": false},
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent adapter qualification remains required",
+  "scopeLimits": ["Exact WUP latitude/longitude [-3.35251428743016, 37.3439049969071] preserved; no coordinate shift applied.", "The retained sample contains only one canonical UUID identity per feature and no raw source attribute set.", "No owner, address, contact, titleholder, tax/account, personal, or unsafe fields were requested or retained.", "A WFS layer response and packet completion do not admit source integration or runtime use.", "Zero exact-point hits and layer differences do not establish citywide absence.", "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification bypass was used."],
+  "remainingUncertainty": "The public e-Ardhi service clearly covers Moshi-area spatial units, but layer semantics, legal parcel status, city boundary completeness, stable identity lifecycle, and production suitability require serial review and independent adapter qualification."
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:938",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-938-graz.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/graz-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/graz-parcels-sample.geojson",
+    "tmp/valhalla-parcel-research/graz/service.json",
+    "tmp/valhalla-parcel-research/graz/layer2.json",
+    "tmp/valhalla-parcel-research/graz/exact.geojson",
+    "tmp/valhalla-parcel-research/graz/nearby.geojson"
+  ],
+  "checkedAt": "2026-10-10T19:00:25.974018Z",
+  "reason": "Cached first-party exact-point response matches one safe-ID full polygon; metric geometry is valid. No independent forced paging, thirteen bounded cells, full overlap/operation checks, source binding, or headed Details verification. Nearby cached response has transfer limit and is not a complete manifest."
+}

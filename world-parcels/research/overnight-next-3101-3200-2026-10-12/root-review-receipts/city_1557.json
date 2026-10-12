@@ -1,0 +1,17 @@
+{
+  "taskId": "city:1557",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-1557-louga.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/louga-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:08:39Z",
+  "finding": "Queue identity agrees with the WUP ranked roster: Louga, Senegal, rank 3105, point [15.6206112652558,-16.2252500871381], 193553 persons. English and French searches and their result URLs are recorded. Saved first-party Géo Sénégal and DGID pages identify land-use data and the NICAD procedure; the saved ONDDL WFS capabilities enumerate only seven administrative layers. No parcel ID plus full polygon was obtained.",
+  "custodyAssessment": "registryFound null remains unresolved for a Louga-local registry or public parcel service; national DGID procedure does not establish a city-local endpoint.",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No fresh native-ID polygon response, forced paging, thirteen bounded cells, independent metric GEOS validity/overlap checks, source binding, or headed details-panel verification. No runtime admission.",
+  "absenceInference": "None: access failures and missing bounded geometry are not citywide absence."
+}

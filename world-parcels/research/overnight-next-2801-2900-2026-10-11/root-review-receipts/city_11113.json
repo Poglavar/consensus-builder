@@ -1,0 +1,28 @@
+{
+  "taskId": "city:11113",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11113-balangir.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/balangir-service-review.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/balangir-sample.geojson",
+    "tmp/valhalla-parcel-research/11113/cad-test.json",
+    "tmp/valhalla-parcel-research/11113/lulc.html"
+  ],
+  "checkedAt": "2026-10-11T22:08:15Z",
+  "reason": "Queue identity matches rank 2884, India, exact point, and 206728 persons. English and Odia searches are recorded in the paired packet. The original Odisha 4K GEO block response contains 139734 features in EPSG:3857; three retained full Polygon samples match original geometries and expose only an id attribute. Public geometry and state registry custody are supported, but revenue_plot is not unique: sampled values 1039, 171 and 1355 each identify 57, 129 and 34 distinct geometries respectively. A source-proven unique native parcel identity/composite key and all independent live adapter admission gates remain unqualified. The bounded block response does not prove citywide coverage.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "registryFound": true,
+  "publicParcelGeometryFound": true,
+  "durableSamplePolygonCount": 3,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

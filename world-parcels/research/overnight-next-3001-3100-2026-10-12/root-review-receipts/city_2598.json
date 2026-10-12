@@ -1,0 +1,33 @@
+{
+  "taskId": "city:2598",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:56:17Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-2598-guantanamo.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/guantanamo-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 2598,
+    "rank": 3017,
+    "country": "Cuba",
+    "point": [
+      20.1456530494398,
+      -75.2058801444205
+    ],
+    "populationPersons": 198411
+  },
+  "checks": {
+    "twoExecutedSearchesRecorded": true,
+    "fullPolygonsObservedInOriginalCache": 0,
+    "safeIdAttributesObserved": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "No qualified first-party parcel service or polygon was obtained; official hosts failed DNS, timed out, or reset. Registry custody remains unresolved, not absent."
+}

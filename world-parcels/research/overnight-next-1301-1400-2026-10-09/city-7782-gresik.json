@@ -1,0 +1,81 @@
+{
+  "cityCode": 7782,
+  "queueRank": 1313,
+  "name": "Gresik",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-7.16160214503704, 112.632593965037],
+  "population2025": 426246,
+  "population2025k": 426.246,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Official national ATR/BPN BHUMI provides a public land-map viewer relevant to Indonesia and exposes parcel/land-field functionality, but this research did not verify a Gresik parcel response with a safe native identity. The official Gresik Regency GIS portal was found but its entry page requires authentication. This is not evidence of citywide absence.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gresik Indonesia official cadastral parcel map land registry GIS",
+        "result": "Found the official ATR/BPN BHUMI public land-map viewer and help pages describing open spatial land-field information, plus the official Gresik Regency GIS portal entry page. No public Gresik parcel API or downloadable safe parcel geometry was identified in search results.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+          "https://e-bk.gresikkab.go.id/authpeta"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "peta bidang tanah Gresik resmi ATR BPN layanan peta",
+        "result": "Found official ATR/BPN BHUMI documentation stating that the interactive map presents land parcels/bidang tanah and supports parcel searches by NIB, HAK, or NIBEL, and found the official Gresik Regency GIS portal. The search did not produce a safe public Gresik parcel feature response.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://jdih.gresikkab.go.id/produk-hukum/download-abstrak/peraturan-bupati-kabupaten-gresik/peraturan-bupati-gresik-nomor-34-tahun-2016-tentang-pembuatan-satu-peta-bidang-tanah-multi-fungsi-di-kabupaten-gresik-1585102622",
+          "https://e-bk.gresikkab.go.id/authpeta"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "role": "ATR/BPN national public land-map viewer documentation",
+      "observation": "Official help page describes the interactive map, spatial land-field information, coordinate display, and parcel search by NIB/HAK/NIBEL. It establishes a relevant first-party public map service, not verified Gresik parcel coverage or a returned feature."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+      "role": "ATR/BPN BHUMI data-catalog documentation",
+      "observation": "Official documentation identifies land parcels, administrative boundaries, and land-value-zone data as catalog datasets and describes ATLAS as the underlying geospatial platform. No raw source attribute set was retained."
+    },
+    {
+      "url": "https://e-bk.gresikkab.go.id/authpeta",
+      "role": "Gresik Regency official GIS portal",
+      "observation": "GET returned the official Portal Peta page with an authentication prompt ('Akses Sistem Informasi GIS'); no anonymous cadastral geometry or schema was exposed."
+    },
+    {
+      "url": "https://jdih.gresikkab.go.id/produk-hukum/download-abstrak/peraturan-bupati-kabupaten-gresik/peraturan-bupati-gresik-nomor-34-tahun-2016-tentang-pembuatan-satu-peta-bidang-tanah-multi-fungsi-di-kabupaten-gresik-1585102622",
+      "role": "Gresik Regency legal/administrative evidence",
+      "observation": "Official legal abstract describes a 2016 single multifunction land-parcel map initiative for Gresik and coordination with BPN. This is local administrative context, not evidence of a currently accessible parcel-vector service."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel identity and full parcel polygon were obtained. The exact WUP point was not shifted and no exact-point hit or non-hit was treated as citywide evidence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Indonesia ATR/BPN public land-map service and Gresik Regency GIS entry point.",
+    "verifiedOpenScope": "Official viewer/documentation presence verified; Gresik-specific anonymous parcel response, native ID field, CRS response, exact parcel containment, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

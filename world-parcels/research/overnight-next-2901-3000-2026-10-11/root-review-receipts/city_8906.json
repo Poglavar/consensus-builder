@@ -1,0 +1,28 @@
+{
+  "taskId": "city:8906",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-8906-gejiu.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/gejiu-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:02:03Z",
+  "reason": "The Gejiu government bureau duties page independently supports local registration and cadastral-survey custody. No anonymous native parcel ID and full polygon response, adapter, or runtime qualification is evidenced. An inaccessible or undiscovered route does not establish citywide absence.",
+  "registryFound": true,
+  "identityVerifiedAgainstOriginalWup": true,
+  "bilingualExecutedSearchesRecorded": true,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://www.hhgj.gov.cn/info/12091/269911.htm"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

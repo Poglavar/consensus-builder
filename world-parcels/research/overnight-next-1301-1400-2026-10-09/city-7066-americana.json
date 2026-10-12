@@ -1,0 +1,143 @@
+{
+  "name": "Americana",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "cityCode": 7066,
+  "queueRank": 1368,
+  "rank": 1368,
+  "point": [-22.7403656033961, -47.3575438232552],
+  "population2025": 412133,
+  "population2025k": 412.133,
+  "populationUnit": "persons",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Americana Brazil official cadastral GIS parcel map municipal cadastre",
+        "result": "Official Prefeitura pages identify the municipal technical cadastre, geoprocessing unit, and a municipal maps service. The linked map endpoint was separately requested but timed out anonymously; no parcel geometry or schema was verified.",
+        "actualResultUrls": [
+          "https://www.americana.sp.gov.br/americana-index.php?a=servicos",
+          "https://www.americana.sp.gov.br/americana-index.php?a=secretaria_15_unidade",
+          "https://planejamento.americana.sp.gov.br/mapa"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Americana SP cadastro imobiliário mapa georreferenciado Prefeitura Unidade de Cadastro Técnico Municipal geoprocessamento",
+        "result": "Local-language first-party discovery confirmed the Prefeitura's Unidade de Cadastro Técnico Municipal and Unidade de Geoprocessamento, plus the municipal cadastral/tax service. The public cadastral certificate page is a tax/certificate interface, not a safe parcel geometry service; no credentials or property selectors were submitted.",
+        "actualResultUrls": [
+          "https://www.americana.sp.gov.br/americana-index.php?a=secretaria_15_unidade",
+          "https://www.americana.sp.gov.br/americana-index.php?a=servicos",
+          "https://nfse.americana.sp.gov.br/iptu/certCadastral.aspx"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.americana.sp.gov.br/americana-index.php?a=secretaria_15_unidade",
+        "operator": "Prefeitura Municipal de Americana, Secretaria de Planejamento",
+        "observation": "First-party page lists Unidade de Cadastro Técnico Municipal and Unidade de Geoprocessamento as municipal administrative units, with public office contact details. This establishes local custody/responsibility, not an open parcel-data endpoint."
+      },
+      {
+        "url": "https://www.americana.sp.gov.br/americana-index.php?a=servicos",
+        "operator": "Prefeitura Municipal de Americana",
+        "observation": "First-party services catalogue links Consulta de Imóveis and Mapas Municipais; the latter links to https://planejamento.americana.sp.gov.br/mapa."
+      },
+      {
+        "url": "https://nfse.americana.sp.gov.br/iptu/certCadastral.aspx",
+        "operator": "Município de Americana electronic Prefeitura service",
+        "observation": "Public cadastral-certificate/tax interface. It is not treated as a parcel geometry service and no tax, owner, address, or account fields were requested or retained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.americana.sp.gov.br/americana-index.php?a=secretaria_15_unidade",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 37851,
+        "assessment": "Direct first-party response; supports municipal custody descriptions only."
+      },
+      {
+        "url": "https://www.americana.sp.gov.br/americana-index.php?a=servicos",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 147909,
+        "assessment": "Direct first-party response; supports the Mapas Municipais and Consulta de Imóveis links only."
+      },
+      {
+        "url": "https://planejamento.americana.sp.gov.br/mapa",
+        "method": "anonymous read-only GET; 15-second timeout; standard TLS; no credentials or property selectors",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": 0,
+        "assessment": "Connection timed out. This is a transport/UI limitation and does not evidence citywide parcel absence."
+      },
+      {
+        "url": "https://nfse.americana.sp.gov.br/iptu/certCadastral.aspx",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytesRead": 53994,
+        "assessment": "Direct first-party cadastral certificate/tax interface; no parcel geometry or safe native ID response was requested or verified."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Prefeitura Municipal de Americana - Secretaria de Planejamento",
+    "url": "https://www.americana.sp.gov.br/americana-index.php?a=secretaria_15_unidade",
+    "operator": "Prefeitura Municipal de Americana",
+    "serviceType": "Official local municipal cadastral/geoprocessing custody identified; public parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Americana municipal custody is evidenced through the official Secretaria de Planejamento units for Cadastro Técnico Municipal and Geoprocessamento, with official links to municipal maps and property/cadastral services.",
+    "verifiedOpenScope": "No anonymous safe full-parcel geometry, schema, native ID, or CRS-backed response was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official planning map timed out on an anonymous bounded GET; the accessible official pages exposed custody/service links but no safe public parcel geometry or schema.",
+  "remainingUncertainty": "A local municipal cadastral/geoprocessing custodian is evidenced. Whether the linked map has a currently public parcel layer, its service protocol, schema, CRS, native identity, and coverage at the unchanged WUP point remain unverified.",
+  "nextStep": "Revisit only through the official map application's current public JavaScript/configuration or a documented public service route; request IDs and geometry only, with no owner, address, tax, account, or titleholder fields.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7066,
+  "cityId": "wup2025:7066",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [-22.7403656033961, -47.3575438232552],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 settlement point (latitude, longitude); not a municipal boundary or parcel-coverage claim.",
+  "registryBasis": "Official Americana municipal pages identify the Unidade de Cadastro Técnico Municipal and Unidade de Geoprocessamento under the Secretaria de Planejamento, and the services catalogue links municipal maps and property/cadastral services. No public parcel geometry was verified.",
+  "registryEvidenceUrls": [
+    "https://www.americana.sp.gov.br/americana-index.php?a=secretaria_15_unidade",
+    "https://www.americana.sp.gov.br/americana-index.php?a=servicos",
+    "https://planejamento.americana.sp.gov.br/mapa",
+    "https://nfse.americana.sp.gov.br/iptu/certCadastral.aspx"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-geometry response was verified; the official planning map request timed out and the accessible cadastral service was tax/certificate oriented."
+  },
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

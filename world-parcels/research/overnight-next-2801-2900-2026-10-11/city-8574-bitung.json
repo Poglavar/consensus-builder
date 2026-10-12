@@ -1,0 +1,69 @@
+{
+  "cityCode": 8574,
+  "queueRank": 2838,
+  "name": "Bitung",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [1.44559473513715, 125.160915303709],
+  "population2025": 209567,
+  "population2025k": 209.567,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bitung Indonesia official cadastral parcel map API ATR BPN",
+        "result": "First-party discovery identified BHUMI ATR/BPN, ATLAS, and the official local Kantor Pertanahan Kota Bitung hostname. BHUMI documentation describes public map access and land-parcel layers, but no indexed Bitung parcel-vector API or safe anonymous feature response was found.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/", "https://kot-bitung.atrbpn.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Bitung peta bidang tanah resmi ATR BPN",
+        "result": "Pencarian resmi berbahasa Indonesia menemukan BHUMI/ATLAS ATR/BPN dan situs resmi Kantor Pertanahan Kota Bitung. Dokumentasi BHUMI menjelaskan layer bidang tanah dan pencarian dengan NIB/HAK/NIBEL, tetapi tidak ditemukan endpoint anonim yang mengembalikan geometri bidang tanah Bitung.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "https://kot-bitung.atrbpn.go.id/"]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "nationalService": "BHUMI ATR/BPN and ATLAS are official national geospatial/map surfaces. BHUMI documentation states that the interactive map is integrated with ATLAS and includes land-parcel layers, but does not establish Bitung coverage or anonymous vector access.",
+    "localCustodian": "The official https://kot-bitung.atrbpn.go.id/ hostname returned the current ATR/BPN application shell and is identified as Kantor Pertanahan Kota Bitung in official ATR/BPN material. It is local custodian evidence, not parcel-geometry evidence.",
+    "registryEvidence": "Local official Kantor Pertanahan Kota Bitung custodian evidence was found; no public parcel registry/API response was qualified. registryFound is true for the evidenced local custodian only."
+  },
+  "requestOutcomes": "TLS-verified bounded GET requests reached BHUMI, BHUMI help pages, ATLAS, and the official local Bitung ATR/BPN hostname. Current BHUMI HTML exposed the konsolbhumi iframe; current konsolbhumi HTML and JavaScript bundles were retrieved and searched for parcel/bidang, WMS/WFS, GeoJSON, identify, API, layer, and geoserver routes. No usable anonymous Bitung parcel request, public schema/CRS, or safe ID-plus-geometry response was identified. No login, credential, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    {"method":"GET","url":"https://bhumi.atrbpn.go.id/","httpStatus":200,"outcome":"Official BHUMI landing page loaded; current Next.js HTML exposed the map iframe and asset URLs but no parcel feature endpoint."},
+    {"method":"GET","url":"https://bhumi.atrbpn.go.id/bantuan/peta","httpStatus":200,"outcome":"Official Indonesian map-help page loaded. It documents the BHUMI map and ATLAS integration, but no Bitung-specific feature response was obtained."},
+    {"method":"GET","url":"https://bhumi.atrbpn.go.id/bantuan/unsur_peta","httpStatus":200,"outcome":"Official help page states that map elements include bidang tanah and that search can use NIB/HAK/NIBEL; it does not publish a public parcel API or safe schema."},
+    {"method":"GET","url":"https://bhumi.atrbpn.go.id/bantuan/katalog_data","httpStatus":200,"outcome":"Official catalog help page documents dataset categories and external WMS/GeoJSON upload, and identifies ATLAS as the geospatial distribution platform; no anonymous Bitung parcel service was exposed."},
+    {"method":"GET","url":"https://atlas.atrbpn.go.id/","httpStatus":200,"outcome":"Official ATLAS portal loaded and exposed general dataset search content; no Bitung cadastral parcel layer or anonymous feature endpoint was verified."},
+    {"method":"GET","url":"https://kot-bitung.atrbpn.go.id/","httpStatus":200,"outcome":"Official local Kantor Pertanahan Kota Bitung hostname returned the current ATR/BPN application shell. Its HTML contained no public parcel endpoint or local feature configuration in the bounded inspection."},
+    {"method":"GET","url":"https://bhumi.atrbpn.go.id/konsolbhumi.html","httpStatus":200,"outcome":"Map wrapper loaded and pointed to https://konsolbhumi.atrbpn.go.id; no parcel data was returned."},
+    {"method":"GET","url":"https://konsolbhumi.atrbpn.go.id/ and current JavaScript bundles","httpStatus":200,"outcome":"Current application shell and bundles were retrieved and searched for safe parcel routes. No usable public parcel endpoint, schema, CRS, or bounded anonymous feature response was found."},
+    {"method":"GET","url":"https://bitung.atrbpn.go.id/ and https://kantahkotabitung.atrbpn.go.id/","httpStatus":0,"outcome":"DNS resolution failed for these guessed hostnames; not treated as evidence of registry or parcel absence."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "BHUMI current landing HTML, konsolbhumi wrapper, local Bitung ATR/BPN shell, and current konsolbhumi JavaScript bundles were inspected.",
+    "parcelApi": null,
+    "geometryTransport": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {"requestScope":"Official portal/help HTML, current JS/configuration inspection, and local custodian shell inspection","featureCount":null,"geometryFeatureCount":0,"result":"No safe parcel ID-plus-unchanged-geometry response qualified; no exact-point hit or miss was inferred."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed","full parcel polygon geometry","geometry CRS / coordinate reference metadata","source layer and public service metadata"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","personal data","tax/account","certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":null,"exactWupPointTest":"No usable public Bitung parcel-vector response; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope":"Official national ATR/BPN BHUMI/ATLAS portals and the official local Kantor Pertanahan Kota Bitung hostname","verifiedOpenScope":"Official portal reachability, map documentation, current viewer shell, and local custodian hostname only; no anonymous Bitung parcel-vector coverage verified","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "runtimeReadiness":"held",
+  "serialReviewerQualification":"not qualified; independent serial review required",
+  "scopeLimits":["Exact WUP point [1.44559473513715, 125.160915303709] was preserved in latitude/longitude order and not shifted.","A zero exact-point hit, map extent miss, unavailable UI, DNS failure, or missing endpoint was not treated as citywide cadastral absence.","No safe native parcel identifier plus full unchanged polygon was obtained; no GeoJSON sample is retained.","No citywide coverage, public parcel schema, service CRS, stable identity semantics, or update cadence was verified.","This packet is research evidence only and is not source integration or runtime admission."],
+  "uncertainty":"Official national map infrastructure and a local Bitung land-office custodian are evidenced. Anonymous Bitung parcel feature access, coverage completeness, schema, CRS, native identity semantics, licensing, and update cadence remain unverified. Runtime readiness remains held."
+}

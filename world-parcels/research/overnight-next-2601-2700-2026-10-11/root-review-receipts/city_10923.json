@@ -1,0 +1,19 @@
+{
+  "taskId": "city:10923",
+  "decision": "held",
+  "evidenceFiles": [
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-10923-sahebganj.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/sahebganj-service-review.json",
+    "tmp/valhalla-parcel-research/10923/bhunaksha-index.html",
+    "tmp/valhalla-parcel-research/10923/muzaffarpur-level2.html",
+    "tmp/valhalla-parcel-research/10923/plot-at-point.json",
+    "tmp/valhalla-parcel-research/10923/extent2.json"
+  ],
+  "reason": "WUP 2025 source, immutable queue and packet agree on code 10923, rank 2662, India, point [26.2485599267954,84.9467454606709] and 221858 persons. English and Hindi executed searches are recorded. First-party BhuNaksha caches show Muzaffarpur district/Sahebganj circle, EPSG:32645 map extent, and bounded point responses with opaque plot IDs and kide 792; registryFound true is grounded. The point responses contain no parcel polygon, and overlapping map candidates do not prove unique containment or citywide coverage. No full polygon is retained. Fresh exact-ID polygon reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed Details verification are absent. Keep held without treating the 204 candidate as absence or admitting a runtime adapter.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T17:16:39Z"
+}

@@ -1,0 +1,29 @@
+{
+  "taskId": "city:6005",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-6005-nagaur.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/nagaur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:34:13Z",
+  "reason": "Immutable WUP identity/rank/point/population and recorded English/Hindi searches match the archive and paired packet. Official Rajasthan Apna Khata links BhuNaksha and the official Rajdharaa page shows Khasra search, supporting state record custody. The BhuNaksha timeout and unavailable routes yielded no bounded Nagaur geometry, native ID or CRS; this is unresolved access, not citywide absence. No adapter qualification or headed Details check is evidenced.",
+  "registryFound": true,
+  "discoveryNativeIdsObserved": false,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://apnakhata.rajasthan.gov.in/",
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/"
+  ],
+  "bilingualExecutedSearchesRecorded": true,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

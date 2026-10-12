@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7548",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7548-nazirhat.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/nazirhat-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T15:49:51Z",
+  "reviewNotes": "WUP 2025 source archive, ranked roster, queue and packet agree on Nazirhat code 7548, rank 1809, Bangladesh, exact point and 317240 persons. English and Bangla searches are recorded. The first-party DLRS survey/map viewer supports record custody. The inspected Chattogram BDS route returned only Anwara and Banshkhali and the packet retains no Nazirhat native-ID polygon. That route limitation does not establish cadastral absence in Nazirhat.",
+  "admissionGate": "Held: no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification. Registry, catalog, city configuration and generated reports were not changed."
+}

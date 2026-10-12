@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "f5ab634c7a1bb74d7343f93d82a1453301c18d9c4a100f2920c07fa3313c01ff",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32634",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 10,
+  "validFeatureCount": 10,
+  "perFeature": [
+    {
+      "id": "046301_1.0004.274/4",
+      "geometrySha256": "40154f75675764cb98ea9bbcbe04dd74516516376dc81fb60b032ae367ea086a",
+      "boundsMetric": {
+        "minX": 340467.4176421728,
+        "minY": 5877858.20898364,
+        "maxX": 340489.2978228786,
+        "maxY": 5877868.568665575,
+        "widthM": 21.880180705804378,
+        "heightM": 10.359681935049593,
+        "aspectRatio": 2.1120513972323645
+      },
+      "areaM2": 131.61270293095305,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0004.281",
+      "geometrySha256": "f2256283eb49bf09eaa33af08fd353ddfaadf6b354a3f44e8ab6f711a5b5fcd0",
+      "boundsMetric": {
+        "minX": 340511.39171600505,
+        "minY": 5877607.475759276,
+        "maxX": 340551.5319398516,
+        "maxY": 5877646.589626141,
+        "widthM": 40.14022384653799,
+        "heightM": 39.113866864703596,
+        "aspectRatio": 1.0262402330453444
+      },
+      "areaM2": 1066.3835122614469,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0004.282/54",
+      "geometrySha256": "0b0b67c148c168e738c7cc00b8a4915804e27ddcfc2ae1943f6b539a8f3d1f06",
+      "boundsMetric": {
+        "minX": 340469.43664205645,
+        "minY": 5877626.8847491415,
+        "maxX": 340507.5053432079,
+        "maxY": 5877663.895391737,
+        "widthM": 38.068701151467394,
+        "heightM": 37.01064259558916,
+        "aspectRatio": 1.0285879542119685
+      },
+      "areaM2": 933.0953096499848,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0004.289/5",
+      "geometrySha256": "3a15bb26c5e1776e1f988beb1b85d37fa43a80f54a4f1dc920326dcb8582a261",
+      "boundsMetric": {
+        "minX": 340370.2337579474,
+        "minY": 5877745.0747188255,
+        "maxX": 340460.3655940669,
+        "maxY": 5877762.529469422,
+        "widthM": 90.13183611951536,
+        "heightM": 17.454750596545637,
+        "aspectRatio": 5.163742421925685
+      },
+      "areaM2": 716.5894070252139,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0004.292/3",
+      "geometrySha256": "c58d3431cf0296e6cc2cad2cec5dc1d700ed730e7940dbf8895017f1b1c2b6b5",
+      "boundsMetric": {
+        "minX": 340478.05253870913,
+        "minY": 5877715.242137117,
+        "maxX": 340492.2030634303,
+        "maxY": 5877765.656649456,
+        "widthM": 14.150524721189868,
+        "heightM": 50.41451233904809,
+        "aspectRatio": 3.562730946899396
+      },
+      "areaM2": 415.02396714735494,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0004.306/2",
+      "geometrySha256": "dad5a93503eb21b9cb8adec0cff55d379868d1385ae4d71de502c1ea925d3457",
+      "boundsMetric": {
+        "minX": 340326.3857512685,
+        "minY": 5877597.928356544,
+        "maxX": 340366.4913211855,
+        "maxY": 5877681.538754185,
+        "widthM": 40.10556991701014,
+        "heightM": 83.6103976406157,
+        "aspectRatio": 2.084757748453131
+      },
+      "areaM2": 2188.4526464897517,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0004.334",
+      "geometrySha256": "644293b1c70db1d43de8e09ab5ddd5cb2b8b9bbc1e7243a7217235ef6b10f8ce",
+      "boundsMetric": {
+        "minX": 340400.1880961292,
+        "minY": 5877616.135993087,
+        "maxX": 340503.08056970907,
+        "maxY": 5877710.493827019,
+        "widthM": 102.89247357985005,
+        "heightM": 94.35783393215388,
+        "aspectRatio": 1.0904497198805223
+      },
+      "areaM2": 4349.837765427417,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0011.83/3",
+      "geometrySha256": "13d689f86aaf9478a13313d5f7b844a6229dedea4f49c5705f40d5cbf72d1a69",
+      "boundsMetric": {
+        "minX": 340395.5882268076,
+        "minY": 5877522.953763482,
+        "maxX": 340426.5312217452,
+        "maxY": 5877567.267844247,
+        "widthM": 30.94299493759172,
+        "heightM": 44.31408076453954,
+        "aspectRatio": 1.4321199629808194
+      },
+      "areaM2": 616.3131123111463,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0011.86/15",
+      "geometrySha256": "a469cfa9fd91abd38bc282773eeb565a7a8ff923be830408550bfff813ddf95f",
+      "boundsMetric": {
+        "minX": 340390.7644654448,
+        "minY": 5877348.88141928,
+        "maxX": 340551.07244915643,
+        "maxY": 5877544.165678314,
+        "widthM": 160.30798371165292,
+        "heightM": 195.2842590343207,
+        "aspectRatio": 1.2181817431225375
+      },
+      "areaM2": 26425.11453125524,
+      "invalidReasons": []
+    },
+    {
+      "id": "046301_1.0048.179",
+      "geometrySha256": "dcb4e04f0609c2324a9ac827fd7ff6d2f07d352893f6aa016613bff860f1a606",
+      "boundsMetric": {
+        "minX": 340547.85537799157,
+        "minY": 5877721.221200634,
+        "maxX": 340574.6227225653,
+        "maxY": 5877780.965508586,
+        "widthM": 26.767344573745504,
+        "heightM": 59.74430795200169,
+        "aspectRatio": 2.23198486452038
+      },
+      "areaM2": 1368.9867408489558,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 0,
+  "subthresholdPositiveIntersectionTotalM2": 0,
+  "subthresholdPositiveIntersections": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

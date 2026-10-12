@@ -1,0 +1,157 @@
+{
+  "cityCode": 7296,
+  "queueRank": 2812,
+  "name": "Fahraj",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso2": "IR",
+  "iso3": "IRN",
+  "point": [28.9472573133135, 58.8834025501694],
+  "population2025": 211342,
+  "population2025k": 211.342,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fahraj Iran official cadastral parcel map GIS land registry Kerman",
+        "result": "Search identified Iran cadastral-law material, a Kerman notaries directory, general Fahraj map references, and local reporting about Fahraj registration/cadastre work. No first-party anonymous Fahraj parcel-vector endpoint, viewer, or safe parcel schema was found.",
+        "actualResultUrls": [
+          "https://www.kermannotary.ir/",
+          "https://nezamat.ir/post-41513/",
+          "https://mapcarta.com/12615602"
+        ]
+      },
+      {
+        "language": "Persian (local/native)",
+        "query": "فهرج کرمان نقشه کاداستر سازمان ثبت اسناد املاک اداره ثبت رسمی",
+        "result": "Persian discovery found references to the national cadastral authority, a Kerman provincial notaries site, and local reporting that Fahraj registration officials were working on cadastral mapping and title issuance. It did not expose a public anonymous parcel geometry service or native parcel-ID schema.",
+        "actualResultUrls": [
+          "https://www.kermannotary.ir/",
+          "https://t.me/s/dvtfahraj1/53037",
+          "https://nezamat.ir/%D9%85%D8%B5%D9%88%D8%A8%D8%A7%D8%AA-%D8%AC%D9%84%D8%B3%D9%87-%D9%87%D8%B4%D8%AA%D8%A7%D8%AF-%DA%A9%D8%A7%D8%B1%DA%AF%D8%B1%D9%88%D9%87-%D8%AA%D8%B9%D8%A7%D9%85%D9%84-%D9%BE%D8%B0%DB%8C%D8%B1%DB%8C/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "nationalCustodian": "Iran's cadastral and property-registration mandate is assigned to the Organization for Registration of Deeds and Properties in the cadastral law material; this is national agency evidence, not proof of an open Fahraj parcel service.",
+    "localCustodian": "Local Persian reporting references the Fahraj County Registry Office and Kerman provincial registration officials in cadastral/title work, but no directly accessible first-party local registry map/API was evidenced.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": []
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.kermannotary.ir/",
+      "httpStatus": 200,
+      "outcome": "Kerman provincial notaries association site loaded and linked to the provincial registration authority; it exposed directory/procedure material, not parcel vectors, schema, CRS, or a Fahraj cadastral viewer."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://t.me/s/dvtfahraj1/53037",
+      "httpStatus": 200,
+      "outcome": "Persian local reporting described Fahraj cadastral mapping and title-issuance activity and mentioned the local registry office; it is not a public parcel API and was not treated as first-party service integration evidence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://nezamat.ir/post-41513/",
+      "httpStatus": 200,
+      "outcome": "Persian cadastral regulation material describes the national cadastral information system and restrictions on property-map disclosure; it exposes no Fahraj parcel endpoint or safe sample."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://map.ir/",
+      "httpStatus": 200,
+      "outcome": "Public Map.ir homepage loaded. Its current HTML/configuration exposed general raster and vector map routes only; inspected style JSON and JavaScript showed no cadastral parcel layer, parcel schema, or safe ID-plus-geometry query route."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.ir/vector/styles/main/mapir-xyz-style.json",
+      "httpStatus": 200,
+      "outcome": "Public vector style JSON retrieved and inspected. It points to the general Map.ir vector source, not a cadastral parcel service; no parcel layer was identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.ir/dist/js/smap.js?v=20200314",
+      "httpStatus": 200,
+      "outcome": "Public viewer JavaScript retrieved and inspected for parcel/cadastre routes and field names; no safe parcel-vector endpoint was identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://ssaa.ir/",
+      "httpStatus": null,
+      "outcome": "Anonymous HTTPS connection timed out after 8 seconds; no content, configuration, schema, or absence inference was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.ssaa.ir/",
+      "httpStatus": null,
+      "outcome": "Host could not be resolved from the research environment; no content or absence inference was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://kateb.ir/",
+      "httpStatus": null,
+      "outcome": "Anonymous HTTPS connection timed out after 8 seconds; no login, credential, private token, CAPTCHA/Cloudflare bypass, or TLS exception was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://iransmartmap.ir/",
+      "httpStatus": null,
+      "outcome": "Host could not be resolved from the research environment; no content or absence inference was made."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Map.ir public viewer HTML, vector style JSON, and JavaScript were inspected; no cadastral viewer/configuration was exposed.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "The exact WUP point [28.9472573133135, 58.8834025501694] was preserved in latitude/longitude order. No coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No public Fahraj parcel-vector route or safe native-ID-plus-geometry response was identified."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Iran national cadastral mandate, Kerman registration context, and Map.ir general public mapping service.",
+    "verifiedOpenScope": "National cadastral mandate and local registration activity were evidenced, but no anonymous Fahraj parcel geometry coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, map extent miss, timeout, DNS failure, or absence of a parcel route in public search results was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, local service CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Fahraj local cadastral/title activity is supported by Persian local reporting and Iran has a national cadastral mandate, but anonymous access to the national portals was unavailable and Map.ir exposed only general mapping. No safe public parcel-vector service, schema, CRS, native identity, or geometry sample was qualified."
+}

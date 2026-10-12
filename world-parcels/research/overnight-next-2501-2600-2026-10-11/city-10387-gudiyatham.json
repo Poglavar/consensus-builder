@@ -1,0 +1,48 @@
+{
+  "cityCode": 10387,
+  "queueRank": 2558,
+  "name": "Gudiyatham",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [12.9464886593116, 78.868948251972],
+  "population2025": 229582,
+  "population2025k": 229.582,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gudiyatham Tamil Nadu official cadastral parcel map land records GIS",
+        "result": "Found first-party Tamil Nadu land-record e-Services, TamilNilam Geo-Info, TNGIS, Vellore/Gudiyatham municipal and Gudiyatham planning references. Official material confirms Patta/FMB/Chitta/TSLR and cadastral-map-related services, but discovery did not expose a safe anonymous parcel feature endpoint.",
+        "actualResultUrls": [
+          "https://eservices.tn.gov.in/",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://www.tnurbantree.tn.gov.in/gudiyatham/",
+          "https://www.tnurbantree.tn.gov.in/gudiyatham/wp-content/uploads/sites/114/2020/09/Gudiyatham-Master-Plan.pdf"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "குடியாத்தம் நில அளவை வரைபடம் அதிகாரப்பூர்வம்",
+        "result": "Found official Tamil Nadu land-record and TNGIS references, plus the official Gudiyatham municipal Tamil-facing portal. The results support state Survey and Land Records custody and public land-record procedures, but no safe anonymous parcel polygon response was exposed.",
+        "actualResultUrls": [
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://www.tnurbantree.tn.gov.in/gudiyatham/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Tamil Nadu's official land-record service and NIC Tamil Nadu announcement identify the Department of Survey and Settlement / Revenue and Disaster Management as custodians of digitized land records, including FMB/maps and Chitta. The official Gudiyatham Municipality portal confirms the local municipal jurisdiction and its land-services context. This evidences a state/local registry custodian, not an admitted parcel API.",
+  "serviceReview": "gudiyatham-service-review.json",
+  "geometry": null,
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": "No safe native parcel identity, parcel polygon, public service schema, or CRS response was obtained. The official e-Services host timed out on an anonymous TLS-verified GET with browser-like headers; TNGIS was a public page with a login/CAPTCHA shell; TamilNilam was identified as a public land-record/map application but no anonymous geometry endpoint was qualified. These outcomes do not establish citywide absence or lack of cadastral coverage."
+}

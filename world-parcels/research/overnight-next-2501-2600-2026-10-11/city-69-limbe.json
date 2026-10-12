@@ -1,0 +1,60 @@
+{
+  "cityCode": 69,
+  "queueRank": 2519,
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "name": "Limbe",
+  "point": [4.01826263171934, 9.19651210382366],
+  "population2025": 233212,
+  "population2025k": 233.212,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Limbe Cameroon official cadastral map parcel GIS land registry cadastre",
+        "result": "Official Cameroon MINDCAF and MINHDU pages, plus an official procurement notice, were found. The results evidence the national land/cadastre custodian and a Fako (Limbe) land-conservation office, but no public Limbe cadastral viewer, parcel API, or geometry download.",
+        "actualResultUrls": [
+          "https://www.mindcaf.gov.cm/fr/",
+          "https://www.minhdu.gov.cm/contact/",
+          "https://armp.cm/details?id_publication=55205&type_publication=AO"
+        ]
+      },
+      {
+        "language": "French (Cameroon official-language search)",
+        "query": "Limbe Cameroun cadastre carte parcellaire service foncier officiel",
+        "result": "Official French-language results identify the MINDCAF departmental land/cadastre/land-affairs structure for Fako (Limbé), the municipal Limbe information site, and MINDCAF cadastral procedure documentation. No anonymous public parcel map/API or safe parcel geometry was exposed.",
+        "actualResultUrls": [
+          "https://mindcaf.gov.cm/fr/docs/",
+          "https://limbe.cm/index-fr.php",
+          "https://limbe.cm/organisation-structurelle-de-la-municipalite-de-limbe.html",
+          "https://www.mindcaf.gov.cm/fr/publications/294/"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "name": "Cameroon MINDCAF / Fako departmental land, cadastre and land-affairs administration",
+    "operator": "Ministère des Domaines, du Cadastre et des Affaires Foncières (MINDCAF); departmental Fako (Limbe) services and land conservation office",
+    "viewerUrl": null,
+    "scope": "Official national institutional/procedure documentation and Fako/Limbe-specific administrative evidence; no open parcel geometry service verified.",
+    "crs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_local_custodian_evidenced_no_verified_open_limbe_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Cameroon MINDCAF national remit with Fako departmental/Limbe office evidence.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["geometry", "CRS", "stable native parcel identity", "source scope/provenance"],
+  "remainingUncertainty": "No public Limbe parcel geometry, safe native parcel ID, service schema, CRS response, or cadastral extent was verified. The exact WUP point was preserved unchanged; no exact-point or map-extent inference was made. Administrative custodian evidence does not establish open data availability or citywide coverage.",
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No GeoJSON sample was retained because no safe native parcel geometry was verified."
+}

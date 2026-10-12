@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7952",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7952-kurukshetra.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/kurukshetra-service-review.json",
+    "tmp/valhalla-parcel-research/7952/hi.html",
+    "tmp/valhalla-parcel-research/7952/wms-capabilities.xml"
+  ],
+  "checkedAt": "2026-10-10T11:11:10Z",
+  "reason": "Kurukshetra immutable WUP identity and English/Hindi searches match the cohort. Official Hindi district material supports local land-record/cadastral-map custody; no safe anonymous native parcel ID plus full-polygon response is evidenced. The OTP wall and 403 WMS response are access limits, not citywide absence; adapter qualification is missing.",
+  "runtimeAdmission": false
+}

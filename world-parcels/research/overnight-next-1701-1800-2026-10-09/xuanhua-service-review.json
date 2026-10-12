@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-8557-xuanhua.json",
+  "schemaVersion": "1.0",
+  "cityCode": 8557,
+  "queueRank": 1718,
+  "city": "Xuanhua",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Official Xuanhua and linked Hebei government-service landing pages were inspected, and public notices identify the local natural-resources custodian. No anonymous public parcel ID plus full geometry response, schema, CRS, or current viewer API was verified; no GeoJSON sample is retained.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text and actual result URLs are recorded in city-8557-xuanhua.json.",
+  "requestOutcomes": "HTTPS to the local government host failed certificate hostname validation and was not bypassed. Bounded HTTP GETs to the local government and linked service landing pages returned HTTP 200, but HTML inspection found no parcel layer or public feature endpoint.",
+  "attemptedRoutes": [
+    {"route": "official Xuanhua district portal HTTPS", "url": "https://www.zjkxuanhua.gov.cn/", "outcome": "TLS hostname validation failure; not bypassed"},
+    {"route": "official Xuanhua district portal HTTP", "url": "http://www.zjkxuanhua.gov.cn/", "outcome": "HTTP 200 landing page; no cadastral viewer/API discovered"},
+    {"route": "linked Hebei government-service portal", "url": "http://zjkxh.hbzwfw.gov.cn/", "outcome": "HTTP 200 landing page; no cadastral layer/schema/CRS or anonymous parcel response"},
+    {"route": "public local land-use notice", "url": "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260821/5679107.html", "outcome": "readable notice naming the Xuanhua natural-resources branch; no parcel feature service"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [40.6060170279236, 115.050639261261] was preserved; no exact-point hit/miss inference was made.",
+    "No city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema, or CRS was retrieved or retained.",
+    "Local custodial notices and service landing pages are not proof of an open vector parcel API.",
+    "Certificate failure, map extent miss, inaccessible viewer, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public geometry query reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Xuanhua district government and natural-resources/property-registration administrative context.", "verifiedOpenScope": "Government landing pages and administrative notice only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current viewer/API route, access controls, layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness.",
+  "retainedSample": null
+}

@@ -1,0 +1,135 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local custody and publicly retrievable safe vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "cityCode": 11370,
+  "queueRank": 1824,
+  "cityId": "wup:11370",
+  "name": "Nankang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [25.6652185600895, 114.754008361018],
+  "point": [25.6652185600895, 114.754008361018],
+  "population2025": 314564,
+  "population2025k": 314.564,
+  "populationUnit": "persons",
+  "year": 2025,
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nankang Ganzhou Jiangxi official cadastral map parcel land registration GIS natural resources",
+        "result": "First-party discovery found an official Nankang District government document stating that cadastral maps were available for free public query through an official WeChat channel, and official Ganzhou Natural Resources Bureau pages identifying the Nankang branch. No anonymous public parcel-vector endpoint or safe ID+full-polygon response was verified.",
+        "actualResultUrls": [
+          "https://www.nkjx.gov.cn/nkqrmzf/c125561/202210/081d7ea38f68426d899cba08a0eae49d.shtml",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/4737404b057649ca9fc31be423d82f98.shtml",
+          "https://bnr.ganzhou.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "南康区 官方 不动产登记 地籍图 地图 GIS 赣州市 自然资源局",
+        "result": "Official Chinese-language results identified the Nankang District Natural Resources branch as the local administrative custodian and an official Nankang policy document describing public cadastral-map query through WeChat. Search results did not expose a separate anonymous parcel API, service schema, CRS, or safe parcel geometry.",
+        "actualResultUrls": [
+          "https://www.nkjx.gov.cn/nkqrmzf/c125561/202210/081d7ea38f68426d899cba08a0eae49d.shtml",
+          "https://www.nkjx.gov.cn/",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/4737404b057649ca9fc31be423d82f98.shtml"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.nkjx.gov.cn/nkqrmzf/c125561/202210/081d7ea38f68426d899cba08a0eae49d.shtml",
+      "observation": "Official Nankang District government policy material says cadastral maps were publicly queryable for free through WeChat and discusses an associated one-map land-use-information system. It does not publish a safe anonymous parcel feature response, native ID field, or geometry service URL."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/4737404b057649ca9fc31be423d82f98.shtml",
+      "observation": "Official Ganzhou Natural Resources Bureau page identifies the comprehensive service center of the Nankang branch, evidencing a local natural-resources/real-estate-registration custodian."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/",
+      "observation": "Official Ganzhou Natural Resources Bureau portal exposes land-resource and real-estate-registration notices, including Nankang-related material; no anonymous cadastral vector layer was found in the bounded review."
+    },
+    {
+      "url": "https://www.nkjx.gov.cn/nkqxxgk/nk934/202509/c4e6ea43730c400e9e4a0e84ddaaa44372/files/5c1ae573f69046a6b92cfaaa891a7aae.pdf",
+      "observation": "Official Nankang public-disclosure directory identifies Ganzhou Natural Resources Bureau Nankang Branch as the public body for real-estate registration information and related land-use disclosures; it is custodian evidence, not parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.nkjx.gov.cn/nkqrmzf/c125561/202210/081d7ea38f68426d899cba08a0eae49d.shtml",
+      "method": "GET; anonymous; TLS verification enabled; max-time 25s",
+      "httpStatus": 200,
+      "outcome": "Official indexed page was readable through first-party discovery and reported the cadastral-map/WeChat service statement. Direct curl returned a short redirect/anti-automation response, so no page JavaScript or API configuration was retained."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled; max-time 25s",
+      "httpStatus": 200,
+      "outcome": "Official portal HTML retrieved. Bounded inspection found no exposed parcel layer, current viewer configuration, safe feature endpoint, schema, or CRS."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/4737404b057649ca9fc31be423d82f98.shtml",
+      "method": "GET; anonymous; TLS verification enabled; max-time 25s",
+      "httpStatus": "not independently fetched; first-party search result inspected",
+      "outcome": "Search-indexed official page identified the Nankang branch service center. No parcel request was issued because no public geometry route was exposed."
+    },
+    {
+      "url": "https://www.nkjx.gov.cn/nkqxxgk/nk934/202509/c4e6ea43730c400e9e4a0e84ddaaa44372/files/5c1ae573f69046a6b92cfaaa891a7aae.pdf",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "not completed",
+      "outcome": "The official PDF was found in first-party search results, but no parcel payload or geometry was requested or retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Nankang District and Ganzhou Natural Resources Bureau material identifies the local Nankang branch as the relevant natural-resources/real-estate-registration custodian, and official Nankang policy material describes cadastral-map public-query service. This evidences local custody/service context only; it does not establish an open cadastral API or runtime admission.",
+  "registryEvidenceUrls": [
+    "https://www.nkjx.gov.cn/nkqxxgk/nk934/202509/c4e6ea43730c400e9e4a0e84ddaaa44372/files/5c1ae573f69046a6b92cfaaa891a7aae.pdf",
+    "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/4737404b057649ca9fc31be423d82f98.shtml"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": null,
+    "kind": "No verified anonymous cadastral parcel-vector source",
+    "publisher": "Ganzhou Natural Resources Bureau Nankang Branch; public cadastral-map service context evidenced, endpoint unverified",
+    "scope": "Local custodian and public-service evidence only; no safe anonymous parcel ID, schema, CRS, or polygon response verified.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not executed against a returned parcel feature layer. Exact WUP point [25.6652185600895, 114.754008361018] remains unchanged; no absence inference is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Nankang District and Ganzhou natural-resources/real-estate-registration sources and the described public cadastral-map service.",
+    "verifiedOpenScope": "Local custodian and service-context evidence only; no anonymous safe full-polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe public parcel/source ID if independently confirmed", "full parcel polygon geometry", "geometry CRS", "non-sensitive public layer/schema metadata"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "status": "complete",
+  "scopeLimits": [
+    "Exact WUP point [25.6652185600895, 114.754008361018] was preserved in latitude/longitude order and not shifted.",
+    "No owner, address, titleholder, contact, deed, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, parcel identity, CRS, or GeoJSON sample was retained.",
+    "A redirect, anti-automation response, unavailable UI, or missing exact-point response is not evidence of citywide cadastral absence.",
+    "Packet completion records executed attempts only; source integration, admission, and runtime qualification remain separate serial-review decisions."
+  ],
+  "uncertainty": "The WeChat cadastral-map service's current public entry point, authentication or anti-automation behavior, parcel identity semantics, geometry delivery mechanism, CRS, city-boundary relationship, and citywide completeness remain unresolved."
+}

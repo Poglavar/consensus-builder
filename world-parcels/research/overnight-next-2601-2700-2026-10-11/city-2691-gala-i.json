@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2691,
+  "wupCityCode": 2691,
+  "queueRank": 2620,
+  "cityId": "wup2025:2691",
+  "name": "Galați",
+  "country": "Romania",
+  "countryCode": "RO",
+  "iso2": "RO",
+  "iso3": "ROU",
+  "point": [45.4366810761243, 28.0227927514628],
+  "centerLatLon": [45.4366810761243, 28.0227927514628],
+  "population2025": 225126,
+  "population2025k": 225.126,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "ANCPI Geoportal cadastral parcel service and OCPI Galați / ANCPI cadastral-program records",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Galati Romania cadastral map parcel Geoportal official cadastru ANCPI",
+        "result": "Found the official ANCPI property viewer, the ANCPI CP/CP_View ArcGIS REST service catalog, and official Galați cadastral-program records. The service metadata advertises a Cadastral Parcel layer with JSON/GeoJSON query support and CRS EPSG:4258.",
+        "actualResultUrls": ["https://geoportal.ancpi.ro/imobile.html", "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer", "https://www.ancpi.ro/pnccf_docs2/Gala%C8%9Bi/Tabel%20sectoare%20-%20GL_03.02.2025.pdf"]
+      },
+      {
+        "language": "Romanian",
+        "query": "Galati Romania harta cadastrala parcele geoportal oficial ANCPI OCPI Galati",
+        "result": "Found the official ANCPI property viewer, OCPI Galați cadastral-office/program material, and the official sector-status PDF identifying Galați UAT cadastral sectors and their work status. No public city-specific downloadable parcel dataset was verified.",
+        "actualResultUrls": ["https://geoportal.ancpi.ro/imobile.html", "https://www.ancpi.ro/ocpi/gl/wp-content/pnccf/tabelsectoare30.05.2025.pdf", "https://www.ancpi.ro/pnccf_docs2/Gala%C8%9Bi/Tabel%20sectoare%20-%20GL_03.02.2025.pdf"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {"url":"https://geoportal.ancpi.ro/imobile.html","operator":"ANCPI Geoportal / national cadastral agency","scope":"Romania; indexed property/imobile viewer","observation":"Official viewer says it displays limits of registered properties/buildings and supports search by address, county/UAT and cadastral/land-book references; it is not advertised as an open bulk-download API."},
+    {"url":"https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer","operator":"ANCPI Geoportal INSPIRE view","scope":"Romania cadastral parcel service","observation":"Indexed ArcGIS REST metadata exposes Cadastral Parcel layer 1, query operations, JSON/GeoJSON formats, max record count 1000, and spatial reference EPSG:4258."},
+    {"url":"https://www.ancpi.ro/ocpi/gl/wp-content/pnccf/tabelsectoare30.05.2025.pdf","operator":"OCPI Galați / ANCPI","scope":"Galați UAT and county cadastral-program status","observation":"Official OCPI material identifies Galați UAT, lists completed and active cadastral sectors, and identifies OCPI Galați as the local cadastral/publicity custodian."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url":"https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=pjson","method":"GET","status":"DNS resolution failure from shell; indexed metadata available via search result","summary":"Could not retrieve live layer JSON in this environment; no schema fields or geometry response was locally verified."},
+    {"url":"https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query?f=geojson&where=1%3D1&geometry=28.0227927514628%2C45.4366810761243&geometryType=esriGeometryPoint&inSR=4258&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true","method":"GET","status":"DNS resolution failure in shell; web fetch returned 502/not accessible","summary":"Bounded exact-point ID+geometry request was attempted with the preserved WUP point and EPSG:4258, but no response was obtained. This is not evidence of parcel absence."},
+    {"url":"https://geoportal.ancpi.ro/imobile.html","method":"GET","status":"Official page found via indexed search; live direct fetch not completed","summary":"Viewer scope and search modes were recorded; no login, credentials, private token, unsafe field, CAPTCHA/Cloudflare bypass, or TLS exception used."},
+    {"url":"https://www.ancpi.ro/ocpi/gl/wp-content/pnccf/tabelsectoare30.05.2025.pdf","method":"GET","status":"Official indexed PDF found","summary":"Local OCPI Galați custodian and Galați UAT cadastral-sector status evidenced; this is program/status evidence, not a parcel geometry feed."}
+  ],
+  "coverageAssessment": {"claimedScope":"ANCPI national cadastral parcel service, with local OCPI Galați program evidence.","verifiedOpenScope":"Service catalog metadata and official local cadastral-program records; no live parcel feature response.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false,"registryExistenceScope":"Local OCPI Galați cadastral/publicity custodian and Galați UAT cadastral work are evidenced; no local bulk parcel endpoint was verified."},
+  "qualityAssessment": {"geometryQuality":"No geometry retained; exact-point request unavailable.","crs":"Indexed service metadata states EPSG:4258 / ETRS89 geographic coordinates; live layer schema not retrieved.","identityReadiness":"Not assessed because no feature response was obtained.","safeFieldAllowlist":["stable native parcel identity","geometry","source layer/year","source CRS if declared","retrieval timestamp"],"attributesRequested":"Only bounded ID+geometry was requested; no owner, address, titleholder, contact, tax or account fields requested or retained."},
+  "runtimeReadiness":"held",
+  "runtimeEligible":false,
+  "blocker":"Serial review must independently qualify the live service, field schema, native identity stability, coverage, CRS/axis handling, and anonymous query behavior before runtime use.",
+  "scopeLimits":["Exact WUP point [45.4366810761243,28.0227927514628] preserved in latitude/longitude order; it was not shifted.","No exact-point hit/miss, map-extent miss, timeout, DNS failure, 502, or unusable UI is evidence of citywide absence.","No retained GeoJSON sample because no safe native parcel feature was independently obtained.","Packet completion is research evidence only and is not source integration/admission.","No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."],
+  "identityPolicy":"No GeoJSON was retained. If later obtained, retain only one stable native parcel identity in properties.id; keep native field mapping and composite-key provenance in metadata.",
+  "nextStep":"Serial reviewer should retry the public ANCPI service, inspect live layer fields and bounded anonymous geometry, then independently assess Galați coverage and identity semantics."
+}

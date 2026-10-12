@@ -1,0 +1,27 @@
+{
+  "taskId": "city:6851",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-6851-khasavyurt.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/khasavyurt-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T214953-176816b2/stdout.jsonl",
+    "tmp/valhalla-parcel-research/6851/xacavurt.html",
+    "tmp/valhalla-parcel-research/6851/ordinance.html"
+  ],
+  "checkedAt": "2026-10-11T21:55:55Z",
+  "reason": "WUP code, rank 2871, Russia, exact point, and 207485 persons match the immutable roster and queue. English and Russian searches ran. First-party municipal HTML documents cadastral procedures, supporting registryFound true; federal viewer requests timed out. No parcel response, safe native ID, CRS, or polygon was obtained. Timeouts do not prove citywide absence.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "searchProvenanceNote": "Executed English and Russian queries match the packet.",
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

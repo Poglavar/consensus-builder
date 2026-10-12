@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2848",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-2848-chon-buri.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/chon-buri-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T19:08:30Z",
+  "reason": "Official LandsMaps viewer timed out; no anonymous feature response, native ID, or bounded read was verified.",
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification."
+}

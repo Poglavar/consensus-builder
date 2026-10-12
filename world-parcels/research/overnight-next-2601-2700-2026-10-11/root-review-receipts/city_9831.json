@@ -1,0 +1,15 @@
+{
+  "taskId": "city:9831",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-9831-mandya.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/mandya-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T16:24:44.973045Z",
+  "reason": "Official Mandya land-record administration and Karnataka land-resource pages support custody, but the Bhoomi host timed out and inspected public pages yielded no cadastral parcel service. No native parcel ID or full polygon response was obtained.",
+  "sourceConfirmationUrl": "https://rcmysore.gov.in/mandya-district/",
+  "admissionGates": "Not evidenced: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification.",
+  "coverageInference": "No citywide absence inferred from timeout, HTTP error, inaccessible viewer, or absent endpoint in a bounded attempt."
+}

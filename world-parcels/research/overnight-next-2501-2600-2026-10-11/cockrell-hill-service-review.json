@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-6557-cockrell-hill.json",
+  "cityCode": 6557,
+  "queueRank": 2548,
+  "name": "Cockrell Hill",
+  "country": "United States of America",
+  "countryCode": "US",
+  "pointLatLon": [32.7239045655777, -96.8406220372146],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": "See city record requestsAndEndpointChecks. Official DCAD and City of Dallas ArcGIS metadata returned HTTP 200, and bounded anonymous ID-plus-geometry queries returned one polygon each at the preserved WUP point. The Texas Geographic Information Office bounded query returned HTTP 400 unsupported operation and was not treated as a negative source finding.",
+  "schemaAndCrs": {
+    "geometryType": "esriGeometryPolygon",
+    "geometryCrs": "EPSG:3857 for retained DCAD sample; City of Dallas service metadata reports EPSG:2276",
+    "queryOutputCrs": "EPSG:4326",
+    "nativeFieldMapping": {"DCAD.OBJECTID": "stable native parcel identity", "City of Dallas.OBJECTID": "stable native feature identity"},
+    "compositeKeyProvenance": null,
+    "rawAttributesRetained": false
+  },
+  "sampleGeoJSON": "city-6557-cockrell-hill-parcel-sample.geojson",
+  "safeFieldAllowlist": ["stable native parcel identity", "full polygon geometry", "source CRS", "geometry type", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title", "mailing information"],
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "The public DCAD TaxParcel2025 service provides a verified polygon-plus-OBJECTID response, but serial review must qualify canonical parcel semantics, coverage and adapter safety before runtime admission."
+  },
+  "scopeLimits": [
+    "DCAD is an appraisal-district parcel service, not evidence of a title/land-registry record.",
+    "One bounded exact-point query is not evidence of complete citywide coverage or absence outside the returned polygon.",
+    "The exact WUP point remains unchanged in latitude/longitude order; only request coordinates were transformed for the source CRS.",
+    "The retained GeoJSON has exactly one canonical native identity property and no raw source attribute set.",
+    "Owner, address, contact, titleholder, personal, tax/account, certificate/title and mailing fields were not requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification exception was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The public services establish a usable local/regional parcel response, but their parcel refresh, completeness and jurisdiction-boundary semantics were not independently established. The statewide Texas service was not queryable with the tested operation."
+}

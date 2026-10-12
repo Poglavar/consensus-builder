@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-6699-bilbeis.json",
+  "cityCode": 6699,
+  "queueRank": 1616,
+  "city": "Bilbeis",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "ESA first-party map and service routes were inspected after separate English and Arabic discovery. They document request-based digital mapping and surveying, but no anonymous Bilbeis parcel ID plus geometry response was verified. This is not evidence of citywide cadastral absence.",
+  "queryOutcomes": "Both discovery queries and actual result URLs are recorded in city-6699-bilbeis.json.",
+  "requestOutcomes": "ESA services, digital-map workflow, historical-map catalog and testmap GETs returned 200; current HTML/scripts exposed no public parcel feature service. Sharqia bulletin was treated as administrative context only.",
+  "attemptedRoutes": [
+    "ESA services index",
+    "ESA digital map sales/request workflow",
+    "ESA historical map catalog",
+    "ESA directorates/testmap page",
+    "Sharqia Governorate bulletin result"
+  ],
+  "scopeLimits": [
+    "No city boundary or complete Bilbeis coverage was established.",
+    "No exact-point hit/miss was used as an absence claim.",
+    "No parcel geometry or source-specific attributes were retained.",
+    "General national-agency prose and governorate statistics are not treated as proof of a local open registry adapter.",
+    "No credentials, login, CAPTCHA/Cloudflare bypass, owner/address/titleholder/tax fields, or private tokens were used."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. A future retained sample must use exactly one stable native identity and keep native field mapping/composite-key provenance in metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The national map custodian and local administrative context are evidenced, but anonymous parcel access, city scope, schema, CRS, stable native IDs and geometry remain unknown.",
+  "retainedSample": null
+}

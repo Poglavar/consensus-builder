@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5986-mahesana.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "The official Mahesana District Administration lists SLR and DILR land-record offices. Gujarat Revenue Department material provides official Record of Rights, property-card and city-survey procedure links. No safe anonymous parcel-vector schema, native identity response, CRS, or full polygon was obtained; no GeoJSON sample was retained and runtime remains held.",
+  "registryAssessment": "Mahesana local/state land-record custody is evidenced by the district SLR/DILR directory and Gujarat Revenue Department service pages. These establish registry/procedure context, not an open city-scoped parcel feature service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mahesana.nic.in/departments/",
+      "operator": "District Administration, Mahesana / Government of Gujarat",
+      "observation": "Official district page lists Superintendent Land Records cum Consolidation Officer and District Inspector Land Records."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "operator": "Revenue Department, Government of Gujarat",
+      "observation": "Official state page lists land-record/property-card/city-survey-related procedures and links the public AnyRoR and e-Milkat services."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "operator": "Revenue Department, Government of Gujarat",
+      "observation": "Official Record of Rights service entry point; bounded anonymous request timed out before a page or service schema could be inspected."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mahesana India official cadastral map land records parcel map Gujarat government",
+      "result": "Official Mahesana district SLR/DILR directory and Gujarat Revenue Department land-record/property-card procedures found; no verified public parcel-vector endpoint.",
+      "actualResultUrls": ["https://mahesana.nic.in/departments/", "https://revenuedepartment.gujarat.gov.in/iora-service", "https://anyror.gujarat.gov.in/", "https://e-milkat.gujarat.gov.in/"]
+    },
+    {
+      "language": "Gujarati",
+      "query": "મહેસાણા જમીન નકશો સત્તાવાર કેડસ્ટ્રલ રેકોર્ડ ગુજરાત",
+      "result": "Gujarati discovery confirmed the official Mahesana district and Gujarat Revenue land-record/service entry points; no machine-readable anonymous parcel polygon endpoint.",
+      "actualResultUrls": ["https://mahesana.nic.in/", "https://mahesana.nic.in/departments/", "https://revenuedepartment.gujarat.gov.in/iora-service", "https://anyror.gujarat.gov.in/"]
+    }
+  ],
+  "attempts": [
+    {
+      "source": "https://mahesana.nic.in/departments/",
+      "outcome": "Official HTTP 200 page reviewed; local SLR/DILR custody evidenced. No public parcel feature endpoint exposed.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "outcome": "Official HTTP 200 service page reviewed; land-record/property-card/city-survey procedures and service links identified. No vector schema exposed.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://anyror.gujarat.gov.in/",
+      "outcome": "Bounded anonymous GET attempted; DNS resolution timed out after 20 seconds. No login, token, TLS exception, CAPTCHA bypass, or property-specific query was attempted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "outcome": "timeout during DNS resolution after 20 seconds",
+      "safeRequest": true
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "retainedPolygonCount": 0,
+    "sampleFile": null,
+    "details": "No full parcel polygon and no verified stable cadastral native identity were obtained. Zero-hit or timeout evidence is not treated as citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Mahesana district/state land-record custody and Gujarat official land-record/property-card/city-survey procedures.",
+    "verifiedOpenScope": "Custody and service information only; parcel geometry, schema, CRS, exact WUP-point coverage and citywide completeness remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or survey identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "The official Gujarat services may expose map or geometry data through an interactive route not available in the bounded request environment.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10520",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-10520-xiangyin.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/xiangyin-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:26:11Z",
+  "identityCheck": "Ranked roster, pending queue and packet agree: rank 2900, WUP code 10520, Xiangyin, China (CHN), point [28.6825214009469, 112.883890481222], 205654 persons.",
+  "researchCheck": "Separate executed English and Chinese searches have official source URLs. The saved Xiangyin government page identifies the local real-estate registration center and describes a person-specific certificate-number inquiry. The provincial portal timed out and Tianditu returned HTTP 418. No safe native ID plus full polygon response or sample was retained.",
+  "custodyDecision": "Retain registryFound true for the evidenced Xiangyin county registration custodian; public parcel geometry and citywide coverage remain unresolved. A timeout and HTTP error are not absence.",
+  "reason": "No fresh native-ID plus full-polygon read, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held."
+}

@@ -1,0 +1,25 @@
+{
+  "taskId": "city:3508",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-3508-sumy.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/sumy-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T04:49:25Z",
+  "finding": "Sumy, Ukraine; rank 3179; 189130 persons. English and Ukrainian searches recorded. Regional StateGeoCadastre page confirms cadastral custody; national map login, legacy timeout and DNS failure do not establish absence. No native ID or polygon response; no adapter qualification.",
+  "firstPartyPageChecked": "https://sumska.land.gov.ua/info/derzhavna-reiestratsiia-ta-kadastr/",
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": [
+    "fresh native-ID reads",
+    "forced paging and complete stable manifest",
+    "13 bounded cells",
+    "independent metric GEOS validity, duplicate and overlap checks",
+    "full-parcel source binding",
+    "headed pointer and Details-panel verification"
+  ]
+}

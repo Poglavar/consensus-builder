@@ -1,0 +1,13 @@
+{
+  "taskId": "city:4876",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4876-wad-madan.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/wad-madan-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T15:59:25Z",
+  "reason": "Queue identity matches rank 1400 / WUP city 4876, Sudan, point [14.3818920091121, 33.5314635606539], 403988 persons. English and Arabic searches are recorded. First-party state land-authority pages support custody, but no public parcel geometry or safe native ID response was obtained; the national spatial portal timed out. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are unevidenced. No polygons were retained. The timeout does not establish citywide absence."
+}

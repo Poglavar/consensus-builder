@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 5770,
+  "wupCityCode": 5770,
+  "queueRank": 2699,
+  "cityId": "wup2025:5770",
+  "name": "Souk Ahras",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso2": "DZ",
+  "iso3": "DZA",
+  "point": [36.2826961442925, 7.95223805895454],
+  "centerLatLon": [36.2826961442925, 7.95223805895454],
+  "population2025": 219287,
+  "population2025k": 219.287,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Algerian Ministry of Finance / cadastral and land-conservation administration; no public parcel API qualified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Souk Ahras Algeria cadastral map official parcel cadastre",
+        "result": "First-party results identified Algeria's Ministry of Finance material describing cadastral and land-conservation functions, and ASGA's official BNDG general cartography viewer. No official Souk Ahras parcel-feature endpoint or public cadastral viewer was found.",
+        "actualResultUrls": [
+          "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+          "https://anurb.dz/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "سوق أهراس المحافظة العقارية مخطط مسح الأراضي الرسمي الجزائر",
+        "result": "Arabic discovery found official Ministry of Finance material about the cadastral/land-conservation structure and official national services pages, but no anonymous Souk Ahras parcel map/API or downloadable safe parcel geometry.",
+        "actualResultUrls": [
+          "https://www.mf.gov.dz/images/pdf/publication/2022_S1.pdf",
+          "https://services.interieur.gov.dz/fr/",
+          "https://mfdgi.gov.dz/plan-site-dgi-ar"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+      "operator": "Algerian Ministry of Finance",
+      "scope": "National cadastral and land-conservation administration",
+      "observation": "Official organizational material describes the conservation foncière sections, including a cadastre section. It is institutional evidence, not a parcel data service and does not establish Souk Ahras local coverage."
+    },
+    {
+      "url": "https://www.mf.gov.dz/images/pdf/publication/2022_S1.pdf",
+      "operator": "Algerian Ministry of Finance",
+      "scope": "National cadastral and land-conservation administration",
+      "observation": "Official material references exploitation of cadastral plans and archives by cadastral/land-conservation structures. No public feature schema or API was exposed."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "operator": "ASGA / InfoGéolAlgérie",
+      "scope": "General Algeria 1:200,000 cartography",
+      "observation": "Official viewer advertises national/general layers such as wilaya and commune boundaries and raster cartography; it is not evidenced as a cadastral parcel viewer."
+    },
+    {
+      "url": "https://anurb.dz/",
+      "operator": "Agence Nationale de l'Urbanisme",
+      "scope": "National urban-planning agency",
+      "observation": "Official agency lead with GIS responsibility, but no anonymous Souk Ahras cadastral parcel endpoint was identified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "GET",
+      "status": "timeout after 20 seconds from shell",
+      "summary": "No HTML, JavaScript/configuration, schema, CRS, parcel layer, or geometry response was obtained. Timeout is not evidence of citywide absence."
+    },
+    {
+      "url": "https://www.mf.gov.dz/",
+      "method": "GET",
+      "status": "HTTP 500",
+      "summary": "The ministry home route returned an error page; indexed official PDF material remained available. No retry with credentials or private access was attempted."
+    },
+    {
+      "url": "https://services.interieur.gov.dz/fr/",
+      "method": "GET via first-party discovery",
+      "status": "official public services portal found",
+      "summary": "General public-services portal; no parcel geometry or Souk Ahras cadastral map service was evidenced."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National institutional cadastral mandate and general national cartography viewer.",
+    "verifiedOpenScope": "Institutional documentation only; no live parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Local Souk Ahras registry/cadastre office existence was not directly evidenced by a first-party local directory in this attempt; therefore registryFound remains null."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No geometry retained.",
+    "crs": null,
+    "identityReadiness": "Not assessed because no parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "parcel polygon geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained; owner, address, titleholder, contact, tax, account, personal, and unsafe fields were excluded."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial reviewer must independently qualify a live public parcel service or safe public geometry source, native identity semantics, CRS/axis handling, coverage, and anonymous bounded query behavior.",
+  "scopeLimits": [
+    "Exact WUP point [36.2826961442925, 7.95223805895454] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss, map-extent miss, timeout, HTTP 500, or unusable viewer is evidence of citywide absence.",
+    "No retained GeoJSON sample because no safe native parcel feature with geometry and identity was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and composite-key provenance in city/service-review metadata.",
+  "nextStep": "Serial reviewer should retry official Algerian cadastral/land-conservation routes and inspect any current public viewer/API configuration, schema, CRS, identity, and anonymous geometry behavior."
+}

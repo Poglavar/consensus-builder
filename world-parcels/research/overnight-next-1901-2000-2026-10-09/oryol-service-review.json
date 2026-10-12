@@ -1,0 +1,67 @@
+{
+  "cityRecord": "city-2827-oryol.json",
+  "cityCode": 2827,
+  "queueRank": 1971,
+  "city": "Oryol",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Oryol municipal administration public cadastral/planning materials; federal public cadastral-map route identified as NSPD/Rosreestr",
+  "serviceUrl": "https://www.orel-adm.ru/ru/activity/karty-plany/",
+  "secondaryServiceUrl": "https://nspd.gov.ru/map?thematic=PKK",
+  "scope": "Local official cadastral-plan/planning publication and federal public cadastral-map discovery only; citywide parcel completeness was not verified.",
+  "configurationEvidence": "The official Oryol administration site exposes ordinary HTML pages for ‘Карты-планы’ and ‘Комплексные кадастровые работы’. The inspected sitemap also labels an ‘Адресный план Геоинформационная база Технический архив’ entry, but no linked public parcel viewer/API configuration was exposed in the bounded HTML retrieval.",
+  "schemaAndCrs": "No parcel feature schema, native parcel identity response, vector geometry, or CRS was exposed. The official city pages provide document/map publication links rather than a bounded parcel feature service. NSPD did not return within the 20-second anonymous GET timeout.",
+  "nativeIdentity": "Not observed; no synthetic identity used.",
+  "fieldMapping": {
+    "id": "Not available because no native parcel feature response returned.",
+    "geometry": "Not available because no native parcel feature response returned.",
+    "sourceAttributes": "No source attributes requested or retained."
+  },
+  "requestAttempts": [
+    {
+      "method": "GET",
+      "url": "https://www.orel-adm.ru/ru/",
+      "outcome": "HTTP 200; official city-administration HTML retrieved. No parcel API endpoint was identified in the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.orel-adm.ru/ru/map/",
+      "outcome": "HTTP 200; official sitemap HTML retrieved. It lists local address-plan/geoinformation-base/technical-archive and cadastral-work sections, but no usable anonymous parcel feature service was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.orel-adm.ru/ru/activity/karty-plany/",
+      "outcome": "Discovery result identifies this as the official ‘Maps-Plans’ page, with Oryol cadastral-quarter materials and notices. No parcel ID-plus-geometry API response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.orel-adm.ru/ru/activity/kompleksnye-kadastrovye-raboty-/",
+      "outcome": "Discovery result identifies official complex-cadastral-work materials for Oryol cadastral quarters. These are publication/document evidence, not a machine-readable parcel feature response."
+    },
+    {
+      "method": "GET",
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "outcome": "Anonymous request timed out after 20 seconds; not evidence of citywide absence. No TLS verification exception, login, credentials, private token, CAPTCHA bypass, or Cloudflare bypass was used."
+    }
+  ],
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained; no unchanged native safe-ID-plus-geometry response was returned.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and ownership/rights fields were not requested or retained.",
+  "officialCustodyEvidence": "The local evidence is hosted on the official orel-adm.ru city-administration domain and includes city cadastral-quarter map-plan publications and complex-cadastral-work materials. NSPD/Rosreestr is recorded as the federal public-map route, but its bounded request timed out and no parcel API custody or adapter contract was verified.",
+  "limits": [
+    "The exact WUP point [52.9696027243269, 36.0804404333876] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point parcel hit, parcel polygon, native parcel identity, vector schema, or CRS was obtained.",
+    "Official city document/map pages are evidence of local cadastral/planning custody, not evidence of citywide parcel-service completeness.",
+    "The NSPD timeout is not evidence of citywide absence.",
+    "No login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "No raw source-specific attribute set was retained and no GeoJSON sample was created.",
+    "Packet completion records executed attempts only; it does not mean source integration or admission.",
+    "RuntimeReadiness remains held pending independent serial review and a real safe parcel response."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Official local cadastral/planning publication is evidenced, but current parcel-level integration is unverified because no public safe-ID-plus-geometry response was exposed and the NSPD map request timed out."
+}

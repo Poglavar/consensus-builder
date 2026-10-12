@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4660-kosti.json",
+  "purpose": "Bounded first-party discovery and anonymous cadastral-service review for Kosti, Sudan.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Aqari site describes a national Sudanese property-registration service affiliated with the judiciary, including land-record review, search certificates, and subdivision workflows. The official NIC search result describes a Sudan Spatial Portal using WMS/WFS, but its project page was not retrievable over the checked TLS path. No Kosti-specific map/API service, schema, CRS, safe parcel ID, or geometry response was verified. The Aqari homepage exposed only service descriptions and public HTML/JavaScript; no anonymous parcel geometry route was identified. Login and credentialed flows were not used.",
+  "registryAssessment": "National official land-registration services were evidenced, but no Kosti-local registry/cadastre/map/procedure was directly evidenced; registryFound remains null.",
+  "officialPrimarySources": [
+    {"url": "https://aqari.nctr.sd/ar", "operator": "Sudan Judiciary-affiliated national property-services platform", "observation": "Public Arabic homepage states that Aqari automates and facilitates land/property registration and exposes land-record review, search-certificate, and subdivision services."},
+    {"url": "https://aqari.nctr.sd/en", "operator": "Sudan Judiciary-affiliated national property-services platform", "observation": "English alternate homepage was identified from the site's hreflang links; no public parcel viewer was exposed."},
+    {"url": "https://www.nic.gov.sd/public/projectDetails/3", "operator": "Sudan National Information Center", "observation": "Search-indexed official project description identifies a Sudan Spatial Portal and says it provides OGC WMS/WFS services; direct GET failed TLS hostname verification, so endpoint/schema access was not claimed."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Kosti Sudan official cadastral map land registry parcel GIS survey authority", "result": "Official national leads only; no verified Kosti geometry service.", "method": "Web search and first-party source inspection."},
+    {"language": "Arabic", "query": "كوستي السودان خريطة عقارية السجل العقاري الأراضي المساحة", "result": "Official Aqari national platform found; no verified Kosti geometry service.", "method": "Web search and first-party source inspection."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "geometry", "source layer/type", "CRS", "request status", "schema field names needed for identity/geometry"],
+  "attempts": [
+    {"url": "https://aqari.nctr.sd/ar", "method": "GET", "httpStatus": 200, "result": "Public Arabic homepage loaded; service descriptions and same-origin Next.js assets inspected. No anonymous parcel geometry endpoint found."},
+    {"url": "https://aqari.nctr.sd/en", "method": "GET", "httpStatus": 200, "result": "English alternate route identified from hreflang; no parcel viewer or safe geometry response retained."},
+    {"url": "https://www.nic.gov.sd/public/projectDetails/3", "method": "GET", "httpStatus": null, "result": "TLS verification failed because the certificate hostname did not match www.nic.gov.sd. No certificate exception was used."},
+    {"url": "https://www.nic.gov.sd/public/projectDetails/3", "method": "web search/open", "httpStatus": "search-indexed", "result": "Official indexed description states Sudan Spatial Portal provides WMS/WFS; no live endpoint or response was verified."}
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": "No geometry retained.",
+  "uncertainty": "Timeout, TLS failure, inaccessible viewer, or an exact-point miss would not establish absence. This review only establishes that no safe anonymous Kosti parcel response was obtained in this attempt.",
+  "nextStep": "Retry official Sudan Spatial Portal and Aqari public routes when reachable, following only anonymous public bootstrap, then request a small Kosti bbox with geometry plus stable parcel IDs and inspect CRS/schema before any admission.",
+  "runtimeEligible": false
+}

@@ -1,0 +1,5068 @@
+{
+ "schemaVersion": 1,
+ "basis": "Laptop qualification on 2026-10-12: jurisdiction-first discovery (non-Turkey waves 1-6, US waves 1-3), Poland (run on valhalla), and re-runs after the qualifier fixes (New Zealand, Saxony, and the Dutch cities held on cursor paging). Turkey and the 12 Catalan/Balearic cities are not in this file.",
+ "pointOrder": "latitude-longitude",
+ "counts": {
+  "held": 75,
+  "qualified": 206,
+  "unchecked": 56
+ },
+ "cities": [
+  {
+   "cityCode": 36,
+   "cityName": "Los Cristianos",
+   "countryCode": "ES",
+   "point": [
+    28.0668618122246,
+    -16.7227473766523
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 55,
+   "cityName": "Ostend",
+   "countryCode": "BE",
+   "point": [
+    51.2238983074035,
+    2.92556166630462
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired (independent re-run of the same candidate): failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'invalidCount': 1} of 122 source polygons (source geometry never repaired); invalid polygons: [{\"id\": \"5271159\", \"reasons\": [\"Ring Self-intersection[2.9381421 51.22116694]\"]}]",
+   "finishedAt": "2026-10-12T11:08:41+00:00"
+  },
+  {
+   "cityCode": 58,
+   "cityName": "Aachen",
+   "countryCode": "DE",
+   "point": [
+    50.7798266066411,
+    6.10963543428455
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:46+00:00"
+  },
+  {
+   "cityCode": 71,
+   "cityName": "Szczecin",
+   "countryCode": "PL",
+   "point": [
+    53.4353064484097,
+    14.5350485616163
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct re-run of the identical candidate passed every check (11 parcels, zero metric blockers). Attempt-01 failed only its fresh exact-ID reread; a diagnostic reread on 2026-10-12 returned all 11 IDs with byte-identical geometry, so that failure was transient.",
+   "finishedAt": "2026-10-12T14:15:49+00:00"
+  },
+  {
+   "cityCode": 85,
+   "cityName": "Liepaja",
+   "countryCode": "LV",
+   "point": [
+    56.512130385031,
+    21.0132738810649
+   ],
+   "sourceIds": [
+    "lv-vzd-geolatvija-vraa-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:59+00:00"
+  },
+  {
+   "cityCode": 87,
+   "cityName": "Klaipėda",
+   "countryCode": "LT",
+   "point": [
+    55.6958163069443,
+    21.1516808865547
+   ],
+   "sourceIds": [
+    "lt-inspire-cp-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:35:29+00:00"
+  },
+  {
+   "cityCode": 99,
+   "cityName": "Ioannina",
+   "countryCode": "GR",
+   "point": [
+    39.661766124509,
+    20.8488973626991
+   ],
+   "sourceIds": [
+    "gr-ktimatologio-active-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:19:49+00:00"
+  },
+  {
+   "cityCode": 118,
+   "cityName": "Ashkelon",
+   "countryCode": "IL",
+   "point": [
+    31.6704500086532,
+    34.5726448021409
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:55+00:00"
+  },
+  {
+   "cityCode": 173,
+   "cityName": "Dunedin",
+   "countryCode": "NZ",
+   "point": [
+    -45.8806189861149,
+    170.499551888766
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:49:43+00:00"
+  },
+  {
+   "cityCode": 208,
+   "cityName": "La Orotava",
+   "countryCode": "ES",
+   "point": [
+    28.4018616361184,
+    -16.5382629350581
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:17+00:00"
+  },
+  {
+   "cityCode": 226,
+   "cityName": "Bruges",
+   "countryCode": "BE",
+   "point": [
+    51.2050163863974,
+    3.22000581359789
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:01:01+00:00"
+  },
+  {
+   "cityCode": 241,
+   "cityName": "Stargard",
+   "countryCode": "PL",
+   "point": [
+    53.3382279105169,
+    15.030564201468
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:05:25+00:00"
+  },
+  {
+   "cityCode": 244,
+   "cityName": "Maribor",
+   "countryCode": "SI",
+   "point": [
+    46.5498932247074,
+    15.6465711763258
+   ],
+   "sourceIds": [
+    "si-gurs-kn-parcele-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:58+00:00"
+  },
+  {
+   "cityCode": 257,
+   "cityName": "Šiauliai",
+   "countryCode": "LT",
+   "point": [
+    55.9342217966661,
+    23.2968931510103
+   ],
+   "sourceIds": [
+    "lt-inspire-cp-wfs"
+   ],
+   "outcome": "held",
+   "summary": "Corrected candidate did not qualify: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 2} of 99 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"290100010182\", \"290100010184\"], \"areaM2\": 5.7592}, {\"ids\": [\"290100010206\", \"290100010212\"], \"areaM2\": 4.2425}]",
+   "finishedAt": "2026-10-12T14:26:58+00:00"
+  },
+  {
+   "cityCode": 267,
+   "cityName": "Tartu",
+   "countryCode": "EE",
+   "point": [
+    58.3707823955219,
+    26.7215611740785
+   ],
+   "sourceIds": [
+    "ee-maaamet-kataster-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:00:14+00:00"
+  },
+  {
+   "cityCode": 268,
+   "cityName": "Patras",
+   "countryCode": "GR",
+   "point": [
+    38.2407535838197,
+    21.7427643082147
+   ],
+   "sourceIds": [
+    "gr-ktimatologio-active-parcels-arcgis"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'invalidCount': 3} of 643 source polygons (source geometry never repaired); invalid polygons: [{\"id\": \"06167\\u0395\\u039a01924\", \"reasons\": [\"Ring Self-intersection[21.7385272808508 38.2416498154479]\"]}, {\"id\": \"06167\\u0395\\u039a02308\", \"reasons\":…",
+   "finishedAt": "2026-10-12T11:25:38+00:00"
+  },
+  {
+   "cityCode": 285,
+   "cityName": "Ashdod",
+   "countryCode": "IL",
+   "point": [
+    31.7987303087695,
+    34.65004462462
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:58+00:00"
+  },
+  {
+   "cityCode": 336,
+   "cityName": "Christchurch",
+   "countryCode": "NZ",
+   "point": [
+    -43.5242720408165,
+    172.621043454784
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:41:04+00:00"
+  },
+  {
+   "cityCode": 339,
+   "cityName": "Santa Maria",
+   "countryCode": "US",
+   "point": [
+    34.9528425414589,
+    -120.437106188515
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (42 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Santa Maria (us-ca-calfire-statewide-parcels) with 2 material overlap pair(s) (> 0.01 m2; max 0.223 m2, 0.0333% of the smaller; total 0.322 m2) among 73 cached features (06083~123-045-013 / 06083~123-280-026: 0.223 m2 = 0.0333% of the smaller; 06083~123-2…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 385,
+   "cityName": "Kortrijk",
+   "countryCode": "BE",
+   "point": [
+    50.8375977978937,
+    3.28211721466875
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:00:32+00:00"
+  },
+  {
+   "cityCode": 389,
+   "cityName": "Krefeld",
+   "countryCode": "DE",
+   "point": [
+    51.3332048663585,
+    6.57862288660859
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:44+00:00"
+  },
+  {
+   "cityCode": 399,
+   "cityName": "Gorzów Wielkopolski",
+   "countryCode": "PL",
+   "point": [
+    52.7429409230698,
+    15.2389393766615
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:00:30+00:00"
+  },
+  {
+   "cityCode": 415,
+   "cityName": "Kaunas",
+   "countryCode": "LT",
+   "point": [
+    54.8983700168962,
+    23.9265885374715
+   ],
+   "sourceIds": [
+    "lt-inspire-cp-wfs"
+   ],
+   "outcome": "held",
+   "summary": "Corrected candidate did not qualify: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 2} of 60 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"190102670001\", \"440049496377\"], \"areaM2\": 6.798}, {\"ids\": [\"190102670001\", \"440044697216\"], \"areaM2\": 2.6362}]",
+   "finishedAt": "2026-10-12T14:26:58+00:00"
+  },
+  {
+   "cityCode": 420,
+   "cityName": "Daugavpils",
+   "countryCode": "LV",
+   "point": [
+    55.8797490625731,
+    26.5364228926285
+   ],
+   "sourceIds": [
+    "lv-vzd-geolatvija-vraa-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:59+00:00"
+  },
+  {
+   "cityCode": 422,
+   "cityName": "Larissa",
+   "countryCode": "GR",
+   "point": [
+    39.6319994376837,
+    22.418368874792
+   ],
+   "sourceIds": [
+    "gr-ktimatologio-active-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:19:37+00:00"
+  },
+  {
+   "cityCode": 486,
+   "cityName": "Wellington",
+   "countryCode": "NZ",
+   "point": [
+    -41.3038566465975,
+    174.781613985253
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:50:04+00:00"
+  },
+  {
+   "cityCode": 487,
+   "cityName": "Santa Barbara",
+   "countryCode": "US",
+   "point": [
+    34.4248954449384,
+    -119.713727756045
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Santa Barbara (us-ca-calfire-statewide-parcels) with 23 material overlap pair(s) (> 0.01 m2; max 140 m2, 100% of the smaller; total 1.67e+03 m2) among 207 cached features (06083~027-640-001 / 06083~027-640-CA1: 140 m2 = 100% of the smaller; 06083~027-500-…",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 511,
+   "cityName": "Cuartería El Uno",
+   "countryCode": "ES",
+   "point": [
+    27.8526487593461,
+    -15.4381028554929
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 531,
+   "cityName": "Ghent",
+   "countryCode": "BE",
+   "point": [
+    51.054687121172,
+    3.73169926424364
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T10:59:56+00:00"
+  },
+  {
+   "cityCode": 534,
+   "cityName": "Bocholt",
+   "countryCode": "DE",
+   "point": [
+    51.837162361442,
+    6.61679793943415
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:47:22+00:00"
+  },
+  {
+   "cityCode": 544,
+   "cityName": "Zielona Góra",
+   "countryCode": "PL",
+   "point": [
+    51.9373160500613,
+    15.5023625952977
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:59:45+00:00"
+  },
+  {
+   "cityCode": 559,
+   "cityName": "Panevėžys",
+   "countryCode": "LT",
+   "point": [
+    55.7321711890858,
+    24.3528850529477
+   ],
+   "sourceIds": [
+    "lt-inspire-cp-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:38:48+00:00"
+  },
+  {
+   "cityCode": 583,
+   "cityName": "Haifa",
+   "countryCode": "IL",
+   "point": [
+    32.812430848624,
+    35.0251596262198
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:28:56+00:00"
+  },
+  {
+   "cityCode": 629,
+   "cityName": "Lower Hutt",
+   "countryCode": "NZ",
+   "point": [
+    -41.2116311605753,
+    174.915386248703
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:44:58+00:00"
+  },
+  {
+   "cityCode": 630,
+   "cityName": "Santa Cruz",
+   "countryCode": "US",
+   "point": [
+    36.971947665622,
+    -122.003440231233
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (45 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Santa Cruz (us-ca-calfire-statewide-parcels) with 68 material overlap pair(s) (> 0.01 m2; max 334 m2, 100% of the smaller; total 1.1e+04 m2) among 262 cached features (06087~011-171-60 / 06087~011-171-86: 334 m2 = 100% of the smaller; 06087~011-171-61 / 0…",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 654,
+   "cityName": "Las Palmas de Gran Canaria",
+   "countryCode": "ES",
+   "point": [
+    28.1144784301988,
+    -15.4347243474751
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 674,
+   "cityName": "Leiden",
+   "countryCode": "NL",
+   "point": [
+    52.1673646768043,
+    4.4726761074768
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:40:08+00:00"
+  },
+  {
+   "cityCode": 685,
+   "cityName": "Koszalin",
+   "countryCode": "PL",
+   "point": [
+    54.19411056018,
+    16.1902100834576
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:00:52+00:00"
+  },
+  {
+   "cityCode": 703,
+   "cityName": "Volos",
+   "countryCode": "GR",
+   "point": [
+    39.3686528293248,
+    22.9445098735385
+   ],
+   "sourceIds": [
+    "gr-ktimatologio-active-parcels-arcgis"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'invalidCount': 1} of 456 source polygons (source geometry never repaired); invalid polygons: [{\"id\": \"35024\\u0395\\u039a00125\", \"reasons\": [\"Ring Self-intersection[22.9432544956838 39.3646596633676]\"]}]",
+   "finishedAt": "2026-10-12T11:25:41+00:00"
+  },
+  {
+   "cityCode": 717,
+   "cityName": "Yavne",
+   "countryCode": "IL",
+   "point": [
+    31.8757091780512,
+    34.7383449871869
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a data verdict: every qualifier run of this city (the runner's direct run plus 3-4 paced reruns of the unchanged deterministic candidate) ended on transient govmap failures - connect timeouts, 45 s response timeouts and fetch resets, mostly on the batched fresh reread - so exact-ID rereads never completed; no check failed on data. Other Israeli cities qualified with the identical candid…",
+   "finishedAt": "2026-10-12T14:26:59+00:00"
+  },
+  {
+   "cityCode": 763,
+   "cityName": "Palmerston North",
+   "countryCode": "NZ",
+   "point": [
+    -40.352703279079,
+    175.614308591725
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:44:55+00:00"
+  },
+  {
+   "cityCode": 764,
+   "cityName": "Salinas",
+   "countryCode": "US",
+   "point": [
+    36.6903607518461,
+    -121.635875360103
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (40 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Salinas (us-ca-calfire-statewide-parcels) with 2 material overlap pair(s) (> 0.01 m2; max 0.101 m2, 4.69e-05% of the smaller; total 0.128 m2) among 6 cached features (06053~261191008000 / 06053~261191012000: 0.101 m2 = 4.69e-05% of the smaller; 06053~2611…",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 787,
+   "cityName": "Telde",
+   "countryCode": "ES",
+   "point": [
+    27.9939122088552,
+    -15.3992992887694
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 804,
+   "cityName": "Aalst",
+   "countryCode": "BE",
+   "point": [
+    50.9435433390796,
+    4.03960887199254
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:02:01+00:00"
+  },
+  {
+   "cityCode": 806,
+   "cityName": "Zoetermeer",
+   "countryCode": "NL",
+   "point": [
+    52.0580064519999,
+    4.50259377674063
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:44+00:00"
+  },
+  {
+   "cityCode": 816,
+   "cityName": "Lubin",
+   "countryCode": "PL",
+   "point": [
+    51.3979869466992,
+    16.1963940635763
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:03:02+00:00"
+  },
+  {
+   "cityCode": 844,
+   "cityName": "Netanya",
+   "countryCode": "IL",
+   "point": [
+    32.3143145554001,
+    34.8598375549541
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:59+00:00"
+  },
+  {
+   "cityCode": 888,
+   "cityName": "Hamilton",
+   "countryCode": "NZ",
+   "point": [
+    -37.7752941478825,
+    175.273989779784
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:41:23+00:00"
+  },
+  {
+   "cityCode": 889,
+   "cityName": "Oxnard",
+   "countryCode": "US",
+   "point": [
+    34.1891769911221,
+    -119.181411608013
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the production adapter fails closed in Oxnard because the CAL FIRE statewide layer uses APN 'common' (FIPS 06111) as a placeholder on 1,977+ distinct polygons (1,809 distinct Shape__Area values in a direct non-geometry reread), so the fresh collected-ID reread fails with 'conflicting geometry for one parcel ID' (502) and exactIds/stableGeometry fail; the metric audit additionally failed wit…",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 926,
+   "cityName": "Sint-Niklaas",
+   "countryCode": "BE",
+   "point": [
+    51.1653252425065,
+    4.14783441472725
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:01:42+00:00"
+  },
+  {
+   "cityCode": 937,
+   "cityName": "Legnica",
+   "countryCode": "PL",
+   "point": [
+    51.2058512284457,
+    16.1741221611038
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:01:45+00:00"
+  },
+  {
+   "cityCode": 951,
+   "cityName": "Chania",
+   "countryCode": "GR",
+   "point": [
+    35.508865587634,
+    24.0224198967439
+   ],
+   "sourceIds": [
+    "gr-ktimatologio-active-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:20:12+00:00"
+  },
+  {
+   "cityCode": 961,
+   "cityName": "Hadera",
+   "countryCode": "IL",
+   "point": [
+    32.4372849491784,
+    34.9185599229164
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:27:00+00:00"
+  },
+  {
+   "cityCode": 1006,
+   "cityName": "Watsonville",
+   "countryCode": "US",
+   "point": [
+    36.9214701015101,
+    -121.763507215187
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Watsonville (us-ca-calfire-statewide-parcels) with 1 material overlap pair(s) (> 0.01 m2; max 0.728 m2, 0.0173% of the smaller; total 0.728 m2) among 97 cached features (06087~016-131-02 / 06087~016-491-06: 0.728 m2 = 0.0173% of the smaller). The overlaps…",
+   "finishedAt": "2026-10-12T13:04:07+00:00"
+  },
+  {
+   "cityCode": 1031,
+   "cityName": "Santiago de Compostela",
+   "countryCode": "ES",
+   "point": [
+    42.877834378286,
+    -8.5417232058283
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:17+00:00"
+  },
+  {
+   "cityCode": 1043,
+   "cityName": "Heemskerk",
+   "countryCode": "NL",
+   "point": [
+    52.4875107568307,
+    4.64912920315651
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:53+00:00"
+  },
+  {
+   "cityCode": 1045,
+   "cityName": "Dormagen",
+   "countryCode": "DE",
+   "point": [
+    51.0798211144991,
+    6.83720865116285
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired (deterministic wave-6 run reproduces the wave-1 result): failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 1} of 45 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"05334704800277______\", \"05496503300098______\"], \"areaM2\": 0.012}]",
+   "finishedAt": "2026-10-12T12:41:40+00:00"
+  },
+  {
+   "cityCode": 1053,
+   "cityName": "Słupsk",
+   "countryCode": "PL",
+   "point": [
+    54.4636975832782,
+    17.0213199178476
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:01:18+00:00"
+  },
+  {
+   "cityCode": 1066,
+   "cityName": "Heraklion",
+   "countryCode": "GR",
+   "point": [
+    35.3275902539722,
+    25.1305178980286
+   ],
+   "sourceIds": [
+    "gr-ktimatologio-active-parcels-arcgis"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'invalidCount': 1} of 384 source polygons (source geometry never repaired); invalid polygons: [{\"id\": \"17063\\u0395\\u039a00541\", \"reasons\": [\"Ring Self-intersection[25.1338665930105 35.3274135310984]\"]}]",
+   "finishedAt": "2026-10-12T11:25:38+00:00"
+  },
+  {
+   "cityCode": 1075,
+   "cityName": "Rehovot",
+   "countryCode": "IL",
+   "point": [
+    31.8958134072658,
+    34.8097538728296
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:55+00:00"
+  },
+  {
+   "cityCode": 1120,
+   "cityName": "Papakura",
+   "countryCode": "NZ",
+   "point": [
+    -37.0379819273102,
+    174.906818249879
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:42:11+00:00"
+  },
+  {
+   "cityCode": 1121,
+   "cityName": "Ventura",
+   "countryCode": "US",
+   "point": [
+    34.2732059389196,
+    -119.243895134809
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Ventura (us-ca-calfire-statewide-parcels) with 15 material overlap pair(s) (> 0.01 m2; max 0.377 m2, 0.0329% of the smaller; total 1.16 m2) among 97 cached features (06111~079003125 / 06111~079003133: 0.377 m2 = 0.0329% of the smaller; 06111~079003126 / 0…",
+   "finishedAt": "2026-10-12T12:57:36+00:00"
+  },
+  {
+   "cityCode": 1152,
+   "cityName": "Nantes",
+   "countryCode": "FR",
+   "point": [
+    47.2226716545731,
+    -1.55741025412737
+   ],
+   "sourceIds": [
+    "fr-ign-parcellaire-express"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:18:18+00:00"
+  },
+  {
+   "cityCode": 1158,
+   "cityName": "Haarlem",
+   "countryCode": "NL",
+   "point": [
+    52.3821638892441,
+    4.64006831462338
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:16+00:00"
+  },
+  {
+   "cityCode": 1167,
+   "cityName": "Pila",
+   "countryCode": "PL",
+   "point": [
+    53.1513682979439,
+    16.7464328052244
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:34+00:00"
+  },
+  {
+   "cityCode": 1188,
+   "cityName": "Even Yehuda",
+   "countryCode": "IL",
+   "point": [
+    32.2667857423064,
+    34.9059580243197
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a data verdict: every qualifier run of this city (the runner's direct run plus 3-4 paced reruns of the unchanged deterministic candidate) ended on transient govmap failures - connect timeouts, 45 s response timeouts and fetch resets, mostly on the batched fresh reread - so exact-ID rereads never completed; no check failed on data. Other Israeli cities qualified with the identical candid…",
+   "finishedAt": "2026-10-12T14:26:55+00:00"
+  },
+  {
+   "cityCode": 1255,
+   "cityName": "Ferrol",
+   "countryCode": "ES",
+   "point": [
+    43.4894958337476,
+    -8.21752085848378
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:13+00:00"
+  },
+  {
+   "cityCode": 1267,
+   "cityName": "Hoofddorp",
+   "countryCode": "NL",
+   "point": [
+    52.3054351617886,
+    4.66703282561631
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:55+00:00"
+  },
+  {
+   "cityCode": 1275,
+   "cityName": "Leszno",
+   "countryCode": "PL",
+   "point": [
+    51.8427843893659,
+    16.5773027600746
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:06:44+00:00"
+  },
+  {
+   "cityCode": 1338,
+   "cityName": "Otūmoetai",
+   "countryCode": "NZ",
+   "point": [
+    -37.6995938088887,
+    176.14886316288
+   ],
+   "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:43:56+00:00"
+  },
+  {
+   "cityCode": 1339,
+   "cityName": "Camarillo",
+   "countryCode": "US",
+   "point": [
+    34.227096224899,
+    -119.028863828538
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (42 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Camarillo (us-ca-calfire-statewide-parcels) with 5 material overlap pair(s) (> 0.01 m2; max 0.228 m2, 0.0206% of the smaller; total 0.509 m2) among 71 cached features (06111~166002020 / 06111~166002042: 0.228 m2 = 0.0206% of the smaller; 06111~166004416 /…",
+   "finishedAt": "2026-10-12T12:57:36+00:00"
+  },
+  {
+   "cityCode": 1362,
+   "cityName": "Ourense",
+   "countryCode": "ES",
+   "point": [
+    42.3398946856005,
+    -7.86521469153386
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:13+00:00"
+  },
+  {
+   "cityCode": 1373,
+   "cityName": "Dordrecht",
+   "countryCode": "NL",
+   "point": [
+    51.8143926922208,
+    4.67469211847365
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:13+00:00"
+  },
+  {
+   "cityCode": 1375,
+   "cityName": "Hürth",
+   "countryCode": "DE",
+   "point": [
+    50.8574852314233,
+    6.89340663734576
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:41+00:00"
+  },
+  {
+   "cityCode": 1400,
+   "cityName": "Daliyat al-Karmel",
+   "countryCode": "IL",
+   "point": [
+    32.7014534889277,
+    35.0558952294538
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:50:15+00:00"
+  },
+  {
+   "cityCode": 1442,
+   "cityName": "San Rafael",
+   "countryCode": "US",
+   "point": [
+    37.9786380960833,
+    -122.53968544247
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for San Rafael (us-ca-calfire-statewide-parcels) with 33 material overlap pair(s) (> 0.01 m2; max 0.359 m2, 0.0453% of the smaller; total 1.28 m2) among 143 cached features (06041~010-154-45 / 06041~010-154-48: 0.359 m2 = 0.0453% of the smaller; 06041~010-154…",
+   "finishedAt": "2026-10-12T12:57:36+00:00"
+  },
+  {
+   "cityCode": 1464,
+   "cityName": "Huelva",
+   "countryCode": "ES",
+   "point": [
+    37.2633684631107,
+    -6.94136215954381
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:13+00:00"
+  },
+  {
+   "cityCode": 1474,
+   "cityName": "Mechelen",
+   "countryCode": "BE",
+   "point": [
+    51.025998805418,
+    4.48126862657754
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:01:10+00:00"
+  },
+  {
+   "cityCode": 1475,
+   "cityName": "Alphen aan den Rijn",
+   "countryCode": "NL",
+   "point": [
+    52.1332574588064,
+    4.65782890208914
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:39+00:00"
+  },
+  {
+   "cityCode": 1502,
+   "cityName": "Tira",
+   "countryCode": "IL",
+   "point": [
+    32.2342787180447,
+    34.9544323813687
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:55+00:00"
+  },
+  {
+   "cityCode": 1561,
+   "cityName": "Badajoz",
+   "countryCode": "ES",
+   "point": [
+    38.8766838529593,
+    -6.97575260055445
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:13+00:00"
+  },
+  {
+   "cityCode": 1571,
+   "cityName": "Alkmaar",
+   "countryCode": "NL",
+   "point": [
+    52.6522439366888,
+    4.78238265594386
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:36+00:00"
+  },
+  {
+   "cityCode": 1572,
+   "cityName": "Leuven",
+   "countryCode": "BE",
+   "point": [
+    50.8812852650943,
+    4.70774709568462
+   ],
+   "sourceIds": [
+    "be-vlaanderen-grb-adp"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:00:47+00:00"
+  },
+  {
+   "cityCode": 1573,
+   "cityName": "Marl",
+   "countryCode": "DE",
+   "point": [
+    51.6681556413441,
+    7.10509206272269
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:47:00+00:00"
+  },
+  {
+   "cityCode": 1580,
+   "cityName": "Wrocław",
+   "countryCode": "PL",
+   "point": [
+    51.1052197969447,
+    17.0226844994164
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:57:19+00:00"
+  },
+  {
+   "cityCode": 1597,
+   "cityName": "Rosh HaAyin",
+   "countryCode": "IL",
+   "point": [
+    32.105795719819,
+    34.9640712304425
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:38:01+00:00"
+  },
+  {
+   "cityCode": 1635,
+   "cityName": "Simi Valley",
+   "countryCode": "US",
+   "point": [
+    34.2742160621372,
+    -118.731796203929
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Simi Valley (us-ca-calfire-statewide-parcels) with 17 material overlap pair(s) (> 0.01 m2; max 0.332 m2, 0.0542% of the smaller; total 1.41 m2) among 207 cached features (06111~633012311 / 06111~633014112: 0.332 m2 = 0.0542% of the smaller; 06111~63301231…",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 1654,
+   "cityName": "Cádiz",
+   "countryCode": "ES",
+   "point": [
+    36.5180340067652,
+    -6.28267978802277
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 1664,
+   "cityName": "Gouda",
+   "countryCode": "NL",
+   "point": [
+    52.020062520535,
+    4.71398619919552
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:26+00:00"
+  },
+  {
+   "cityCode": 1673,
+   "cityName": "Gniezno",
+   "countryCode": "PL",
+   "point": [
+    52.5344430787909,
+    17.6064312677703
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:06:20+00:00"
+  },
+  {
+   "cityCode": 1688,
+   "cityName": "Kafr Yasif",
+   "countryCode": "IL",
+   "point": [
+    32.9538350684818,
+    35.1826472209271
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:56+00:00"
+  },
+  {
+   "cityCode": 1756,
+   "cityName": "Remscheid",
+   "countryCode": "DE",
+   "point": [
+    51.1817871834151,
+    7.2043470437967
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:41+00:00"
+  },
+  {
+   "cityCode": 1763,
+   "cityName": "Wejherowo",
+   "countryCode": "PL",
+   "point": [
+    54.6054036640665,
+    18.2391802227089
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:08:08+00:00"
+  },
+  {
+   "cityCode": 1777,
+   "cityName": "Baqa al Gharbiyya",
+   "countryCode": "IL",
+   "point": [
+    32.4138768491295,
+    35.0399183829221
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a data verdict: every qualifier run of this city (the runner's direct run plus 3-4 paced reruns of the unchanged deterministic candidate) ended on transient govmap failures - connect timeouts, 45 s response timeouts and fetch resets, mostly on the batched fresh reread - so exact-ID rereads never completed; no check failed on data. Other Israeli cities qualified with the identical candid…",
+   "finishedAt": "2026-10-12T14:26:56+00:00"
+  },
+  {
+   "cityCode": 1814,
+   "cityName": "La Rambla",
+   "countryCode": "US",
+   "point": [
+    33.7366691602744,
+    -118.297849978423
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for La Rambla (us-ca-calfire-statewide-parcels) with 150 material overlap pair(s) (> 0.01 m2; max 1.13e+03 m2, 100% of the smaller; total 1.06e+05 m2); 133 exact-duplicate geometries under distinct IDs among 234 cached features (06037~7458012045 / 06037~74580…",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 1833,
+   "cityName": "Cáceres",
+   "countryCode": "ES",
+   "point": [
+    39.4710387391063,
+    -6.37588015614012
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:17+00:00"
+  },
+  {
+   "cityCode": 1864,
+   "cityName": "Beersheba",
+   "countryCode": "IL",
+   "point": [
+    31.2545180899882,
+    34.7869140000578
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:56+00:00"
+  },
+  {
+   "cityCode": 1899,
+   "cityName": "Santa Rosa",
+   "countryCode": "US",
+   "point": [
+    38.4414715811293,
+    -122.725064571145
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Santa Rosa (us-ca-calfire-statewide-parcels) with 15 material overlap pair(s) (> 0.01 m2; max 0.7 m2, 0.189% of the smaller; total 2.27 m2) among 148 cached features (06097~010-101-029 / 06097~010-101-GAP: 0.7 m2 = 0.118% of the smaller; 06097~010-092-004…",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 1917,
+   "cityName": "San Fernando",
+   "countryCode": "ES",
+   "point": [
+    36.4630204375561,
+    -6.20210970696362
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 1927,
+   "cityName": "Purmerend",
+   "countryCode": "NL",
+   "point": [
+    52.5033693716876,
+    4.96148509531992
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:12+00:00"
+  },
+  {
+   "cityCode": 1928,
+   "cityName": "Hagen",
+   "countryCode": "DE",
+   "point": [
+    51.3659087620314,
+    7.46735353305389
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:41+00:00"
+  },
+  {
+   "cityCode": 1935,
+   "cityName": "Gdynia",
+   "countryCode": "PL",
+   "point": [
+    54.5322041862711,
+    18.5076341710355
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:57:58+00:00"
+  },
+  {
+   "cityCode": 1947,
+   "cityName": "Taibe",
+   "countryCode": "IL",
+   "point": [
+    32.2649299482491,
+    35.0081305909969
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:57+00:00"
+  },
+  {
+   "cityCode": 1982,
+   "cityName": "Pleasanton",
+   "countryCode": "US",
+   "point": [
+    37.6840412289955,
+    -121.881389590301
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Pleasanton (us-ca-calfire-statewide-parcels) with 8 material overlap pair(s) (> 0.01 m2; max 0.471 m2, 0.0519% of the smaller; total 1.69 m2) among 170 cached features (06001~946-3321-12 / 06001~946-3322-38: 0.471 m2 = 0.0519% of the smaller; 06001~946-33…",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 1999,
+   "cityName": "Jerez",
+   "countryCode": "ES",
+   "point": [
+    36.6880058807652,
+    -6.12730032928733
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2008,
+   "cityName": "Hoorn",
+   "countryCode": "NL",
+   "point": [
+    52.6558213441406,
+    5.06975918263357
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:29+00:00"
+  },
+  {
+   "cityCode": 2014,
+   "cityName": "Ostrów Wielkopolski",
+   "countryCode": "PL",
+   "point": [
+    51.6497384459528,
+    17.8138050881419
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:05:24+00:00"
+  },
+  {
+   "cityCode": 2061,
+   "cityName": "Concord",
+   "countryCode": "US",
+   "point": [
+    37.9523383146985,
+    -122.042026648317
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Concord (us-ca-calfire-statewide-parcels) with 4 material overlap pair(s) (> 0.01 m2; max 0.535 m2, 0.0267% of the smaller; total 0.782 m2) among 100 cached features (06013~128290061 / 06013~128290070: 0.535 m2 = 0.0267% of the smaller; 06013~147092003 /…",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 2078,
+   "cityName": "Mairena del Aljarafe",
+   "countryCode": "ES",
+   "point": [
+    37.3699307690889,
+    -6.04960234044055
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2088,
+   "cityName": "Münster",
+   "countryCode": "DE",
+   "point": [
+    51.9527203351823,
+    7.6263298998742
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:42+00:00"
+  },
+  {
+   "cityCode": 2105,
+   "cityName": "Umm al-Fahm",
+   "countryCode": "IL",
+   "point": [
+    32.5239214711844,
+    35.1523058461333
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:57+00:00"
+  },
+  {
+   "cityCode": 2140,
+   "cityName": "Vallejo",
+   "countryCode": "US",
+   "point": [
+    38.1110395191306,
+    -122.225134637053
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Vallejo (us-ca-calfire-statewide-parcels) with 15 material overlap pair(s) (> 0.01 m2; max 0.423 m2, 0.0696% of the smaller; total 1.89 m2) among 180 cached features (06095~0069053040 / 06095~0069212080: 0.423 m2 = 0.0696% of the smaller; 06095~0069070060…",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 2167,
+   "cityName": "Unna",
+   "countryCode": "DE",
+   "point": [
+    51.5396885168331,
+    7.65878768202864
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:47:00+00:00"
+  },
+  {
+   "cityCode": 2172,
+   "cityName": "Inowrocław",
+   "countryCode": "PL",
+   "point": [
+    52.7902336993022,
+    18.2590588435053
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:03:55+00:00"
+  },
+  {
+   "cityCode": 2184,
+   "cityName": "Modiin-Maccabim-Reut",
+   "countryCode": "IL",
+   "point": [
+    31.8986246886273,
+    35.0077621307069
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:26:57+00:00"
+  },
+  {
+   "cityCode": 2218,
+   "cityName": "Livermore",
+   "countryCode": "US",
+   "point": [
+    37.678488891042,
+    -121.767840355486
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Livermore (us-ca-calfire-statewide-parcels): 113 cached features, 43 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 2235,
+   "cityName": "Dos Hermanas",
+   "countryCode": "ES",
+   "point": [
+    37.2844472525494,
+    -5.92448113154322
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2239,
+   "cityName": "Rouen",
+   "countryCode": "FR",
+   "point": [
+    49.4334014958952,
+    1.08426580718412
+   ],
+   "sourceIds": [
+    "fr-ign-parcellaire-express"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:18:18+00:00"
+  },
+  {
+   "cityCode": 2243,
+   "cityName": "Waalwijk",
+   "countryCode": "NL",
+   "point": [
+    51.6765003437214,
+    5.05181650386737
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "held",
+   "summary": "Held on the source data: in the first sampled cell PDOK returns a record that the production adapter refuses as an invalid native ID or excluded ground record (reproduced twice on 2026-10-12 after the cursor fix); the adapter is not loosened for one city.",
+   "finishedAt": "2026-10-12T14:51:23+00:00"
+  },
+  {
+   "cityCode": 2244,
+   "cityName": "Lüdenscheid",
+   "countryCode": "DE",
+   "point": [
+    51.2199872933547,
+    7.63018199810285
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:47:01+00:00"
+  },
+  {
+   "cityCode": 2249,
+   "cityName": "Kalisz",
+   "countryCode": "PL",
+   "point": [
+    51.7549404064184,
+    18.0833173060179
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:01:40+00:00"
+  },
+  {
+   "cityCode": 2261,
+   "cityName": "Beit Shemesh",
+   "countryCode": "IL",
+   "point": [
+    31.7377399040953,
+    34.9909804687318
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a data verdict: every qualifier run of this city (the runner's direct run plus 3-4 paced reruns of the unchanged deterministic candidate) ended on transient govmap failures - connect timeouts, 45 s response timeouts and fetch resets, mostly on the batched fresh reread - so exact-ID rereads never completed; no check failed on data. Other Israeli cities qualified with the identical candid…",
+   "finishedAt": "2026-10-12T14:26:57+00:00"
+  },
+  {
+   "cityCode": 2319,
+   "cityName": "Bussum",
+   "countryCode": "NL",
+   "point": [
+    52.2773118416372,
+    5.16304422962181
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:48:00+00:00"
+  },
+  {
+   "cityCode": 2320,
+   "cityName": "Iserlohn",
+   "countryCode": "DE",
+   "point": [
+    51.3791903656589,
+    7.68570083680636
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:47:11+00:00"
+  },
+  {
+   "cityCode": 2325,
+   "cityName": "Tczew",
+   "countryCode": "PL",
+   "point": [
+    54.0908371715605,
+    18.7843364944908
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:06:17+00:00"
+  },
+  {
+   "cityCode": 2337,
+   "cityName": "Carmiel",
+   "countryCode": "IL",
+   "point": [
+    32.917005101634,
+    35.2992591516175
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a data verdict: every qualifier run of this city (the runner's direct run plus 3-4 paced reruns of the unchanged deterministic candidate) ended on transient govmap failures - connect timeouts, 45 s response timeouts and fetch resets, mostly on the batched fresh reread - so exact-ID rereads never completed; no check failed on data. Other Israeli cities qualified with the identical candid…",
+   "finishedAt": "2026-10-12T14:26:57+00:00"
+  },
+  {
+   "cityCode": 2371,
+   "cityName": "Santa Clarita",
+   "countryCode": "US",
+   "point": [
+    34.3878836634765,
+    -118.55282492176
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Santa Clarita (us-ca-calfire-statewide-parcels) with 54 material overlap pair(s) (> 0.01 m2; max 0.768 m2, 0.133% of the smaller; total 9.27 m2) among 178 cached features (06037~2857003014 / 06037~2857003026: 0.768 m2 = 0.133% of the smaller; 06037~285700…",
+   "finishedAt": "2026-10-12T12:57:37+00:00"
+  },
+  {
+   "cityCode": 2387,
+   "cityName": "Oviedo / Uviéu",
+   "countryCode": "ES",
+   "point": [
+    43.3662219381849,
+    -5.84679501465977
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2395,
+   "cityName": "Hilversum",
+   "countryCode": "NL",
+   "point": [
+    52.2216945481736,
+    5.17282299607963
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:22+00:00"
+  },
+  {
+   "cityCode": 2401,
+   "cityName": "Opole",
+   "countryCode": "PL",
+   "point": [
+    50.6681692860732,
+    17.9404125955347
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:01:10+00:00"
+  },
+  {
+   "cityCode": 2446,
+   "cityName": "Napa",
+   "countryCode": "US",
+   "point": [
+    38.3100656004138,
+    -122.304857594344
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Napa (us-ca-calfire-statewide-parcels) with 3 material overlap pair(s) (> 0.01 m2; max 0.681 m2, 0.128% of the smaller; total 1.3 m2) among 138 cached features (06055~001061009000 / 06055~001061013000: 0.681 m2 = 0.128% of the smaller; 06055~001061009000…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 2462,
+   "cityName": "Algeciras",
+   "countryCode": "ES",
+   "point": [
+    36.1312582102,
+    -5.45243135123163
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2470,
+   "cityName": "Almere",
+   "countryCode": "NL",
+   "point": [
+    52.377455091164,
+    5.24278468537167
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:29+00:00"
+  },
+  {
+   "cityCode": 2471,
+   "cityName": "Hamm",
+   "countryCode": "DE",
+   "point": [
+    51.6789688105277,
+    7.78773684717369
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:42+00:00"
+  },
+  {
+   "cityCode": 2476,
+   "cityName": "Toruń",
+   "countryCode": "PL",
+   "point": [
+    53.0245852712266,
+    18.6212481126872
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:58:50+00:00"
+  },
+  {
+   "cityCode": 2488,
+   "cityName": "Jerusalem",
+   "countryCode": "IL",
+   "point": [
+    31.77637421887,
+    35.1855603763909
+   ],
+   "sourceIds": [
+    "il-govmap-cadastral-parcel-rows"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a data verdict: every qualifier run of this city (the runner's direct run plus 3-4 paced reruns of the unchanged deterministic candidate) ended on transient govmap failures - connect timeouts, 45 s response timeouts and fetch resets, mostly on the batched fresh reread - so exact-ID rereads never completed; no check failed on data. Other Israeli cities qualified with the identical candid…",
+   "finishedAt": "2026-10-12T14:26:58+00:00"
+  },
+  {
+   "cityCode": 2521,
+   "cityName": "Antioch",
+   "countryCode": "US",
+   "point": [
+    37.9995977752111,
+    -121.852977227884
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Antioch (us-ca-calfire-statewide-parcels) with 19 material overlap pair(s) (> 0.01 m2; max 2.78 m2, 0.132% of the smaller; total 6.58 m2) among 132 cached features (06013~074080006 / 06013~074261040: 2.78 m2 = 0.132% of the smaller; 06013~074080006 / 0601…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 2536,
+   "cityName": "Salamanca",
+   "countryCode": "ES",
+   "point": [
+    40.9667663153024,
+    -5.66275929601071
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2544,
+   "cityName": "Zeist",
+   "countryCode": "NL",
+   "point": [
+    52.0897846498778,
+    5.23582173112321
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:48:03+00:00"
+  },
+  {
+   "cityCode": 2549,
+   "cityName": "Grudziądz",
+   "countryCode": "PL",
+   "point": [
+    53.4788249167263,
+    18.7571110836073
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:02:02+00:00"
+  },
+  {
+   "cityCode": 2592,
+   "cityName": "Mission Viejo",
+   "countryCode": "US",
+   "point": [
+    33.5935129285423,
+    -117.683461261124
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (45 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Mission Viejo (us-ca-calfire-statewide-parcels) with 13 material overlap pair(s) (> 0.01 m2; max 0.317 m2, 0.0765% of the smaller; total 1.27 m2) among 127 cached features (06059~627-391-32 / 06059~627-391-61: 0.317 m2 = 0.0756% of the smaller; 06059~627-…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 2615,
+   "cityName": "'s-Hertogenbosch",
+   "countryCode": "NL",
+   "point": [
+    51.7066884581067,
+    5.31629111142042
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:39+00:00"
+  },
+  {
+   "cityCode": 2620,
+   "cityName": "Elbląg",
+   "countryCode": "PL",
+   "point": [
+    54.1668551128978,
+    19.4103120545885
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:00:12+00:00"
+  },
+  {
+   "cityCode": 2682,
+   "cityName": "Amersfoort",
+   "countryCode": "NL",
+   "point": [
+    52.1691038816767,
+    5.39728040800154
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:28+00:00"
+  },
+  {
+   "cityCode": 2687,
+   "cityName": "Włocławek",
+   "countryCode": "PL",
+   "point": [
+    52.6505942526297,
+    19.0626658622382
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:02:28+00:00"
+  },
+  {
+   "cityCode": 2727,
+   "cityName": "Verdugo City",
+   "countryCode": "US",
+   "point": [
+    34.2392149865027,
+    -118.267445968965
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Verdugo City (us-ca-calfire-statewide-parcels) with 21 material overlap pair(s) (> 0.01 m2; max 0.34 m2, 0.028% of the smaller; total 1.22 m2) among 109 cached features (06037~2572002031 / 06037~2572002039: 0.34 m2 = 0.028% of the smaller; 06037~257100602…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 2741,
+   "cityName": "Ceuta",
+   "countryCode": "ES",
+   "point": [
+    35.8861920165,
+    -5.32748513933702
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2749,
+   "cityName": "Lelystad",
+   "countryCode": "NL",
+   "point": [
+    52.5058770190195,
+    5.47327676910043
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:35+00:00"
+  },
+  {
+   "cityCode": 2750,
+   "cityName": "Siegen",
+   "countryCode": "DE",
+   "point": [
+    50.8899005634816,
+    8.02247385221933
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:43+00:00"
+  },
+  {
+   "cityCode": 2754,
+   "cityName": "Rybnik",
+   "countryCode": "PL",
+   "point": [
+    50.099180479429,
+    18.5383788655106
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:05:52+00:00"
+  },
+  {
+   "cityCode": 2806,
+   "cityName": "León",
+   "countryCode": "ES",
+   "point": [
+    42.6013051988391,
+    -5.57593090649129
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2813,
+   "cityName": "Eindhoven",
+   "countryCode": "NL",
+   "point": [
+    51.4432163203009,
+    5.45844256201511
+   ],
+   "sourceIds": [
+    "c153d50f-e31d-52e4-ab48-a23ecdb56b1c",
+    "84bf43ab-d08c-557c-b24f-042c9439d5a9"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualified with the cursor-aware qualifier (2026-10-12) using the candidate the valhalla catch-up worker built for this research packet; every check passed in 37 requests with zero metric blockers.",
+   "finishedAt": "2026-10-12T14:51:23+00:00"
+  },
+  {
+   "cityCode": 2814,
+   "cityName": "Freiburg im Breisgau",
+   "countryCode": "DE",
+   "point": [
+    48.0006635061131,
+    7.83778338402154
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:32+00:00"
+  },
+  {
+   "cityCode": 2818,
+   "cityName": "Jastrzębie-Zdrój",
+   "countryCode": "PL",
+   "point": [
+    49.9518257086113,
+    18.5908434066578
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:07:10+00:00"
+  },
+  {
+   "cityCode": 2876,
+   "cityName": "Oss",
+   "countryCode": "NL",
+   "point": [
+    51.7661201043065,
+    5.52895010311022
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:48+00:00"
+  },
+  {
+   "cityCode": 2881,
+   "cityName": "Gliwice",
+   "countryCode": "PL",
+   "point": [
+    50.2974825733379,
+    18.6726701509765
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:00:37+00:00"
+  },
+  {
+   "cityCode": 2918,
+   "cityName": "Fairfield",
+   "countryCode": "US",
+   "point": [
+    38.2615931538981,
+    -122.028684958595
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Fairfield (us-ca-calfire-statewide-parcels) with 37 material overlap pair(s) (> 0.01 m2; max 0.588 m2, 0.104% of the smaller; total 7.13 m2) among 177 cached features (06095~0033204200 / 06095~0033204250: 0.588 m2 = 0.104% of the smaller; 06095~0033192070…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 2931,
+   "cityName": "Córdoba",
+   "countryCode": "ES",
+   "point": [
+    37.8877717912882,
+    -4.78225054209289
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 2937,
+   "cityName": "Veenendaal",
+   "countryCode": "NL",
+   "point": [
+    52.0224599462408,
+    5.55574016955085
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:42+00:00"
+  },
+  {
+   "cityCode": 2938,
+   "cityName": "Gütersloh",
+   "countryCode": "DE",
+   "point": [
+    51.9044262053087,
+    8.38418745049793
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:47:11+00:00"
+  },
+  {
+   "cityCode": 2979,
+   "cityName": "Hillgrove",
+   "countryCode": "US",
+   "point": [
+    33.9904967598225,
+    -117.932463907655
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (46 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Hillgrove (us-ca-calfire-statewide-parcels) with 28610 material overlap pair(s) (> 0.01 m2; max 4.6e+04 m2, 100% of the smaller; total 1.1e+09 m2; e.g. 06037~8295020001 / 06037~8295020002: 4.6e+04 m2 = 100% of the smaller; 06037~8295020001 / 06037~8295020…",
+   "finishedAt": "2026-10-12T13:04:06+00:00"
+  },
+  {
+   "cityCode": 2991,
+   "cityName": "Talavera de la Reina",
+   "countryCode": "ES",
+   "point": [
+    39.9627110592181,
+    -4.82872684764929
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:17+00:00"
+  },
+  {
+   "cityCode": 2997,
+   "cityName": "Ede",
+   "countryCode": "NL",
+   "point": [
+    52.0353765306542,
+    5.65323487609329
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:53+00:00"
+  },
+  {
+   "cityCode": 3002,
+   "cityName": "Częstochowa",
+   "countryCode": "PL",
+   "point": [
+    50.8076252950718,
+    19.1134120802074
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired: every source check passed, but the metric audit found parcel 246401_1.0181.11/8 (901 m2) lying entirely inside 246401_1.0181.11/9 (100% of the smaller parcel).",
+   "finishedAt": "2026-10-12T14:15:49+00:00"
+  },
+  {
+   "cityCode": 3050,
+   "cityName": "Fuengirola",
+   "countryCode": "ES",
+   "point": [
+    36.5476594580092,
+    -4.62490817255359
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 3056,
+   "cityName": "Helmond",
+   "countryCode": "NL",
+   "point": [
+    51.4711841170888,
+    5.66069182320304
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:11+00:00"
+  },
+  {
+   "cityCode": 3061,
+   "cityName": "Pabianice",
+   "countryCode": "PL",
+   "point": [
+    51.6609967628735,
+    19.3534282663508
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:05:01+00:00"
+  },
+  {
+   "cityCode": 3109,
+   "cityName": "Valladolid",
+   "countryCode": "ES",
+   "point": [
+    41.6383171910057,
+    -4.72828357608669
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 3115,
+   "cityName": "Leeuwarden",
+   "countryCode": "NL",
+   "point": [
+    53.2003327872053,
+    5.80785745182904
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:04+00:00"
+  },
+  {
+   "cityCode": 3156,
+   "cityName": "Tracy",
+   "countryCode": "US",
+   "point": [
+    37.732411235337,
+    -121.439747564863
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Tracy (us-ca-calfire-statewide-parcels) with 28 material overlap pair(s) (> 0.01 m2; max 0.49 m2, 0.0721% of the smaller; total 5.02 m2) among 155 cached features (06077~23419005 / 06077~23419007: 0.49 m2 = 0.0596% of the smaller; 06077~23419005 / 06077~2…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 3167,
+   "cityName": "Torremolinos",
+   "countryCode": "ES",
+   "point": [
+    36.6157875735994,
+    -4.51891924854848
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:14+00:00"
+  },
+  {
+   "cityCode": 3173,
+   "cityName": "Nijmegen",
+   "countryCode": "NL",
+   "point": [
+    51.8273681725996,
+    5.82030557604345
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:22+00:00"
+  },
+  {
+   "cityCode": 3174,
+   "cityName": "Bielefeld",
+   "countryCode": "DE",
+   "point": [
+    52.0195333690261,
+    8.54753242156078
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:43+00:00"
+  },
+  {
+   "cityCode": 3178,
+   "cityName": "Tychy",
+   "countryCode": "PL",
+   "point": [
+    50.1188429468754,
+    18.987175031002
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:00:10+00:00"
+  },
+  {
+   "cityCode": 3230,
+   "cityName": "Maastricht",
+   "countryCode": "NL",
+   "point": [
+    50.8485108833663,
+    5.69710839005175
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:57+00:00"
+  },
+  {
+   "cityCode": 3269,
+   "cityName": "Vacaville",
+   "countryCode": "US",
+   "point": [
+    38.3435773464155,
+    -121.969584736925
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (45 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Vacaville (us-ca-calfire-statewide-parcels) with 15 material overlap pair(s) (> 0.01 m2; max 0.55 m2, 0.0734% of the smaller; total 2.29 m2) among 121 cached features (06095~0132230010 / 06095~0132271080: 0.55 m2 = 0.0734% of the smaller; 06095~0132293110…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 3279,
+   "cityName": "Palencia",
+   "countryCode": "ES",
+   "point": [
+    42.0084314212523,
+    -4.5272214544595
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3285,
+   "cityName": "Arnhem",
+   "countryCode": "NL",
+   "point": [
+    51.9720027817995,
+    5.91461730519761
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:23+00:00"
+  },
+  {
+   "cityCode": 3286,
+   "cityName": "Herford",
+   "countryCode": "DE",
+   "point": [
+    52.1186742740275,
+    8.67431041713781
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:47:20+00:00"
+  },
+  {
+   "cityCode": 3289,
+   "cityName": "Płock",
+   "countryCode": "PL",
+   "point": [
+    52.5430998887522,
+    19.7195485490596
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:03:27+00:00"
+  },
+  {
+   "cityCode": 3334,
+   "cityName": "Collado Villalba",
+   "countryCode": "ES",
+   "point": [
+    40.6302224124352,
+    -4.00790261120973
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3340,
+   "cityName": "Apeldoorn",
+   "countryCode": "NL",
+   "point": [
+    52.2088941318488,
+    5.97243707164198
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:45+00:00"
+  },
+  {
+   "cityCode": 3341,
+   "cityName": "Rüsselsheim am Main",
+   "countryCode": "DE",
+   "point": [
+    49.990515288114,
+    8.43382940878915
+   ],
+   "sourceIds": [
+    "hessen-alkis-vereinfacht-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:43+00:00"
+  },
+  {
+   "cityCode": 3344,
+   "cityName": "Bełchatów",
+   "countryCode": "PL",
+   "point": [
+    51.3600738693611,
+    19.3733696862117
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "held",
+   "summary": "Held: the Belchatow county ULDK backend gives no clean explicit absence. GetParcelById for the absent ID 100101_1.0013.999999 answers -1 brak wynikow followed by a backend failure fragment (bledny format odpowiedzi XML) after the aggregate-database line, which the adapter treats as unavailable (502). Every other check passed; reproduced 2026-10-12.",
+   "finishedAt": "2026-10-12T14:15:49+00:00"
+  },
+  {
+   "cityCode": 3377,
+   "cityName": "Manteca",
+   "countryCode": "US",
+   "point": [
+    37.8048207266411,
+    -121.225267401044
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (46 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Manteca (us-ca-calfire-statewide-parcels) with 37 material overlap pair(s) (> 0.01 m2; max 0.871 m2, 0.101% of the smaller; total 10.4 m2) among 166 cached features (06077~21709124 / 06077~21710002: 0.871 m2 = 0.0664% of the smaller; 06077~21709125 / 0607…",
+   "finishedAt": "2026-10-12T13:04:07+00:00"
+  },
+  {
+   "cityCode": 3393,
+   "cityName": "Zwolle",
+   "countryCode": "NL",
+   "point": [
+    52.5132062071371,
+    6.09243811399258
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:03+00:00"
+  },
+  {
+   "cityCode": 3394,
+   "cityName": "Karlsruhe",
+   "countryCode": "DE",
+   "point": [
+    49.0084967221897,
+    8.4011625005132
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:34+00:00"
+  },
+  {
+   "cityCode": 3397,
+   "cityName": "Bielsko-Biała",
+   "countryCode": "PL",
+   "point": [
+    49.8178778643515,
+    19.0423255904236
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:59:46+00:00"
+  },
+  {
+   "cityCode": 3446,
+   "cityName": "Heerlen",
+   "countryCode": "NL",
+   "point": [
+    50.9001389828976,
+    5.99426673932929
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:18+00:00"
+  },
+  {
+   "cityCode": 3447,
+   "cityName": "Mannheim",
+   "countryCode": "DE",
+   "point": [
+    49.485482134892,
+    8.47482558079509
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:34+00:00"
+  },
+  {
+   "cityCode": 3449,
+   "cityName": "Piotrków Trybunalski",
+   "countryCode": "PL",
+   "point": [
+    51.4086733870137,
+    19.6836162711193
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:08:53+00:00"
+  },
+  {
+   "cityCode": 3493,
+   "cityName": "Jaén",
+   "countryCode": "ES",
+   "point": [
+    37.7763618487055,
+    -3.78973949349206
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3499,
+   "cityName": "Deventer",
+   "countryCode": "NL",
+   "point": [
+    52.2589851524138,
+    6.17977057589214
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:20+00:00"
+  },
+  {
+   "cityCode": 3502,
+   "cityName": "Olsztyn",
+   "countryCode": "PL",
+   "point": [
+    53.7665732876546,
+    20.4978271160328
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:59:17+00:00"
+  },
+  {
+   "cityCode": 3546,
+   "cityName": "Granada",
+   "countryCode": "ES",
+   "point": [
+    37.1713370150694,
+    -3.60908353210738
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3552,
+   "cityName": "Groningen",
+   "countryCode": "NL",
+   "point": [
+    53.2187480982514,
+    6.5694015697624
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:33+00:00"
+  },
+  {
+   "cityCode": 3553,
+   "cityName": "Paderborn",
+   "countryCode": "DE",
+   "point": [
+    51.7199802103556,
+    8.75710708517565
+   ],
+   "sourceIds": [
+    "de-nrw-lika-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:43+00:00"
+  },
+  {
+   "cityCode": 3555,
+   "cityName": "Tomaszów Mazowiecki",
+   "countryCode": "PL",
+   "point": [
+    51.5340194073462,
+    20.0135606379077
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:07:39+00:00"
+  },
+  {
+   "cityCode": 3599,
+   "cityName": "Santander",
+   "countryCode": "ES",
+   "point": [
+    43.4528941081206,
+    -3.82448712390228
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3605,
+   "cityName": "Almelo",
+   "countryCode": "NL",
+   "point": [
+    52.3551248247847,
+    6.65940688231402
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:45+00:00"
+  },
+  {
+   "cityCode": 3641,
+   "cityName": "Palmdale",
+   "countryCode": "US",
+   "point": [
+    34.5672624372045,
+    -118.072595845325
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Palmdale (us-ca-calfire-statewide-parcels) with 59 material overlap pair(s) (> 0.01 m2; max 0.626 m2, 0.109% of the smaller; total 14.6 m2) among 147 cached features (06037~3020022025 / 06037~3020022064: 0.626 m2 = 0.109% of the smaller; 06037~3020002903…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 3656,
+   "cityName": "Hengelo",
+   "countryCode": "NL",
+   "point": [
+    52.2689917662346,
+    6.80085741213038
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:47:33+00:00"
+  },
+  {
+   "cityCode": 3657,
+   "cityName": "Gießen",
+   "countryCode": "DE",
+   "point": [
+    50.5871854112385,
+    8.67930634779687
+   ],
+   "sourceIds": [
+    "hessen-alkis-vereinfacht-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:44+00:00"
+  },
+  {
+   "cityCode": 3660,
+   "cityName": "Warszawa (Warsaw)",
+   "countryCode": "PL",
+   "point": [
+    52.2229170530915,
+    21.0008161096485
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:57:12+00:00"
+  },
+  {
+   "cityCode": 3692,
+   "cityName": "Murrieta",
+   "countryCode": "US",
+   "point": [
+    33.5360803187946,
+    -117.149890103166
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the production adapter fails closed in Murrieta because the CAL FIRE statewide layer repeats APN 'RW' (a right-of-way placeholder, FIPS 06065) on distinct polygons: a direct non-geometry read of qualifier cell 3 (bbox -117.151,33.536,-117.15,33.537) shows objectids 7201604 and 7202346 sharing 06065~RW with Shape__Area 42,700.5 vs 55,148.0, so cells 3, 6, 9 and 11 raise 'conflicting geometry…",
+   "finishedAt": "2026-10-12T12:57:38+00:00"
+  },
+  {
+   "cityCode": 3707,
+   "cityName": "Enschede",
+   "countryCode": "NL",
+   "point": [
+    52.2156183904437,
+    6.88434157506402
+   ],
+   "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:46:51+00:00"
+  },
+  {
+   "cityCode": 3708,
+   "cityName": "Darmstadt",
+   "countryCode": "DE",
+   "point": [
+    49.8775164874442,
+    8.65106829046502
+   ],
+   "sourceIds": [
+    "hessen-alkis-vereinfacht-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:44+00:00"
+  },
+  {
+   "cityCode": 3710,
+   "cityName": "Legionowo",
+   "countryCode": "PL",
+   "point": [
+    52.4039665953965,
+    20.9252703477092
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:07+00:00"
+  },
+  {
+   "cityCode": 3741,
+   "cityName": "Turlock",
+   "countryCode": "US",
+   "point": [
+    37.5084061848935,
+    -120.850326176668
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Turlock (us-ca-calfire-statewide-parcels) with 1 material overlap pair(s) (> 0.01 m2; max 0.0148 m2, 0.000629% of the smaller; total 0.0148 m2) among 70 cached features (06099~071015020000 / 06099~071015023000: 0.0148 m2 = 0.000629% of the smaller). The o…",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 3750,
+   "cityName": "Rivas-Vaciamadrid",
+   "countryCode": "ES",
+   "point": [
+    40.354890726015,
+    -3.53015604503024
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3756,
+   "cityName": "Heidelberg",
+   "countryCode": "DE",
+   "point": [
+    49.3910185824291,
+    8.6720920591206
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:35+00:00"
+  },
+  {
+   "cityCode": 3758,
+   "cityName": "Kielce",
+   "countryCode": "PL",
+   "point": [
+    50.8750758566059,
+    20.6275441266407
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:58:56+00:00"
+  },
+  {
+   "cityCode": 3788,
+   "cityName": "Lancaster",
+   "countryCode": "US",
+   "point": [
+    34.6916596712139,
+    -118.119896293898
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (46 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Lancaster (us-ca-calfire-statewide-parcels) with 41 material overlap pair(s) (> 0.01 m2; max 0.694 m2, 0.105% of the smaller; total 5.08 m2) among 190 cached features (06037~3146018023 / 06037~3146018026: 0.694 m2 = 0.105% of the smaller; 06037~3146018007…",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 3796,
+   "cityName": "Torrejón de Ardoz",
+   "countryCode": "ES",
+   "point": [
+    40.4562368259996,
+    -3.46752939188295
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3805,
+   "cityName": "Wołomin",
+   "countryCode": "PL",
+   "point": [
+    52.342697415251,
+    21.2337346051155
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:07:39+00:00"
+  },
+  {
+   "cityCode": 3835,
+   "cityName": "Rubidoux",
+   "countryCode": "US",
+   "point": [
+    34.0042242249142,
+    -117.443373578253
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the production adapter fails closed in Rubidoux because the CAL FIRE statewide layer uses APN 'RW' (a right-of-way placeholder, FIPS 06065) on 1,982 distinct polygons (1,976 distinct Shape__Area values in a direct non-geometry reread of the 59 cached IDs), so the fresh collected-ID reread fails with 'conflicting geometry for one parcel ID' (502) and exactIds/stableGeometry fail; the metric…",
+   "finishedAt": "2026-10-12T12:58:35+00:00"
+  },
+  {
+   "cityCode": 3843,
+   "cityName": "Arganda del Rey",
+   "countryCode": "ES",
+   "point": [
+    40.3049969772298,
+    -3.45160875510971
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:17+00:00"
+  },
+  {
+   "cityCode": 3849,
+   "cityName": "Pforzheim",
+   "countryCode": "DE",
+   "point": [
+    48.8884978124238,
+    8.69418460384127
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:35+00:00"
+  },
+  {
+   "cityCode": 3851,
+   "cityName": "Radom",
+   "countryCode": "PL",
+   "point": [
+    51.3964628828514,
+    21.1526507651136
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:58:26+00:00"
+  },
+  {
+   "cityCode": 3889,
+   "cityName": "Alcalá de Henares",
+   "countryCode": "ES",
+   "point": [
+    40.4884650292481,
+    -3.36786868627994
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3895,
+   "cityName": "Hanau",
+   "countryCode": "DE",
+   "point": [
+    50.1192991264763,
+    8.92227699927494
+   ],
+   "sourceIds": [
+    "hessen-alkis-vereinfacht-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:45+00:00"
+  },
+  {
+   "cityCode": 3897,
+   "cityName": "Nowy Sącz",
+   "countryCode": "PL",
+   "point": [
+    49.6140452924349,
+    20.6998999214814
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:03:12+00:00"
+  },
+  {
+   "cityCode": 3926,
+   "cityName": "Davis",
+   "countryCode": "US",
+   "point": [
+    38.553067679527,
+    -121.743239448172
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Davis (us-ca-calfire-statewide-parcels): 133 cached features, 43 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 3934,
+   "cityName": "Guadalajara",
+   "countryCode": "ES",
+   "point": [
+    40.6337871190935,
+    -3.16523144931672
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3942,
+   "cityName": "Tarnów",
+   "countryCode": "PL",
+   "point": [
+    50.0164917071665,
+    20.9877709077343
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:02:36+00:00"
+  },
+  {
+   "cityCode": 3970,
+   "cityName": "Ragsdale",
+   "countryCode": "US",
+   "point": [
+    37.3145309664504,
+    -120.470766252423
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (42 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Ragsdale (us-ca-calfire-statewide-parcels) with 7 material overlap pair(s) (> 0.01 m2; max 2.71 m2, 0.45% of the smaller; total 5.34 m2) among 48 cached features (06047~007290039000 / 06047~007290041000: 2.71 m2 = 0.0241% of the smaller; 06047~00729004100…",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 3978,
+   "cityName": "Melilla",
+   "countryCode": "ES",
+   "point": [
+    35.2917388888371,
+    -2.94653731099416
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 3984,
+   "cityName": "Sindelfingen",
+   "countryCode": "DE",
+   "point": [
+    48.6952777912253,
+    9.00720562643213
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:36+00:00"
+  },
+  {
+   "cityCode": 3986,
+   "cityName": "Łomża",
+   "countryCode": "PL",
+   "point": [
+    53.1714002876591,
+    22.0646901929271
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:54+00:00"
+  },
+  {
+   "cityCode": 4013,
+   "cityName": "Lodi",
+   "countryCode": "US",
+   "point": [
+    38.12648465915,
+    -121.282989940807
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Lodi (us-ca-calfire-statewide-parcels) with 44 material overlap pair(s) (> 0.01 m2; max 0.76 m2, 0.128% of the smaller; total 8.78 m2) among 171 cached features (06077~03316001 / 06077~03317407: 0.76 m2 = 0.102% of the smaller; 06077~03316002 / 06077~0331…",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 4027,
+   "cityName": "Gerlingen",
+   "countryCode": "DE",
+   "point": [
+    48.8110813845571,
+    9.09691074394977
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:37+00:00"
+  },
+  {
+   "cityCode": 4029,
+   "cityName": "Elk",
+   "countryCode": "PL",
+   "point": [
+    53.8234849792281,
+    22.3576680534356
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:07:12+00:00"
+  },
+  {
+   "cityCode": 4056,
+   "cityName": "Madera",
+   "countryCode": "US",
+   "point": [
+    36.9636127025836,
+    -120.063186461836
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Madera (us-ca-calfire-statewide-parcels): 69 cached features, 44 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 4070,
+   "cityName": "Tübingen",
+   "countryCode": "DE",
+   "point": [
+    48.5232846769463,
+    9.05802872894238
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 1} of 94 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"08745000000499000202\", \"08745000000916000000\"], \"areaM2\": 0.2268}]",
+   "finishedAt": "2026-10-12T11:08:37+00:00"
+  },
+  {
+   "cityCode": 4072,
+   "cityName": "Siedlce",
+   "countryCode": "PL",
+   "point": [
+    52.1656867656902,
+    22.2767061227765
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:02:09+00:00"
+  },
+  {
+   "cityCode": 4107,
+   "cityName": "Almeria",
+   "countryCode": "ES",
+   "point": [
+    36.849902132657,
+    -2.43377811362075
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 4115,
+   "cityName": "Suwałki",
+   "countryCode": "PL",
+   "point": [
+    54.1043061997561,
+    22.9331027875897
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:03:40+00:00"
+  },
+  {
+   "cityCode": 4149,
+   "cityName": "Logroño",
+   "countryCode": "ES",
+   "point": [
+    42.4616570867915,
+    -2.44447075451474
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 4157,
+   "cityName": "Stalowa Wola",
+   "countryCode": "PL",
+   "point": [
+    50.5664297325734,
+    22.0568167437462
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:06:46+00:00"
+  },
+  {
+   "cityCode": 4183,
+   "cityName": "Woodland",
+   "countryCode": "US",
+   "point": [
+    38.6738246565953,
+    -121.770580660094
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Woodland (us-ca-calfire-statewide-parcels) with 3 material overlap pair(s) (> 0.01 m2; max 0.125 m2, 0.101% of the smaller; total 0.255 m2) among 157 cached features (06113~006571027 / 06113~006571030: 0.125 m2 = 0.101% of the smaller; 06113~006571028 / 0…",
+   "finishedAt": "2026-10-12T13:04:07+00:00"
+  },
+  {
+   "cityCode": 4197,
+   "cityName": "Kassel",
+   "countryCode": "DE",
+   "point": [
+    51.3151466598024,
+    9.48755550595054
+   ],
+   "sourceIds": [
+    "hessen-alkis-vereinfacht-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:45+00:00"
+  },
+  {
+   "cityCode": 4199,
+   "cityName": "Rzeszów",
+   "countryCode": "PL",
+   "point": [
+    50.0320723876861,
+    22.0039593163143
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:58:24+00:00"
+  },
+  {
+   "cityCode": 4232,
+   "cityName": "Albacete",
+   "countryCode": "ES",
+   "point": [
+    38.9970730232228,
+    -1.86300775814036
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:15+00:00"
+  },
+  {
+   "cityCode": 4238,
+   "cityName": "Heilbronn",
+   "countryCode": "DE",
+   "point": [
+    49.1519115615472,
+    9.21652129447529
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:38+00:00"
+  },
+  {
+   "cityCode": 4265,
+   "cityName": "Ambler",
+   "countryCode": "US",
+   "point": [
+    36.3159769257435,
+    -119.320794374399
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (45 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Ambler (us-ca-calfire-statewide-parcels) with 5 material overlap pair(s) (> 0.01 m2; max 0.444 m2, 0.0523% of the smaller; total 0.722 m2) among 117 cached features (06107~095-171-017 / 06107~095-222-010: 0.444 m2 = 0.0523% of the smaller; 06107~095-171-0…",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 4280,
+   "cityName": "Lublin",
+   "countryCode": "PL",
+   "point": [
+    51.2411675205158,
+    22.5517979898529
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:57:39+00:00"
+  },
+  {
+   "cityCode": 4304,
+   "cityName": "Hemet",
+   "countryCode": "US",
+   "point": [
+    33.7564387822321,
+    -116.960268820094
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the production adapter fails closed in Hemet because the CAL FIRE statewide layer uses APN 'RW' (FIPS 06065) as a right-of-way placeholder on thousands of distinct polygons (a direct non-geometry reread of the single cached key returns the 2,000-row transfer limit with 1,995 distinct Shape__Area values), so sampling and the fresh collected-ID reread fail with 'conflicting geometry for one p…",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 4312,
+   "cityName": "Murcia",
+   "countryCode": "ES",
+   "point": [
+    37.9871660929647,
+    -1.13561881899431
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4318,
+   "cityName": "Przemyśl",
+   "countryCode": "PL",
+   "point": [
+    49.7865703940357,
+    22.7720844417991
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:08:04+00:00"
+  },
+  {
+   "cityCode": 4342,
+   "cityName": "Porterville",
+   "countryCode": "US",
+   "point": [
+    36.0721228509344,
+    -119.037786489403
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (42 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Porterville (us-ca-calfire-statewide-parcels) with 14 material overlap pair(s) (> 0.01 m2; max 1.29 m2, 0.243% of the smaller; total 2.42 m2) among 42 cached features (06107~251-170-016 / 06107~251-170-019: 1.29 m2 = 0.243% of the smaller; 06107~251-170-0…",
+   "finishedAt": "2026-10-12T12:57:39+00:00"
+  },
+  {
+   "cityCode": 4350,
+   "cityName": "Cartagena",
+   "countryCode": "ES",
+   "point": [
+    37.618765646404,
+    -0.993745386979599
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4354,
+   "cityName": "Reutlingen",
+   "countryCode": "DE",
+   "point": [
+    48.494515205626,
+    9.2093446638816
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:38+00:00"
+  },
+  {
+   "cityCode": 4356,
+   "cityName": "Zamość",
+   "countryCode": "PL",
+   "point": [
+    50.7217702281141,
+    23.2609637553334
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:05:50+00:00"
+  },
+  {
+   "cityCode": 4380,
+   "cityName": "Redlands",
+   "countryCode": "US",
+   "point": [
+    34.0602422132012,
+    -117.172811904947
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Redlands (us-ca-calfire-statewide-parcels) with 8 material overlap pair(s) (> 0.01 m2; max 0.977 m2, 0.139% of the smaller; total 2.85 m2) among 81 cached features (06071~017007129 / 06071~017007135: 0.977 m2 = 0.139% of the smaller; 06071~017007210 / 060…",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 4388,
+   "cityName": "Zaragoza",
+   "countryCode": "ES",
+   "point": [
+    41.649969882317,
+    -0.891594240579151
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4394,
+   "cityName": "Chełm",
+   "countryCode": "PL",
+   "point": [
+    51.1343001957731,
+    23.4775917479072
+   ],
+   "sourceIds": [
+    "pl-gugik-uldk"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:08:26+00:00"
+  },
+  {
+   "cityCode": 4426,
+   "cityName": "Elda",
+   "countryCode": "ES",
+   "point": [
+    38.4771867587344,
+    -0.787404505886849
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4430,
+   "cityName": "Constance",
+   "countryCode": "DE",
+   "point": [
+    47.6744214989573,
+    9.17309580098738
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:39+00:00"
+  },
+  {
+   "cityCode": 4455,
+   "cityName": "Yuba City",
+   "countryCode": "US",
+   "point": [
+    39.1297434746797,
+    -121.63154481313
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Yuba City (us-ca-calfire-statewide-parcels) with 28 material overlap pair(s) (> 0.01 m2; max 0.321 m2, 0.0301% of the smaller; total 3.71 m2) among 97 cached features (06101~052-112-003-000 / 06101~052-112-013-000: 0.321 m2 = 0.0301% of the smaller; 06101…",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 4463,
+   "cityName": "Elx / Elche",
+   "countryCode": "ES",
+   "point": [
+    38.2689671225358,
+    -0.701951348620113
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4492,
+   "cityName": "Rocklin",
+   "countryCode": "US",
+   "point": [
+    38.8026571525261,
+    -121.266323770494
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the production adapter fails closed in Rocklin because the CAL FIRE statewide layer repeats a right-of-way APN with different geometry (06061~017-350-ROW-000: 2 rows, 2 distinct Shape__Area values, inside the binding envelope -121.2698,38.7981,-121.2569,38.8073), so binding fails with 'conflicting geometry for one parcel ID' (502); the metric audit also failed with 31 material overlap pair(…",
+   "finishedAt": "2026-10-12T13:04:06+00:00"
+  },
+  {
+   "cityCode": 4500,
+   "cityName": "Torrevieja",
+   "countryCode": "ES",
+   "point": [
+    37.9889392541475,
+    -0.675763054142019
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4504,
+   "cityName": "Fulda",
+   "countryCode": "DE",
+   "point": [
+    50.5519779322862,
+    9.69246242762928
+   ],
+   "sourceIds": [
+    "hessen-alkis-vereinfacht-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T12:41:45+00:00"
+  },
+  {
+   "cityCode": 4537,
+   "cityName": "Alicante",
+   "countryCode": "ES",
+   "point": [
+    38.3645764288393,
+    -0.476811353862035
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4540,
+   "cityName": "Toulon",
+   "countryCode": "FR",
+   "point": [
+    43.1183148051142,
+    5.91190474692264
+   ],
+   "sourceIds": [
+    "fr-ign-parcellaire-express"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:19:19+00:00"
+  },
+  {
+   "cityCode": 4603,
+   "cityName": "Chico",
+   "countryCode": "US",
+   "point": [
+    39.7451421845011,
+    -121.842959124086
+   ],
+   "sourceIds": [
+    "us-ca-calfire-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Chico (us-ca-calfire-statewide-parcels) with 7 material overlap pair(s) (> 0.01 m2; max 0.0171 m2, 0.00409% of the smaller; total 0.0937 m2) among 129 cached features (06007~003-412-004 / 06007~003-412-011: 0.0171 m2 = 0.00362% of the smaller; 06007~003-4…",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 4611,
+   "cityName": "Alcoi / Alcoy",
+   "countryCode": "ES",
+   "point": [
+    38.6994653177862,
+    -0.476115309209115
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:17+00:00"
+  },
+  {
+   "cityCode": 4648,
+   "cityName": "Benidorm",
+   "countryCode": "ES",
+   "point": [
+    38.5417642417215,
+    -0.11934178823247
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:17+00:00"
+  },
+  {
+   "cityCode": 4652,
+   "cityName": "Göppingen",
+   "countryCode": "DE",
+   "point": [
+    48.7012458331498,
+    9.6658201173015
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "held",
+   "summary": "Source data defect, not repaired: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 2} of 68 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"08205000000170000102\", \"08205000000187000006\"], \"areaM2\": 0.0296}, {\"ids\": [\"08205000000175000001\", \"08205000002736000200\"…",
+   "finishedAt": "2026-10-12T11:08:39+00:00"
+  },
+  {
+   "cityCode": 4677,
+   "cityName": "Reno",
+   "countryCode": "US",
+   "point": [
+    39.5301389649096,
+    -119.79566677593
+   ],
+   "sourceIds": [
+    "us-nv-ndwr-statewide-county-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the Nevada NDWR County_Parcels MapServer returns inconsistent manifests: for qualifier cell 5 (bbox -119.795,39.53,-119.794,39.531) returnCountOnly gives 2 but returnIdsOnly lists 3 object IDs, so the production adapter correctly refuses with 'incomplete or invalid object-ID list' (502) and sampling/completeness fail in both attempt-01 and attempt-02 (the other 12 cells read cleanly). A cou…",
+   "finishedAt": "2026-10-12T12:09:14+00:00"
+  },
+  {
+   "cityCode": 4685,
+   "cityName": "Castelló de la Plana",
+   "countryCode": "ES",
+   "point": [
+    39.9856232055655,
+    -0.0444394598055663
+   ],
+   "sourceIds": [
+    "es-dgc-inspire-cp-wfs"
+   ],
+   "outcome": "unchecked",
+   "summary": "Held, not a source verdict: the Spanish Catastro WFS (ovc.catastro.meh.es) answers HTTP 403 'Ha superado el limite de peticiones por hora' to this machine since about 11:16Z (coordinator: 11:33Z), so the ~50 live requests per city cannot be made and, per coordinator instruction, none are sent. The summary has no fabricated absence: nothing was verified. Rerun this city from its wave queue once th…",
+   "finishedAt": "2026-10-12T11:44:16+00:00"
+  },
+  {
+   "cityCode": 4689,
+   "cityName": "Ravensburg",
+   "countryCode": "DE",
+   "point": [
+    47.7945532106953,
+    9.62553797821608
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:39+00:00"
+  },
+  {
+   "cityCode": 4832,
+   "cityName": "Strasbourg",
+   "countryCode": "FR",
+   "point": [
+    48.5776653862353,
+    7.74205726308135
+   ],
+   "sourceIds": [
+    "fr-ign-parcellaire-express"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:18:18+00:00"
+  },
+  {
+   "cityCode": 4833,
+   "cityName": "Ulm",
+   "countryCode": "DE",
+   "point": [
+    48.3989825933644,
+    9.98693462795703
+   ],
+   "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate passed all eight qualifier checks (classification, exactIds, stableGeometry, explicitAbsence, sampling, completeness, binding, metric) with zero metric blockers.",
+   "finishedAt": "2026-10-12T11:08:40+00:00"
+  },
+  {
+   "cityCode": 5217,
+   "cityName": "Hazel Dell",
+   "countryCode": "US",
+   "point": [
+    45.6532383734832,
+    -122.569426017328
+   ],
+   "sourceIds": [
+    "us-wa-watech-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:42:17+00:00"
+  },
+  {
+   "cityCode": 5331,
+   "cityName": "Federal Way",
+   "countryCode": "US",
+   "point": [
+    47.3433562107519,
+    -122.331287833192
+   ],
+   "sourceIds": [
+    "us-wa-watech-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: all source checks passed but the metric audit failed with 21 exact-duplicate geometries / 21 overlap pairs (max 1,628 m2, 100% of the smaller) among 73 cached WaTech polygons around Federal Way (King County 033): distinct PARCEL_ID_NR values (033-3222049126, -127, -128) share one identical polygon, consistent with stacked condominium units (not confirmed; only ID fields…",
+   "finishedAt": "2026-10-12T12:01:52+00:00"
+  },
+  {
+   "cityCode": 5413,
+   "cityName": "Bellevue",
+   "countryCode": "US",
+   "point": [
+    47.6694577413674,
+    -122.166399898028
+   ],
+   "sourceIds": [
+    "us-wa-watech-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:41:33+00:00"
+  },
+  {
+   "cityCode": 5440,
+   "cityName": "Yakima",
+   "countryCode": "US",
+   "point": [
+    46.5950341911278,
+    -120.53759265329
+   ],
+   "sourceIds": [
+    "us-wa-watech-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Retry of attempt-01 whose exact-ID read failed with a transient 502; attempt-02 passed every check including metric. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:09+00:00"
+  },
+  {
+   "cityCode": 5472,
+   "cityName": "Zwickau",
+   "countryCode": "DE",
+   "point": [
+    50.7132491597848,
+    12.4833751663692
+   ],
+   "sourceIds": [
+    "dresden-saxony-gml-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:43:53+00:00"
+  },
+  {
+   "cityCode": 5551,
+   "cityName": "Chemnitz",
+   "countryCode": "DE",
+   "point": [
+    50.8270132341809,
+    12.9110519091696
+   ],
+   "sourceIds": [
+    "dresden-saxony-gml-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T14:40:31+00:00"
+  },
+  {
+   "cityCode": 5571,
+   "cityName": "Anchorage",
+   "countryCode": "US",
+   "point": [
+    61.2001872597905,
+    -149.82840565615
+   ],
+   "sourceIds": [
+    "us-ak-statewide-parcels-agol"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate: the direct preparer's all-9s/letter-mapped absent ID turned the percent-escape %20 in 'Anchorage%20Municipality' into invalid %99 (adapter 400); absent ID rebuilt from the decoded composite-key parts (Zzzzzzzzz%20Zzzzzzzzzzzz~99999999999). Qualifier run attempt-02 passed every check (classification, exact IDs, stable geometry, absence, sampling, completeness, binding, metric)…",
+   "finishedAt": "2026-10-12T12:04:06+00:00"
+  },
+  {
+   "cityCode": 5596,
+   "cityName": "Bellingham",
+   "countryCode": "US",
+   "point": [
+    48.7488502456406,
+    -122.472157616913
+   ],
+   "sourceIds": [
+    "us-wa-watech-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: all source checks passed but the metric audit failed with 1 exact-duplicate geometry and 2 overlap pairs (max 4,894 m2, 100% of the smaller) among 150 cached WaTech polygons around Bellingham (Whatcom County 073): PARCEL_ID_NR 073-3803303751280000 and ...0001 (and 073-3803303790920000/...0001) carry identical polygons, consistent with stacked condominium-unit records (n…",
+   "finishedAt": "2026-10-12T12:01:52+00:00"
+  },
+  {
+   "cityCode": 5621,
+   "cityName": "Provo",
+   "countryCode": "US",
+   "point": [
+    40.3078525920474,
+    -111.714794014436
+   ],
+   "sourceIds": [
+    "us-ut-ugrc-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: all source checks (classification, exact IDs, absence, sampling, completeness, binding) passed but the independent metric audit failed with 182 material overlap pairs (total 787 m2, max 108.4 m2 = 17% of the smaller parcel; 87 pairs involve IDs ending 500, the rest are between ordinary IDs; 0 invalid, 0 duplicate IDs) among 157 cached UGRC statewide polygons around Prov…",
+   "finishedAt": "2026-10-12T12:01:52+00:00"
+  },
+  {
+   "cityCode": 5766,
+   "cityName": "Bountiful",
+   "countryCode": "US",
+   "point": [
+    40.8817486186391,
+    -111.884849707951
+   ],
+   "sourceIds": [
+    "us-ut-ugrc-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: all source checks passed but the metric audit failed with 31 exact-duplicate geometries and 34 overlap pairs (max 116 m2, 100% of the smaller) among 123 cached UGRC statewide polygons around Bountiful (Davis County): distinct native IDs (e.g. Davis~031143106 and Davis~031143206) carry the identical polygon, consistent with stacked condominium-unit records (attributes be…",
+   "finishedAt": "2026-10-12T12:01:52+00:00"
+  },
+  {
+   "cityCode": 5788,
+   "cityName": "Layton",
+   "countryCode": "US",
+   "point": [
+    41.1024668531369,
+    -112.008818127792
+   ],
+   "sourceIds": [
+    "us-ut-ugrc-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Retry of attempt-01 whose sampling/completeness failed on a 15 s client timeout (UGRC statewide layer, reported as 504 while three UT cities ran concurrently); run serially, attempt-02 passed every check including metric. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:07+00:00"
+  },
+  {
+   "cityCode": 5810,
+   "cityName": "Ogden",
+   "countryCode": "US",
+   "point": [
+    41.2172850013019,
+    -111.961087851707
+   ],
+   "sourceIds": [
+    "us-ut-ugrc-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Retry of attempt-01 whose sampling and binding stages hit 15 s timeouts (504) on the UGRC statewide layer; attempt-02 passed every check including metric. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:09:33+00:00"
+  },
+  {
+   "cityCode": 6089,
+   "cityName": "Boulder",
+   "countryCode": "US",
+   "point": [
+    40.0140689394027,
+    -105.261838065455
+   ],
+   "sourceIds": [
+    "us-co-oit-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Boulder (us-co-oit-statewide-parcels): 15 cached features, 195 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 6108,
+   "cityName": "Longmont",
+   "countryCode": "US",
+   "point": [
+    40.1842725408466,
+    -105.103362776236
+   ],
+   "sourceIds": [
+    "us-co-oit-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (194 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Longmont (us-co-oit-statewide-parcels) with 55 material overlap pair(s) (> 0.01 m2; max 7.08e+03 m2, 100% of the smaller; total 3.9e+05 m2); 55 exact-duplicate geometries under distinct IDs among 86 cached features (Boulder~120534263001 / Boulder~1205342…",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 6146,
+   "cityName": "Fort Collins",
+   "countryCode": "US",
+   "point": [
+    40.5521620103556,
+    -105.082666110416
+   ],
+   "sourceIds": [
+    "us-co-oit-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (194 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Fort Collins (us-co-oit-statewide-parcels) with 107 material overlap pair(s) (> 0.01 m2; max 934 m2, 100% of the smaller; total 8.78e+04 m2); 107 exact-duplicate geometries under distinct IDs among 84 cached features (Larimer~9726150100 / Larimer~9726150…",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 6165,
+   "cityName": "Greeley",
+   "countryCode": "US",
+   "point": [
+    40.4065900589356,
+    -104.71555057375
+   ],
+   "sourceIds": [
+    "us-co-oit-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Greeley (us-co-oit-statewide-parcels): 75 cached features, 203 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:57:40+00:00"
+  },
+  {
+   "cityCode": 6665,
+   "cityName": "South Central",
+   "countryCode": "US",
+   "point": [
+    45.7817768816123,
+    -108.549285709368
+   ],
+   "sourceIds": [
+    "us-mt-helena-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T13:25:30+00:00"
+  },
+  {
+   "cityCode": 7009,
+   "cityName": "Urbandale",
+   "countryCode": "US",
+   "point": [
+    41.6149025063095,
+    -93.6594933902087
+   ],
+   "sourceIds": [
+    "us-ia-des-moines-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Retry of attempt-01 whose forced-paging, binding and fresh-reread stages failed on 504/502 and timeouts; run serially, attempt-02 passed every check including metric. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:07+00:00"
+  },
+  {
+   "cityCode": 7093,
+   "cityName": "Bradenton",
+   "countryCode": "US",
+   "point": [
+    27.461361061327,
+    -82.582711212242
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:16:28+00:00"
+  },
+  {
+   "cityCode": 7107,
+   "cityName": "Sarasota",
+   "countryCode": "US",
+   "point": [
+    27.3213005254979,
+    -82.5086315166656
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-03 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Sarasota (us-fl-dor-statewide-cadastral). Attempts 01 and 02 failed only on the geometry-binding envelope query hitting the adapter's fixed 15 s timeout (504); attempt-03's slowest request took 13.97 s, i.e. the FL layer is within about 1 s of the cap…",
+   "finishedAt": "2026-10-12T13:06:14+00:00"
+  },
+  {
+   "cityCode": 7120,
+   "cityName": "Bayonet Point",
+   "countryCode": "US",
+   "point": [
+    28.2700137222575,
+    -82.7070769589785
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:19:10+00:00"
+  },
+  {
+   "cityCode": 7146,
+   "cityName": "The Reserve of Old Tampa Bay",
+   "countryCode": "US",
+   "point": [
+    28.012133885569,
+    -82.5779470776082
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (194 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for The Reserve of Old Tampa Bay (us-fl-dor-statewide-cadastral) with 3 material overlap pair(s) (> 0.01 m2; max 1.14 m2, 0.0687% of the smaller; total 1.68 m2) among 116 cached features (39~1728260A2000077000580U / 39~172826ZZZ000000376401U: 1.14 m2 = 0.068…",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 7159,
+   "cityName": "Tampa",
+   "countryCode": "US",
+   "point": [
+    28.0030986140797,
+    -82.4702888424246
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:07:06+00:00"
+  },
+  {
+   "cityCode": 7185,
+   "cityName": "Golden Gate",
+   "countryCode": "US",
+   "point": [
+    26.1736880540033,
+    -81.7107076428987
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (183 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Golden Gate (us-fl-dor-statewide-cadastral) with 3 material overlap pair(s) (> 0.01 m2; max 9.37e+03 m2, 100% of the smaller; total 2.81e+04 m2); 3 exact-duplicate geometries under distinct IDs among 80 cached features (21~66030001026 / 21~66030001042: 9…",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 7198,
+   "cityName": "Fargo",
+   "countryCode": "US",
+   "point": [
+    46.8614438595037,
+    -96.8024909909751
+   ],
+   "sourceIds": [
+    "us-nd-gishub-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Retry of attempt-01 whose sampling failed on a 15 s timeout (504); attempt-02 passed every check including metric. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:08+00:00"
+  },
+  {
+   "cityCode": 7211,
+   "cityName": "Ventura Bay",
+   "countryCode": "US",
+   "point": [
+    27.9100995716056,
+    -82.3147524355478
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:49:14+00:00"
+  },
+  {
+   "cityCode": 7250,
+   "cityName": "Lakeland",
+   "countryCode": "US",
+   "point": [
+    28.0176498923629,
+    -81.9426377334415
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:48:17+00:00"
+  },
+  {
+   "cityCode": 7341,
+   "cityName": "Kissimmee",
+   "countryCode": "US",
+   "point": [
+    28.313394631813,
+    -81.4206702193088
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (200 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Kissimmee (us-fl-dor-statewide-cadastral) with 1033 material overlap pair(s) (> 0.01 m2; max 913 m2, 100% of the smaller; total 9.32e+05 m2); 932 exact-duplicate geometries under distinct IDs among 142 cached features (59~16252910310001COMM / 59~16252910…",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 7419,
+   "cityName": "Forest City",
+   "countryCode": "US",
+   "point": [
+    28.6545129049095,
+    -81.4377636401185
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:51:05+00:00"
+  },
+  {
+   "cityCode": 7528,
+   "cityName": "Port Saint Lucie",
+   "countryCode": "US",
+   "point": [
+    27.2987598439619,
+    -80.357237726397
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:46:10+00:00"
+  },
+  {
+   "cityCode": 7540,
+   "cityName": "Saint Johns Park",
+   "countryCode": "US",
+   "point": [
+    30.2820297974115,
+    -81.7388077386963
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:43:39+00:00"
+  },
+  {
+   "cityCode": 7573,
+   "cityName": "Holiday Hill",
+   "countryCode": "US",
+   "point": [
+    30.3432082180442,
+    -81.5857638197135
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:44:22+00:00"
+  },
+  {
+   "cityCode": 7584,
+   "cityName": "Jacksonville Beach",
+   "countryCode": "US",
+   "point": [
+    30.3079308989275,
+    -81.4038356066191
+   ],
+   "sourceIds": [
+    "us-fl-dor-statewide-cadastral"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:52:36+00:00"
+  },
+  {
+   "cityCode": 7664,
+   "cityName": "Lafayette",
+   "countryCode": "US",
+   "point": [
+    40.4136422406136,
+    -86.893516234892
+   ],
+   "sourceIds": [
+    "us-in-indianamap-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the production adapter refuses the Indiana statewide layer around Lafayette: in qualifier cell 0 (bbox -86.894,40.413,-86.893,40.414) 17 rows carry only 13 distinct state_parcel_id values (790729254003000004 x2, 790729254006000004 x2, 790729254007000004 x3, each with distinct geometries), so sampling/completeness fail with 'conflicting geometry for one parcel ID' (502); explicitAbsence also…",
+   "finishedAt": "2026-10-12T12:09:14+00:00"
+  },
+  {
+   "cityCode": 7828,
+   "cityName": "Kenosha",
+   "countryCode": "US",
+   "point": [
+    42.5784858065008,
+    -87.8410657652837
+   ],
+   "sourceIds": [
+    "us-wi-v12-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:50:04+00:00"
+  },
+  {
+   "cityCode": 7837,
+   "cityName": "Racine",
+   "countryCode": "US",
+   "point": [
+    42.7232104953445,
+    -87.8044867117979
+   ],
+   "sourceIds": [
+    "us-wi-v12-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:52:12+00:00"
+  },
+  {
+   "cityCode": 7855,
+   "cityName": "Ludlow",
+   "countryCode": "US",
+   "point": [
+    39.1283327727324,
+    -84.5943579148481
+   ],
+   "sourceIds": [
+    "us-oh-ogrip-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:40:30+00:00"
+  },
+  {
+   "cityCode": 7864,
+   "cityName": "Cincinnati",
+   "countryCode": "US",
+   "point": [
+    39.1199188166246,
+    -84.4875559123333
+   ],
+   "sourceIds": [
+    "us-oh-ogrip-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate for Cincinnati (Ohio OGRIP statewide): the metric audit also failed with 14054 material overlap pair(s) (> 0.01 m2; max 7.97e+03 m2), 14054 exact-duplicate geometries among 380 cached features (Hamilton~0690003023400 / Hamilton~0690003023500: 7.97e+03 m2 = 100% of the smaller; Hamilton~0690003023400 / Hamilton~0690003023600: 7.97e+03 m2 = 100% of the smaller); the same r…",
+   "finishedAt": "2026-10-12T12:58:36+00:00"
+  },
+  {
+   "cityCode": 7873,
+   "cityName": "North College Hill",
+   "countryCode": "US",
+   "point": [
+    39.2103708310297,
+    -84.5574832845292
+   ],
+   "sourceIds": [
+    "us-oh-ogrip-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate for North College Hill (Ohio OGRIP statewide): the metric audit also failed with 2 material overlap pair(s) (> 0.01 m2; max 0.0125 m2) among 260 cached features (Hamilton~5950008060800 / Hamilton~5950008092600: 0.0125 m2 = 0.0192% of the smaller; Hamilton~5950008060700 / Hamilton~5950008092600: 0.0118 m2 = 0.0181% of the smaller); the same run also hit 504 timeouts (fres…",
+   "finishedAt": "2026-10-12T12:58:36+00:00"
+  },
+  {
+   "cityCode": 7889,
+   "cityName": "South Bend",
+   "countryCode": "US",
+   "point": [
+    41.6729596149942,
+    -86.2207704674956
+   ],
+   "sourceIds": [
+    "us-in-indianamap-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held: the production adapter refuses the Indiana statewide layer around South Bend because state_parcel_id is not unique: a direct exact-ID reread of the 71 cached IDs returns 73 rows (710907402011000026 -> objectids 3773812/3782324, 710907476002000026 -> 3778152/3799155, each with distinct geometries), so freshCollectedIdRead/exactIds/stableGeometry fail with 'conflicting geometry for one parcel…",
+   "finishedAt": "2026-10-12T12:09:14+00:00"
+  },
+  {
+   "cityCode": 7913,
+   "cityName": "Fort Wayne",
+   "countryCode": "US",
+   "point": [
+    41.0690939195421,
+    -85.1300955495992
+   ],
+   "sourceIds": [
+    "us-in-indianamap-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate: the direct preparer's all-9s absent ID (999999999999999999) is a real placeholder state_parcel_id in the Indiana layer (count 3, which the adapter then refuses as conflicting geometry); replaced by the verified-absent 999999999999999998 (count 0). attempt-03 passed every check including metric; primary review remains required.",
+   "finishedAt": "2026-10-12T12:09:13+00:00"
+  },
+  {
+   "cityCode": 7920,
+   "cityName": "Carmel Commons",
+   "countryCode": "US",
+   "point": [
+    35.1193564857687,
+    -80.8673939888706
+   ],
+   "sourceIds": [
+    "us-nc-onemap-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: the metric audit failed with 64,620 exact-duplicate geometries / 64,621 overlap pairs (max 169,958 m2, 100% of the smaller) among 379 cached NC OneMap polygons around Carmel Commons (Mecklenburg 37119): hundreds of distinct parcel IDs (37119_17332101, _17332102, _17332371 ...) carry one identical footprint, consistent with stacked condominium-unit records (not confirmed…",
+   "finishedAt": "2026-10-12T12:01:52+00:00"
+  },
+  {
+   "cityCode": 7934,
+   "cityName": "Green Bay",
+   "countryCode": "US",
+   "point": [
+    44.5130911878879,
+    -88.0136377235277
+   ],
+   "sourceIds": [
+    "us-wi-v12-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: all source checks passed but the metric audit failed with 43 exact-duplicate geometries / 43 overlap pairs (max 8,506 m2, 100% of the smaller) among 77 cached Wisconsin V12 polygons around Green Bay: distinct parcel IDs (00912-195, 00912-196, 00912-197, 00912-200-3, 00912-201) share one identical polygon, consistent with stacked condominium units (not confirmed; only ID…",
+   "finishedAt": "2026-10-12T12:01:52+00:00"
+  },
+  {
+   "cityCode": 7969,
+   "cityName": "Greensboro",
+   "countryCode": "US",
+   "point": [
+    36.0643485281769,
+    -79.7946139332298
+   ],
+   "sourceIds": [
+    "us-nc-onemap-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:55:14+00:00"
+  },
+  {
+   "cityCode": 7983,
+   "cityName": "Toledo",
+   "countryCode": "US",
+   "point": [
+    41.6697459831271,
+    -83.5721153382202
+   ],
+   "sourceIds": [
+    "us-oh-ogrip-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:11:13+00:00"
+  },
+  {
+   "cityCode": 8046,
+   "cityName": "Parma",
+   "countryCode": "US",
+   "point": [
+    41.446594957922,
+    -81.7617220593044
+   ],
+   "sourceIds": [
+    "us-oh-ogrip-statewide-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: all source checks passed but the metric audit failed with 2 material overlap pairs among 88 cached Ohio OGRIP statewide polygons around Parma (Cuyahoga~43108001 / Cuyahoga~43109005: 27.08 m2, 0.08% of the smaller parcel; Cuyahoga~01717043 / Cuyahoga~43101002: 0.079 m2), 0 invalid and 0 duplicates. The overlaps are in the published polygons; source polygons are never rep…",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 8053,
+   "cityName": "Firestone Park",
+   "countryCode": "US",
+   "point": [
+    41.0591020042923,
+    -81.487870623553
+   ],
+   "sourceIds": [
+    "us-oh-ogrip-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:54:34+00:00"
+  },
+  {
+   "cityCode": 8060,
+   "cityName": "Euclid",
+   "countryCode": "US",
+   "point": [
+    41.510843325213,
+    -81.57541713518
+   ],
+   "sourceIds": [
+    "us-oh-ogrip-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Euclid (us-oh-ogrip-statewide-parcels): 145 cached features, 194 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:57:41+00:00"
+  },
+  {
+   "cityCode": 8151,
+   "cityName": "Gaithersburg",
+   "countryCode": "US",
+   "point": [
+    39.1540081427406,
+    -77.2246960079017
+   ],
+   "sourceIds": [
+    "us-md-imap-statewide-parcel-boundaries"
+   ],
+   "outcome": "held",
+   "summary": "Held: the Maryland iMAP MD_ParcelBoundaries MapServer returns inconsistent manifests for the binding envelope around the sample parcel (Gaithersburg): returnCountOnly=88 but returnIdsOnly lists 87 distinct object IDs, so the production adapter refuses with 'incomplete or invalid object-ID list' (502) and the binding check fails in both attempt-01 and attempt-02; every other check passed. Source d…",
+   "finishedAt": "2026-10-12T12:09:14+00:00"
+  },
+  {
+   "cityCode": 8158,
+   "cityName": "Fairland",
+   "countryCode": "US",
+   "point": [
+    39.0669362280002,
+    -76.9540592052469
+   ],
+   "sourceIds": [
+    "us-md-imap-statewide-parcel-boundaries"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T11:53:15+00:00"
+  },
+  {
+   "cityCode": 8165,
+   "cityName": "Columbia",
+   "countryCode": "US",
+   "point": [
+    39.2048448908618,
+    -76.8403726722015
+   ],
+   "sourceIds": [
+    "us-md-imap-statewide-parcel-boundaries"
+   ],
+   "outcome": "qualified",
+   "summary": "Retry of attempt-01 whose exact-ID, absence and stable-geometry stages failed on transient 502s; attempt-02 passed every check including metric. Primary review remains required.",
+   "finishedAt": "2026-10-12T12:09:14+00:00"
+  },
+  {
+   "cityCode": 8179,
+   "cityName": "Glen Burnie",
+   "countryCode": "US",
+   "point": [
+    39.1403071281894,
+    -76.6210818000162
+   ],
+   "sourceIds": [
+    "us-md-imap-statewide-parcel-boundaries"
+   ],
+   "outcome": "held",
+   "summary": "Held: the Maryland iMAP MD_ParcelBoundaries MapServer returns inconsistent manifests for the binding envelope around the sample parcel (Glen Burnie): returnCountOnly=205 but returnIdsOnly lists 204 distinct object IDs, so the production adapter refuses with 'incomplete or invalid object-ID list' (502) and the binding check fails in both attempt-01 and attempt-02; every other check passed. Source…",
+   "finishedAt": "2026-10-12T12:09:14+00:00"
+  },
+  {
+   "cityCode": 8228,
+   "cityName": "Wilmington",
+   "countryCode": "US",
+   "point": [
+    39.7459671684999,
+    -75.5615080662526
+   ],
+   "sourceIds": [
+    "us-de-firstmap-statewide-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Corrected candidate: absent ID rebuilt from decoded composite-key parts (Zzz%20Zzzzzz~9999999999) because the direct preparer turned the %20 in 'New%20Castle' into invalid %99. Qualifier run attempt-02 passed every check including metric; primary review remains required.",
+   "finishedAt": "2026-10-12T12:04:06+00:00"
+  },
+  {
+   "cityCode": 8463,
+   "cityName": "Springfield",
+   "countryCode": "US",
+   "point": [
+    42.1113118931937,
+    -72.5784998231599
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-03 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Springfield (us-ma-massgis-l3-tax-parcels). Attempts 01 and 02 failed only on 15 s adapter timeouts (504) in exact-ID/fresh-reread stages while other cities hit the same host; timeouts are never treated as absence. Primary review remains required.",
+   "finishedAt": "2026-10-12T13:06:14+00:00"
+  },
+  {
+   "cityCode": 8469,
+   "cityName": "Worcester",
+   "countryCode": "US",
+   "point": [
+    42.2597734886551,
+    -71.8070882719052
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Worcester (us-ma-massgis-l3-tax-parcels): 103 cached features, 43 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T13:04:07+00:00"
+  },
+  {
+   "cityCode": 8481,
+   "cityName": "Fall River",
+   "countryCode": "US",
+   "point": [
+    41.6955271095878,
+    -71.1534456550269
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:41:16+00:00"
+  },
+  {
+   "cityCode": 8487,
+   "cityName": "New Bedford",
+   "countryCode": "US",
+   "point": [
+    41.6443758563109,
+    -70.9295167896688
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for New Bedford (us-ma-massgis-l3-tax-parcels) with 1 invalid geometry (F_814531_2684804: Ring Self-intersection[-70.9502897497859 41.6580734218245]) among 152 cached features. The defects are in the published polygons themselves; source polygons are never re…",
+   "finishedAt": "2026-10-12T13:04:06+00:00"
+  },
+  {
+   "cityCode": 8499,
+   "cityName": "Brockton",
+   "countryCode": "US",
+   "point": [
+    42.084339659697,
+    -71.0187865990425
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Brockton (us-ma-massgis-l3-tax-parcels) with 1 invalid geometry (F_777348_2845480: Ring Self-intersection[-71.0022448663374 42.0645302914554]) among 84 cached features. The defects are in the published polygons themselves; source polygons are never repair…",
+   "finishedAt": "2026-10-12T13:04:06+00:00"
+  },
+  {
+   "cityCode": 8505,
+   "cityName": "Lowell",
+   "countryCode": "US",
+   "point": [
+    42.6417314473143,
+    -71.3181810964044
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Lowell (us-ma-massgis-l3-tax-parcels): 133 cached features, 51 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T13:04:07+00:00"
+  },
+  {
+   "cityCode": 8511,
+   "cityName": "Manchester",
+   "countryCode": "US",
+   "point": [
+    42.9856355554368,
+    -71.457888414659
+   ],
+   "sourceIds": [
+    "us-nh-granit-parcel-mosaic"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: all source checks passed but the metric audit failed with 2 material overlap pairs among 156 cached NH GRANIT parcel-mosaic polygons around Manchester (064134-54-22A/23: 6.02 m2 = 5.2% of the smaller; 064134-54-22C/23: 2.32 m2), 0 invalid and 0 duplicates. The overlap is in the published mosaic itself; source polygons are never repaired or clipped. Evidence: attempt-01/…",
+   "finishedAt": "2026-10-12T12:01:34+00:00"
+  },
+  {
+   "cityCode": 8517,
+   "cityName": "Lawrence",
+   "countryCode": "US",
+   "point": [
+    42.7075937387977,
+    -71.1639769493182
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Qualifier attempt-02 passed every check (classification, exact IDs, stable geometry, explicit absence, sampling, completeness, binding, metric) for Lawrence (us-ma-massgis-l3-tax-parcels): 99 cached features, 45 requests. Primary review remains required.",
+   "finishedAt": "2026-10-12T13:04:08+00:00"
+  },
+  {
+   "cityCode": 8523,
+   "cityName": "Lynn",
+   "countryCode": "US",
+   "point": [
+    42.4692858620628,
+    -70.9553412983168
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "qualified",
+   "summary": "Direct qualification passed all source and geometry gates; primary review remains required.",
+   "finishedAt": "2026-10-12T12:17:12+00:00"
+  },
+  {
+   "cityCode": 8529,
+   "cityName": "Peabody",
+   "countryCode": "US",
+   "point": [
+    42.5224020657245,
+    -70.8943363143339
+   ],
+   "sourceIds": [
+    "us-ma-massgis-l3-tax-parcels"
+   ],
+   "outcome": "held",
+   "summary": "Held at the geometry gate: every source check passed (78 requests, 2 qualifier run(s) on this city) but the independent metric audit failed for Peabody (us-ma-massgis-l3-tax-parcels) with 1 invalid geometry (M_249837_919226: Nested shells[-70.8927260798835 42.5223010050249]) among 92 cached features. The defects are in the published polygons themselves; source polygons are never repaired, clipped…",
+   "finishedAt": "2026-10-12T13:04:07+00:00"
+  }
+ ]
+}

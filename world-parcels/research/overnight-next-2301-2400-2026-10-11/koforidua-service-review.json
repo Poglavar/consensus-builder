@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-3548-koforidua.json",
+  "cohort": "overnight-next-2301-2400-2026-10-11",
+  "purpose": "Document first-party Ghana cadastral-service discovery and bounded anonymous access review for Koforidua.",
+  "assessment": "Ghana Lands Commission custody is evidenced, including a named Koforidua Client Service Access Unit/regional service location and official descriptions of survey, mapping, cadastral-plan, search and land-registration functions. Public anonymous retrieval reached institutional pages and authentication shells only; no safe parcel ID plus geometry response was verified.",
+  "registryAssessment": "registryFound=true is supported by the official Lands Commission CSAU page naming Koforidua and by official Lands Commission service/organizational pages. This evidences a local/regional registry and cadastral custodian, not an open adapter.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceInferred": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://www.lc.gov.gh/contact-us/csau/", "operator": "Ghana Lands Commission", "scope": "CSAU locations and land-service procedures; Koforidua is explicitly listed."},
+    {"url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/", "operator": "Ghana Lands Commission", "scope": "Official Survey and Mapping Division mandate, including survey/mapping and parcel-record custody."},
+    {"url": "https://www.lc.gov.gh/about-us/organizational-structure/land-registration-division-lrd/", "operator": "Ghana Lands Commission", "scope": "Official Land Registration Division mandate and land-register custody."},
+    {"url": "https://www.lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf", "operator": "Ghana Lands Commission", "scope": "Official-search, cadastral-plan and map services, including other-region procedures."},
+    {"url": "https://onlineservices.lc.gov.gh/", "operator": "Ghana Lands Commission", "scope": "Current public online-services shell; authentication required for account services."},
+    {"url": "https://elis.lc.gov.gh/", "operator": "Ghana Lands Commission", "scope": "Enterprise Land Information System login shell; authentication required."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Koforidua Ghana official cadastral parcel map GIS Lands Commission land registry", "result": "Official Lands Commission custody and Koforidua service lead found; no open parcel geometry endpoint verified.", "resultUrls": ["https://www.lc.gov.gh/contact-us/csau/", "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/", "https://onlineservices.lc.gov.gh/"]},
+    {"language": "Twi (local language)", "query": "Koforidua Ghana Twi asase cadastral map Lands Commission", "result": "No additional official Twi cadastral viewer/API found; the official site indicates Twi service-video availability only.", "resultUrls": ["https://www.lc.gov.gh/", "https://www.lc.gov.gh/contact-us/csau/"]}
+  ],
+  "attempts": [
+    {"url": "https://www.lc.gov.gh/contact-us/csau/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official page retrieved; Koforidua is listed as a CSAU location. Procedures reference regional-number/examination data and parcel-service workflows, but no downloadable parcel layer/API is exposed."},
+    {"url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official SMD mandate retrieved; custody and survey/mapping functions documented, with no public feature-service route."},
+    {"url": "https://www.lc.gov.gh/about-us/organizational-structure/land-registration-division-lrd/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official LRD mandate retrieved; land-register custody documented, with no public parcel query route."},
+    {"url": "https://www.lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official service charter retrieved; it describes official searches, cadastral plans and map sales, including other-region submission workflows. No anonymous geometry endpoint."},
+    {"url": "https://onlineservices.lc.gov.gh/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Current public online-services landing page retrieved; account services expose a login/register flow. No anonymous parcel map/API route was exposed; no login attempted."},
+    {"url": "https://elis.lc.gov.gh/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "ELIS login shell retrieved. No anonymous parcel response; no login or credential use attempted."},
+    {"url": "https://www.lc.gov.gh/wp-json/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Public WordPress content API was identifiable from the official homepage, but it contains site content rather than a cadastral feature service; no parcel query attempted."}
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official Ghana Lands Commission cadastral and land-registration services with Koforidua regional custody.", "verifiedOpenScope": "Institutional/service metadata only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "Regional parcel records, map extracts, or an authenticated ELIS workflow may exist outside the anonymous public surface. The present review does not establish absence, coverage, or completeness.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

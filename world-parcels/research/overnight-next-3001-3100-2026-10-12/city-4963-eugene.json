@@ -1,0 +1,119 @@
+{
+  "cityCode": 4963,
+  "queueRank": 3037,
+  "name": "Eugene",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "locId": 840,
+  "capital": false,
+  "point": [44.0582120407445, -123.066090649008],
+  "population2025": 197063,
+  "population2025k": 197.063,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Eugene Oregon official parcel map GIS taxlots ArcGIS REST",
+        "result": "First-party results identified the City of Eugene Property Explorer, the City Mapping Hub, and the public City GIS ArcGIS REST Taxlots layer. The viewer route, layer metadata, and an anonymous bounded query were directly inspected.",
+        "actualResultUrls": [
+          "https://pdd.eugene-or.gov/maps/propertymap",
+          "https://mapping.eugene-or.gov/",
+          "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4"
+        ]
+      },
+      {
+        "language": "English (United States local/native)",
+        "query": "Eugene official GIS tax lot map City of Eugene property explorer",
+        "result": "The United States local-language equivalent is English. Independent first-party discovery again identified the City Property Explorer and City GIS taxlot service; no separate non-English local-language cadastral service was found.",
+        "actualResultUrls": [
+          "https://pdd.eugene-or.gov/maps/propertymap",
+          "https://mapping.eugene-or.gov/",
+          "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4/query"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "City of Eugene GIS / Planning and Development, publishing the City GIS taxlot service; Lane County is the broader county assessment context but was not used as the parcel geometry endpoint in this attempt.",
+    "scope": "The City Property Explorer and City GIS ArcGIS taxlot layer provide local map access and parcel polygons for Eugene-area planning/property exploration.",
+    "evidenceUrls": [
+      "https://pdd.eugene-or.gov/maps/propertymap",
+      "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4",
+      "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Land/MapServer"
+    ],
+    "scopeNote": "The City service is the evidenced local GIS publisher and parcel-layer endpoint. This does not establish that the City is the tax-assessment custodian for every parcel or that the bounded response is citywide-complete."
+  },
+  "parcelDiscovery": {
+    "geometryFound": true,
+    "sampleFiles": [],
+    "source": "City of Eugene PWE/Default ArcGIS MapServer layer 4 (Taxlots)",
+    "nativeIdField": "maptaxlot",
+    "crs": "EPSG:2914 / WKID 2914 native Oregon State Plane North; query output requested as EPSG:4326",
+    "boundedResponse": {
+      "method": "GET",
+      "url": "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4/query",
+      "parameters": {
+        "where": "1=1",
+        "geometry": "-123.066090649008,44.0582120407445",
+        "geometryType": "esriGeometryPoint",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,maptaxlot",
+        "returnGeometry": true,
+        "outSR": "4326",
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "featureCount": 1,
+      "returnedNativeIds": ["1703294000301"],
+      "exceededTransferLimit": false
+    },
+    "fieldMapping": {
+      "maptaxlot": "canonical native map-and-taxlot identifier; selected as the stable parcel identity",
+      "OBJECTID": "service object identifier observed but not selected as canonical identity",
+      "taxlot": "source field observed; not retained",
+      "rlid_link": "source link field observed; not requested or retained",
+      "Shape": "source polygon geometry field; returned geometry remained in ignored scratch evidence",
+      "otherFields": "metadata exposed additional land-use, ownership, address, tax/account, valuation, and other fields; none were requested or retained"
+    },
+    "compositeKeyProvenance": "No composite key used. The service schema labels maptaxlot as Map & Taxlot Number and the bounded response returned maptaxlot 1703294000301; OBJECTID was not used as identity.",
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://pdd.eugene-or.gov/maps/propertymap",
+        "outcome": "HTTP 200; official City Property Explorer page inspected. It exposes address and taxlot search controls and identifies the City of Eugene GIS map context. No login was used."
+      },
+      {
+        "method": "GET",
+        "url": "https://mapping.eugene-or.gov/",
+        "outcome": "First-party City of Eugene Mapping Hub discovered through search; it documents official interactive maps and city data routes."
+      },
+      {
+        "method": "GET",
+        "url": "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4?f=pjson",
+        "outcome": "HTTP 200; polygon Taxlots layer metadata inspected. Native WKID 2914; supported query formats include JSON and geoJSON; safe schema fields include maptaxlot and OBJECTID, with additional unsafe fields deliberately excluded."
+      },
+      {
+        "method": "GET",
+        "url": "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4/query",
+        "outcome": "HTTP 200; anonymous exact-point query at the unchanged WUP coordinate returned one polygon with maptaxlot 1703294000301 and geometry. Only OBJECTID/maptaxlot and geometry were requested."
+      }
+    ],
+    "note": "The exact WUP point was preserved in latitude/longitude order and was not shifted. This is an exact-point discovery result, not a citywide completeness test."
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_qualification",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact-point result proves a reachable local parcel service but does not establish complete citywide coverage or a canonical bulk-download workflow.",
+    "The service exposes source fields beyond the safe allowlist; no owner, address/contact, titleholder, personal, tax/account, valuation, or other unsafe fields were requested or retained.",
+    "No sample GeoJSON was retained; the returned full polygon remains only in ignored scratch evidence, within the three-polygon limit.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

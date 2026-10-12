@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityCode": 2093,
+  "wupCityCode": 2093,
+  "cityId": "wup2025:2093",
+  "name": "Gdansk",
+  "country": "Poland",
+  "countryCode": "PL",
+  "centerLatLon": [54.3729195961829, 18.6101651609193],
+  "population2025": 384985,
+  "population2025k": 384.985,
+  "populationUnit": "persons",
+  "queueRank": 1478,
+  "queuePriority": 1478,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gdansk Poland official cadastral map parcel polygons public API Geoportal ewidencja dzialki",
+        "result": "First-party GUGiK/Geoportal material identified the national EGiB services, the ULDK locator, and the current aggregate EGiB WFS. The Gdańsk municipal WFS endpoint was then checked directly.",
+        "actualResultUrls": [
+          "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+          "https://uldk.gugik.gov.pl/opis.html",
+          "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+        ]
+      },
+      {
+        "language": "Polish",
+        "query": "Gdańsk oficjalna mapa katastralna działki ewidencyjne geoportal API WMS WFS",
+        "result": "Polish-language first-party results identified GUGiK's EGiB documentation and the validated Gdańsk powiat WFS service at ewid-wms.gdansk.gda.pl; direct anonymous capabilities, schema, and bounded feature requests succeeded.",
+        "actualResultUrls": [
+          "https://www.gov.pl/web/gugik/zbiorcza-usluga-wfs-dla-ewidencji-gruntow-i-budynkow-udostepniona-w-modulach-mapowych-serwisu-geoportalgovpl",
+          "https://wms02.epodgik.pl/walidator/raport.php?rep_type=minimal&service=wfs&showPoints=&source=1&teryt=2261&tmpPoints=&url=https%3A%2F%2Fewid-wms.gdansk.gda.pl%2Fiip%2Fows",
+          "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Gdańsk municipal EGiB WFS",
+        "operator": "Urząd Miejski w Gdańsku",
+        "homeUrl": "https://ewid-wms.gdansk.gda.pl/iip/ows",
+        "observation": "Capabilities identify a public WFS intended for the City of Gdańsk and expose the parcel layer ms:dzialki."
+      },
+      {
+        "name": "GUGiK EGiB / ULDK",
+        "operator": "Główny Urząd Geodezji i Kartografii",
+        "homeUrl": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+        "observation": "National documentation states that EGiB is maintained by competent local authorities and documents WFS parcel geometry and ULDK lookup behavior."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+        "httpStatus": 200,
+        "assessment": "Anonymous capabilities returned the public WFS metadata and ms:dzialki parcel feature type."
+      },
+      {
+        "method": "GET",
+        "url": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&request=DescribeFeatureType&version=2.0.0&typeNames=ms:dzialki",
+        "httpStatus": 200,
+        "assessment": "Schema returned geometry plus safe native fields ID_DZIALKI, NUMER_DZIALKI, NAZWA_OBREBU, NUMER_OBREBU, and NUMER_JEDNOSTKI. Owner, address, contact, titleholder, tax, and account fields were not requested or retained."
+      },
+      {
+        "method": "GET",
+        "url": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ms:dzialki&maxFeatures=3&propertyName=ID_DZIALKI,NUMER_DZIALKI,NAZWA_OBREBU,NUMER_OBREBU,NUMER_JEDNOSTKI,geometry&srsName=EPSG:2177&bbox=6539600,6027080,6539700,6027180,EPSG:2177",
+        "httpStatus": 200,
+        "assessment": "Bounded anonymous GML response returned three full parcel polygons near the WUP point, with native IDs 226101_1.0055.284/13, 226101_1.0055.284/15, and 226101_1.0055.279/9. Native coordinates were transformed from EPSG:2177 to WGS84 for the retained sample."
+      },
+      {
+        "method": "GET",
+        "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=18.6101651609193,54.3729195961829&result=id,numer,obreb,powiat,geom_wkt",
+        "httpStatus": 200,
+        "assessment": "Returned -1 brak wyników with a malformed XML-format notice. This exact-point miss is recorded only as a failed auxiliary lookup and is not treated as evidence of citywide absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ms:dzialki&outputFormat=application/json&maxFeatures=3&propertyName=ID_DZIALKI,NUMER_DZIALKI,NAZWA_OBREBU,NUMER_OBREBU,NUMER_JEDNOSTKI,geometry&srsName=EPSG:4326&bbox=18.6095,54.3723,18.6108,54.3735,EPSG:4326",
+        "httpStatus": 500,
+        "assessment": "Rejected because this layer does not permit GeoJSON/application-json output; the subsequent EPSG:2177 GML request was used instead."
+      }
+    ]
+  },
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "Polygon"
+    ],
+      "responseFile": "gdansk-parcel-samples.geojson"
+  },
+  "retainedPolygonSampleFile": "gdansk-parcel-samples.geojson",
+  "coverageAssessment": {
+    "claimedScope": "Three parcels returned by a bounded WFS request around the transformed WUP point in Gdańsk.",
+    "verifiedOpenScope": "A local public cadastral/EGiB WFS and three safe-ID parcel geometries; no citywide completeness claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "sourceQuality": "First-party municipal WFS operated for Urząd Miejski w Gdańsku, corroborated by GUGiK EGiB documentation. Native parcel identity is ID_DZIALKI; the source also exposes parcel-number and cadastral-unit fields.",
+  "nativeFieldMapping": {
+    "stableIdentity": "ID_DZIALKI",
+    "parcelNumber": "NUMER_DZIALKI",
+    "cadastralDistrictName": "NAZWA_OBREBU",
+    "cadastralDistrictNumber": "NUMER_OBREBU",
+    "cadastralUnitNumber": "NUMER_JEDNOSTKI",
+    "geometry": "geometry",
+    "compositeKeyProvenance": "No composite key was needed for retained samples; ID_DZIALKI is the source-published national parcel identifier."
+  },
+  "assessment": {
+    "status": "verified_sample_partial_coverage",
+    "runtimeReadiness": "held",
+    "registryFound": true,
+    "verifiedSample": true,
+    "technicalBlocker": "The successful public service response was GML rather than GeoJSON, and only a bounded three-feature sample was verified. Adapter compatibility and citywide completeness remain unqualified.",
+    "nextStep": "Independently qualify a production adapter for this municipal WFS, including its GML/native-CRS handling and bounded pagination before enablement."
+  },
+  "runtimeReadiness": "held",
+  "workstream": "poland",
+  "kind": "city_parcel_source_research"
+}

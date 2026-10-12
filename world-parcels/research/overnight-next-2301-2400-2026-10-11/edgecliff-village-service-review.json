@@ -1,0 +1,23 @@
+{
+  "cityRecord": "city-6273-edgecliff-village.json",
+  "cityCode": 6273,
+  "queueRank": 2344,
+  "name": "Edgecliff Village",
+  "country": "United States of America",
+  "countryCode": "US",
+  "pointLatLon": [32.6689211757899, -97.3618144680358],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "source": "Tarrant County GIS / Tarrant Appraisal District-derived parcel layer",
+  "sampleGeoJSON": "edgecliff-village-sample.geojson",
+  "sampleFile": "edgecliff-village-sample.geojson",
+  "sampleFiles": ["edgecliff-village-sample.geojson"],
+  "runtimeReadiness": "held",
+  "review": "See city-6273-edgecliff-village.json for complete query, request, schema, CRS, field-safety, and uncertainty evidence. The local county ArcGIS parcel layer returned one bounded safe polygon with native OBJECTID 18958; the exact WUP point returned zero features and was not shifted.",
+  "safeFieldAllowlist": ["native OBJECTID", "full polygon geometry", "source URL", "source CRS", "requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "scopeLimits": ["Bounded envelope only; not citywide completeness evidence.", "Exact-point zero is not an absence finding.", "No direct runtime adapter qualification; serial review required.", "No packet completion claim is a source integration/admission claim."],
+  "uncertainty": "Native identity and geometry are verified for the retained sample. Coverage completeness, update cadence, and runtime compatibility remain unverified."
+}

@@ -1,0 +1,25 @@
+{
+  "taskId": "packet:2513",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2513-pematang-siantar.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pematang-siantar-service-review.json",
+    "tmp/valhalla-parcel-research/2513/bhumi.html",
+    "tmp/valhalla-parcel-research/2513/bhumi.headers",
+    "tmp/valhalla-parcel-research/2513/wms.headers",
+    "tmp/valhalla-parcel-research/2513/wms2.headers",
+    "tmp/valhalla-parcel-research/2513/wms-capabilities.xml",
+    "tmp/valhalla-parcel-research/2513/wms2.out"
+  ],
+  "checkedAt": "2026-10-09T13:30:21.568931Z",
+  "reason": "Official Pematangsiantar/ATR material confirms a local land office. Original BHUMI HTML shell and two proxy response caches are HTML 404s, not WMS capabilities or parcel features. Configured NIB/PersilHak is not a returned native ID. No geometry or independent adapter and headed Details qualification is evidenced.",
+  "firstPartyUrlsChecked": [
+    "https://pematangsiantar.go.id/artikel/wesly-diwakili-herlina-terima-audiensi-kepala-kantor-pertanahan-pematangsiantar",
+    "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+  ],
+  "qualificationCheck": "No independent proof of fresh native-ID reads, forced paging, 13 aligned bounded cells, metric GEOS validity/duplicates/overlap/operation checks, full-parcel source binding, and headed pointer/Details-panel verification; no runtime admission."
+}

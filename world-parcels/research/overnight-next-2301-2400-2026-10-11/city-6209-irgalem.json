@@ -1,0 +1,119 @@
+{
+  "cityCode": 6209,
+  "queueRank": 2366,
+  "name": "Irgalem",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "point": [6.74778002139066, 38.4068710535576],
+  "population2025": 246701,
+  "population2025k": 246.701,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Irgalem Ethiopia cadastral parcel map official land registry GIS",
+        "result": "Discovery found Ethiopia's official Ethio-NSDI geoportal, the official Addis Ababa e-Land cadastral viewer, and an official Ministry of Justice urban-cadastral directive, but no Irgalem-specific public parcel viewer or service endpoint.",
+        "actualResultUrls": [
+          "https://ethionsdi.gov.et/",
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/"
+        ]
+      },
+      {
+        "language": "Amharic (local/native discovery language)",
+        "query": "ኢርጋለም ካዳስተር የመሬት ምዝገባ ካርታ ኦፊሴላዊ",
+        "result": "Amharic discovery returned national land/cadastral legal material and the official Addis e-Land viewer, but no Irgalem or Sidama public parcel map/API.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://www.ddacouncil.gov.et/public/uploads/proclamations/file-60.pdf",
+          "https://ethionsdi.gov.et/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": null,
+    "regionalOrNationalSources": [
+      "Ethio-NSDI is an official Space Science and Geospatial Institute geoportal and advertises WMS/WFS/REST capabilities, but the public resource listing did not expose an Irgalem parcel layer.",
+      "The e-Land viewer is explicitly operated by Addis Ababa City Administration Land Holding Registration and Information Agency; it is not evidence for Irgalem or Sidama coverage.",
+      "Federal land-administration material describes legal responsibilities and cadastral concepts but is not a city-specific open parcel source."
+    ],
+    "registryEvidence": "No city or regional Irgalem registry/map/procedure source was identified in this attempt; national and Addis-specific material is insufficient for registryFound=true."
+  },
+  "requestOutcomes": "TLS-verified GET/search inspection reached https://ethionsdi.gov.et/ through public indexed content and confirmed the official geoportal's advertised WMS/WFS/REST functions and public resource area. A TLS-verified GET of https://eland.addiscadaster.gov.et/maps returned HTTP 200; its current HTML referenced the live Angular bundle, but the bundle request timed out during the bounded anonymous fetch. The viewer's stated institutional scope is Addis Ababa, so it was not queried for Irgalem parcel features. Direct curl to Ethio-NSDI failed TLS verification because the host presented a self-signed certificate; no certificate exception was used. Requests to candidate SNNPR and Sidama government hostnames failed DNS resolution. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or global TLS-disable was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Official Ethio-NSDI geoportal",
+      "url": "https://ethionsdi.gov.et/",
+      "outcome": "Public indexed page confirms an official geospatial portal with public/authorized resource management and advertised OGC WMS/WFS plus REST API capabilities. No Irgalem parcel dataset, layer identifier, schema, CRS, or anonymous feature response was exposed by the inspected public content. Direct TLS request rejected the site's self-signed certificate; no exception used."
+    },
+    {
+      "route": "Ethio-NSDI public resource listing",
+      "url": "https://www.ethionsdi.gov.et/all",
+      "outcome": "Public indexed listing was reachable in search results as 'All Resources', but no Irgalem-specific parcel resource or safe native-ID-plus-geometry response was identified."
+    },
+    {
+      "route": "Official Addis Ababa e-Land map viewer",
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "outcome": "HTTP 200; current HTML and JavaScript entrypoint were inspected. The service identifies Addis Ababa's land-registration agency and is not evidence of Irgalem coverage. The main JavaScript bundle timed out during the bounded request; no parcel endpoint, schema, CRS, or feature response was retained."
+    },
+    {
+      "route": "Official Ministry of Justice urban cadastral directive",
+      "url": "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+      "outcome": "Official legal/procedural reference confirms an urban cadastral framework; it is general national guidance, not Irgalem registry or open parcel-vector evidence."
+    },
+    {
+      "route": "Candidate regional government hosts",
+      "url": "https://www.snnpr.gov.et/ and https://sidama.gov.et/",
+      "outcome": "Bounded DNS requests failed for both candidate hostnames; this is not evidence of absence and no TLS exception or alternate private route was attempted."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [6.74778002139066, 38.4068710535576] was preserved in latitude/longitude order; it was not shifted to force a parcel hit.",
+    "No exact-point parcel hit or miss, map-extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+    "National geoportal capability prose and Addis Ababa viewer access do not establish Irgalem or Sidama parcel coverage.",
+    "No safe native parcel identifier plus full polygon response was obtained; no GeoJSON sample is retained.",
+    "Packet completion records research status only; runtimeReadiness remains held and independent serial review is required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "No parcel CRS response observed.",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable Irgalem parcel-vector response; no hit/miss inference.",
+    "requestEvidence": [
+      "Ethio-NSDI public capability and resource pages were inspected without an Irgalem parcel response.",
+      "The reachable e-Land viewer is Addis Ababa-specific and its bundle fetch timed out; it was not treated as Irgalem evidence."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ethiopia national geospatial discovery, Addis Ababa e-Land comparison, and candidate Sidama/SNNPR public-host checks.",
+    "verifiedOpenScope": "Official national geoportal and Addis-specific viewer references were verified; no anonymous Irgalem parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A regional or municipal Irgalem land-information service may exist behind an unindexed or currently unavailable public route. Its current URL, access conditions, parcel schema, native identity, CRS, geometry endpoint, and coverage were not established through safe anonymous requests."
+}

@@ -1,0 +1,27 @@
+{
+  "taskId": "city:7619",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-7619-rabwah.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/rabwah-service-review.json",
+    "tmp/valhalla-parcel-research/7619/pulse.html",
+    "tmp/valhalla-parcel-research/7619/gpc-service.json",
+    "tmp/valhalla-parcel-research/7619/gpc-point.geojson",
+    "tmp/valhalla-parcel-research/runs/20261011T220211-9963e02b/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-11T22:05:16.449Z",
+  "reason": "First-party Punjab PLRA/PULSE records support a provincial registry/map lead, but the saved GPC parcel metadata and bounded point query both return Token Required. No native parcel identity or full polygon was obtained; access failure is not absence.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

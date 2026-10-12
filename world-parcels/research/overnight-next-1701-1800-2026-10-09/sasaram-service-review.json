@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-10841-sasaram.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10841,
+  "queueRank": 1726,
+  "city": "Sasaram",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Bihar's first-party Bhu-Naksha viewer is a local cadastral-map route for Rohtas/Sasaram and returned a bounded Special Survey extent in EPSG:32645. The exact WUP point was tested without shifting coordinates; the anonymous point route returned no parcel data, and no safe native ID plus polygon was retrieved. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "English and Hindi discovery queries are recorded in city-10841-sasaram.json. They identified the official Bihar Bhu-Naksha viewer, Directorate of Land Records & Survey, and Rohtas government map pages.",
+  "requestOutcomes": "The viewer, configuration, current JavaScript, hierarchy REST responses, Sasaram selection metadata, and Special Survey extent loaded through ordinary public GET/POST. The exact point transformed to EPSG:32645 as [199546.42187871446, 2762932.174425789] and is inside the returned extent. getPlotAtXY returned has_data=N; ScalarDatahandler returned no parcel data; WMS GetFeatureInfo returned an image rather than usable feature JSON. No credentials, private tokens, CAPTCHA bypass, unsafe fields, or TLS-disable action was used.",
+  "scopeLimits": [
+    "Exact WUP point [24.9520568188232, 84.0245718623021] was preserved in latitude/longitude order; no coordinate shift or citywide absence inference was made.",
+    "The verified extent is for one Sasaram mauza and Special Survey map instance, not proven complete city coverage.",
+    "A zero exact-point hit, empty scalar response, map extent limitation, or unusable feature-info response is not evidence of citywide cadastral absence.",
+    "No stable native parcel ID, source schema for parcel attributes, or full parcel polygon was obtained.",
+    "No owner, address, titleholder, contact, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:32645 for the verified Special Survey map extent; no parcel feature CRS response retained",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Projected exact point was inside the verified extent, but getPlotAtXY returned has_data=N and ScalarDatahandler returned no parcel data. This is not a citywide absence claim.",
+    "requestEvidence": [
+      "https://bhunaksha.bihar.gov.in/index.jsp",
+      "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "https://bhunaksha.bihar.gov.in/ScalarDatahandler"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bihar Bhu-Naksha cadastral maps, with a verified route to Rohtas district, Sasaram subdivision/circle, Sasaram mauza and Special Survey map extent.",
+    "verifiedOpenScope": "Public hierarchy and map extent only; anonymous parcel ID plus geometry response was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public viewer exposes WMS imagery and parcel-selection routes, but the anonymous exact-point request did not yield parcel data. The stable native parcel identity, parcel schema, geometry extraction route, and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title, or completeness.",
+  "retainedSample": null
+}

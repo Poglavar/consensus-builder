@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 5647,
+  "cityId": "wup2025:5647",
+  "name": "Ponta Grossa",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "centerLatLon": [-25.0913949234323, -50.1591332487979],
+  "queueRank": 1953,
+  "population2025": 296610,
+  "population2025k": 296.61,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ponta Grossa official cadastral parcel map geoserver prefeitura cadastro imobiliario mapa",
+        "result": "Found the official municipal GeoWeb/georeferencing announcement and service guide, plus Paraná Interativo's official ArcGIS REST cartographic service with a Ponta Grossa group layer. No public municipal parcel-polygon API was verified.",
+        "actualResultUrls": [
+          "https://www.pontagrossa.pr.gov.br/2022/09/19/prefeitura-moderniza-sistema-de-georreferenciamento/",
+          "https://www.pontagrossa.pr.gov.br/guia-de-servicos/",
+          "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer"
+        ]
+      },
+      {
+        "language": "Portuguese (local/native)",
+        "query": "Ponta Grossa cadastro territorial mapa lotes prefeitura serviço oficial",
+        "result": "Official municipal pages document GeoWeb, Cadastro Técnico Municipal/geoprocessamento, lot-plant and parcel subdivision/unification procedures, and construction-viability lookup by property-registration number. Anonymous GeoWeb host access was unavailable during this attempt.",
+        "actualResultUrls": [
+          "https://pontagrossa.pontagrossa.pr.gov.br/2025/01/09/prefeitura-de-ponta-grossa-adota-nova-forma-de-autenticacao-no-sistema-de-geoprocessamento/",
+          "https://pontagrossa.pontagrossa.pr.gov.br/2025/04/29/populacao-de-pg-pode-consultar-servico-de-viabilidade-de-construcao-no-site-da-prefeitura/",
+          "https://geo.pontagrossa.pr.gov.br/sistema/mapa"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A municipal GeoWeb/geoprocessing system and Cadastro Técnico Municipal are directly evidenced by official Ponta Grossa pages and procedures, but no anonymous parcel-polygon endpoint or usable parcel response was established in this attempt.",
+  "source": {
+    "localCustodian": "Prefeitura Municipal de Ponta Grossa / Instituto de Planejamento de Ponta Grossa (IPLAN), municipal GeoWeb and Cadastro Técnico Municipal",
+    "publicMapService": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer",
+    "municipalGroupLayer": 277,
+    "municipalGroupName": "Ponta Grossa",
+    "accessibleSubLayers": [
+      {"id": 1736, "name": "Ponta Grossa [2021_09] (esc2000) - Texto", "geometryType": "Annotation"},
+      {"id": 1756, "name": "Ponta Grossa [2021_09] (esc2000) - Linha", "geometryType": "Polyline"},
+      {"id": 4665, "name": "Ponta Grossa [2021_09] (res15cm) - Raster", "geometryType": "Raster"},
+      {"id": 1755, "name": "Ponta Grossa dist. Guaragi [2021_08] (esc2000) - Texto", "geometryType": "Annotation"},
+      {"id": 1757, "name": "Ponta Grossa dist. Guaragi [2021_08] (esc2000) - Linha", "geometryType": "Polyline"},
+      {"id": 4666, "name": "Ponta Grossa dist. Guaragi [2021_08] (res15cm) - Raster", "geometryType": "Raster"}
+    ],
+    "crs": "EPSG:31982 / SIRGAS 2000 UTM zone 22S",
+    "parcelPolygonLayerVerified": false,
+    "nativeFieldMapping": {},
+    "safeIdentityFields": []
+  },
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "The municipal GeoWeb is described as a city geoprocessing/georeferencing and cadastral-information platform; Paraná Interativo publishes a Ponta Grossa cartographic group.",
+    "verifiedOpenScope": "The Paraná Interativo group and sublayer metadata were fetched anonymously. The exposed Ponta Grossa sublayers are annotation, polyline, and raster; no parcel polygon layer was identified.",
+    "exactPointHit": false,
+    "exactPointInterpretation": "A point-intersects query against the accessible Ponta Grossa line layer returned zero features. This is a layer/geometry miss only, not evidence of citywide parcel absence.",
+    "citywideVerified": false
+  },
+  "resultCategory": "municipal_geoweb_evidenced_no_usable_anonymous_parcel_polygon_response",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The municipal GeoWeb may expose cadastral parcels behind its current authentication and web application routes, but the host timed out for anonymous HTTP access and no JavaScript/configuration or parcel API response could be inspected. The Paraná Interativo cartographic service is not a parcel source on the evidence obtained.",
+  "nextStep": "Serial reviewer should independently inspect the current municipal GeoWeb through its public, non-authenticated map route if available and qualify any parcel layer, CRS, native identity, and citywide coverage before adapter admission."
+}

@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-6749-kot-addu.json",
+  "cityCode": 6749,
+  "queueRank": 3072,
+  "name": "Kot Addu",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [30.4674951563177, 70.9680706614739],
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "service": "Punjab Land Records Authority / PULSE public Punjab_Cdastral_Maps ArcGIS layer 16 (Kot Addu)",
+  "queryAndRequestOutcome": "First-party English and Urdu discovery, current viewer JavaScript inspection, layer metadata inspection, exact-point-centered bounded probe, wider local ID probe, and three native-ID geometry reads were executed. The exact 600 m probe was empty; the wider probe returned polygons. PULSE hierarchy returned 401 and no login or credential was attempted.",
+  "nativeFieldMapping": {"canonicalGeoJSONProperty": "id", "nativeIdField": "OBJECTID", "nativeGeometryField": "Shape", "sourceCrs": "EPSG:3857", "sampleOutputCrs": "EPSG:4326", "compositeKeyProvenance": null},
+  "retainedSample": {"file": "kot-addu-parcel-samples.geojson", "featureCount": 3, "properties": "exactly one canonical native identity per feature: id", "nativeIds": ["1952299", "2374333", "2374997"]},
+  "safeFieldAllowlist": ["OBJECTID native parcel identity", "full polygon geometry", "geometry CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": ["Bounded samples do not establish citywide completeness or legal boundary accuracy.", "Zero exact-point results are not evidence of absence.", "No ownership, address, contact, titleholder, tax, account, or personal fields were requested or retained.", "The public viewer's complete-detail/login routes were not used."],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Real public ID-plus-geometry evidence exists, but runtime adapter qualification remains a separate serial review."},
+  "scratchEvidence": "tmp/valhalla-parcel-research/6749/ (unchanged HTML, JavaScript, metadata, and bounded request outputs)"
+}

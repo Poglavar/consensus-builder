@@ -1,0 +1,17 @@
+{
+  "taskId": "city:8654",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:50:30Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-8654-mulia.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/mulia-service-review.json"
+  ],
+  "inspectedCacheFiles": [
+    "tmp/valhalla-parcel-research/mulia/bhumi.html",
+    "tmp/valhalla-parcel-research/mulia/atlas.html"
+  ],
+  "review": "Cached first-party BHUMI and ATLAS pages support public service context; English and Indonesian searches and immutable WUP identity check passed. No native parcel ID plus full polygon response or safe sample was obtained; catalog scope and DNS failure cannot establish citywide absence. All independent adapter, 13-cell, metric geometry, source-binding, and headed Details gates remain unverified."
+}

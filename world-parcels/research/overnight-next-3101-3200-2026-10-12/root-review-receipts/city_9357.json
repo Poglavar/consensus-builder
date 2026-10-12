@@ -1,0 +1,20 @@
+{
+  "taskId": "city:9357",
+  "decision": "held",
+  "checkedAt": "2026-10-12T04:41:42Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-9357-parli.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/parli-service-review.json"
+  ],
+  "officialPagesChecked": [
+    "https://beed.gov.in/en/about-district/map-of-district/",
+    "https://beed.gov.in/%E0%A4%AE%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%A4%E0%A5%80%E0%A4%9A%E0%A4%BE-%E0%A4%85%E0%A4%A7%E0%A4%BF%E0%A4%95%E0%A4%BE%E0%A4%B0/",
+    "https://bhumiabhilekh.maharashtra.gov.in/Services"
+  ],
+  "identityCheck": "Queue and ranked roster agree on Parli, India, code 9357, rank 3175, point [18.8502895774339,76.5241343803141], and 189364 population persons.",
+  "researchCheck": "The paired packet records executed English and Marathi searches. The first-party Beed district page lists Parli tehsil; its RTI page lists the Deputy Superintendent Land Records, Parli Vaijnath. Maharashtra's official services page advertises Bhu-Naksha. These ground local custody and a viewer lead, not an accepted parcel response.",
+  "geometryCheck": "The paired packet has no source-proven native parcel ID, full polygon, schema or CRS; sample count is zero. Direct viewer requests timed out. No original parcel response artifact exists for acceptance metrics.",
+  "holdReason": "Fresh native-ID adapter reads, forced paging, 13 bounded cells, independent metric GEOS validity and overlap checks, source binding, and headed Details verification are absent. Timeout and viewer unavailability are not citywide absence. No runtime admission is authorized."
+}

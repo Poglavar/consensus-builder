@@ -1,0 +1,27 @@
+{
+  "taskId": "city:7893",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-7893-hasilpur.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/hasilpur-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/hasilpur-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T14:26:33.048554Z",
+  "review": {
+    "queueIdentity": "Matched immutable roster and pending queue: code, rank, country, point, and population persons.",
+    "bilingualSearches": "Packet records executed English and Urdu searches with result URLs.",
+    "sampleCount": 1,
+    "sampleSafety": "Only native ID and full unchanged polygon geometry retained.",
+    "sourceCacheInspection": {
+      "originalResponse": "tmp/valhalla-parcel-research/7893/exact-point.geojson",
+      "metadata": "tmp/valhalla-parcel-research/7893/bahawalpur-layer.json",
+      "originalFeatureCount": 1,
+      "sampleGeometryEqualsOriginal": true,
+      "nativeId": "OBJECTID:857666"
+    },
+    "reason": "One unchanged first-party Bahawalpur ArcGIS polygon with OBJECTID 857666 is retained safely. A point hit and service metadata do not establish Hasilpur-wide coverage or a qualified live adapter.",
+    "admissionGates": "No independently evidenced fresh adapter native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details-panel check."
+  }
+}

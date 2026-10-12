@@ -1,0 +1,17 @@
+{
+  "taskId": "city:389",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:50:30Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-389-krefeld.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/krefeld-service-review.json"
+  ],
+  "inspectedCacheFiles": [
+    "tmp/valhalla-parcel-research/krefeld/wfs-query-gml.xml",
+    "tmp/valhalla-parcel-research/krefeld/wfs-query.geojson"
+  ],
+  "review": "Official city ALKIS WFS returned one native OID and one full EPSG:25832 GML polygon in the cached first-party response; it includes a GML arc, while direct GeoJSON returned a geometry-conversion exception. English and German searches and immutable WUP identity check passed. No safe retained sample or independently qualified adapter; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are unproved. Geometry discovery remains held, with no citywide absence inference."
+}

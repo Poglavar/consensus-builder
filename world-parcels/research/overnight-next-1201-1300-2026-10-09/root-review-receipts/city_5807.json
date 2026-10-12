@@ -1,0 +1,18 @@
+{
+  "taskId": "city:5807",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5807-toyohashi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/toyohashi-service-review.json",
+    "tmp/valhalla-parcel-research/aigid-moj-23201.json",
+    "tmp/valhalla-parcel-research/toyohashi-2026.geojson",
+    "tmp/valhalla-parcel-research/toyohashi-sample-limited.geojson"
+  ],
+  "checkedAt": "2026-10-09T12:30:51Z",
+  "identityReview": "Rank 1263; WUP code 5807; Japan JP/JPN; [34.7670614726782,137.389808743258]; 441665 persons. Exact roster and pending queue match.",
+  "sourceReview": "English and Japanese searches with result URLs are recorded. The cached first-party G-Space catalog points to the downloaded 2026 GeoJSON, which has 28068 full polygons. Three scratch sample geometries exactly match source features and retain only id, but the source ID field has only 2508 distinct values: sample IDs H000000018 and H000000017 each name 126 different geometries, and H000000131 names 65. Therefore the claimed stable unique source identity is unproven.",
+  "admissionReview": "No durable full polygons were retained in the packet. A valid unique native or proven composite key, fresh exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS overlap/operation checks, source binding, and headed Details verification are absent. Exact-point miss is not citywide absence."
+}

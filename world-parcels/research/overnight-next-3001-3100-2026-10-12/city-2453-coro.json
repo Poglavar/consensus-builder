@@ -1,0 +1,147 @@
+{
+  "cityCode": 2453,
+  "queueRank": 3069,
+  "name": "Coro",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso3": "VEN",
+  "point": [11.4020516898788, -69.6719085761861],
+  "population2025": 195549,
+  "population2025k": 195.549,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Coro Venezuela official cadastral parcel map catastro GIS API municipal Falcón",
+        "result": "First-party discovery identified the official Alcaldía del Municipio Miranda portal for Coro and the national Instituto Geográfico de Venezuela Simón Bolívar (IGVSB). The municipal portal links the SIGAT municipal tax platform, but no public cadastral viewer or parcel API was exposed. IGVSB exposes general cartographic services and a map catalog, not a city parcel service.",
+        "actualResultUrls": [
+          "https://alcaldiamiranda.com/",
+          "https://miranda.sigat.net/",
+          "https://igvsb.gob.ve/",
+          "https://igvsb.gob.ve/servicios_cartograficos",
+          "https://igvsb.gob.ve/servicio_api_mapoteca"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Coro Venezuela mapa catastral parcelas catastro oficial GIS API Alcaldía de Miranda Falcón",
+        "result": "La búsqueda en español identificó el portal oficial de la Alcaldía del Municipio Miranda y el IGVSB. La Alcaldía publica trámites y enlaza SIGAT, pero las páginas accesibles no muestran visor catastral ni servicio público de parcelas. El IGVSB publica cartografía general y una mapoteca; no se calificó una respuesta anónima de identidad más geometría parcelaria para Coro.",
+        "actualResultUrls": [
+          "https://alcaldiamiranda.com/tramites",
+          "https://miranda.sigat.net/",
+          "https://igvsb.gob.ve/servicios_cartograficos",
+          "https://igvsb.gob.ve/servicio_api_mapoteca"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://alcaldiamiranda.com/",
+      "https://alcaldiamiranda.com/tramites",
+      "https://miranda.sigat.net/",
+      "https://igvsb.gob.ve/",
+      "https://igvsb.gob.ve/servicios_cartograficos",
+      "https://igvsb.gob.ve/servicio_api_mapoteca"
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": {
+    "name": "Instituto Geográfico de Venezuela Simón Bolívar (IGVSB)",
+    "scope": "National geographic, cartographic and cadastral authority identified by its official site and national cadastral-law materials; no Coro parcel endpoint was qualified.",
+    "evidence": "https://igvsb.gob.ve/"
+  },
+  "localCustodianContext": {
+    "name": "Alcaldía del Municipio Miranda, Coro, Falcón",
+    "scope": "Official municipal portal and linked municipal tax platform were reachable. They evidence municipal administration and tax services, not an accessible cadastral map, parcel API, or cadastral procedure for anonymous retrieval.",
+    "evidence": "https://alcaldiamiranda.com/"
+  },
+  "service": {
+    "name": "IGVSB cartographic services / mapoteca; Alcaldía Miranda portal and SIGAT",
+    "viewerUrl": "https://alcaldiamiranda.com/",
+    "baseUrl": "https://igvsb.gob.ve/",
+    "viewerConfiguration": "The official municipal portal is a Next.js institutional site with links to municipal services and SIGAT; page inspection found no cadastral viewer or parcel-layer configuration. IGVSB's cartographic page embeds a general Leaflet map with state/capital/water layers. Its mapoteca page configures a POST endpoint at https://igvsb.gob.ve/api_igvsb/public/api/mapas for general map catalog records, not parcel features.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://alcaldiamiranda.com/",
+      "status": 200,
+      "outcome": "Official municipal portal loaded. Current HTML and linked pages exposed institutional content, news, procedures and a link to https://miranda.sigat.net/; no cadastral viewer, parcel layer, or parcel API configuration was found."
+    },
+    {
+      "method": "GET",
+      "url": "https://alcaldiamiranda.com/tramites",
+      "status": 200,
+      "outcome": "Official municipal procedures page loaded. No cadastral parcel lookup or public map endpoint was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://miranda.sigat.net/",
+      "status": 200,
+      "outcome": "Linked SIGAT municipal tax platform loaded. Public landing page describes tax/revenue services and contains no anonymous cadastral parcel geometry or parcel viewer. No login was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://igvsb.gob.ve/",
+      "status": 200,
+      "outcome": "Official IGVSB site loaded. It exposes general geographic, cartographic, geodesic and mapoteca services; no city-specific parcel API was identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://igvsb.gob.ve/servicios_cartograficos",
+      "status": 200,
+      "outcome": "Official cartographic page loaded. Its embedded Leaflet configuration contains general Venezuela layers (capitals, departments and water), not cadastral parcels; no parcel schema or CRS was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://igvsb.gob.ve/servicio_api_mapoteca",
+      "status": 200,
+      "outcome": "Official mapoteca page loaded and disclosed the current POST endpoint https://igvsb.gob.ve/api_igvsb/public/api/mapas for a general map catalog. This is not a parcel feature service."
+    },
+    {
+      "method": "GET",
+      "url": "https://igvsb.gob.ve/api_igvsb/public/api/mapas",
+      "status": 405,
+      "outcome": "Server reported that GET is not supported and POST is required. No POST was made because the endpoint is a general map catalog and not a parcel service; no credentials, tokens, or unsafe fields were requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://igvsb.gob.ve/servicios_geodesicos",
+      "status": 200,
+      "outcome": "Official geodesic services page loaded; no anonymous parcel feature service was exposed."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/2453/ (unchanged HTML/API response evidence and request outcomes; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [11.4020516898788, -69.6719085761861] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel request was submitted because no usable public parcel endpoint or layer configuration was available; this is not evidence of a point miss or citywide absence.",
+    "No parcel schema, native identity field, geometry CRS, or anonymous ID-plus-geometry response was qualified; no GeoJSON sample is retained.",
+    "The municipal portal and SIGAT evidence establishes local government/tax-service context, not a local cadastral registry or map service; registryFound therefore remains null.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe land-record fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The municipal administration may maintain non-public or authenticated cadastral data not exposed on its public portal.",
+    "IGVSB may have additional internal or restricted cadastral services not linked from the accessible public pages.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

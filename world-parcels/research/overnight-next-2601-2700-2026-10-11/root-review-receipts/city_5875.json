@@ -1,0 +1,22 @@
+{
+  "taskId": "city:5875",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5875-spokane.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/spokane-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5875-spokane-sample.geojson",
+    "tmp/valhalla-parcel-research/spokane/parcels-layer.pjson",
+    "tmp/valhalla-parcel-research/spokane/exact-point.geojson",
+    "tmp/valhalla-parcel-research/spokane/extent-1km.geojson"
+  ],
+  "reason": "Rank 2672 US Spokane identity, WUP point and 220842 persons match the immutable queue. Packet records English and Spanish searches. Original exact-point response is empty, but a nearby bounded response has three polygons; all three PID_NUM values and complete geometries match the retained safe-id sample exactly. The bounded response declares exceededTransferLimit, so it is not a complete manifest. Official county GIS/Assessor pages corroborate local parcel custody. Fresh exact-ID adapter reads, forced pagination, 13 bounded cells, metric GEOS validity/overlap/operation checks, full source binding and headed Details-panel verification remain unverified. Hold without admission; a point-zero is not citywide absence.",
+  "custodyFinding": "true: official Spokane County GIS and Assessor parcel publication",
+  "retainedFullPolygons": 3,
+  "firstPartyUrls": [
+    "https://www.spokanecounty.gov/272/Maps",
+    "https://services1.arcgis.com/ozNll27nt9ZtPWOn/arcgis/rest/services/Parcels/FeatureServer/0"
+  ],
+  "checkedAt": "2026-10-11T17:31:53Z",
+  "runtimeAdmitted": false
+}

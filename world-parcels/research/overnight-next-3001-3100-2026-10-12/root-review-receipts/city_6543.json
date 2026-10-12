@@ -1,0 +1,29 @@
+{
+  "taskId": "city:6543",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-6543-norwich.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/norwich-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T01:57:16.586925Z",
+  "city": "Norwich",
+  "queueRank": 3056,
+  "registryFound": true,
+  "identityCheck": "Packet code, rank, country, original 2025 WUP point and population persons match the immutable cohort roster, pending queue, and official WUP 2025 compressed source (SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114).",
+  "searchCheck": "Two English queries are recorded because English is also the official service language locally; both include first-party result URLs.",
+  "firstPartyCheck": "Norwich City Council’s current page identifies local land-charge searches. HM Land Registry guidance describes indicative registered-freehold INSPIRE polygons and its 4 October 2026 download page lists Norwich. Independent HEAD/redirect check of the Norwich ZIP returned HTTP 302 to the identical URL three times, with zero payload bytes.",
+  "polygonCheck": "Zero full sample polygons and zero retained parcel ID attributes; within the maximum of three full polygons and no unsafe attributes retained.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "The listed download is a positive source lead, but no Norwich GML, native ID or polygon was obtained; the redirect loop cannot establish absence.",
+  "scopeLimit": "Research completion is not integration or admission. No citywide parcel absence inferred, and no runtime, catalog or coverage/report state changed."
+}

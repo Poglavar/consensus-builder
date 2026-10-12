@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-7213-omoku.json",
+  "cityCode": 7213,
+  "queueRank": 2981,
+  "name": "Omoku",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and local-language discovery was completed. Official Rivers State land-administration pages and the federal survey authority were checked with browser-like headers and a cookie jar. The state ministry route is account-oriented, SGRIV currently returns 404, the federal page is descriptive, the state homepage returned 403, and no bounded anonymous parcel ID+polygon response was available.",
+  "attemptedRoutes": [
+    {"url": "https://urban.riversstateapps.ng/", "method": "GET", "outcome": "HTTP 200 official ministry service page; land procedures and account workflow, no parcel layer"},
+    {"url": "https://urban.riversstateapps.ng/login.html", "method": "GET", "outcome": "HTTP 200 login/registration wall; no credentials used"},
+    {"url": "https://urban.riversstateapps.ng/frontend/js/login.js", "method": "GET", "outcome": "HTTP 200 JavaScript; login/registration endpoints only"},
+    {"url": "https://www.sgriv.com/", "method": "GET", "outcome": "HTTP 404 deployment-not-found response"},
+    {"url": "https://osgof.gov.ng/cadastral-legal-surveys/", "method": "GET", "outcome": "HTTP 200 federal cadastral/legal survey description; no open geometry service"},
+    {"url": "https://www.riversstate.gov.ng/", "method": "GET", "outcome": "HTTP 403 WAF response from this network"},
+    {"url": "https://opendata.arcgis.com/api/v3/datasets?q=cadastral%20Rivers%20Nigeria", "method": "GET", "outcome": "HTTP 200 catalog search; no verified Rivers/Omoku parcel service"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [5.34068647964386, 6.65584499280551] was preserved in latitude/longitude order and never shifted.",
+    "No zero-hit or map-extent result was used as evidence of citywide absence.",
+    "No parcel polygon or native parcel identity was retained because no safe bounded response was returned.",
+    "A state custodian does not establish Nigeria-wide coverage or public queryability."
+  ],
+  "nativeFieldMapping": {"canonicalIdentity": null, "alsoObserved": [], "retainedGeoJSONProperty": null, "compositeKeyProvenance": "No parcel response was obtained; no identity was invented."},
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "Rivers State land/survey custody and a public application procedure are evidenced, but the inspected routes did not expose a usable anonymous parcel API. Current SGRIV availability is uncertain due to HTTP 404, and the state homepage was WAF-blocked. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+}

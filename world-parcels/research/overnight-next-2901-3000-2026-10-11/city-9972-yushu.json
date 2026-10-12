@@ -1,0 +1,93 @@
+{
+  "cityCode": 9972,
+  "queueRank": 2941,
+  "name": "Yushu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [44.8249440425072, 126.541546977958],
+  "population2025": 202654,
+  "population2025k": 202.654,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yushu Jilin China official cadastral parcel map land registry GIS 榆树市 吉林 地籍 parcel map",
+        "result": "First-party discovery identified the Jilin Provincial Department of Natural Resources data/mapping page and the official Tianditu Jilin platform. The platform's current city-node response identifies 榆树市 (Yushu City), city code 220182, but no public cadastral parcel service was identified.",
+        "actualResultUrls": [
+          "https://zrzy.jl.gov.cn/zwgk/tjxx/ch/",
+          "https://zrzy.jl.gov.cn/zwgk/tjxx/",
+          "https://jilin.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "玉树市 吉林省 自然资源 地籍图 宗地 不动产登记 地图 官方",
+        "result": "中文 first-party discovery identified the Jilin Natural Resources mapping/data pages, the Jilin immovable-property-registration information page, and the official Tianditu Jilin service. Direct platform inspection matched the point to 榆树市 and exposed its municipal extent; no anonymous cadastral parcel layer or polygon response was available.",
+        "actualResultUrls": [
+          "https://zrzy.jl.gov.cn/jlsbdcdj/",
+          "https://zrzy.jl.gov.cn/zwgk/tjxx/ch/",
+          "https://jilin.tianditu.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "Jilin Provincial Department of Natural Resources / official Tianditu Jilin geospatial platform",
+    "locality": "榆树市 (Yushu City), Changchun, Jilin; platform city code 220182",
+    "evidenceUrls": [
+      "https://jilin.tianditu.gov.cn/api/cityNode/queryByTree.json",
+      "https://jilin.tianditu.gov.cn/api/region/queryRegionByCode.json?code=220182",
+      "https://jilin.tianditu.gov.cn/api/region/getExtentByCode?code=220182"
+    ],
+    "scopeNote": "A local official geospatial platform and municipal extent are evidenced, but the observed public service is not a cadastral registry/map/procedure and did not expose parcel geometry; registryFound therefore remains null."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Tianditu Jilin public platform",
+    "nativeIdField": null,
+    "crs": "Platform base map configuration reports Web Mercator for online maps; no parcel-layer CRS was exposed.",
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": []
+    },
+    "note": "The exact WUP point was preserved and was not shifted. The point falls inside the official 220182 municipal extent, but extent membership is not parcel evidence. No full polygon was retained."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://zrzy.jl.gov.cn/zwgk/tjxx/ch/", "outcome": "Official Jilin Natural Resources mapping page retrieved; links to Tianditu Jilin and standard map service."},
+    {"method": "GET", "url": "https://zrzy.jl.gov.cn/zwgk/tjxx/", "outcome": "Official Jilin Natural Resources data-services page retrieved; it lists mapping and land-data services but no open Yushu parcel layer."},
+    {"method": "GET", "url": "https://zrzy.jl.gov.cn/jlsbdcdj/", "outcome": "Official Jilin immovable-property-registration page was attempted; direct fetch returned HTTP 403, so no service schema or geometry was inferred."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/", "outcome": "HTTP 200; current official platform HTML retrieved and JavaScript/configuration assets identified."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/static/config.js", "outcome": "HTTP 200; current configuration inspected. It identifies the public API base, online map endpoint, Web Mercator map setting, and Jilin default region."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/api/cityNode/queryByTree.json", "outcome": "HTTP 200; response identifies 榆树市 / Yushu Platform for Common Geospatial Information Services, city code 220182, enabled=0."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/api/region/queryRegionByCode.json?code=220182", "outcome": "HTTP 200; municipal extent returned: xmin 126.002201, ymin 44.509826, xmax 127.086480, ymax 45.250799."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/api/region/getExtentByCode?code=220182", "outcome": "HTTP 200; same extent returned in numeric form; exact WUP point is inside this administrative extent."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/api/mapconfig/findMapQueryConfig.json?regionCode=220182&isDefault=0", "outcome": "HTTP 200; only route and POI query services returned, no cadastral/parcel layer."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/api/mapconfig/findMapQueryConfig.json?regionCode=220182&isDefault=1", "outcome": "HTTP 200; geocode, route, AOI, and POI services returned, no cadastral/parcel layer."},
+    {"method": "GET", "url": "https://jilin.tianditu.gov.cn/api/onlineQueryLayerList", "outcome": "HTTP 404; guessed endpoint was not available and was not treated as evidence of absence."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "scopeLimits": [
+    "The exact supplied WUP point [44.8249440425072, 126.541546977958] was preserved and not shifted.",
+    "The official platform extent confirms municipal containment only; it does not establish citywide parcel coverage or a parcel hit.",
+    "The platform municipal node is disabled and its public query configuration exposes only general map/POI/AOI/geocode services, not cadastral geometry.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "Yushu is name-ambiguous; the supplied point matches 榆树市 in Jilin, not the Tibetan Yushu location. No coordinate was changed.",
+    "The 403 response on the Jilin immovable-property-registration page prevented inspection of any linked local registration workflow.",
+    "No public anonymous parcel schema, native parcel identity, CRS, or geometry response was observed."
+  ]
+}

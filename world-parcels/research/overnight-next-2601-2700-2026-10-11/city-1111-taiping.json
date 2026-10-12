@@ -1,0 +1,126 @@
+{
+  "cityCode": 1111,
+  "queueRank": 2656,
+  "city": "Taiping",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "point": [4.85501603331364, 100.727250933951],
+  "population2025": 222522,
+  "population2025k": 222.522,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Taiping Malaysia official cadastral parcel map geoportal land office Perak",
+        "result": "First-party discovery identified the official PerakGIS state GIS portal, the MyGeoportal Unique Parcel Identifier (UPI) service, and the official Taiping/Larut Matang and Selama District and Land Office portal. A public parcel feature endpoint was not verified.",
+        "actualResultUrls": [
+          "https://mygdispatial.perak.gov.my/",
+          "https://www.mygeoportal.gov.my/en/unique-parcel-identifier-upi",
+          "https://ptg.perak.gov.my/portal/en/web/taiping/hubungi-kami"
+        ]
+      },
+      {
+        "language": "Malay",
+        "query": "Taiping Malaysia peta kadaster lot tanah rasmi Pejabat Daerah dan Tanah Larut Matang Selama",
+        "result": "Carian sumber pertama dalam Bahasa Melayu mengenal pasti Portal Rasmi PerakGIS, perkhidmatan Pengenal Pasti Bungkusan Unik (UPI) MyGeoportal, dan Pejabat Daerah dan Tanah Taiping/Larut Matang dan Selama sebagai penjaga tempatan. Tiada respons ciri parcel awam yang boleh disahkan.",
+        "actualResultUrls": [
+          "https://mygdispatial.perak.gov.my/",
+          "https://www.mygeoportal.gov.my/en/unique-parcel-identifier-upi",
+          "https://ptg.perak.gov.my/portal/web/taiping/peta-laman",
+          "https://ptg.perak.gov.my/portal/en/web/taiping/hubungi-kami"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Pejabat Daerah dan Tanah Taiping / Pejabat Daerah Larut, Matang dan Selama, Perak; state GIS custodian is Unit PerakGIS, Perak state government.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://ptg.perak.gov.my/portal/en/web/taiping/hubungi-kami",
+    "stateGisUrl": "https://mygdispatial.perak.gov.my/",
+    "nationalParcelReferenceUrl": "https://www.mygeoportal.gov.my/en/unique-parcel-identifier-upi",
+    "evidence": "The official Taiping portal identifies the District and Land Office at 34000 Taiping, Perak and provides its official contact details. The official PerakGIS portal identifies state GIS applications and the PerakGIS unit. MyGeoportal documents Malaysia's UPI parcel-location identifier and spatial display service. These establish local/state custodianship, not an open parcel geometry response."
+  },
+  "sourceReview": {
+    "service": "PerakGIS state GIS portal and Malaysia MyGeoportal UPI service, with the local land custodian being Pejabat Daerah dan Tanah Taiping / Larut, Matang dan Selama.",
+    "baseUrls": [
+      "https://mygdispatial.perak.gov.my/",
+      "https://www.mygeoportal.gov.my/en/unique-parcel-identifier-upi",
+      "https://ptg.perak.gov.my/portal/en/web/taiping/hubungi-kami"
+    ],
+    "officialAssetsInspected": [
+      "PerakGIS portal landing page and its listed GIS applications, including Lot Finder",
+      "MyGeoportal UPI service description",
+      "Official Taiping District and Land Office contact page and Malay site map"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel feature response returned",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier, only if feature-level stability is independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and coverage metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET/search inspection",
+      "url": "https://mygdispatial.perak.gov.my/",
+      "outcome": "Official portal was identified through first-party discovery as the PerakGIS state GIS portal; its indexed page lists a Lot Finder application and the PerakGIS contact/custodian. A direct TLS-verified shell fetch from the research environment timed out after 20 seconds, so current JavaScript/configuration and API routes could not be inspected."
+    },
+    {
+      "method": "GET/search inspection",
+      "url": "https://www.mygeoportal.gov.my/en/unique-parcel-identifier-upi",
+      "outcome": "Official MyGeoportal page was readable in first-party discovery. It describes UPI as a standardized parcel-location identifier and says results can be shown textually and spatially; no Taiping parcel feature response or downloadable geometry was obtained."
+    },
+    {
+      "method": "GET/search inspection",
+      "url": "https://ptg.perak.gov.my/portal/en/web/taiping/hubungi-kami",
+      "outcome": "Official Taiping District and Land Office contact page was readable and identified the local land custodian at 34000 Taiping, Perak. No unsafe property lookup was attempted."
+    },
+    {
+      "method": "GET/search inspection",
+      "url": "https://ptg.perak.gov.my/portal/web/taiping/peta-laman",
+      "outcome": "Official Malay site map was readable and confirmed the Taiping portal sections for land administration, public land-service guidance, and local administrative information. No parcel geometry route was exposed by the indexed content."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed against a usable public parcel layer; exact WUP point [4.85501603331364, 100.727250933951] was preserved and not shifted.",
+    "requestEvidence": [
+      "official local land custodian identified",
+      "official state GIS portal and Lot Finder application identified",
+      "official national UPI service documented",
+      "direct PerakGIS fetch timed out",
+      "no parcel feature geometry, schema, native ID or CRS returned"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "PerakGIS state GIS applications and MyGeoportal UPI land-administration reference, with local land administration by Taiping/Larut Matang and Selama District and Land Office.",
+    "verifiedOpenScope": "Official custodian and service descriptions only; no anonymous Taiping parcel geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [4.85501603331364, 100.727250933951] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "UPI service documentation is not equivalent to an anonymous parcel geometry response or proof of Taiping city coverage.",
+    "No stable native parcel identity plus full polygon geometry was retrieved or retained; no sample GeoJSON is written.",
+    "No owner, address, titleholder, contact, tax/account, registration, personal or other unsafe fields were requested or retained.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Official local custodianship and relevant state/national geospatial services are evidenced. The current Lot Finder implementation, anonymous service/API route, parcel layer schema, CRS, stable native identity, geometry availability, city-boundary relationship and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

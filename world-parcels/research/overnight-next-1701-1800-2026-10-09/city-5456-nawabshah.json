@@ -1,0 +1,86 @@
+{
+  "cityCode": 5456,
+  "queueRank": 1785,
+  "name": "Nawabshah",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "point": [26.24695838916, 68.4053000344491],
+  "population2025": 321838,
+  "population2025k": 321.838,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nawabshah Sindh Pakistan official cadastral parcel map GIS land records Board of Revenue",
+        "result": "First-party discovery identified the Board of Revenue, Government of Sindh, Sindh Zameen/LARMIS public land-record portal, its deh-map service, Sindh maps page, and the Sindh e-Registration service. Search evidence describes digital land administration, cadastral survey maps, deh maps and property registers, but did not expose a public parcel feature endpoint for Nawabshah.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx",
+          "https://www.sindhzameen.gos.pk/maps.aspx",
+          "https://www.sindhzameen.gos.pk/map/Sindh_Map.aspx",
+          "https://bor.sindh.gov.pk/",
+          "https://e-registration.gos.pk/"
+        ]
+      },
+      {
+        "language": "Urdu/Sindhi",
+        "query": "نواب شاہ سندھ سرکاری نقشہ اراضی ریکارڈ کادستر GIS",
+        "result": "Native-language discovery returned the official Sindh Zameen portal and official Sindh/Board of Revenue land-record references. The results describe maps, deh records and public revenue services, but no anonymous Nawabshah parcel-ID-plus-geometry API was identified.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx",
+          "https://www.sindhzameen.gos.pk/maps.aspx",
+          "https://bor.sindh.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://www.sindhzameen.gos.pk/Default.aspx", "observation": "Official Board of Revenue Sindh portal; search evidence identifies digital land administration, property registers, survey/deh maps and revenue records."},
+    {"url": "https://www.sindhzameen.gos.pk/maps.aspx", "observation": "Official Sindh maps service page identified by discovery; direct TLS-verified retrieval was not usable because the presented certificate hostname did not match."},
+    {"url": "https://bor.sindh.gov.pk/", "observation": "Official Board of Revenue Sindh site; discovery evidence describes computerization of land records and GIS/geodatabase work, but this is institutional evidence rather than a parcel response."},
+    {"url": "https://e-registration.gos.pk/", "observation": "Official Sindh e-Registration service describing deed-registration workflow; not treated as an open parcel geometry source."}
+  ],
+  "requests": [
+    {"url": "https://www.sindhzameen.gos.pk/", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 0, "outcome": "Blocked before HTTP response: certificate hostname mismatch (presented certificate did not match www.sindhzameen.gos.pk). No TLS exception was used."},
+    {"url": "https://www.sindhzameen.gos.pk/maps.aspx", "method": "GET; anonymous via web fetch", "httpStatus": 400, "outcome": "Web fetch timed out; no HTML, JavaScript configuration, service URL, schema, CRS or parcel response obtained."},
+    {"url": "https://www.sindhzameen.gos.pk/Default.aspx", "method": "GET; anonymous via web fetch", "httpStatus": 502, "outcome": "Web fetch failed with Bad Gateway; no parcel service route or geometry obtained."},
+    {"url": "https://bor.sindh.gov.pk/", "method": "GET; anonymous", "httpStatus": 0, "outcome": "DNS resolution timed out; no page or service configuration obtained."},
+    {"url": "https://e-registration.gos.pk/", "method": "GET; anonymous", "httpStatus": 403, "outcome": "Endpoint reached but denied anonymous retrieval; no parcel geometry or safe native parcel identity was requested."}
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Board of Revenue Sindh and Sindh Zameen/LARMIS sources establish the provincial land-record and cadastral/deh-map custodian relevant to Nawabshah (now in Shaheed Benazirabad district). This evidences an official registry/map route, not an open parcel API or citywide geometry dataset.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "board-of-revenue-sindh-sindh-zameen-larmis",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Sindh provincial land records, deh maps and cadastral/revenue services, including Nawabshah-area records.",
+    "verifiedOpenScope": "Official custodian and service descriptions only; anonymous parcel geometry, stable native parcel identity and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [26.24695838916, 68.4053000344491] was preserved; no point was shifted and no exact-point hit or miss was inferred.",
+    "TLS hostname failure, timeout, 502, DNS failure and 403 are access/request outcomes only and are not evidence of citywide cadastral absence.",
+    "No current official viewer JavaScript/configuration, parcel schema, CRS or bounded anonymous ID-plus-geometry response could be safely retrieved.",
+    "No owner, address, titleholder, contact, tax/account, CNIC or personal fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity and full polygon geometry were obtained.",
+    "Packet completion is research bookkeeping only and does not qualify or admit a runtime adapter; runtime remains held pending serial review."
+  ],
+  "uncertainty": "Sindh Zameen may expose maps or records through a browser workflow, formal service-centre process, or an endpoint not reachable in this attempt. The public parcel API route, access controls, stable parcel identity, CRS, update currency, legal status and Nawabshah citywide completeness remain unresolved.",
+  "retainedSample": null
+}

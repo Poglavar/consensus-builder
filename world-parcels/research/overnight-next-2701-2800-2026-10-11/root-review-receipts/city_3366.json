@@ -1,0 +1,30 @@
+{
+  "taskId": "city:3366",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:54:47Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-3366-lhasa.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/lhasa-service-review.json",
+    "tmp/valhalla-parcel-research/lhasa/layer.json",
+    "tmp/valhalla-parcel-research/lhasa/count.json",
+    "tmp/valhalla-parcel-research/lhasa/point-window.json",
+    "tmp/valhalla-parcel-research/lhasa/root-exact-point-ids.json",
+    "tmp/valhalla-parcel-research/lhasa/root-official-registration.html",
+    "tmp/valhalla-parcel-research/lhasa/sample.geojson"
+  ],
+  "review": "Official Lhasa Natural Resources Bureau page supports registryFound=true for local registration procedure. English and Chinese executed searches are recorded. The first-party ArcGIS service describes historical 1949/1966 Lhasa, not current cadastre. Root correction: actual layer extent is approximately 91.061535–91.156525 longitude, so the packet claim of 91.130–91.163 and outside extent is wrong. A fresh exact WUP-point intersects query returns native OBJECTID 822, and the cached bounded window returns 822 and 867; the packet exactPointHit=false is wrong. The ignored raw three-polygon cache carries additional source attributes, so it is not a safe durable ID-only sample. No source admission: historical source mismatch and no independently qualified current adapter, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, runtime source binding, or headed Details-panel verification.",
+  "firstPartyCorrection": {
+    "serviceUrl": "https://services2.arcgis.com/8k2PygHqghVevhzy/ArcGIS/rest/services/Historic_Lhasa_GIS_WFL1/FeatureServer/21",
+    "query": "geometry=91.1204931098001,29.6590572103938&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true",
+    "objectIds": [
+      822
+    ],
+    "actualExtentLongitude": [
+      91.061534669,
+      91.156524751
+    ]
+  }
+}

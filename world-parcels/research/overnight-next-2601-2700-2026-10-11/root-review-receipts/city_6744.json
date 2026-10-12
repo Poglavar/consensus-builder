@@ -1,0 +1,18 @@
+{
+  "taskId": "city:6744",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-6744-manfalut.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/manfalut-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T16:31:00Z",
+  "reason": "WUP source and queue identity match rank 2627, Egypt, immutable point, and 224667 persons. English and Arabic executed search records include actual first-party ESA URLs, corroborated by the ESA services page. Registry custody remains unresolved (registryFound null): the pages do not supply a Manfalut parcel feature route. No full polygon or native ID was retained. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; hold without admission.",
+  "registryFound": null,
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "firstPartyPagesChecked": [
+    "https://www.esa.gov.eg/services.aspx"
+  ]
+}

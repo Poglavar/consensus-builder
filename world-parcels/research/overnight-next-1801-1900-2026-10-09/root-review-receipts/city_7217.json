@@ -1,0 +1,31 @@
+{
+  "taskId": "city:7217",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7217-magnitogorsk.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/magnitogorsk-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/runs/20261010T155017-2c202788/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T15:55:00.588244Z",
+  "reason": "Municipal GIS and cadastral-map references establish a custodian, but no verified anonymous parcel polygon or native ID. Portal TLS failure and timed-out service probes leave source scope unresolved.",
+  "identity": {
+    "cityCode": 7217,
+    "queueRank": 1810,
+    "country": "Russian Federation",
+    "point": [
+      53.4009207599711,
+      59.0039817989917
+    ],
+    "populationPersons": 317107,
+    "verifiedAgainst": "official 2025 WUP archive and pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Russian"
+  ],
+  "firstPartyUrls": [
+    "https://gisportal.magnitogorsk.ru/button_html/about/"
+  ],
+  "admissionGates": "No verified public parcel response or native IDs; fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not evidenced."
+}

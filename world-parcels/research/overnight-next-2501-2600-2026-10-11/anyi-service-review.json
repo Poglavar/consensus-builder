@@ -1,0 +1,67 @@
+{
+  "cityRecord": "city-11190-anyi.json",
+  "cityCode": 11190,
+  "queueRank": 2581,
+  "name": "Anyi",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [33.2432241609582, 119.297979735798],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://yzby.jszwfw.gov.cn/col/col185536/",
+      "httpStatus": 200,
+      "outcome": "Official Baoying County portal page for Anyi Town; identifies Anyi (安宜镇), its county relationship, local government address, and service context. No parcel endpoint or geometry was present."
+    },
+    {
+      "method": "GET",
+      "url": "https://yzby.jszwfw.gov.cn/col/col185532/index.html",
+      "httpStatus": 200,
+      "outcome": "Official Baoying government-service page describes the integrated real-estate registration service area and registration workflow; it is procedural prose, not an anonymous parcel API."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+      "httpStatus": 200,
+      "outcome": "Official Jiangsu government-service real-estate registration landing page loaded; no public Anyi parcel ID-plus-geometry response was exposed in the bounded request."
+    },
+    {
+      "method": "GET",
+      "url": "https://jiangsu.tianditu.gov.cn/server/index",
+      "httpStatus": 200,
+      "outcome": "Official Jiangsu Tianditu portal loaded. Current page links and scripts were inspected for public map/API configuration; no cadastral parcel service was qualified."
+    },
+    {
+      "method": "GET",
+      "url": "https://jiangsu.tianditu.gov.cn/server/mapArray",
+      "httpStatus": 200,
+      "outcome": "Official thematic map-directory HTML loaded. It exposed general map entries and no anonymous parcel feature endpoint, schema, CRS, or bounded ID-plus-geometry response."
+    }
+  ],
+  "schemaAndCrs": {
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "rawAttributesRetained": false
+  },
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity", "full polygon geometry", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Only official local/provincial service context and a general map directory were verified. No real anonymous parcel geometry response was obtained, so no adapter qualification or admission is possible."
+  },
+  "scopeLimits": [
+    "One or more official pages being reachable does not establish parcel-layer availability or citywide coverage.",
+    "No exact-point parcel request was made because no qualified parcel endpoint was found; this is not a zero-hit result.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or global TLS exception were used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The local custodian and provincial map portal are evidenced, but current public parcel service access for Anyi remains unresolved. Native identity, source schema, CRS, geometry, and citywide completeness are unverified."
+}

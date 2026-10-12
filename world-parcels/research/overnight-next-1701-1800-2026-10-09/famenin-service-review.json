@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-3955-famenin.json",
+  "cityCode": 3955,
+  "queueRank": 1793,
+  "city": "Famenin",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "Iran's public land-management portal was inspected and its current JavaScript/configuration was followed to the same-origin API base. No anonymous Famenin parcel endpoint with a safe native ID and full polygon response was verified; no GeoJSON sample was retained.",
+  "queryOutcomes": "English and Persian discovery queries, exact query text, outcomes, and actual URLs are recorded in city-3955-famenin.json under freshResearch.",
+  "requestOutcomes": "All direct requests and their outcomes are recorded in city-3955-famenin.json under requestOutcomes. The public portal returned HTML and JavaScript, but no parcel layer/schema/CRS/ID+geometry route was identified. Registration-related hosts were timeout, DNS, or connection-reset cases and were not treated as absence.",
+  "scopeLimits": [
+    "The WUP point [35.1198911619496, 48.9735870145821] was preserved exactly in latitude/longitude order.",
+    "No local Famenin registry/cadastre map or procedure was evidenced strongly enough for registryFound=true.",
+    "National registration and land-management evidence is not evidence of citywide Famenin open parcel coverage.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No geometry was retained because native identity and complete polygon response were not verified.",
+    "A zero hit, extent miss, timeout, login wall, or unavailable UI would not prove citywide absence.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No verified safe parcel response."},
+  "qualificationDecision": "hold",
+  "completionSummary": {
+    "recordWritten": true,
+    "serviceReviewWritten": true,
+    "sampleGeoJSONWritten": false,
+    "openParcelEndpointVerified": false,
+    "adapterQualified": false
+  }
+}

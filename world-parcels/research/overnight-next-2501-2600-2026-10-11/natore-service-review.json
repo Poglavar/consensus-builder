@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-3314-natore.json",
+  "cityCode": 3314,
+  "queueRank": 2568,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "service": "Official Bangladesh DLRS Map Search; no verified public Natore parcel geometry response",
+  "officialEvidence": [
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "observation": "Official DLRS viewer page identifies public selectors for division, district, survey, upazila/thana, mouza, sheet and plot, and states DLRS/Ministry of Land ownership. It is a registry/map service at national level, not proof of a Natore city parcel layer."},
+    {"url": "https://dlrs.gov.bd/pages/static-pages/6922dff4933eb65569e24ceb", "observation": "Official DLRS description explains online survey software, digital maps and khatian/record publication. It provides national process context, not a safe anonymous Natore geometry response."},
+    {"url": "https://map.land.gov.bd/", "observation": "Official Ministry of Land project describes mouza/plot-based digital land zoning and georeferenced mouza sheets; Natore parcel coverage was not verified from the public page."},
+    {"url": "https://natore.judiciary.gov.bd/bn/servicve-box-detail/mouza-rate", "observation": "Official Natore Judiciary result exposes Natore mouza-rate/procedural material, but no public parcel geometry or safe native parcel endpoint."},
+    {"url": "https://dr.natore.gov.bd/", "observation": "Official Natore district registrar office site confirms a local land-registration administrative custodian; no public cadastral geometry/API was exposed in the bounded check."}
+  ],
+  "discoveryQueries": [
+    {"language": "English", "query": "Natore Bangladesh cadastral parcel map land records official GIS", "outcome": "Official DLRS and Ministry of Land services found; no Natore parcel geometry or safe ID in search results."},
+    {"language": "native/local", "query": "নাটোর ভূমি রেকর্ড মৌজা ম্যাপ খতিয়ান সরকারি", "outcome": "Official Bengali DLRS/land-map pages found; no Natore parcel geometry or safe ID in search results."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "method": "GET", "status": 200, "observation": "HTML retrieved; current page loads /js/MapSearch.js and exposes public map-search controls."},
+    {"url": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ", "method": "GET", "status": 200, "observation": "Current JavaScript inspected. It defines public POST routes for division/district/survey/upazila/mouza discovery and per-mouza tile/GeoJSON routes: /tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf, /meta, and /Khatian/GetSheetJsonBySurvey."},
+    {"url": "https://settlement.gov.bd/Map/GetDivisionList", "method": "POST", "status": 200, "request": "empty form body", "observation": "Returned divisions; Rajshahi division was identified as unitcod 030000000."},
+    {"url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise", "method": "POST", "status": 200, "request": "divid=030000000", "observation": "Returned Natore district entry unitcod 031500000 with comcod 4126, plus a separate Diara-survey Natore entry unitcod 037400000 with comcod 4198."},
+    {"url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "method": "POST", "status": 200, "request": "districtid=031500000&comcod=4126", "observation": "Returned current BDS survey rsnum 201901."},
+    {"url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "method": "POST", "status": 200, "request": "comcod=4126&rsno1=201901&districtid=031500000", "observation": "Returned an empty JSON array; therefore no public upazila/mouza key was available for a bounded parcel request."},
+    {"url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "method": "POST", "status": 200, "request": "districtid=037400000&comcod=4198", "observation": "Returned current Digital Diara survey rsnum 201901."},
+    {"url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "method": "POST", "status": 200, "request": "comcod=4198&rsno1=201901&districtid=037400000", "observation": "Returned an empty JSON array; no public upazila/mouza key was available for a bounded parcel request."}
+  ],
+  "sourceFieldMapping": {"viewerAdministrativeFields": ["unitcod", "comcod", "rsnum", "upzcod", "shetnum"], "parcelFields": "Not observed in a returned parcel feature; no native parcel field retained."},
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "CRS", "source scope/provenance"],
+  "sample": {"file": null, "featureCount": 0, "nativeIds": [], "propertiesPolicy": "No sample retained because no native parcel identity and full geometry were verified."},
+  "coverageAssessment": {"claimedScope": "Bangladesh national DLRS survey/map-search service and Natore administrative lookup; no citywide parcel coverage claim.", "verifiedOpenScope": null, "countrywideVerified": false},
+  "uncertainty": [
+    "An empty upazila response is a service/coverage result only, not evidence of citywide cadastral absence.",
+    "No anonymous Natore parcel response supplied a stable native parcel identity, geometry, schema, or CRS.",
+    "No request was made for owner, address, contact, titleholder, tax/account, or other unsafe fields; the khatian data route was not called.",
+    "The exact WUP point [24.4107301071372, 88.9823767797248] was preserved and not shifted.",
+    "Runtime readiness remains held pending independent serial adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "technicalBlocker": "The official viewer's current public discovery chain reached Natore district and survey records but returned no public upazila/mouza records, so no bounded anonymous parcel geometry request could be formed."
+}

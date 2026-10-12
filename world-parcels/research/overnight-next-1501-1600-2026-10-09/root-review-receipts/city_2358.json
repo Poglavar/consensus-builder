@@ -1,0 +1,28 @@
+{
+  "taskId": "city:2358",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2358-shihezi.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/shihezi-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:35:55.349460Z",
+  "reviewFindings": "The official Bingtuan report identifies the Eighth Division Shihezi registration center; Xinjiang guidance describes cadastral-map inquiry generally. Neither yields a current Shihezi parcel service or native-ID plus complete-polygon response. No independent adapter qualification exists.",
+  "identityCheck": "Packet matches both immutable ranked roster and pending queue on city code, rank, country, point, and population converted from thousands to persons.",
+  "bilingualSearchCheck": "Distinct English and native-language queries with result URLs and outcomes recorded in packet; the queries were re-executed during root review.",
+  "retainedFullPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "independentlyCheckedFirstPartyUrls": [
+    "https://zrzy.xjbt.gov.cn/c/2022-01-14/8189887.shtml",
+    "https://zrzyt.xinjiang.gov.cn/xjgtzy/c114961/202405/7c6c2647f8a24055aa8c0f00836d07c9.shtml"
+  ],
+  "sourceAdmission": "not_admitted"
+}

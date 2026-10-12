@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4000",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-4000-qoqand.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/qoqand-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:14:07Z",
+  "reviewNotes": "Uzbekistan government National Geoinformation Portal page supports Cadastre Agency registry custody. The claimed ArcGIS route was documented by discovery, but direct anonymous portal and REST attempts timed out; no original parcel feature response, native ID, CRS, or polygon exists. English and Uzbek searches are recorded. Route documentation is not an observed service response.",
+  "identityCheck": "2025 WUP archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, and pending queue agree on code, rank, country, point and population persons.",
+  "admissionGate": "Held: no independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Zero retained full polygons; no runtime/catalog/report admission."
+}

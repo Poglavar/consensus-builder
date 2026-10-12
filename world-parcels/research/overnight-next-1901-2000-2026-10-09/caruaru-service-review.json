@@ -1,0 +1,26 @@
+{
+  "cityRecord": "city-8482-caruaru.json",
+  "cityCode": 8482,
+  "queueRank": 1916,
+  "serviceReviewStatus": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "summary": "Caruaru's official municipal Cadastro Imobiliário Fiscal/Territorial was evidenced as the local cadastral custodian. Public anonymous inspection reached the city portal, citizen-services portal, legislative records, procurement notices, and the SEFAZ system login page, but did not retrieve parcel geometry or a safe native parcel identity.",
+  "queryAndRequestOutcomes": "Documented in city-8482-caruaru.json under freshResearch, officialSources, and requests. English and Portuguese discovery were separate. No credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe fields were used.",
+  "scopeLimits": [
+    "The exact WUP point [-8.28267201513391, -35.9712887605926] was not shifted and was not used to claim a parcel hit or miss.",
+    "No public parcel feature endpoint, schema response, native parcel ID, or geometry was verified.",
+    "The official SIRGAS 2000 / UTM zone 25 reference came from a municipal technical document, not a parcel feature response.",
+    "Administrative cadastral-system evidence is not source integration/admission and does not prove citywide public parcel coverage."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "uncertainty": "The municipal cadastral database may be authenticated, restricted, or unpublished. No retained GeoJSON sample is appropriate because no stable native identity could be paired with safe full geometry.",
+  "retainedGeojson": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required"
+}

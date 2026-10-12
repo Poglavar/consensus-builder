@@ -1,0 +1,79 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 9460,
+  "queueRank": 3123,
+  "name": "Jinghai",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [38.9322938051401, 116.916940499307],
+  "population2025": 192550,
+  "population2025k": 192.55,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jinghai China cadastral parcel map official Tianjin Jinghai",
+        "result": "Search identified the official Tianjin Tianditu public geospatial platform and official Tianjin planning/natural-resources pages, but no Jinghai-specific public cadastral parcel viewer or anonymous parcel ID-plus-geometry API.",
+        "actualResultUrls": [
+          "https://tianjin.tianditu.gov.cn/",
+          "https://ghhzrzy.tj.gov.cn/",
+          "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/djgl/202309/W020230914376972783764.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "天津市 静海区 不动产登记 地图 地籍 图 官方",
+        "result": "Search found the official Tianjin public map platform, its Jinghai standard-map page, official Jinghai-related land-use notices, and official registration-policy material. The discovered public pages did not expose a parcel-boundary query, native parcel ID field, parcel schema, or CRS.",
+        "actualResultUrls": [
+          "https://tianjin.tianditu.gov.cn/static/html/gydt003.html?t=jhq",
+          "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/tdcrgg/202411/t20241121_6786221.html",
+          "https://ghhzrzy.tj.gov.cn/yshj/yhyshjxzspzdggzt/zcfg3/bdcdjn/gjzcwjbdc/202504/W020250411308493955238.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "静海区 不动产登记中心 地籍图 查询 天津 官方",
+        "result": "Official-source search results confirmed the Jinghai local planning/natural-resources registration context and public notices, but no anonymous local registry map/API with parcel geometry was found. General registration rules indicate that registration records are queried through the local registration institution; that is not a public parcel service response.",
+        "actualResultUrls": [
+          "https://ghhzrzy.tj.gov.cn/WZWSREL3p0emxfMTQzL2tqeXdoL2xzd2htYy8yMDIzMTIvdDIwMjMxMjI3XzY0OTE4NzQuaHRtbA%3D%3D",
+          "https://ghhzrzy.tj.gov.cn/yshj/yhyshjxzspzdggzt/zcfg3/bdcdjn/gjzcwjbdc/202504/W020250411308493955238.pdf",
+          "https://tianjin.tianditu.gov.cn/static/html/bzmap.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "Official Tianjin planning/natural-resources sources establish the municipal and Jinghai-area natural-resources/registration context, and the first-party Tianditu platform publishes public map and standard-map services. No public local registry/cadastre parcel service was verified, so registryFound remains null.",
+  "officialSources": [
+    {"url": "https://tianjin.tianditu.gov.cn/", "role": "official Tianjin public geospatial platform", "access": "web search/open result reached; public map, basemap and development-resource descriptions observed; no parcel layer/API response"},
+    {"url": "https://tianjin.tianditu.gov.cn/static/html/gydt003.html?t=jhq", "role": "official Jinghai standard-map page", "access": "public page observed; standard map image context only, no parcel geometry or parcel identity"},
+    {"url": "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/tdcrgg/202411/t20241121_6786221.html", "role": "official Tianjin planning/natural-resources land-use notice naming Jinghai bureau involvement", "access": "public notice observed; land-use notice context only, no safe parcel API response"},
+    {"url": "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/djgl/202309/W020230914376972783764.pdf", "role": "official Tianjin benchmark-land-price document with Jinghai entries", "access": "public document observed; tabular land-use records, not cadastral parcel geometry"},
+    {"url": "https://ghhzrzy.tj.gov.cn/yshj/yhyshjxzspzdggzt/zcfg3/bdcdjn/gjzcwjbdc/202504/W020250411308493955238.pdf", "role": "official registration-policy document", "access": "public document observed; procedural/standards context, not an anonymous parcel service"}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"route": "https://tianjin.tianditu.gov.cn/", "method": "web search/open", "outcome": "Official platform page was discoverable; public map, basemap, standard-map and API-resource descriptions were visible, but no anonymous cadastral parcel response was exposed"},
+    {"route": "https://tianjin.tianditu.gov.cn/static/html/gydt003.html?t=jhq", "method": "web open", "outcome": "Official Jinghai standard-map page returned page/image context only; no parcel IDs, parcel polygons, schema, or CRS"},
+    {"route": "https://tianjin.tianditu.gov.cn/static/html/bzmap.html", "method": "web open", "outcome": "Official standard-map index listed Jinghai among map products; no cadastral parcel service route"},
+    {"route": "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/tdcrgg/202411/t20241121_6786221.html", "method": "web search/open", "outcome": "Official Jinghai-area land-use notice returned; no safe parcel geometry or public parcel query"},
+    {"route": "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/djgl/202309/W020230914376972783764.pdf", "method": "web search/open", "outcome": "Official document returned Jinghai benchmark land records; these are tabular land-use records and not parcel polygons"},
+    {"route": "https://ghhzrzy.tj.gov.cn/yshj/yhyshjxzspzdggzt/zcfg3/bdcdjn/gjzcwjbdc/202504/W020250411308493955238.pdf", "method": "web search/open", "outcome": "Official registration standards returned procedural guidance; no public anonymous parcel endpoint"},
+    {"route": "https://tianjin.tianditu.gov.cn/", "method": "curl HTTPS GET", "outcome": "TLS certificate verification failed because the certificate was expired; no certificate exception or TLS bypass was used"}
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_custodian_context_found_no_verified_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel query was attempted because no public parcel endpoint was identified. The exact WUP point was preserved and not shifted. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current Jinghai local registry viewer/API, native parcel identity field, safe field schema, CRS, query semantics, and citywide coverage remain unverified. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only, not source integration or admission."
+}

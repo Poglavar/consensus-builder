@@ -1,0 +1,90 @@
+{
+  "cityCode": 7793,
+  "queueRank": 3005,
+  "name": "Sete Lagoas",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-19.4475797252093, -44.2340188238421],
+  "population2025": 199145,
+  "population2025k": 199.145,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sete Lagoas Brazil official cadastral parcel map GIS prefeitura cadastro imobiliario mapa",
+        "result": "Found the official municipal e-Cidade property/IPTU lookup, which searches by municipal cadastral components (district, zone, sector, block, lot, unit). The public result did not expose a parcel map or machine-readable geometry service.",
+        "actualResultUrls": ["https://ecidadao.setelagoas.mg.gov.br/?page=imoveis", "https://www.setelagoas.mg.gov.br/"]
+      },
+      {
+        "language": "native/local",
+        "query": "Sete Lagoas cadastro imobiliário geoprocessamento mapa lotes prefeitura serviço oficial",
+        "result": "Found official municipal e-Cidade/CECON property services and official municipal records identifying a Gerência de Geoprocessamento and cadastro imobiliário/geoprocessamento work. No public parcel vector endpoint or anonymous geometry response was exposed.",
+        "actualResultUrls": ["https://ecidadao.setelagoas.mg.gov.br/?page=imoveis", "https://cecon.setelagoas.mg.gov.br/", "https://www.setelagoas.mg.gov.br/abrir_arquivo.aspx?arquivo=%7BB34BC65B-4CC0-EE26-7AEC-BBE1C0BED0CD%7D.pdf&cdLocal=12"]
+      }
+    ]
+  },
+  "custodians": [
+    {
+      "name": "Prefeitura Municipal de Sete Lagoas / e-Cidade Cidadão / CECON",
+      "scope": "Local municipal property-tax and cadastral lookup workflow using cadastro components; local service custodian evidenced, but public geometry coverage not evidenced.",
+      "evidenceUrls": ["https://ecidadao.setelagoas.mg.gov.br/?page=imoveis", "https://cecon.setelagoas.mg.gov.br/"]
+    },
+    {
+      "name": "Gerência de Geoprocessamento, Secretaria Municipal da Fazenda e Planejamento",
+      "scope": "Municipal geoprocessing/cadastral function evidenced in official municipal organizational and procurement records; no public API or downloadable parcel layer qualified.",
+      "evidenceUrls": ["https://sapl.setelagoas.mg.leg.br/media/sapl/public/documentoacessorio/2023/19051/anexo_i.pdf", "https://www.setelagoas.mg.gov.br/abrir_arquivo.aspx?arquivo=%7B727ECA71-47EB-C4CD-1D1D-4D34CACEBC58%7D.pdf&cdLocal=12"]
+    },
+    {
+      "name": "IBGE Geociências",
+      "scope": "General national municipal map download, not a local cadastral parcel service; retained only as a non-parcel context lead.",
+      "evidenceUrls": ["https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2022/MG/sete_lagoas/"]
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "request": "GET https://ecidadao.setelagoas.mg.gov.br/?page=imoveis",
+      "outcome": "Timed out after 20 seconds from the anonymous request; no HTML, JavaScript configuration, form action, schema, or geometry endpoint was retrieved.",
+      "evidence": "curl transport timeout; the same official page is indexed as an e-Cidade IPTU lookup with Dist/Zona/Setor/Quadra/Lote/Unidade fields."
+    },
+    {
+      "request": "GET https://cecon.setelagoas.mg.gov.br/",
+      "outcome": "Official service portal was discoverable in first-party search and lists property services, but no parcel geometry/API response was obtained in the bounded anonymous checks.",
+      "evidence": "Official CECON search result and page description."
+    },
+    {
+      "request": "GET official municipal geoprocessing/procurement PDF references",
+      "outcome": "HTTP/search-accessible official records confirm a municipal Gerência de Geoprocessamento and cadastro imobiliário/geoprocessamento activity, but contain no safe public parcel ID-plus-geometry API.",
+      "evidence": "Official municipal records linked under custodians."
+    },
+    {
+      "request": "GET https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2022/MG/sete_lagoas/",
+      "outcome": "HTTP/search-accessible public municipal map directory; it provides a municipal map PDF, not cadastral parcel polygons or parcel identities.",
+      "evidence": "Official IBGE directory listing A0_3167202_MM.pdf."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier if source-proven", "full parcel polygon geometry", "geometry CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point [-19.4475797252093, -44.2340188238421] was preserved in latitude/longitude order and was not shifted.",
+    "The municipal cadastral lookup is evidence of a local registry/cadastre workflow, not evidence of public citywide vector coverage.",
+    "No exact-point hit or miss was inferred from the timeout or from the absence of a geometry endpoint in indexed page content.",
+    "No native parcel ID, parcel schema, CRS, anonymous geometry response, or citywide machine-readable coverage was qualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": ["The municipal e-Cidade page was unreachable within the bounded request timeout", "The public cadastral viewer/API route and native identity semantics remain unresolved", "Official records establish local custodians and workflows but not open parcel geometry", "Independent serial review is required"],
+  "runtimeReadiness": "held",
+  "admissionDecision": "held",
+  "doNotInfer": ["A timeout or unusable UI is not evidence of citywide parcel absence", "A cadastral/IPTU lookup workflow is not proof of an open parcel API", "A general IBGE municipal map is not cadastral parcel coverage"]
+}

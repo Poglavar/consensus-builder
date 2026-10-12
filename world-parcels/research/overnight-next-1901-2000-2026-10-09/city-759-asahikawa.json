@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 759,
+  "wupCityCode": 759,
+  "queueRank": 1930,
+  "name": "Asahikawa",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "point": [43.7753917441246, 142.382627947],
+  "centerLatLon": [43.7753917441246, 142.382627947],
+  "population2025": 298481,
+  "population2025k": 298.481,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "official_reference_polygon_dataset_available_but_no_bounded_point_hit",
+  "nativeIdReadiness": "schema_observed_no_verified_target_feature",
+  "registryFound": true,
+  "registryBasis": "Asahikawa City publishes an official 2025-01-01 GIS shapefile download for 地番参考図 (parcel-number reference map) and operates the Asahikawa Digital Map public GIS. The city expressly says the reference map is not a cadastral map or proof of parcel boundaries, exact position/shape, or rights. This establishes local municipal map/data custody, not authoritative title or boundary admission.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Asahikawa official cadastral map parcel land registry GIS Japan",
+        "result": "Found the official Asahikawa City parcel-number reference-data download, official public GIS, and Asahikawa Legal Affairs Bureau map-making pages. The city download is a reference map and not authoritative cadastral boundary evidence.",
+        "actualResultUrls": [
+          "https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184.html",
+          "https://www2.wagmap.jp/asahikawa-city/Portal",
+          "https://houmukyoku.moj.go.jp/asahikawa/page000200.html"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "旭川市 公式 地籍図 GIS 筆界 地図 土地 登記",
+        "result": "Found the official municipal 地番参考図 download and 地籍調査 explanation, plus the official Asahikawa Legal Affairs Bureau map-making notice. The municipal GIS/download route was reachable; no authoritative parcel feature was verified at the unchanged WUP point.",
+        "actualResultUrls": [
+          "https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184.html",
+          "https://www.city.asahikawa.hokkaido.jp/kurashi/401/407/p000539.html",
+          "https://houmukyoku.moj.go.jp/asahikawa/page000200.html"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Asahikawa City 2025-01-01 地番参考図 shapefile publication and Asahikawa public GIS, with Legal Affairs Bureau map-making context.",
+    "verifiedOpenScope": "Municipal reference polygon archive and public GIS/procedure context; no authoritative legal-boundary scope or citywide parcel completeness established.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "resultCategory": "official_local_reference_map_and_registry_context_evidenced_no_verified_target_geometry",
+  "blocker": "The official archive exposes polygon geometry, but the WUP point produced no feature in the bounded spatial query after transforming longitude/latitude to the archive's apparent Hokkaido plane-coordinate convention. The archive has no .prj declaration, and the publisher warns that 地番参考図 is reference placement data rather than authoritative boundary evidence. No synthetic identity or geometry was retained.",
+  "remainingUncertainty": "The zero exact-point result may reflect map coverage, coordinate convention/datum, or the reference layer's scope and is not evidence of citywide absence. The public GIS may expose additional layers or requests not captured by the downloadable archive. Legal map/title data remain outside this anonymous safe-field review.",
+  "nextStep": "A serial reviewer may independently qualify the municipal GIS/archive and CRS, then determine whether a safe native parcel identity and geometry can be admitted. Keep runtime admission held pending that review."
+}

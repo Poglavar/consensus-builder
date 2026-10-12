@@ -1,0 +1,84 @@
+{
+  "cityCode": 10137,
+  "queueRank": 3156,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.5330358267187, 81.8535950796536],
+  "population2025": 190377,
+  "population2025k": 190.377,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registry": {
+    "name": "Uttar Pradesh Revenue Council / Prayagraj district land-records service",
+    "scope": "Official Prayagraj district material directs users to the Uttar Pradesh Bhulekh land-record service; the state Revenue Council portal documents Bhulekh and Bhu-Naksha services. This is custodian/procedure evidence, not proof of a citywide parcel API.",
+    "url": "https://prayagraj.nic.in/service/land-records-record-of-right-ror/"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "India official cadastral parcel map API Uttar Pradesh Phaphamau Prayagraj",
+        "result": "Found the official Uttar Pradesh Revenue Council portal, official UP Bhulekh/Bhu-Naksha viewer, official Prayagraj land-records page, and a current public state Bhu-Naksha service. The viewer's public map extent for the Phaphamau revenue-village code was zero, so no parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/",
+          "https://upbhulekh.gov.in/",
+          "https://prayagraj.nic.in/service/land-records-record-of-right-ror/",
+          "https://upbhunaksha.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "उत्तर प्रदेश आधिकारिक भू-नक्शा फाफामऊ प्रयागराज खसरा नक्शा",
+        "result": "Found the official Uttar Pradesh Revenue Council Hindi portal and Bhulekh/Bhu-Naksha services. The current public viewer exposed Prayagraj district 175, Soraon tehsil 00888, and Phaphamau village 218785, but marked that village as having no map data; no safe parcel feature was returned.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/"
+        ]
+      }
+    ]
+  },
+  "service": {
+    "name": "Uttar Pradesh Bhu-Naksha public viewer/API",
+    "serviceUrl": "https://upbhunaksha.gov.in/bhunakshaserver",
+    "sourceCustodian": "Uttar Pradesh Revenue Council / NIC Uttar Pradesh state unit; state service, not a Phaphamau municipal API",
+    "viewerUrl": "https://upbhunaksha.gov.in/",
+    "nativeRoutesInspected": [
+      "/Levels/levelLabels",
+      "/Levels/vsrLevelCount",
+      "/Levels/mapLevelCount",
+      "/masterdata/levelvalue",
+      "/Levels/getGisCodeFromLevels",
+      "/MapInfo/getVVVVExtentGeoref",
+      "/MapInfo/getPlotAtXY",
+      "/MapInfo/getPlotByPlotNo"
+    ],
+    "nativeIdentityFieldCandidates": ["plotno", "giscode"],
+    "nativeFieldMapping": {
+      "plotno": "viewer plot-number input / native plot identifier candidate",
+      "giscode": "viewer composite geographic code",
+      "geometry": "MapInfo response geometry candidate; no feature geometry returned"
+    },
+    "compositeKeyProvenance": "Viewer JavaScript builds the level path from state 09, district 175, tehsil 00888, and village 218785; getGisCodeFromLevels returned 0917500888 (the map-level GIS code).",
+    "crs": "Viewer configuration did not expose a usable parcel response CRS; the WUP point was kept in latitude/longitude order and was not transformed or shifted.",
+    "geometryType": "Not established; no parcel feature returned",
+    "safeFieldAllowlist": ["plotno", "giscode", "geometry"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mutation", "sale", "litigation"],
+    "sampleFile": null,
+    "sampleCount": 0,
+    "exactPointCheck": {
+      "method": "Public viewer route inspection for the exact WUP point [25.5330358267187, 81.8535950796536] in latitude/longitude order; no coordinate shift and no synthetic parcel lookup.",
+      "hit": null,
+      "result": "The official level-value response identified Phaphamau (फाफामऊ), village code 218785, with hasData=false. getGisCodeFromLevels returned 0917500888, and getVVVVExtentGeoref returned xmin/ymin/xmax/ymax all 0.0. This map extent miss is not evidence of citywide absence.",
+      "sourceGeometryRetained": false
+    }
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "The official state viewer and current JavaScript/API routes were inspected anonymously. Level discovery succeeded, but the target village was explicitly marked hasData=false and its map extent was zero.",
+    "No exact-point hit, map extent miss, timeout, login wall, or unusable UI was treated as citywide absence; a neighboring revenue village or a later digitization update could expose different coverage.",
+    "No owner, address, contact, titleholder, personal, tax, account, sale, mutation, or litigation fields were requested or retained.",
+    "Packet completion is not source integration or runtime adapter admission."
+  ]
+}

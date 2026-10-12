@@ -1,0 +1,21 @@
+{
+  "taskId": "city:1761",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-1761-bafoussam.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/bafoussam-service-review.json",
+    "tmp/valhalla-parcel-research/1761/minmidt-http.headers"
+  ],
+  "checkedAt": "2026-10-10T15:16:31Z",
+  "reason": "WUP 2025 rank 1789 identity and English/French searches checked. MINDCAF mandate and local references support a possible custodian, while registry status remains unresolved. The retained MINMIDT route redirects to a mining cadastre; no safe native land-parcel ID/full polygon or independent admission checks. No citywide absence inferred.",
+  "checks": {
+    "immutableQueueIdentity": "matched 2025 WUP source and both cohort rosters",
+    "bilingualExecutedSearches": true,
+    "retainedFullPolygons": 0,
+    "independentLiveAdapterQualified": false,
+    "runtimeAdmission": false
+  }
+}

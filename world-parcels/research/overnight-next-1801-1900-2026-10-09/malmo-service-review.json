@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-540-malmo.json",
+  "cityCode": 540,
+  "queueRank": 1806,
+  "city": "Malmo",
+  "country": "Sweden",
+  "countryCode": "SE",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Malmö stad's official public ArcGIS layer Fastighetsgräns returned one anonymous polygon at the exact WUP point using safe ID plus geometry fields. Lantmäteriet official pages establish the national cadastral/geodata custodian and product model. Runtime remains held pending serial adapter qualification.",
+  "queryOutcomes": "Separate English and Swedish discovery queries are recorded in city-540-malmo.json. They identified Malmö stad's SEPlan parcel layer and Lantmäteriet's official cadastral/geodata documentation.",
+  "requestOutcomes": [
+    {"route":"https://gis.malmo.se/arcgis/rest/services/SEPlan/fastigheter_primarkarta/MapServer?f=pjson","method":"GET","status":200,"outcome":"Service metadata retrieved; layer 0 is Fastighetsgräns polygon layer, EPSG:3008."},
+    {"route":"https://gis.malmo.se/arcgis/rest/services/SEPlan/fastigheter_primarkarta/MapServer/0?f=pjson","method":"GET","status":200,"outcome":"Layer schema retrieved; native identity OBJECTID and geometry field SHAPE confirmed; supported query formats include GeoJSON."},
+    {"route":"https://gis.malmo.se/arcgis/rest/services/SEPlan/fastigheter_primarkarta/MapServer/0/query","method":"GET","status":200,"outcome":"Exact WUP point queried as EPSG:3008 point with outFields=OBJECTID, returnGeometry=true, outSR=4326; one polygon returned, OBJECTID 295."},
+    {"route":"https://gis.malmo.se/arcgis/rest/services/SEPlan/Bakgrund_primarkarta/MapServer?f=pjson","method":"GET","status":200,"outcome":"Related official Malmö background map metadata confirmed Fastighet group and Fastighetsgräns/Fastighetsnamn sublayers."}
+  ],
+  "requestCoordinates": {
+    "wupPointLatLon": [55.5881237274507, 13.008169923296],
+    "queryPointEpsg3008": [118987.94, 6162815.31],
+    "coordinateOrderNote": "WUP point preserved latitude/longitude; ArcGIS query used projected x/y."
+  },
+  "safeFieldAllowlist": ["OBJECTID", "polygon geometry", "source layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"OBJECTID":"stable native ArcGIS object identifier","SHAPE":"native polygon geometry"},
+  "compositeKeyProvenance": null,
+  "crs": {"source":"EPSG:3008","retainedSample":"EPSG:4326 via ArcGIS outSR=4326"},
+  "geometryQuality": "One full polygon with interior rings returned by the official service; no simplification or coordinate shift applied.",
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "OBJECTID=295",
+    "sampleCount": 1,
+    "sampleFile": "malmo-parcel-sample.geojson",
+    "nativeId": "295",
+    "nativeIdField": "OBJECTID",
+    "exactWupPointTest": "Exact projected point query returned one intersecting polygon; WUP coordinates were not shifted.",
+    "requestEvidence": "tmp/valhalla-parcel-research/malmo-point-query.geojson"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Malmö stads SEPlan/fastigheter_primarkarta parcel-boundary map layer and its advertised local service extent.",
+    "verifiedOpenScope": "Anonymous ID-plus-geometry access for the official Malmö layer at the target point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "scopeLimits": [
+    "One exact-point result is not a citywide inventory or proof of complete legal cadastral coverage.",
+    "Lantmäteriet national direct-access products and some property information require application, API access or other controlled access; no credentials or private tokens were used.",
+    "The map layer's displayed boundaries may be map/primärkarta representations; legal boundary status and currency were not independently established.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested, logged or retained.",
+    "A failure, timeout, login wall, extent miss or unusable UI would not have been treated as citywide absence; none was used as absence evidence.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "Citywide completeness, update currency, legal status, and whether the source's OBJECTID remains stable across publication updates require independent review. National registry access and richer cadastral attributes remain outside the safe anonymous query."
+}

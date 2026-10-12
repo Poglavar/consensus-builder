@@ -1,0 +1,26 @@
+{
+  "cityRecord": "city-2696-city.json",
+  "cityCode": 2696,
+  "queueRank": 3137,
+  "serviceReview": "Rosreestr/NSPD is the evidenced federal cadastral source, with the official Yaroslavl regional Rosreestr office and Рыбинск municipal land-resources page providing regional/local service context. Public map endpoint access was not qualified anonymously during this attempt.",
+  "registryFound": true,
+  "registryCustodian": "Rosreestr; official Yaroslavl regional office, with Рыбинск municipal land-resources page as a local public-service route.",
+  "sourceLead": "https://nspd.gov.ru/map?thematic=PKK",
+  "requestOutcomes": [
+    {"method":"GET","url":"https://nspd.gov.ru/map?thematic=PKK","outcome":"Timeout after 20 seconds; no viewer/API inspection."},
+    {"method":"GET","url":"https://rosreestr.gov.ru/","outcome":"Timeout after 8 seconds; no credentials or private tokens used."},
+    {"method":"GET","url":"https://yamo.adm.yar.ru/gos_organ/rosreestr.php","outcome":"HTTP 200; regional Rosreestr custody prose inspected; no parcel endpoint."},
+    {"method":"GET","url":"https://rybinsk.ru/economy/land","outcome":"HTTP 200 before bounded timeout; municipal public cadastral-map reference observed; no geometry response."}
+  ],
+  "scopeAndLimits": [
+    "Exact WUP point [57.9878035862067, 38.8478465092283] and required population fields are preserved.",
+    "Шелепино is an ambiguous place name in Yaroslavl Oblast; no name-only match or shifted coordinate was used.",
+    "No exact-point hit or miss was inferred, and no citywide absence claim is made.",
+    "No safe native parcel ID, polygon, CRS, schema, or anonymous bounded feature response was verified; therefore no GeoJSON sample is retained.",
+    "Safe field allowlist would be limited to stable native parcel ID, full parcel polygon, CRS, public service metadata, and retrieval date; no source-specific attribute set was retained.",
+    "Runtime readiness remains held pending independent serial adapter qualification; this packet is not source integration/admission."
+  ],
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "Official cadastral custody and regional/local public-service routes are evidenced, but anonymous parcel-vector behavior, exact place resolution, identity semantics, CRS, and coverage remain unresolved."
+}

@@ -65,6 +65,7 @@
 
     /* Country coverage and source evidence on the world globe. */
     --cb-world-coverage-full: #71bc91;
+    --cb-world-coverage-mostly: #b1dac2;
     --cb-world-coverage-none: #d8918c;
     --cb-world-coverage-unknown: #a4acb8;
     --cb-world-city-glow: rgba(67, 230, 166, 0.42);

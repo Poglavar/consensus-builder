@@ -1,0 +1,91 @@
+{
+  "cityRecord": "city-12087-putuo-district.json",
+  "cityCode": 12087,
+  "queueRank": 2418,
+  "name": "Putuo District",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [29.9537409177113, 122.288864034767],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.putuo.gov.cn/art/2023/8/3/art_1229700119_149374.html",
+      "httpStatus": 200,
+      "outcome": "Official Putuo government page loaded. It identifies the Putuo Real Estate Registration Center under the district Natural Resources and Planning Sub-bureau and states that it performs cadastral and property-rights surveys, database construction and updates, and registration-material query management for the Putuo area. No parcel API or geometry was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.putuo.gov.cn/art/2023/8/3/art_1229700119_149374.html",
+      "httpStatus": 200,
+      "outcome": "Live HTML retrieval independently confirmed the page title, content source, local custodian, and the safe scope of the published duties. No JavaScript viewer or parcel-service configuration was present in the inspected page."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.putuo.gov.cn/module/download/downfile.jsp?classid=0&filename=63176c6f0d314d969ea1e818239ef34c.pdf",
+      "httpStatus": 200,
+      "outcome": "Official Putuo spatial-plan PDF loaded. It defines the Putuo administrative planning area and describes a land-space planning one-map supervision system and basic information platform, but provides no anonymous cadastral parcel endpoint, safe parcel identity, or parcel geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.putuo.gov.cn/",
+      "httpStatus": null,
+      "outcome": "Request timed out after 20 seconds from the research host. Treated as an access limitation; not evidence of citywide absence. No retry with credentials, CAPTCHA bypass, or TLS weakening was attempted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.zhoushan.gov.cn/art/2023/2/28/art_1229295579_1652421.html",
+      "httpStatus": 200,
+      "outcome": "Official Zhoushan notice confirms online immovable-property registration procedures covering Dinghai and Putuo, but it is a procedure notice rather than a public parcel-vector service."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.zhoushan.gov.cn/art/2020/9/10/art_1229028985_35295.html",
+      "httpStatus": 200,
+      "outcome": "Official Zhoushan government plan describes construction of a natural-resources registration information database and data sharing, but exposes no anonymous Putuo parcel query or geometry route."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "parcelApi": null,
+    "geometryCrs": "No parcel geometry response obtained; CRS and coordinate order remain unverified for a Putuo parcel source.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": null
+  },
+  "localCustodianAssessment": "The Putuo Real Estate Registration Center, under the Putuo District Natural Resources and Planning Sub-bureau, is evidenced as the local cadastral/registration custodian. Zhoushan municipal materials are higher-level procedure and database-planning evidence, not evidence of a city-bounded public parcel layer.",
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "polygon geometry",
+    "source service URL",
+    "source CRS / coordinate order",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous parcel geometry or city-bounded public vector response was verified; a serial reviewer would need to independently qualify a real source before runtime consideration."
+  },
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude order were preserved; no coordinate was shifted to force a hit.",
+    "No exact-point parcel hit or miss was used as a citywide absence claim.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe full parcel polygon and native identity were obtained.",
+    "Official local and municipal materials were inspected, but no current public viewer JavaScript/configuration exposing a parcel service was identified.",
+    "This packet records research completion only and is not source integration or registry admission."
+  ],
+  "uncertainty": "Local custody and cadastral responsibilities are evidenced, but anonymous parcel-service reachability, parcel schema/CRS, coverage, update cadence, licensing, and runtime behavior remain unverified. The absence of a public vector endpoint is an access/discovery limitation, not evidence of citywide cadastral absence."
+}

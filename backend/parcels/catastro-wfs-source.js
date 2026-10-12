@@ -16,9 +16,11 @@ const utm = zone => `+proj=utm +zone=${zone} +ellps=GRS80 +units=m +no_defs`;
 // The official GetParcel query reports a missing reference as an HTTP200 OWS exception.
 // Accept only its observed, explicit message for this exact reference and requested zone.
 // General exceptions, viewport failures and malformed documents remain unavailable.
+const MISSING_ZONES = { 'EPSG::25830': '25830', 'EPSG::25831': '25831' };
 function explicitMissingReference(bytes, params) {
+    const zone = MISSING_ZONES[params.SRSNAME];
     if (params.STOREDQUERY_ID !== 'GetParcel' || !KEY.test(params.REFCAT || '')
-        || params.SRSNAME !== 'EPSG::25830' || bytes.length > 8192) return false;
+        || !zone || bytes.length > 8192) return false;
     const parser = new SaxesParser({ xmlns: true });
     const names = ['ExceptionReport', 'Exception', 'ExceptionText'];
     const counts = [0, 0, 0];
@@ -41,7 +43,7 @@ function explicitMissingReference(bytes, params) {
         // The matched provider message contains ASCII only, including both echoed keys.
         parser.write(new TextDecoder('utf-8', { fatal: true }).decode(bytes)).close();
         return depth === 0 && counts.every(n => n === 1)
-            && text.trim() === `No se ha encontrado la parcela ${params.REFCAT} para el huso 25830`;
+            && text.trim() === `No se ha encontrado la parcela ${params.REFCAT} para el huso ${zone}`;
     } catch { return false; }
 }
 
@@ -124,8 +126,11 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
         return result(remember(await query({ typeNames: 'CP:CadastralParcel', srsName: srid, bbox: box.join(',') })));
     }
 
-    async function queryIds(ids) {
+    // `near` ([longitude, latitude]) says where the caller expects the parcels: asking that zone
+    // first makes one request per parcel instead of two east of 0°. A wrong hint costs a re-read.
+    async function queryIds(ids, { near } = {}) {
         if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 parcel IDs.');
+        const firstZone = Array.isArray(near) && Number.isFinite(near[0]) ? zoneForLongitude(near[0]) : 30;
         const unique = [...new Set(ids)];
         const native = unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(descriptor.idPrefix)
@@ -141,17 +146,17 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
                 continue;
             }
             recent.delete(descriptor.idPrefix + key);
-            // The explicit missing-parcel message is only recognised for UTM30, so ask there first.
-            let found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: 'EPSG::25830' });
+            let found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: `EPSG::${25800 + firstZone}` });
             if (found.length > 1 || found.some(f => f.properties.sourceParcelId !== key)) {
                 throw upstreamError('Cadastral exact lookup returned an unexpected native parcel.');
             }
             if (found.length === 1) {
                 const [west, , east] = geometryBbox(found[0]);
-                if (zoneForLongitude((west + east) / 2) === 31) {
-                    found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: 'EPSG::25831' });
+                const zone = zoneForLongitude((west + east) / 2);
+                if (zone !== firstZone) {
+                    found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: `EPSG::${25800 + zone}` });
                     if (found.length !== 1 || found[0].properties.sourceParcelId !== key) {
-                        throw upstreamError('Cadastral UTM31 exact lookup did not return the requested parcel.');
+                        throw upstreamError(`Cadastral UTM${zone} exact lookup did not return the requested parcel.`);
                     }
                 }
             }

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9119-jalna.json",
+  "cityCode": 9119,
+  "purpose": "Document first-party discovery, current public land-record routes, bounded anonymous access review, and evidence limits for Jalna.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Maharashtra and Jalna pages establish local land-record custody and a public BhuNaksha route. The indexed viewer shows parcel-number search and map controls, but direct GET retrieval of the viewer and the state service page timed out from this environment. No anonymous ID-plus-geometry response, native field mapping, CRS, or citywide coverage was verified. A timeout is not evidence of citywide absence.",
+  "registryAssessment": "Jalna local cadastral custody is evidenced by the official Maharashtra contact page naming the District Superintendent of Land Records, Jalna, and subordinate offices. The state services page identifies e-Nakasha/Bhu-Naksha as the map route. Because no actual public parcel geometry response was verified, registryFound remains null and runtime qualification is held.",
+  "safeFieldAllowlist": [
+    "safe parcel or survey identifier only if publicly exposed and non-personal",
+    "geometry",
+    "CRS",
+    "non-personal layer/schema metadata"
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Jalna Maharashtra official cadastral map land records GIS parcel government",
+      "outcome": "Official Jalna district, Maharashtra land-record, Mahabhumi, BhuNaksha, and DILRMP pages found; no bounded anonymous parcel-vector response identified.",
+      "actualResultUrls": ["https://jalna.gov.in/en/", "https://bhumiabhilekh.maharashtra.gov.in/Services", "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=26", "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard", "https://mahabhunakasha.mahabhumi.gov.in/27/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/514"]
+    },
+    {
+      "language": "Marathi",
+      "query": "जालना महाराष्ट्र अधिकृत जमीन नकाशा भू-अभिलेख कॅडस्ट्रल पार्सल",
+      "outcome": "Official Marathi Bhumi Abhilekh pages confirm e-Nakasha/Bhu-Naksha and Jalna land-record offices; no public safe parcel-vector response identified.",
+      "actualResultUrls": ["https://bhumiabhilekh.maharashtra.gov.in/Services", "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=26", "https://bhumiabhilekh.maharashtra.gov.in/", "https://mahabhunakasha.mahabhumi.gov.in/27/"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://jalna.gov.in/en/", "method": "GET via first-party indexed result", "httpStatus": 200, "result": "Official Jalna district portal identified land-record and revenue-service links; no parcel-vector endpoint exposed in the indexed page."},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Services", "method": "GET via first-party indexed result; direct curl", "httpStatus": "indexed content available; direct curl timeout", "result": "Service index identifies e-Nakasha/Bhu-Naksha for village, urban-survey, and parcel maps. Direct request timed out after 20 seconds; no retry with unsafe or bypassing methods."},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=26", "method": "GET via first-party indexed result", "httpStatus": 200, "result": "Jalna District Superintendent of Land Records and subordinate Deputy Superintendent offices identified; no geometry response."},
+    {"url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard", "method": "GET via first-party indexed result", "httpStatus": 200, "result": "Official state portal identifies Mahabhunakasha and land-record services; no parcel feature payload inspected."},
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/", "method": "GET via first-party indexed result; direct curl", "httpStatus": "indexed viewer available; direct curl timeout", "result": "Viewer UI is publicly indexed with location selectors, parcel-number search, plot info, and layers. Direct request timed out after 20 seconds before current JavaScript/configuration/API inspection; no login, CAPTCHA, credential, or TLS bypass attempted."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/514", "method": "GET via first-party indexed result", "httpStatus": 200, "result": "Government of India Jalna map-digitization/georeferencing/ULPIN status page identified; status metadata only, not parcel geometry."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not completed because no anonymous parcel feature endpoint returned a bounded geometry response. Exact WUP point [19.8438902798699, 75.8830612617864] was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra state land-record/cadastral administration with Jalna district offices and the public BhuNaksha map route.",
+    "verifiedOpenScope": "Official service and custodian context only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current BhuNaksha JavaScript/configuration, parcel service endpoint, request parameters, native ID field, CRS, exact WUP-point inclusion, and citywide open coverage remain unknown. Timeouts or map extent misses do not establish absence.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

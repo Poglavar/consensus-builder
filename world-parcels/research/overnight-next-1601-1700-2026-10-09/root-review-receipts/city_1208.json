@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1208",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-1208-ras-al-khaimah.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ras-al-khaimah-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T12:08:20.267200Z",
+  "reason": "WUP 2025 Ras Al Khaimah identity agrees with the hashed source archive. English and Arabic search records and municipality evidence establish local GIS custody, but the cited ArcGIS metadata requests timed out and no anonymous native parcel ID or full polygon was retrieved. No adapter qualification or headed Details evidence."
+}

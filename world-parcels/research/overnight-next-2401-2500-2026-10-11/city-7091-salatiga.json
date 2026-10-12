@@ -1,0 +1,54 @@
+{
+  "cityCode": 7091,
+  "queueRank": 2420,
+  "name": "Salatiga",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso2": "ID",
+  "iso3": "IDN",
+  "point": [-7.3357599139726, 110.497825017967],
+  "population2025": 242116,
+  "population2025k": 242.116,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Salatiga Indonesia official cadastral parcel map land registry ATR BPN",
+        "result": "Search identified the official national ATR/BPN BHUMI and ATLAS portals and Salatiga Geoportal Palapa. No Salatiga-specific public parcel feature response was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/", "https://geoportal.salatiga.go.id/main/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Salatiga peta bidang tanah kadaster resmi ATR BPN",
+        "result": "Search identified ATR/BPN guidance describing BHUMI/ATLAS parcel layers and the Salatiga local geoportal, but no safe anonymous Salatiga parcel ID plus polygon endpoint was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "https://geoportal.salatiga.go.id/main/"]
+      }
+    ]
+  },
+  "requestOutcomes": [
+    {"route": "ATLAS catalog", "url": "https://atlas.atrbpn.go.id/", "method": "GET via public web fetch", "outcome": "HTTP 200 page was inspected; current rendered catalog reported zero sources at request time. This is a catalog/UI outcome, not proof of citywide absence."},
+    {"route": "BHUMI landing/help", "url": "https://bhumi.atrbpn.go.id/bantuan/landing", "method": "GET via public web fetch", "outcome": "Official help page confirms BHUMI is an open geospatial presentation platform but warns data may be incomplete and official use requires public-information procedures; no parcel response was obtained."},
+    {"route": "BHUMI map guidance", "url": "https://bhumi.atrbpn.go.id/bantuan/peta", "method": "GET via public web fetch", "outcome": "Official guidance documents parcel layers and coordinate display; no anonymous native parcel geometry response was exposed by the inspected page."},
+    {"route": "BHUMI catalog guidance", "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "method": "GET via public web fetch", "outcome": "Official guidance describes ATLAS as the centralized geospatial catalog and lists parcel data as a main dataset category; no Salatiga-specific safe feature response was obtained."},
+    {"route": "Salatiga Geoportal Palapa", "url": "https://geoportal.salatiga.go.id/main/", "method": "GET", "outcome": "Default TLS verification failed because the host certificate chain was not trusted in this environment; the request was not retried with verification disabled. A separate public web fetch returned HTTP 502. No login or bypass was attempted."},
+    {"route": "Salatiga land-office reference", "url": "https://kantahsalatiga.com/wp-content/uploads/2021/06/Laporan-Kinerja-Kantor-Pertanahan-Kota-Salatiga-Tahun-2020.pdf", "method": "GET via public web search result", "outcome": "Official/local land-office performance report was discovered, evidencing the local BPN custodian but not an open parcel geometry service."}
+  ],
+  "runtimeReadiness": "held",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe anonymous native parcel ID plus complete polygon response was verified."},
+  "scopeLimits": [
+    "The exact WUP point [-7.3357599139726, 110.497825017967] is preserved in latitude/longitude order; no coordinate was shifted.",
+    "National ATR/BPN custody, a local land-office report, and the existence of Geoportal Palapa do not establish an open, citywide Salatiga parcel geometry service.",
+    "A zero catalog result, exact-point non-query, TLS certificate failure, HTTP 502, or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "qualificationDecision": "hold",
+  "uncertainty": "A restricted, browser-only, authenticated, unpublished, or currently unavailable ATR/BPN/local parcel service may exist. Stable parcel identity, schema, CRS, anonymous geometry access, and citywide coverage remain unresolved."
+}

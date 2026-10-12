@@ -1,0 +1,20 @@
+{
+  "taskId": "city:7423",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-7423-qena.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/qena-service-review.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "tmp/valhalla-parcel-research/qena/service.json",
+    "tmp/valhalla-parcel-research/qena/layer14.json",
+    "tmp/valhalla-parcel-research/qena/query14.json",
+    "tmp/valhalla-parcel-research/qena/esa-services.html"
+  ],
+  "checkedAt": "2026-10-11T11:11:20Z",
+  "city": "Qena",
+  "reason": "Cached first-party ArcGIS layer 14 query contains one governorate-scale polygon with OBJECTID 1 and Name قنا; no native parcel identity or parcel geometry. ESA service page is institutional context. RegistryFound true remains a packet claim grounded in ESA/Qena planning references, without independently proven local parcel access.",
+  "identityCheck": "Matched city code, rank, country, point and 2025 population in persons against immutable pending queue and official WUP 2025 source row.",
+  "searchCheck": "English and local-language executed searches are documented in both paired evidence files; independent source response artifacts were available only for the Qena candidate.",
+  "sampleCheck": "No retained parcel sample; count zero, within three-polygon limit. No safe native parcel ID was verified.",
+  "admissionGates": "No qualified fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification. City remains excluded; no runtime, catalog or report admission change."
+}

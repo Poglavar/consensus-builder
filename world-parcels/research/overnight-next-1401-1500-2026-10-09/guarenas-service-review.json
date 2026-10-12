@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4016-guarenas.json",
+  "purpose": "Document first-party local-government discovery and bounded anonymous cadastral/map-service review for Guarenas, Municipio Ambrosio Plaza, Miranda, Venezuela.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Alcaldía de Guarenas and municipal SIGAT/SATMAP pages establish a local municipal-government and tax-service context. They did not expose a public cadastral parcel viewer or feature API in the reviewed HTML/JavaScript. Historical/currently referenced IGVSB service routes were probed, but no usable anonymous parcel response was obtained. No polygon or native parcel identity was retained.",
+  "registryAssessment": "A local municipal administrative custodian is evidenced, but a local cadastral registry, map, or public cadastral procedure was not sufficiently evidenced for registryFound=true; the city record therefore uses null.",
+  "officialPrimarySources": [
+    {
+      "url": "https://alcaldiadeguarenas.gob.ve/la-alcaldia/",
+      "observation": "Official Alcaldía de Guarenas page identifies the municipality and its local-government mission; it does not expose a parcel layer or cadastral API."
+    },
+    {
+      "url": "https://alcaldiadeguarenas.gob.ve/contacto/",
+      "observation": "Official municipal contact page gives the Guarenas municipal address and contact channels; it does not publish a public cadastral query route."
+    },
+    {
+      "url": "https://guarenas.sigat.net/",
+      "observation": "Official municipal SIGAT/SATMAP site describes the Servicio Autónomo Tributario del Municipio Ambrosio Plaza and publishes municipal ordinances, including the SATMAP creation ordinance; the reviewed page contains no parcel feature service or cadastral viewer."
+    },
+    {
+      "url": "https://tugacetaoficial.com/leyes/ley-de-geografia-cartografia-y-catastro-nacional-gaceta-37002-2000-texto/",
+      "observation": "National Venezuelan cadastral-law text describes municipal cadastral offices and cadastral maps, but is general national legal context rather than evidence of an open Guarenas endpoint."
+    },
+    {
+      "url": "https://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv",
+      "observation": "Historical/secondary discovery reference for an IGVSB OGC map service; direct anonymous capability probing timed out and did not yield a current parcel layer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Guarenas Venezuela official cadastral parcel map land registry GIS",
+      "result": "Found official municipal Alcaldía and SIGAT/SATMAP pages plus IGVSB service references; no current public parcel feature service or safe-ID geometry verified.",
+      "actualResultUrls": [
+        "https://alcaldiadeguarenas.gob.ve/",
+        "https://guarenas.sigat.net/",
+        "https://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "Guarenas Venezuela mapa catastral oficial catastro registro de tierras SIG GIS",
+      "result": "Found official municipal and national cadastral-context pages; no anonymous current parcel schema, CRS, safe native ID, or geometry response verified.",
+      "actualResultUrls": [
+        "https://alcaldiadeguarenas.gob.ve/contacto/",
+        "https://guarenas.sigat.net/",
+        "https://tugacetaoficial.com/leyes/ley-de-geografia-cartografia-y-catastro-nacional-gaceta-37002-2000-texto/"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://alcaldiadeguarenas.gob.ve/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official municipal WordPress home reviewed; no cadastral/map endpoint or parcel API found in page markup."
+    },
+    {
+      "url": "https://alcaldiadeguarenas.gob.ve/wp-json/wp/v2/search?search=catastro",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Returned an empty JSON search result; no indexed municipal cadastral page was found through this public endpoint."
+    },
+    {
+      "url": "https://guarenas.sigat.net/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official SIGAT/SATMAP landing page reviewed. It exposed municipal ordinances and tax-service information, but no parcel viewer, map configuration, feature endpoint, schema, CRS, or safe parcel identity."
+    },
+    {
+      "url": "https://guarenas.sigat.net/js/index.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Public JavaScript reviewed; it only loads site content/data and did not reveal a cadastral parcel API or map service."
+    },
+    {
+      "url": "https://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "Anonymous request timed out during DNS resolution after 20 seconds; no response, schema, CRS, or layer list obtained. No retry with credentials or TLS weakening."
+    },
+    {
+      "url": "https://ide.igvsb.gob.ve/wms/?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "Anonymous request failed because the host could not be resolved; no response or layer list obtained."
+    },
+    {
+      "url": "https://ide.igvsb.gob.ve/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
+      "method": "GET",
+      "httpStatus": "timeout/unknown",
+      "result": "Request did not produce a usable response within the bounded probe. No parcel query or geometry was attempted."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a verified public feature service; a zero hit, timeout, DNS failure, or unusable UI is not treated as citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal government and tax-service scope is evidenced; national IGVSB cadastral/map authority is general context.",
+    "verifiedOpenScope": "No open parcel geometry, native ID schema, CRS, or citywide completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The existence, access controls, endpoint structure, parcel schema/CRS, safe identity fields, and coverage of any Guarenas municipal cadastral database remain unknown without a separately published anonymous parcel service or authorized access.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}
