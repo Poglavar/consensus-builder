@@ -59,8 +59,11 @@ const PROFILES = Object.freeze({
         // one request instead of count + page + recount; larger and empty sets report "unknown".
         // Its CountDefault is 1000: a 3x3 block of city-centre cells (75-153 parcels) fits one page.
         // It resets about 1% of connections before answering (ECONNRESET; 2026-10-12: 1 of 90
-        // relayed block reads, 14 of ~2,900 qualifier requests), so such a read is sent once more.
-        version: '2.0.0', schema: POLAND_EGIB_GML_SCHEMA, pageMatchCount: true, maxPageSize: 1000, transportRetries: 1
+        // relayed block reads, 14 of ~2,900 qualifier requests), often several in the same second
+        // (four relayed reads at once on production), so a dropped read is sent again after 1 s
+        // and then 2 s rather than straight back into the burst.
+        version: '2.0.0', schema: POLAND_EGIB_GML_SCHEMA, pageMatchCount: true, maxPageSize: 1000,
+        transportRetries: 2, transportRetryDelayMs: 1000
     }),
     // Official capabilities declare ImplementsResultPaging FALSE. Fetch the
     // entire bounded match set once; never infer completeness from a short page.
@@ -249,12 +252,16 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
     }
 
     // A read the provider dropped before answering (no HTTP response, or the relay's 502 for one)
-    // is sent again when the profile names transportRetries; every other failure stands.
+    // is sent again when the profile names transportRetries, each time after a longer pause;
+    // every other failure stands.
     async function request(params, budget) {
-        for (let retries = profile.transportRetries ?? 0; ; retries--) {
+        const retries = profile.transportRetries ?? 0;
+        for (let retry = 1; ; retry++) {
+            const pause = (profile.transportRetryDelayMs ?? 0) * retry;
             try { return await attempt(params, budget); } catch (error) {
-                if (retries <= 0 || !dropped.has(error)) throw error;
+                if (retry > retries || !dropped.has(error) || budget.deadline - Date.now() <= pause) throw error;
             }
+            if (pause) await waitImpl(pause);
         }
     }
 

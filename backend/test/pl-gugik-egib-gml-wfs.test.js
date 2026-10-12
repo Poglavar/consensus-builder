@@ -81,7 +81,7 @@ test('an absent ID is not proven by a page that leaves the count unknown', async
     assert.ok(requests.some(u => u.searchParams.get('resultType') === 'hits'));
 });
 
-// GUGiK resets about 1% of connections before answering; the relay reports such a read as 502.
+// GUGiK resets about 1% of connections before answering, often several at once; the relay reports such a read as 502.
 function flaky(failures, ids = [ID]) {
     const { fetchImpl: answer, requests } = transport(ids);
     const queue = [...failures];
@@ -94,23 +94,28 @@ function flaky(failures, ids = [ID]) {
     return { fetchImpl, requests };
 }
 
-test('a read GUGiK dropped before answering is sent once more', async () => {
-    for (const failure of ['reset', 502]) {
-        const { fetchImpl, requests } = flaky([failure]);
-        const result = await createGmlWfsParcelSource(descriptor, { fetchImpl }).queryBounds([22.705, 53.862, 22.715, 53.866]);
-        assert.equal(requests.length, 2);
+test('a read GUGiK dropped before answering is sent again after 1 s, then 2 s', async () => {
+    const bbox = [22.705, 53.862, 22.715, 53.866];
+    for (const failures of [['reset'], [502], ['reset', 502]]) {
+        const { fetchImpl, requests } = flaky(failures);
+        const pauses = [];
+        const result = await createGmlWfsParcelSource(descriptor, { fetchImpl, waitImpl: async ms => { pauses.push(ms); } }).queryBounds(bbox);
+        assert.equal(requests.length, failures.length + 1);
+        assert.deepEqual(pauses, [1000, 2000].slice(0, failures.length));
         assert.deepEqual(result.features.map(feature => feature.id), [`${PREFIX}${ID}`]);
     }
-    const twice = flaky(['reset', 'reset']);
-    await assert.rejects(createGmlWfsParcelSource(descriptor, { fetchImpl: twice.fetchImpl }).queryBounds([22.705, 53.862, 22.715, 53.866]),
+    const thrice = flaky(['reset', 'reset', 'reset']);
+    await assert.rejects(createGmlWfsParcelSource(descriptor, { fetchImpl: thrice.fetchImpl, waitImpl: async () => {} }).queryBounds(bbox),
         error => error.code === 'parcel-source-unavailable' && error.upstreamStatus === undefined);
-    assert.equal(twice.requests.length, 2);
+    assert.equal(thrice.requests.length, 3);
     // An answer is never repeated: a refusal or an overloaded service stands.
     for (const status of [403, 503]) {
         const answered = flaky([status]);
-        await assert.rejects(createGmlWfsParcelSource(descriptor, { fetchImpl: answered.fetchImpl }).queryBounds([22.705, 53.862, 22.715, 53.866]),
+        const pauses = [];
+        await assert.rejects(createGmlWfsParcelSource(descriptor, { fetchImpl: answered.fetchImpl, waitImpl: async ms => { pauses.push(ms); } }).queryBounds(bbox),
             error => error.upstreamStatus === status);
         assert.equal(answered.requests.length, 1);
+        assert.deepEqual(pauses, []);
     }
 });
 

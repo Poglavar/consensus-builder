@@ -59,6 +59,9 @@ export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.
     // Only a source the catalog marks network-restricted gets a deadline for its direct answer's
     // headers; past it, the request goes through the relay, which answers from a served network.
     const directBudget = descriptor.knownLimit?.kind === 'network-restricted' ? directBudgetMs : null;
+    // A provider that lets no other site read its answers (no CORS) is never tried directly: the
+    // attempt fails for every visitor, so it would only delay the relay and say nothing about them.
+    const relayOnly = descriptor.browserTransport === 'relay';
     const needsSession = descriptor.adapter === 'kerala-entebhoomi'
         || descriptor.adapter === 'dgu-wfs'
         || (descriptor.adapter === 'gml-snapshot' && new URL(descriptor.endpoint).hostname === 'use-land-property-data.service.gov.uk');
@@ -94,7 +97,7 @@ export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.
     }
     return async function browserProviderFetch(url, options = {}) {
         const origin = new URL(url).origin;
-        if (needsSession || (descriptor.adapter === 'hmlr-browser' && new URL(url).hostname === 'use-land-property-data.service.gov.uk') || (blocked.get(origin) || 0) > now()) return relay(url, options);
+        if (relayOnly || needsSession || (descriptor.adapter === 'hmlr-browser' && new URL(url).hostname === 'use-land-property-data.service.gov.uk') || (blocked.get(origin) || 0) > now()) return relay(url, options);
         let response;
         const budget = directBudget === null ? null : new AbortController();
         const timer = budget ? setTimeout(() => budget.abort(), directBudget) : null;

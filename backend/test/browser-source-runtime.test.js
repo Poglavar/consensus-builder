@@ -57,6 +57,20 @@ describe('createBrowserProviderFetch', () => {
         expect(slowFetch.mock.calls.map(([url]) => url)).toEqual(['https://provider.test/wfs']);
     });
 
+    it('never tries a relay-only provider directly, so its failures say nothing about the visitor', async () => {
+        const fetchImpl = vi.fn(async () => response(200));
+        const relayOnly = createBrowserProviderFetch({ id: 'pl-gugik-egib-wfs', adapter: 'gml-wfs', browserTransport: 'relay' },
+            { fetchImpl, relayBase: 'https://relay.test' });
+        await relayOnly('https://provider.test/wfs?request=GetFeature');
+        await relayOnly('https://provider.test/wfs?request=GetFeature&startIndex=500');
+        expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual(['https://relay.test/parcel-provider-relay/pl-gugik-egib-wfs',
+            'https://relay.test/parcel-provider-relay/pl-gugik-egib-wfs']);
+        // GUGiK's collective EGiB WFS sends no CORS headers: it is relay-only and blames no network.
+        const egib = catalog.sources.find(source => source.id === 'pl-gugik-egib-wfs');
+        expect(egib.browserTransport).toBe('relay');
+        expect(knownLimitFor(egib, upstreamError('Parcel WFS is unavailable.'))).toBeUndefined();
+    });
+
     it('restores a manual redirect carried as HTTP metadata without following it in fetch', async () => {
         const fetchImpl = vi.fn(async () => response(200, { 'x-parcel-upstream-status': '302',
             'x-parcel-upstream-location': 'https://provider.test/next', 'x-parcel-upstream-cookies': '["sid=one"]' }));

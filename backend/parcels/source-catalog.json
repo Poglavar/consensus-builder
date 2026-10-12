@@ -11041,10 +11041,7 @@
         "Geometry is the provider's EPSG:2180 output (northing, easting) reprojected to WGS84 unrepaired; parcel IDs equal ULDK's TERYT IDs.",
         "No CORS headers: browsers read it through the production provider relay."
       ],
-      "knownLimit": {
-        "kind": "network-restricted",
-        "evidence": "2026-10-12: from one consumer network mapy.geoportal.gov.pl did not resolve and GUGiK addresses did not answer, while the production relay and another server got answers (the same limit as ULDK). Which networks are affected is unpublished."
-      },
+      "browserTransport": "relay",
       "evidenceFile": "research/countries/PL-egib-wfs-2026-10-12.json",
       "attribution": "GUGiK collective EGiB WFS · county cadastral parcels · adapted",
       "licenceNote": "GetCapabilities declares Fees none and AccessConstraints none. Public EGiB WFS services carry only data provided free of charge (art. 40a(2) of the Polish Geodetic and Cartographic Law, as summarised by GUGiK). Cadastral geometry does not establish legal title or survey accuracy.",
