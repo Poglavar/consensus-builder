@@ -12,3 +12,4 @@ rasterio>=1.4
 Pillow>=11
 opencv-python-headless
 tqdm
+scikit-image>=0.24   # watershed reconstruction (layered/reconstruct.py)

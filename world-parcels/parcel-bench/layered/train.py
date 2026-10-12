@@ -400,6 +400,8 @@ def evaluate_only(args):
     if args.osm_mode == 'none':
         configs = [dict(config, interior_seeds=True) for config in configs]   # without OSM buildings, interiors are the only seeds
     suffix = ('' if args.osm_mode == 'full' else f'-osm-{args.osm_mode}') + (f'-gsd{args.degrade_gsd:g}' if args.degrade_gsd else '')
+    if index.manifest['version'] != results.get('manifest_version'):
+        suffix += f"-{index.manifest['version']}"      # scored against another city's manifest: keep the run's own eval
     out_dir = args.output / f'{args.split}-eval{suffix}'
     summary = evaluate(model, index, cache, ids, configs, device, recon_size=state['recon_size'],
                        workers=args.eval_workers, out_dir=out_dir, osm_mode=args.osm_mode)

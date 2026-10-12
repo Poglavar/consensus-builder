@@ -258,7 +258,7 @@ def main(argv=None):
         todo = [item for item in todo if item[0] in pool_ids] + [item for item in todo if item[0] not in pool_ids][:args.limit]
     started, done = time.time(), 0
     log(f'{len(todo)} tiles to process ({len(eligible) - len(todo)} already done)')
-    with psycopg.connect(url, connect_timeout=8,
+    with psycopg.connect(url, connect_timeout=8, autocommit=True,
                          options='-c statement_timeout=30000 -c lock_timeout=3000 -c default_transaction_read_only=on') as conn:
         for tile_id, bbox, path in todo:
             if tile_id in pool_ids:

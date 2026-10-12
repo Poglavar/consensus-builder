@@ -10,6 +10,7 @@ case "$cmd" in
   start)
     shift 2; [ -n "$name" ] && [ $# -gt 0 ] || { echo "usage: job.sh start <name> <command...>" >&2; exit 2; }
     printf '%q ' "$@" > "$JOBS/$name.sh"; rm -f "$JOBS/$name.rc"
+    [ -f "$JOBS/$name.log" ] && mv -f "$JOBS/$name.log" "$JOBS/$name.log.prev"   # a fresh start gets a fresh log
     # setsid + nohup detach from the terminal; the wrapper records the exit code when the command ends.
     setsid nohup bash -c "cd '$ROOT' && { $(printf '%q ' "$@"); echo \$? > '$JOBS/$name.rc'; }" \
       >> "$JOBS/$name.log" 2>&1 < /dev/null &

@@ -221,7 +221,9 @@ def main(argv=None):
     progress_path = root / 'progress.json'
     progress = json.loads(progress_path.read_text()) if progress_path.exists() else {'prescreen': {}, 'screen': {}}
     options = '-c statement_timeout=60000 -c lock_timeout=3000 -c default_transaction_read_only=on'
-    with psycopg.connect(url, connect_timeout=8, options=options) as conn:
+    # Autocommit: read-only queries must not hold a transaction open across the long fetch phase, or the
+    # server's idle-in-transaction guard terminates the session.
+    with psycopg.connect(url, connect_timeout=8, options=options, autocommit=True) as conn:
         # Phase 1: cheap database pre-screen of the whole grid (count and clipped-area share), cached.
         todo = [(x, y) for x, y in grid if f'tile_{x}_{y}' not in progress['prescreen']]
         if todo:
