@@ -279,3 +279,45 @@ describe('consent validity against the current effect (§12 step 4)', () => {
         expect(proposal.acceptedParcelIds.sort()).toEqual(['HR-1-A', 'HR-1-B', 'HR-1-LEGACY']);
     });
 });
+
+describe('effectFingerprintOf memo', () => {
+    // plan-order.js hands back one footprint object per unchanged record, so the hash is reused for
+    // that object instead of being rounded and hashed again; an edited record gets a new footprint
+    // object from plan-order.js and so a new hash. The override stands in for plan-order's cache.
+    const withFootprint = (footprint, run) => {
+        const previous = globalThis.__planOrder;
+        globalThis.__planOrder = { ...planOrder, footprintOf: () => footprint };
+        try { return run(); } finally { globalThis.__planOrder = previous; }
+    };
+
+    it('reuses the hash of a footprint object it has already hashed under the same terms', () => {
+        const footprint = t.feature(JSON.parse(JSON.stringify(STRIP.geometry)));
+        withFootprint(footprint, () => {
+            const proposal = { goal: 'road-track', ownershipFlow: [] };
+            const first = flowApi.effectFingerprintOf(proposal);
+            // A cached footprint is never mutated in the app; here it proves the hash was not recomputed.
+            footprint.geometry.coordinates[0][1][0] += 0.01;
+            expect(flowApi.effectFingerprintOf(proposal)).toBe(first);
+            // Different terms on the same footprint are hashed afresh.
+            expect(flowApi.effectFingerprintOf({ goal: 'park', ownershipFlow: [] })).not.toBe(first);
+        });
+    });
+});
+
+describe('effectFingerprintOf on a published record', () => {
+    it('returns the stamped hash without touching the footprint', () => {
+        let reads = 0;
+        const previous = globalThis.__planOrder;
+        globalThis.__planOrder = { ...planOrder, footprintOf: () => { reads += 1; return t.feature(STRIP.geometry); } };
+        try {
+            const published = { goal: 'road-track', ownershipFlow: [], effectHash: 'e-stamped' };
+            expect(flowApi.effectFingerprintOf(published)).toBe('e-stamped');
+            expect(reads).toBe(0);
+            // A draft hashed under a supplied flow is computed, stamp or not.
+            expect(flowApi.effectFingerprintOf(published, { ownershipFlow: [] })).not.toBe('e-stamped');
+            expect(reads).toBe(1);
+        } finally {
+            globalThis.__planOrder = previous;
+        }
+    });
+});

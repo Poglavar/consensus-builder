@@ -53,6 +53,15 @@
         ? global.__footprintParts
         : (typeof require === 'function' ? require('./footprint-parts.js') : null);
 
+    // One union per record, not per caller. Unioning the parts of a record that has many (a plan
+    // of 1,105 courtyard buildings) takes seconds, and the details panel alone asks for the
+    // footprint twice per listed parcel: 116 parcels froze the page for minutes (2026-10-12).
+    // Keyed by the record object; the content key catches an in-place edit of its geometry. The
+    // cached feature is shared by every caller and treated as immutable: no caller mutates a
+    // footprint, and ownership-flow.js relies on "same object = unchanged record".
+    const footprintCache = new WeakMap();
+    const footprintKeyOf = parts => JSON.stringify([parts.polygons, parts.centerline ? parts.centerline.definition : null]);
+
     // A proposal's own footprint, from whichever geometry its typology carries. Pure GeoJSON in/out.
     // WHICH parts count is defined once in footprint-parts.js (shared with the API and migrations);
     // this only unions them, rebuilding a centreline-only road with the exact corridor builder.
@@ -62,13 +71,27 @@
         if (!t || !proposal || !partsApi) return null;
         const parts = partsApi.footprintParts(proposal);
         if (parts.invalid) return null;
+        const cacheable = typeof proposal === 'object';
+        const key = cacheable ? footprintKeyOf(parts) : null;
+        const cached = cacheable ? footprintCache.get(proposal) : null;
+        if (cached && cached.key === key) return cached.footprint;
+        const { footprint, complete } = unionParts(parts, t);
+        // A centreline whose corridor builder is not loaded yet gives an incomplete footprint;
+        // that one is not kept, so the next call tries the builder again.
+        if (cacheable && complete) footprintCache.set(proposal, { key, footprint });
+        return footprint;
+    }
+
+    function unionParts(parts, t) {
         const polys = parts.polygons.map(geometry => t.feature(geometry));
+        let complete = true;
         if (parts.centerline) {
             const corridor = corridorFootprintFromCenterline(parts.centerline.definition, { turf: t });
             if (corridor) polys.push(corridor);
+            else complete = false;
         }
 
-        if (!polys.length) return null;
+        if (!polys.length) return { footprint: null, complete };
         // Every part or none: keeping "what we have" after a failed union is a partial footprint
         // that looks whole.
         let acc = polys[0];
@@ -77,7 +100,7 @@
             if (!next) throw new Error('plan-order: the footprint union of a proposal failed');
             acc = next;
         }
-        return acc;
+        return { footprint: acc, complete };
     }
 
     // Geometry-only coverage inspection for explicit repair/audit tools. This result is diagnostic;

@@ -243,3 +243,30 @@ describe('ReparcellizationDeal shared fingerprint', () => {
         expect(() => deal.fingerprint(openGround)).toThrow('Ownerless ground cannot receive cash.');
     });
 });
+
+describe('ReparcellizationDeal without cash', () => {
+    // The Borovje readjustments carry no cash offer; production's offer_currency column default
+    // stamped USD on them, and that must not void a deal that moves no money.
+    const noCash = () => {
+        const record = proposal();
+        record.offer = 0;
+        record.reparcellization.ownerShares.forEach(owner => { owner.cashOffer = 0; });
+        return record;
+    };
+
+    it('ignores the stored currency when the ledger moves no money', () => {
+        const usd = noCash();
+        usd.offerCurrency = 'USD';
+        expect(() => deal.fingerprint(usd)).not.toThrow();
+        const eur = noCash();
+        eur.offerCurrency = 'EUR';
+        expect(deal.fingerprint(usd)).toBe(deal.fingerprint(eur));
+        expect(deal.content(usd).terms.currency).toBeNull();
+    });
+
+    it('still refuses non-EUR cash', () => {
+        const paid = proposal();
+        paid.offerCurrency = 'USD';
+        expect(() => deal.fingerprint(paid)).toThrow(/EUR/);
+    });
+});

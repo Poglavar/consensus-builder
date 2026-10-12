@@ -120,12 +120,21 @@
     // The flow input is the STAMPED proposal.ownershipFlow when present (frozen at publish, stable
     // everywhere); opts.ownershipFlow lets the accept path supply a freshly computed one for
     // never-published local proposals.
+    // plan-order.js hands back the same footprint object while a record is unchanged, so the costly
+    // part (rounding and hashing a footprint of hundreds of parts) runs once per record and the
+    // cheap terms decide whether that hash still applies.
+    const effectHashCache = new WeakMap();
     function effectFingerprintOf(proposal, options) {
         const deal = global.ReparcellizationDeal
             || (typeof require === 'function' ? require('../reparcellization-deal.js') : null);
         if (deal?.isReadjustment(proposal)) return deal.fingerprint(proposal);
-        const api = planOrder();
         const opts = options || {};
+        // A published record carries the hash the server stamped at publish, and a published record
+        // never changes (an edit derives a new record, which binding-drift.js strips the stamp from).
+        // Reading the stamp spares the footprint union, which is what the hash costs: a plan of
+        // 1,105 buildings unions for seconds. A caller supplying its own flow is hashing a draft.
+        if (!opts.ownershipFlow && typeof proposal?.effectHash === 'string' && proposal.effectHash) return proposal.effectHash;
+        const api = planOrder();
         if (!api || !proposal) return null;
         let footprint = null;
         try { footprint = api.footprintOf(proposal); } catch (_) { footprint = null; }
@@ -133,12 +142,8 @@
 
         const flow = Array.isArray(proposal.ownershipFlow) ? proposal.ownershipFlow
             : (Array.isArray(opts.ownershipFlow) ? opts.ownershipFlow : []);
-        const effect = {
+        const terms = {
             goal: String(proposal.goal === undefined || proposal.goal === null ? '' : proposal.goal).trim(),
-            footprint: {
-                type: footprint.geometry.type,
-                coordinates: roundCoords(footprint.geometry.coordinates)
-            },
             flow: flow
                 .filter(entry => entry && entry.parcelId)
                 .map(entry => ({
@@ -149,8 +154,22 @@
                 .sort((a, b) => a.parcelId.localeCompare(b.parcelId))
         };
         const modes = collectImpactModes(proposal);
+        if (modes) terms.modes = modes;
+        const termsKey = stableStringifyLocal(terms);
+        const cached = effectHashCache.get(footprint);
+        if (cached && cached.termsKey === termsKey) return cached.hash;
+        const effect = {
+            goal: terms.goal,
+            footprint: {
+                type: footprint.geometry.type,
+                coordinates: roundCoords(footprint.geometry.coordinates)
+            },
+            flow: terms.flow
+        };
         if (modes) effect.modes = modes;
-        return 'e-' + effectHashString(stableStringifyLocal(effect));
+        const hash = 'e-' + effectHashString(stableStringifyLocal(effect));
+        effectHashCache.set(footprint, { termsKey, hash });
+        return hash;
     }
 
     // --- replay fidelity (§11 first rung) ---------------------------------------------------

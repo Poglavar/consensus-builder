@@ -135,6 +135,9 @@
         }).filter(Boolean);
     }
 
+    // Below this many parts a region is intersected whole; a few parts cost nothing to sweep.
+    const PART_ROUTING_MIN_PARTS = 4;
+
     // minimumArea must match the record-writing thresholds (upsertCutRecord /
     // splitDemolitionFootprint ignore clips under 2 m²): a lower detection floor made buildings
     // grazed by 0.25–2 m² PROMPT but produce no record, so the finish check re-prompted for them.
@@ -165,12 +168,40 @@
             return region[0] > box[2] || box[0] > region[2] || region[1] > box[3] || box[1] > region[3];
         };
 
+        // A region of many parts (a plan's 1,105 buildings handed over as one MultiPolygon) is
+        // routed by part: a candidate is intersected only with the parts whose boxes it touches, as
+        // a MultiPolygon of just those. Exact — a part whose box misses the candidate cannot
+        // contribute — and the intersection no longer sweeps every vertex of the whole plan for
+        // each building near it (3.8 s of a 1,105-building apply, 2026-10-12).
+        const parts = corridorFeature.geometry.type === 'MultiPolygon' && corridorFeature.geometry.coordinates.length > PART_ROUTING_MIN_PARTS
+            && typeof api.bbox === 'function'
+            ? corridorFeature.geometry.coordinates.map(coordinates => {
+                let box = null;
+                try { box = api.bbox({ type: 'Polygon', coordinates }); } catch (_) { box = null; }
+                return { coordinates, box };
+            })
+            : null;
+        const regionFor = box => {
+            if (!parts || !box) return corridorFeature;
+            const touching = parts.filter(part => !part.box
+                || !(box[0] > part.box[2] || part.box[0] > box[2] || box[1] > part.box[3] || part.box[1] > box[3]));
+            if (!touching.length) return null;
+            return { type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: touching.map(part => part.coordinates) } };
+        };
+
         buildings.forEach((candidate, index) => {
             const feature = normalizeBuildingFeature(candidate);
             if (!feature || !feature.geometry) return;
             if (outsideRegion(feature)) return;
+            let target = corridorFeature;
+            if (parts) {
+                let box = null;
+                try { box = api.bbox(feature); } catch (_) { box = null; }
+                target = regionFor(box);
+                if (!target) return;
+            }
             let intersection = null;
-            try { intersection = api.intersect(corridorFeature, feature); } catch (_) { return; }
+            try { intersection = api.intersect(target, feature); } catch (_) { return; }
             if (!intersection) return;
             let area = minimumArea;
             try {

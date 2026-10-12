@@ -108,8 +108,10 @@
         const totalCashCents = ledger.reduce((sum, owner) => sum + owner.cashCents, 0);
         if (!Number.isSafeInteger(totalCashCents)) throw new Error('Total cash offer is too large.');
         if (moneyCents(proposal.offer ?? 0) !== totalCashCents) throw new Error('Proposal offer must equal the owner cash ledger.');
-        const currency = String(proposal.offerCurrency || proposal.currency || 'EUR').toUpperCase();
-        if (currency !== 'EUR') throw new Error('Readjustment cash offers currently use EUR.');
+        // A deal without cash has no currency: the stored record may still carry one (a database
+        // column default stamped USD on the Borovje readjustments), and it must not void the deal.
+        const currency = totalCashCents ? String(proposal.offerCurrency || proposal.currency || 'EUR').toUpperCase() : null;
+        if (currency !== null && currency !== 'EUR') throw new Error('Readjustment cash offers currently use EUR.');
         return {
             schema: SCHEMA,
             approval: approval().contextContent(proposal),

@@ -119,10 +119,19 @@
         const minimumOverlapM2 = Number.isFinite(Number(options.minimumOverlapM2))
             ? Math.max(0, Number(options.minimumOverlapM2))
             : 2;
-        const targetFootprint = displacesBuildingContent(proposal)
-            && planOrder && typeof planOrder.footprintOf === 'function'
-            ? planOrder.footprintOf(proposal)
-            : null;
+        // The footprint is unioned only once a candidate actually needs comparing: a plan of
+        // 1,105 buildings takes seconds to union, and an explicit apply with nothing applied nearby
+        // asked for it for no one (2026-10-12).
+        let targetFootprint;
+        const targetFootprintOf = () => {
+            if (targetFootprint === undefined) {
+                targetFootprint = displacesBuildingContent(proposal)
+                    && planOrder && typeof planOrder.footprintOf === 'function'
+                    ? planOrder.footprintOf(proposal)
+                    : null;
+            }
+            return targetFootprint;
+        };
 
         return list.filter(candidate => {
             const candidateId = proposalRecordId(candidate);
@@ -155,11 +164,11 @@
             if (proposal.roadProposal && candidate.structureProposal && !isBuildingContentProposal(candidate)) return false;
             // No measurable footprint on either side means no demonstrable overlap, and ground that
             // cannot be shown to be taken is left free: refusing here would block on a suspicion.
-            if (!targetFootprint || !planOrder || typeof planOrder.footprintOf !== 'function'
-                || typeof planOrder.intersectionArea !== 'function') return false;
+            if (!planOrder || typeof planOrder.footprintOf !== 'function'
+                || typeof planOrder.intersectionArea !== 'function' || !targetFootprintOf()) return false;
             const candidateFootprint = planOrder.footprintOf(candidate);
             return candidateFootprint
-                ? planOrder.intersectionArea(targetFootprint, candidateFootprint) >= minimumOverlapM2
+                ? planOrder.intersectionArea(targetFootprintOf(), candidateFootprint) >= minimumOverlapM2
                 : false;
         });
     }

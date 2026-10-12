@@ -266,3 +266,36 @@ describe('road footprints', () => {
         expect(planOrder.footprintOf({ bounds: [1, 2, 3, 4] })).toBeNull();
     });
 });
+
+describe('footprint memo', () => {
+    // Three parts on one record — `geometry`, a structure and a building geometry, all read by
+    // footprint-parts.js — so one footprint costs two unions.
+    const part = (lng, lat) => ({ type: 'Polygon', coordinates: [[[lng, lat], [lng + 0.001, lat], [lng + 0.001, lat + 0.001], [lng, lat + 0.001], [lng, lat]]] });
+    const record = () => ({ geometry: part(16, 45.8), structureProposal: { geometry: part(16.002, 45.8) }, buildingGeometry: part(16.004, 45.8) });
+    const countingTurf = () => {
+        let unions = 0;
+        return { turf: { ...turf, union: (a, b) => { unions += 1; return turf.union(a, b); } }, unions: () => unions };
+    };
+
+    it('unions the parts of an unchanged record once, however many callers ask', () => {
+        const { turf: t, unions } = countingTurf();
+        const proposal = record();
+        const first = planOrder.footprintOf(proposal, { turf: t });
+        expect(unions()).toBe(2);
+        const again = planOrder.footprintOf(proposal, { turf: t });
+        expect(unions()).toBe(2);
+        expect(again).toBe(first);
+    });
+
+    it('recomputes after the record is edited in place', () => {
+        const { turf: t, unions } = countingTurf();
+        const proposal = record();
+        const before = planOrder.footprintOf(proposal, { turf: t });
+        proposal.buildingGeometry.coordinates[0][1][0] += 0.001; // the third part grows eastwards
+        proposal.buildingGeometry.coordinates[0][2][0] += 0.001;
+        const after = planOrder.footprintOf(proposal, { turf: t });
+        expect(unions()).toBe(4);
+        expect(after).not.toBe(before);
+        expect(turf.area(after)).toBeGreaterThan(turf.area(before));
+    });
+});

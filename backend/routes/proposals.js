@@ -31,6 +31,7 @@ import { footprintParts, hasFootprint } from '../proposals/footprint.js';
 import { verifyPreparation, isConstructedCorridor, PREPARED_TABLE, PREPARED_INSERT_COLUMNS, preparedRowValues } from '../proposals/prepare.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares, readjustmentDealFingerprint, validateReadjustmentProposal } from './reparcellization.js';
+import { effectHashOf } from '../proposals/effect-hash.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
 import { resolveChainMirror } from '../proposals/chain-mirror.js';
 
@@ -864,6 +865,17 @@ export function createProposalCreateHandler(pool) {
                 } catch (error) {
                     return res.status(422).json({ code: 'invalid-readjustment-deal', error: error.message });
                 }
+            } else if (!(reparcellization || proposalData.goal === 'reparcellization')) {
+                // Every other record is stamped the same way: the hash consent binds to is computed
+                // here from the stored fields (proposals/effect-hash.js) and the uploader's copy is
+                // dropped. Null (no footprint, or a corridor only the browser rebuilds) leaves the
+                // browser to derive it; a failure here never blocks publication.
+                let effectHash = null;
+                try { effectHash = effectHashOf(proposalData); } catch (error) {
+                    console.warn(`[${new Date().toISOString()}] effect hash not computed for ${proposalData.proposalId || '?'}:`, error.message);
+                }
+                if (effectHash) proposalData.effectHash = effectHash;
+                else delete proposalData.effectHash;
             }
             if (!authoredAt) delete proposalData.authoredAt;
             if (!req.chainMirror) delete proposalData.toleranceM;

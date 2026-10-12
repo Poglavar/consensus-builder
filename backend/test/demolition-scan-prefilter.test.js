@@ -113,3 +113,38 @@ describe('the demolition scan asks the box before it clips', () => {
         expect(scanMs / bboxMs).toBeLessThan(8);
     });
 });
+
+describe('a region of many parts is clipped part by part', () => {
+    // Six squares in a row as one MultiPolygon (a plan handed over whole). A building is clipped
+    // against the parts whose boxes it touches only — exact, since a part whose box misses the
+    // building cannot contribute — instead of against all six at once for every building nearby.
+    const parts = [0, 1, 2, 3, 4, 5].map(i => box(15.870 + i * 0.001, 43.75, 0.0006).geometry.coordinates);
+    const region = { type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: parts } };
+    const counting = () => {
+        const calls = [];
+        return { calls, api: { ...turf, intersect: (a, b) => { calls.push(a.geometry.type === 'MultiPolygon' ? a.geometry.coordinates.length : 1); return turf.intersect(a, b); } } };
+    };
+
+    it('gives the same answer as clipping the whole region, with far less work', () => {
+        const inThird = box(15.8722, 43.7502);              // inside part 3
+        const inTheGap = box(15.8707, 43.7502);             // between parts 1 and 2: inside the region box, touching no part
+        const farAway = box(15.9, 43.8);
+        const { calls, api } = counting();
+        const hits = find(region, [inThird, inTheGap, farAway], api);
+        expect(hits).toHaveLength(1);
+        expect(hits[0].area).toBeCloseTo(turf.area(inThird), 0);
+        expect(calls).toEqual([1]);                          // one clip, against one part
+        const whole = find({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: parts[2] } }, [inThird], turf);
+        expect(hits[0].area).toBeCloseTo(whole[0].area, 6);
+    });
+
+    it('clips a building straddling two parts against both', () => {
+        const straddling = box(15.8705, 43.7502, 0.0008);    // from part 1 into part 2
+        const { calls, api } = counting();
+        const hits = find(region, [straddling], api);
+        expect(hits).toHaveLength(1);
+        expect(calls).toEqual([2]);
+        const both = turf.area(turf.intersect(region, straddling));
+        expect(hits[0].area).toBeCloseTo(both, 6);
+    });
+});

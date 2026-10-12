@@ -320,3 +320,20 @@ describe('reparcellization agreement replacement families', () => {
         }).map(record => record.proposalId)).toEqual(['agreement-1']);
     });
 });
+
+describe('collectAppliedProposalAlternatives reads the footprint lazily', () => {
+    it('never unions the target when no applied rival is there to compare with', () => {
+        const planOrder = require('../../frontend/js/proposals/plan-order.js');
+        let unions = 0;
+        const counting = { ...planOrder, footprintOf: record => { unions += 1; return planOrder.footprintOf(record); } };
+        const square = turf.polygon([[[16, 45.8], [16.001, 45.8], [16.001, 45.801], [16, 45.801], [16, 45.8]]]);
+        const target = { proposalId: 'plan', goal: 'buildings', buildingProposal: {}, geometry: square.geometry };
+        const unapplied = { proposalId: 'other', applied: false, goal: 'buildings', buildingProposal: {}, geometry: square.geometry };
+        const road = { proposalId: 'road', applied: true, goal: 'road-track', roadProposal: { definition: { polygon: square.geometry } } };
+        expect(collectAppliedProposalAlternatives(target, [target, unapplied, road], { planOrder: counting })).toEqual([]);
+        expect(unions).toBe(0);
+        const rival = { proposalId: 'rival', applied: true, goal: 'buildings', buildingProposal: {}, geometry: square.geometry };
+        expect(collectAppliedProposalAlternatives(target, [target, rival], { planOrder: counting }).map(r => r.proposalId)).toEqual(['rival']);
+        expect(unions).toBeGreaterThan(0);
+    });
+});
