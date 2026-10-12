@@ -39,13 +39,14 @@ class Element {
 
 function renderParcelPanel(properties) {
     const ids = [
-        'parcel-info-panel', 'parcel-info-title', 'info-content', 'proposals-content',
+        'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
         'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements'
     ];
     const elements = new Map(ids.map(id => [id, new Element(id)]));
     const copied = [];
     const document = {
         getElementById: id => elements.get(id) || null,
+        querySelector: () => null,
         querySelectorAll: () => [],
         createTextNode: text => Object.assign(new Element(), { _textContent: String(text) }),
         createElement: () => new Element()
@@ -66,6 +67,7 @@ function renderParcelPanel(properties) {
             applyFeatureVisibility() {}
         },
         requestAnimationFrame: callback => callback(),
+        ParcelSetProposals: { renderPublishedOnly() {} },
         resetParcelMintStatusState() {},
         window: null
     };

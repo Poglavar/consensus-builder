@@ -2049,10 +2049,10 @@ const multiParcelSelection = {
         }
 
         // Clear all tab content
-        const infoContent = document.getElementById('info-content');
-        const proposalsContent = document.getElementById('proposals-content');
-        if (infoContent) infoContent.innerHTML = '';
-        if (proposalsContent) proposalsContent.innerHTML = '';
+        ['info-content', 'propose-content', 'proposals-content'].forEach(id => {
+            const content = document.getElementById(id);
+            if (content) content.innerHTML = '';
+        });
 
         const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel);
         const feature = parcelId ? window.LiveParcelFabric?.get?.(parcelId) : null;
@@ -2145,7 +2145,7 @@ const multiParcelSelection = {
 
         // Clear the regular info content and use parcel-info-content for multi-parcel display
         document.getElementById('info-content').innerHTML = '';
-        window.ParcelsUIParcelPanel?.dropParcelHistoryCard?.(null); // one parcel's history, not the selection's
+        window.ParcelsUIParcelPanel.renderParcelHistory(null); // one parcel's history, not the selection's
 
         const content = `
             <div class="multi-parcel-actions" style="margin-bottom: 15px; text-align: center;">
@@ -2201,16 +2201,20 @@ const multiParcelSelection = {
         // Show multi-parcel content in the Info tab
         document.getElementById('info-content').innerHTML = content;
 
-        const proposalsContent = `
+        const proposeContent = `
             <div class="metric-group multi-parcel-proposal-hint">
                 <div class="metric-value" data-i18n-key="panel.parcel.multi.proposalsHint">${tParcelMulti('panel.parcel.multi.proposalsHint', {}, 'Create a proposal that includes all the selected parcels.')}</div>
             </div>
             <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
         `;
-        document.getElementById('proposals-content').innerHTML = proposalsContent;
+        document.getElementById('propose-content').innerHTML = proposeContent;
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions();
         }
+        // The Proposals tab lists what already stands on any of the selected parcels, with its total.
+        window.ParcelSetProposals.render(document.getElementById('proposals-content'), [...this.selectedParcels], {
+            onCount: count => window.ParcelsUIParcelPanel.setProposalsTabCount(count)
+        });
 
         const infoPanelEl = document.getElementById('parcel-info-panel');
         if (infoPanelEl) {
@@ -2238,11 +2242,10 @@ const multiParcelSelection = {
         }
 
         // Clear all tab content areas
-        const infoContent = document.getElementById('info-content');
-        const proposalsContent = document.getElementById('proposals-content');
-
-        if (infoContent) infoContent.innerHTML = '';
-        if (proposalsContent) proposalsContent.innerHTML = '';
+        ['info-content', 'propose-content', 'proposals-content'].forEach(id => {
+            const content = document.getElementById(id);
+            if (content) content.innerHTML = '';
+        });
 
         document.getElementById('parcel-info-panel').classList.remove('visible');
 
@@ -2263,6 +2266,28 @@ const multiParcelSelection = {
         });
     },
 
+    // Add these parcel layers to the active selection (a block, a Shift+drag box: parcels/ui/
+    // box-select.js), keeping what is already selected; one UI update for all. Returns how many
+    // were added.
+    addLayers(layers) {
+        if (!this.isActive) return 0;
+        let added = 0;
+        (layers || []).forEach(layer => {
+            const parcelId = window.ParcelPresenter?.getIdForLayer?.(layer);
+            if (!parcelId || !window.LiveParcelFabric?.get?.(String(parcelId))) return;
+            const parcelIdStr = parcelId.toString();
+            if (this.selectedParcels.has(parcelIdStr)) return;
+            this.selectedParcels.add(parcelIdStr);
+            this.addParcelHighlight(layer);
+            added += 1;
+        });
+        if (this.selectedParcels.size > 0) {
+            this.lastSelectedParcelId = Array.from(this.selectedParcels).slice(-1)[0];
+        }
+        this.updateUI();
+        return added;
+    },
+
     // Select all parcels in a block (used for Buenos Aires block selection)
     selectBlockLayers(blockLayers) {
         if (!Array.isArray(blockLayers) || blockLayers.length === 0) {
@@ -2278,22 +2303,7 @@ const multiParcelSelection = {
         this.clearSelection();
 
         // Add all block layers to selection
-        blockLayers.forEach(layer => {
-            const parcelId = window.ParcelPresenter?.getIdForLayer?.(layer);
-            if (parcelId && window.LiveParcelFabric?.get?.(String(parcelId))) {
-                const parcelIdStr = parcelId.toString();
-                this.selectedParcels.add(parcelIdStr);
-                this.addParcelHighlight(layer);
-            }
-        });
-
-        // Update the last selected parcel ID
-        if (this.selectedParcels.size > 0) {
-            this.lastSelectedParcelId = Array.from(this.selectedParcels).slice(-1)[0];
-        }
-
-        // Update UI to show the selected parcels
-        this.updateUI();
+        this.addLayers(blockLayers);
 
         // Show ephemeral message
         if (typeof showEphemeralMessage === 'function') {

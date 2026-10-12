@@ -60,14 +60,22 @@ coverage.
 ### Parcel interaction
 
 - **Click a parcel** → parcel menu at the click point: parcel id and one-line facts, then actions:
-  *Propose here* (opens the parcel panel on its build palette), *Select more* (enters multi-select),
-  *Details* (parcel panel info tab), *History*, *Tools* (parcel panel tools tab), *Offer my land*
-  (only when the build palette offers it), *View in 3D*. Everything the existing click chain does
-  (drill to proposals on top, share-plan pick, browse mode, blocks highlight) is preserved; only the
-  final "open the parcel panel" becomes "open the parcel menu".
+  *Propose here* (opens the parcel panel on its Propose tab), *Select more* (enters multi-select),
+  *Details* (parcel panel Info tab), *History* (Info tab with its History section opened), *Tools*
+  (parcel panel Tools tab), *Offer my land* (only when the build palette offers it), *View in 3D*.
+  Everything the existing click chain does (drill to proposals on top, share-plan pick, browse mode,
+  blocks highlight) is preserved; only the final "open the parcel panel" becomes "open the parcel menu".
+- **Parcel panel tabs** (2026-10-12): *Info* (facts, then a collapsed *History* section, fetched when
+  opened) · *Propose* (the build palette) · *Proposals* (what already stands here, with a count badge:
+  this browser's proposals and those published on the server, which load lazily and are imported
+  when opened) · *Tools* (an icon, so four tabs fit a 320 px phone in every language). A
+  multi-parcel selection and the site panel use the same Propose / Proposals split, the list totalling
+  the proposals on any of their parcels.
 - **Select more** → multi-select (`multiParcelSelection`); each click toggles; Shift+click still
-  works; the **selection tray** shows count, total area and actions: *Propose* (panel build palette
-  for the selection), *Detect block*, *Clear*, *Done*.
+  works; **Shift+drag** draws a box and adds every parcel it touches (it replaces Leaflet's box zoom,
+  which remains where parcels take no clicks: editors, tools, the site tool, 3D); the **selection
+  tray** shows count, total area and actions: *Propose* (panel Propose tab for the selection),
+  *Detect block*, *Clear*, *Done*.
 - Block, road, proposal clicks open their existing panels unchanged.
 
 ### Search box

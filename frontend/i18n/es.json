@@ -1031,9 +1031,10 @@
             "idLabel": "ID:",
             "geometryReferenceNote": "Referencia de la aplicación derivada de la geometría. No hay número registral de origen; un cambio en el límite genera una nueva referencia.",
             "tabInfo": "Info",
+            "tabPropose": "Proponer",
             "tabProposals": "Propuestas",
-            "tabProposalsWithCount": "Propuestas ({{count}})",
             "tabTools": "Herramientas",
+            "historySection": "Historial",
             "selectMultiple": "Seleccionar múltiples parcelas",
             "selectManually": "Manualmente",
             "detectBlock": "Detectar bloque",
@@ -1114,7 +1115,7 @@
             "proposalsSection": {
                 "producerPill": "Origen de la parcela",
                 "create": "Crear propuesta",
-                "empty": "Sin propuestas",
+                "empty": "Aún no hay propuestas en esta parcela.",
                 "fallbackTitle": "Propuesta",
                 "roadSuffix": " (Carretera)",
                 "badges": {
@@ -1131,6 +1132,19 @@
                 "status": {
                     "active": "Activa"
                 }
+            },
+            "setProposals": {
+                "empty": "Aún no hay propuestas en estas parcelas.",
+                "summary": {
+                    "one": "{{count}} propuesta en estas parcelas",
+                    "other": "{{count}} propuestas en estas parcelas"
+                },
+                "covers": {
+                    "other": "En {{covered}} de {{count}} parcelas"
+                },
+                "loading": "Buscando propuestas publicadas…",
+                "unavailable": "No se pudieron cargar las propuestas publicadas: {{reason}}",
+                "publishedHeading": "También publicadas aquí"
             },
             "acceptance": {
                 "parcelTitle": "Aceptación de parcelas",
@@ -5067,6 +5081,14 @@
             "facingUnnamed": "Fachada hacia una calle sin nombre (a {{distance}} m).",
             "longestNoStreet": "Fachada: el borde más largo (ninguna calle a menos de {{distance}} m).",
             "longestNoData": "Fachada: el borde más largo (no hay datos de calles aquí)."
+        },
+        "proposals": {
+            "none": "Aún no hay propuestas en las parcelas de este sitio.",
+            "existing": {
+                "one": "Ya hay {{count}} propuesta en estas parcelas",
+                "other": "Ya hay {{count}} propuestas en estas parcelas"
+            },
+            "show": "Ver"
         }
     },
     "groundStats": {

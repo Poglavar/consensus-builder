@@ -2,7 +2,8 @@
 // permanent per-parcel log from GET /parcels/:parcelUid/history (proposals, lens ownership
 // attestations, acceptances, verdicts, lifecycle) as a timeline with explorer links. The pure
 // builders (URL, link resolution, event text, timeline HTML) take no DOM and are exported via
-// CommonJS for headless tests; mountAfter is the thin DOM layer, fetching a parcel only when opened.
+// CommonJS for headless tests; mountAfter (the card) and renderSection (the parcel panel's collapsed
+// History section) are the thin DOM layer, fetching a parcel only when opened.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -135,6 +136,22 @@
             ${rows}`;
     }
 
+    // The parcel panel's always-present section: one collapsed History row per cadastral parcel
+    // (usually one), without the card's heading; the hint becomes the summary's tooltip.
+    function buildSectionHtml(parcelIds, t = plainT) {
+        const hint = t('panel.proposal.parcelHistory.hint', 'Every proposal, ownership attestation and consent recorded for each parcel, oldest first, at the time its source states.');
+        return parcelIds.map(parcelUid => {
+            const label = parcelIds.length === 1
+                ? t('panel.parcel.historySection', 'History')
+                : t('panel.proposal.parcelHistory.summary', 'History: {{parcel}}', { parcel: parcelUid });
+            return `
+            <details class="parcel-history-parcel parcel-history-section" data-parcel-history="${escapeText(parcelUid)}">
+                <summary title="${escapeText(hint)}"><i class="fas fa-clock-rotate-left" aria-hidden="true"></i> <span class="parcel-id-text">${escapeText(label)}</span></summary>
+                <div class="parcel-history-content" aria-live="polite"></div>
+            </details>`;
+        }).join('');
+    }
+
     // ---- DOM layer -------------------------------------------------------------------------
     function t(key, fallback, params = {}) {
         const api = root && root.i18n;
@@ -168,6 +185,28 @@
         }
     }
 
+    function bindLoaders(scope) {
+        scope.querySelectorAll('[data-parcel-history]').forEach(details => {
+            details.addEventListener('toggle', () => {
+                if (details.open && !details.dataset.loaded) load(details);
+            });
+        });
+    }
+
+    // Fills the parcel panel's history host for these parcels; an empty list empties it (open
+    // ground has no parcel history). The same parcels again keep the rows as they are, open and
+    // loaded, since the panel re-renders one parcel several times.
+    function renderSection(host, { parcelIds = [] } = {}) {
+        if (!host) return null;
+        const ids = Array.from(new Set((parcelIds || []).map(String).filter(Boolean)));
+        const key = ids.join('\n');
+        if (host.dataset.parcelHistoryIds === key && (host.childElementCount > 0 || !ids.length)) return host;
+        host.dataset.parcelHistoryIds = key;
+        host.innerHTML = ids.length ? buildSectionHtml(ids, t) : '';
+        bindLoaders(host);
+        return host;
+    }
+
     // Inserts the card right after `anchorElement` (the lens card) and fetches each parcel's history
     // the first time its row is opened.
     function mountAfter(anchorElement, { parcelIds = [] } = {}) {
@@ -179,14 +218,10 @@
         const section = anchorElement.ownerDocument.createElement('section');
         section.className = 'proposal-funding-card proposal-parcel-history-card';
         section.innerHTML = buildCardHtml(ids, t);
-        section.querySelectorAll('[data-parcel-history]').forEach(details => {
-            details.addEventListener('toggle', () => {
-                if (details.open && !details.dataset.loaded) load(details);
-            });
-        });
+        bindLoaders(section);
         anchorElement.parentNode.insertBefore(section, anchorElement.nextSibling);
         return section;
     }
 
-    return { historyUrl, resolveLink, formatAt, describeEvent, normalizeHistory, buildAnchorHtml, buildTimelineHtml, buildCardHtml, mountAfter };
+    return { historyUrl, resolveLink, formatAt, describeEvent, normalizeHistory, buildAnchorHtml, buildTimelineHtml, buildCardHtml, buildSectionHtml, renderSection, mountAfter };
 });

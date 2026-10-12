@@ -160,7 +160,7 @@
             throw new Error('SelectionTray.propose: no parcels are selected');
         }
         multi.showSelectionInPanel();
-        win.switchParcelTab(null, 'proposals-tab');
+        win.switchParcelTab(null, 'propose-tab');
     }
 
     function initializeSelectionTray() {

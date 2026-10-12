@@ -158,7 +158,7 @@ describe('whole-block fresh-proposal suggestion', () => {
 
         await window.maybeSuggestWholeBlockForFreshProposal('buildings', ['a']);
         expect(showSelectionInPanel).toHaveBeenCalledOnce();
-        expect(switchParcelTab).toHaveBeenCalledWith(null, 'proposals-tab');
+        expect(switchParcelTab).toHaveBeenCalledWith(null, 'propose-tab');
     });
 
     it('runs the same preflight when Detached is launched from the classic proposal dialog', async () => {

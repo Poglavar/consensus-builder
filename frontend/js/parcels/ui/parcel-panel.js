@@ -46,17 +46,8 @@
         return id !== undefined && id !== null ? id.toString() : null;
     };
 
-    const findParcelTabButton = (tabId) => {
-        const tabButtons = Array.from(global.document.querySelectorAll('.parcel-tab-btn'));
-        return tabButtons.find((button, index) => {
-            if (button.dataset && button.dataset.parcelTabId === tabId) return true;
-            if (tabId === 'info-tab') return index === 0;
-            if (tabId === 'proposals-tab') return index === 1;
-            if (tabId === 'tools-tab') return index === 2;
-            const onclickAttr = button.getAttribute('onclick') || '';
-            return onclickAttr.includes(tabId);
-        }) || null;
-    };
+    const findParcelTabButton = (tabId) => global.document
+        .querySelector(`#parcel-info-panel .parcel-tab-btn[data-parcel-tab-id="${tabId}"]`);
 
     const buildRawOwnershipList = (props) => {
         if (Array.isArray(props?.ownershipList) && props.ownershipList.length > 0) {
@@ -120,18 +111,11 @@
             minimizeButton.dataset.parcelPanelBound = 'true';
         }
 
-        const tabButtons = [
-            ['info-tab', '.parcel-tab-btn[onclick*="info-tab"]'],
-            ['proposals-tab', '.parcel-tab-btn[onclick*="proposals-tab"]'],
-            ['tools-tab', '.parcel-tab-btn[onclick*="tools-tab"]']
-        ];
-
-        tabButtons.forEach(([tabId, selector]) => {
-            const button = panel.querySelector(selector);
-            if (!button || button.dataset.parcelTabBound === 'true') {
+        panel.querySelectorAll('.parcel-tab-btn[data-parcel-tab-id]').forEach(button => {
+            const tabId = button.dataset.parcelTabId;
+            if (button.dataset.parcelTabBound === 'true') {
                 return;
             }
-            button.dataset.parcelTabId = tabId;
             button.removeAttribute('onclick');
             button.onclick = null;
             button.addEventListener('click', function (event) {
@@ -169,17 +153,37 @@
         }
     }
 
-    // The history card the parcel menu mounts under the Info tab belongs to the parcel it was
-    // opened for (ui/parcel-menu.js showHistory); drop it once the panel shows anything else.
-    function dropParcelHistoryCard(keepForParcelId) {
-        global.document.querySelectorAll('#info-tab > .proposal-parcel-history-card').forEach(card => {
-            if (!keepForParcelId || card.dataset.parcelHistoryFor !== keepForParcelId) card.remove();
-        });
+    // The Info tab's collapsed History section (proposals/parcel-history-card.js renderSection) for
+    // the cadastral parcels this live parcel stands on, by the parcel menu's rule; none for open
+    // ground or when the panel shows no single parcel (feature null).
+    function renderParcelHistory(feature) {
+        const host = global.document.getElementById('parcel-history-section');
+        if (!host) return;
+        let historyIds = [];
+        if (feature) {
+            const fabric = global.LiveParcelFabric;
+            const parcelId = resolveParcelId(feature);
+            const live = fabric && typeof fabric.get === 'function' ? (fabric.get(parcelId) || feature) : feature;
+            historyIds = global.ParcelMenuModel.parcelHistoryIds({
+                parcelId,
+                cadastreIds: fabric && typeof fabric.explicitCadastreIds === 'function' ? fabric.explicitCadastreIds(live) : [],
+                groundIds: fabric && typeof fabric.explicitGroundIds === 'function' ? fabric.explicitGroundIds(live) : []
+            }).historyIds;
+        }
+        global.ProposalParcelHistoryCard.renderSection(host, { parcelIds: historyIds });
+    }
+
+    // The Proposals tab's count badge: the proposals listed there, hidden at zero.
+    function setProposalsTabCount(count) {
+        const badge = global.document.querySelector('#parcel-info-panel [data-parcel-tab-id="proposals-tab"] .parcel-tab-count');
+        if (!badge) return;
+        badge.textContent = count > 0 ? String(count) : '';
+        badge.hidden = !(count > 0);
     }
 
     function showParcelInfoPanel(feature) {
         bindParcelPanelControls();
-        dropParcelHistoryCard(resolveParcelId(feature));
+        renderParcelHistory(feature);
         const props = feature?.properties || {};
         const areaSource = props.calculatedArea
             || props.area
@@ -738,11 +742,24 @@
         </div>
     `;
 
-        const proposalsContent = `
+        const proposeContent = `
         <div id="parcel-proposal-actions" class="parcel-proposal-actions">
             <div id="parcel-proposal-primary-actions"></div>
         </div>
-        ${parcelProposals.length > 0 ? proposalsHtml : ''}
+    `;
+        // With nothing here yet, the empty list points to the Propose tab instead of a blank page.
+        const proposalsEmptyHtml = `
+        <div class="parcel-proposals-empty">
+            <p data-i18n-key="panel.parcel.proposalsSection.empty">${tParcel('panel.parcel.proposalsSection.empty', {}, 'No proposals on this parcel yet.')}</p>
+            <button type="button" class="btn btn-primary btn-sm parcel-proposals-empty-btn" data-i18n-key="parcelMenu.actions.propose"
+                onclick="(window.switchParcelTab || function(){})(null, 'propose-tab')">${tParcel('parcelMenu.actions.propose', {}, 'Propose here')}</button>
+        </div>
+    `;
+        // The published proposals this browser holds no copy of are asked from the server and added
+        // under the list (ParcelSetProposals.renderPublishedOnly), with the tab's count.
+        const proposalsContent = `
+        ${parcelProposals.length > 0 ? proposalsHtml : proposalsEmptyHtml}
+        <div class="parcel-published-proposals"></div>
         <div id="canton-proposals-content" class="canton-card-host"></div>
     `;
 
@@ -973,25 +990,18 @@
                 hasSimulatedOwner: !!simulatedOwnerHtml
             });
         }
+        global.document.getElementById('propose-content').innerHTML = proposeContent;
         global.document.getElementById('proposals-content').innerHTML = proposalsContent;
         // Tick boxes + Compare on the listed proposals (proposals/parcel-compare-ui.js).
         if (global.ParcelCompare) global.ParcelCompare.decoratePanelList(global.document.getElementById('proposals-content'), parcelId);
         // The tab count updates ONLY after the list content is in the DOM — updating it earlier
         // let a mid-render exception show "Proposals (1)" over a stale/empty list.
-        const proposalCount = parcelProposals.length;
-        const proposalsTabButton = findParcelTabButton('proposals-tab');
-        if (proposalsTabButton) {
-            if (proposalCount > 0) {
-                proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposalsWithCount');
-                proposalsTabButton.setAttribute('data-i18n-params', JSON.stringify({ count: proposalCount }));
-                proposalsTabButton.textContent = tParcel('panel.parcel.tabProposalsWithCount', { count: proposalCount }, `Proposals (${proposalCount})`);
-            } else {
-                proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposals');
-                proposalsTabButton.removeAttribute('data-i18n-params');
-                proposalsTabButton.textContent = tParcel('panel.parcel.tabProposals', {}, 'Proposals');
-            }
-            applyParcelTranslations(proposalsTabButton);
-        }
+        setProposalsTabCount(parcelProposals.length);
+        global.ParcelSetProposals.renderPublishedOnly(
+            global.document.querySelector('#proposals-content .parcel-published-proposals'), parcelKey, {
+                emptyNote: global.document.querySelector('#proposals-content .parcel-proposals-empty'),
+                onCount: published => setProposalsTabCount(parcelProposals.length + published)
+            });
         const renderParcelProposalActions = uiProposals.renderParcelProposalActions || global.renderParcelProposalActions;
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions(parcelId);
@@ -1053,7 +1063,7 @@
         global.__openParcelInfoCollapsed = false;
         const parcelInfoPanel = global.document.getElementById('parcel-info-panel');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
-        dropParcelHistoryCard(null);
+        renderParcelHistory(null);
         if (typeof global.clearRoadVisualization === 'function') {
             global.clearRoadVisualization();
         }
@@ -1123,7 +1133,8 @@
 
     global.ParcelsUIParcelPanel = {
         showParcelInfoPanel,
-        dropParcelHistoryCard,
+        renderParcelHistory,
+        setProposalsTabCount,
         resetMeasureAsRoadButton,
         hideParcelInfoPanel,
         setParcelInfoPanelMinimized

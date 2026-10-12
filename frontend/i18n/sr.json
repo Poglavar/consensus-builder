@@ -1013,9 +1013,10 @@
                 "proposalsHint": "Kreiraj predlog koji uključuje sve izabrane parcele."
             },
             "tabInfo": "Info",
+            "tabPropose": "Predloži",
             "tabProposals": "Predlozi",
-            "tabProposalsWithCount": "Predlozi ({{count}})",
             "tabTools": "Alati",
+            "historySection": "Istorija",
             "selectMultiple": "Izaberi više parcela",
             "selectManually": "Ručno",
             "detectBlock": "Detektuj blok",
@@ -1098,7 +1099,7 @@
             "proposalsSection": {
                 "producerPill": "Izvor parcele",
                 "create": "Kreiraj predlog",
-                "empty": "Nema predloga",
+                "empty": "Na ovoj parceli još nema predloga.",
                 "fallbackTitle": "Predlog",
                 "roadSuffix": " (Put)",
                 "badges": {
@@ -1115,6 +1116,22 @@
                 "status": {
                     "active": "Aktivan"
                 }
+            },
+            "setProposals": {
+                "empty": "Na ovim parcelama još nema predloga.",
+                "summary": {
+                    "one": "{{count}} predlog na ovim parcelama",
+                    "few": "{{count}} predloga na ovim parcelama",
+                    "other": "{{count}} predloga na ovim parcelama"
+                },
+                "covers": {
+                    "one": "Na {{covered}} od {{count}} parcele",
+                    "few": "Na {{covered}} od {{count}} parcele",
+                    "other": "Na {{covered}} od {{count}} parcela"
+                },
+                "loading": "Proveravam objavljene predloge…",
+                "unavailable": "Objavljeni predlozi nisu mogli da se učitaju: {{reason}}",
+                "publishedHeading": "Takođe objavljeno ovde"
             },
             "acceptance": {
                 "parcelTitle": "Prihvatanje parcele",
@@ -5055,6 +5072,15 @@
             "facingUnnamed": "Front ka neimenovanoj ulici (udaljena {{distance}} m).",
             "longestNoStreet": "Front: najduža ivica (nema ulice u krugu od {{distance}} m).",
             "longestNoData": "Front: najduža ivica (podaci o ulicama ovde nisu dostupni)."
+        },
+        "proposals": {
+            "none": "Na parcelama ove lokacije još nema predloga.",
+            "existing": {
+                "one": "Na ovim parcelama već je {{count}} predlog",
+                "few": "Na ovim parcelama već su {{count}} predloga",
+                "other": "Na ovim parcelama već je {{count}} predloga"
+            },
+            "show": "Prikaži"
         }
     },
     "groundStats": {

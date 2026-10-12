@@ -46,6 +46,16 @@ export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Prom
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
 }
 
+// A proposal published on the server that this browser has never loaded: the answer to the Proposals
+// tabs' GET /proposals/summary?parcel_ids=… (js/parcels/parcel-set-proposals.js).
+export async function publishOn(page: Page, parcelId: string): Promise<void> {
+  await page.route('**/proposals/summary**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+    proposals: [{ id: 41, proposalId: 'p-published', city: 'zagreb', title: 'Published park', type: 'park', goal: 'park',
+      lifecycleStatus: 'Active', createdAt: '2026-10-12T10:00:00.000Z', cadastreParcelIds: [parcelId], screenshotUrl: null }],
+    count: 1, limit: 200, offset: 0
+  }) }));
+}
+
 export async function createSpace(page: Page, kind: 'park'|'square'|'lake'): Promise<string> {
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-build-btn--${kind}`).click();

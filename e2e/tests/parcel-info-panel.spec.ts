@@ -63,8 +63,8 @@ test.describe('Parcel inspector @core', () => {
   test('tabs open the palette and tools; close dismisses the inspector', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
-    await page.locator('#parcel-info-panel').getByRole('button', { name: 'Proposals', exact: true }).click();
-    await expect(page.locator('.parcel-build-palette')).toBeVisible();
+    await page.locator('#parcel-info-panel').getByRole('button', { name: 'Propose', exact: true }).click();
+    await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
     await expect(page.locator('.parcel-build-btn')).toHaveCount(15);
     await page.locator('#parcel-info-panel').getByRole('button', { name: 'Tools', exact: true }).click();
     await expect(page.locator('#parcelBuilderButton')).toBeVisible();

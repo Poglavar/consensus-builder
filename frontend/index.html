@@ -1275,16 +1275,23 @@
             </div>
 
             <!-- Tab Navigation -->
+            <!-- Propose holds the palette of things to create; Proposals lists what already exists
+                 here (its count rides in a badge); Tools is an icon so four tabs fit a phone. -->
             <div class="parcel-tabs">
-                <button class="parcel-tab-btn active"
-                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"
-                    data-i18n-key="panel.parcel.tabInfo">Info</button>
-                <button class="parcel-tab-btn"
-                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"
-                    data-i18n-key="panel.parcel.tabProposals">Proposals</button>
-                <button class="parcel-tab-btn"
+                <button type="button" class="parcel-tab-btn active" data-parcel-tab-id="info-tab"
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"><span
+                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabInfo">Info</span></button>
+                <button type="button" class="parcel-tab-btn" data-parcel-tab-id="propose-tab"
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"><span
+                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabPropose">Propose</span></button>
+                <button type="button" class="parcel-tab-btn" data-parcel-tab-id="proposals-tab"
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
+                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabProposals">Proposals</span><span
+                        class="parcel-tab-count" hidden></span></button>
+                <button type="button" class="parcel-tab-btn parcel-tab-btn--icon" data-parcel-tab-id="tools-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')"
-                    data-i18n-key="panel.parcel.tabTools">Tools</button>
+                    aria-label="Tools" title="Tools" data-i18n-key="panel.parcel.tabTools" data-i18n-attr="aria-label,title"><i
+                        class="fas fa-screwdriver-wrench" aria-hidden="true"></i></button>
             </div>
 
             <div class="panel-body">
@@ -1305,6 +1312,15 @@
                         </div>
                     </div>
                     <div id="info-content"></div>
+                    <!-- The parcel's permanent history, collapsed; js/proposals/parcel-history-card.js
+                         fetches it the first time it is opened. Outside #info-content, which is
+                         re-rendered when the owners arrive. -->
+                    <div id="parcel-history-section"></div>
+                </div>
+
+                <!-- Propose Tab -->
+                <div id="propose-tab" class="parcel-tab-content">
+                    <div id="propose-content"></div>
                 </div>
 
                 <!-- Proposals Tab -->
@@ -1757,8 +1773,10 @@
             'js/parcels/selection.js?v=20260404b',
             'js/parcels/ui/info-panel.js',
             'js/parcels/ui/parcel-selection.js?v=20260708a',
+            'js/parcels/ui/box-select.js',
             'js/parcels/share-format.js',
-            'js/parcels/ui/parcel-panel.js?v=20261008-geometry-reference',
+            'js/parcels/parcel-set-proposals.js',
+            'js/parcels/ui/parcel-panel.js?v=20261012-propose-tab',
             'js/parcels/ui/locate.js',
             'js/parcels/ui/road.js',
             'js/parcels/ui/labels.js',
@@ -1892,7 +1910,7 @@
             'js/proposals/grain-score-rules.js',
             'js/proposals/chain-proposal-loader.js',
             'js/proposals/core.js',
-            'js/proposals/data.js',
+            'js/proposals/data.js?v=20261012-propose-tab',
             'js/proposals/bootstrap.js',
             'js/proposals/sharing.js',
             'js/proposals/plan-yield.js',

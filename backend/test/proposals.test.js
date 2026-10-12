@@ -1423,6 +1423,17 @@ describe('GET /proposals/summary', () => {
         expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
     });
 
+    it('filters summary rows to those declaring any of the given parcels (a Proposals tab)', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals/summary?city=zg&parcel_ids=HR-1, HR-2,,HR-1');
+
+        expect(res.status).toBe(200);
+        const call = pool.getCalls()[0];
+        expect(call.sql).toContain('cadastre_parcel_ids ?| $2::text[]');
+        expect(call.params).toEqual(['zagreb', ['HR-1', 'HR-2'], 100, 0]);
+    });
+
     it('filters summary rows by bbox while retaining city, sorting, and pagination', async () => {
         pool.setResult({ rows: [] });
 

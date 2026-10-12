@@ -286,6 +286,17 @@ body.site-tool-drawing .leaflet-container {
     background: #f3f4f6;
 }
 
+/* "3 proposals already on these parcels · Show": opens the site's Proposals tab. */
+.site-panel__existing {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    margin: 6px 0;
+    color: var(--cb-text);
+    font-size: 12px;
+}
+
 .site-panel__actions {
     display: flex;
     flex-wrap: wrap;

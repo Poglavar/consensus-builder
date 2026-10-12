@@ -31,7 +31,7 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-title')).toContainText('1234');
   await expect(page.locator('#proposal-details-panel')).toBeHidden();
-  await page.locator('.parcel-tab-btn').filter({ hasText: 'Proposals' }).click();
+  await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
   await expect(page.locator('#proposals-content')).toContainText(/park/i);
   await page.locator('#parcel-info-panel .close-button').click();
   await toggleCadastreView(page, true);

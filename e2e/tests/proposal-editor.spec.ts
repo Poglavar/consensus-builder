@@ -144,9 +144,9 @@ test.describe('SimCity proposal lifecycle @core', () => {
       document.getElementById('parcel-info-panel')?.classList.add('visible');
       w.currentParcel = { id: parcelId, layer: layer || null, isRoad: false };
       w.renderParcelProposalActions(parcelId);
-      // The palette lives in the Proposals tab.
+      // The palette lives in the Propose tab.
       const switchTab = w.Parcels?.proposals?.switchParcelTab || w.switchParcelTab;
-      if (typeof switchTab === 'function') switchTab(null, 'proposals-tab');
+      if (typeof switchTab === 'function') switchTab(null, 'propose-tab');
     }, source.parcelId);
 
     const palette = page.locator('.parcel-build-palette');

@@ -24,6 +24,18 @@
         return s.parcelContextId !== undefined && s.parcelContextId !== null && String(s.parcelContextId) !== '';
     }
 
+    // The cadastral parcels whose history a live parcel shows (the menu's History and the parcel
+    // panel's History section): its explicit cadastral sources, or its own id when the fabric names
+    // none. A piece on open ground only (PARCEL-OPTIONAL.md phase 3) is no cadastral parcel: it has
+    // no history and its id must never be sent to the backend as a parcel id.
+    function parcelHistoryIds({ parcelId, cadastreIds = [], groundIds = [] } = {}) {
+        const explicit = (cadastreIds || []).map(String).filter(Boolean);
+        if (explicit.length) return { historyIds: explicit, isGround: false };
+        if ((groundIds || []).length) return { historyIds: [], isGround: true };
+        const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+        return { historyIds: id ? [id] : [], isGround: false };
+    }
+
     // facts: { parcelId, isRoad, multiSelectActive, selectionCount, historyIds: [], blocksEnabled,
     // can3d, compareCount }. Missing facts count as "not available" — never as a guess that it is.
     function isActionAvailable(action, facts) {
@@ -157,6 +169,7 @@
     return {
         ACTIONS,
         buildPaletteAvailable,
+        parcelHistoryIds,
         isActionAvailable,
         availableActions,
         parcelArea,

@@ -68,6 +68,17 @@ describe('parcel history card builders', () => {
         expect(html).toContain('<summary title="KE-NAIROBI-NM-g1~368402797~-12643572~hash#chain_0123456789abcdef-2&amp;x">');
     });
 
+    it('builds the parcel panel section collapsed, named History for one parcel and by id for several', () => {
+        const one = card.buildSectionHtml(['HR-1']);
+        expect(one).toContain('data-parcel-history="HR-1"');
+        expect(one).toContain('>History<');
+        expect(one).not.toMatch(/<details[^>]*\bopen\b/);
+        expect(one).not.toContain('proposal-funding-head');
+        const several = card.buildSectionHtml(['HR-1', 'HR-<2>']);
+        expect(several).toContain('History: HR-1');
+        expect(several).toContain('History: HR-&lt;2&gt;');
+    });
+
     it('has every UI string in en, hr, es and sr', () => {
         const keysOf = (obj, prefix = '') => Object.entries(obj).flatMap(([k, v]) => (typeof v === 'object' ? keysOf(v, `${prefix}${k}.`) : [`${prefix}${k}`]));
         const en = keysOf(require('../../frontend/i18n/en.json').panel.proposal.parcelHistory).sort();

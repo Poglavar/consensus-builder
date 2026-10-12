@@ -196,7 +196,7 @@
             && typeof multi.showSelectionInPanel === 'function') {
             multi.showSelectionInPanel();
         }
-        if (typeof global.switchParcelTab === 'function') global.switchParcelTab(null, 'proposals-tab');
+        if (typeof global.switchParcelTab === 'function') global.switchParcelTab(null, 'propose-tab');
         return true;
     }
 

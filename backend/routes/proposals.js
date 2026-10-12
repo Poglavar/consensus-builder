@@ -1140,9 +1140,15 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         const sort = Object.prototype.hasOwnProperty.call(SORT_ORDER_BY, req.query.sort) ? req.query.sort : null;
         const limit = parseInt(req.query.limit, 10);
         const offset = parseInt(req.query.offset, 10);
+        // The proposals declaring any of these cadastral parcels (?parcel_ids=a,b,c): a parcel's, a
+        // selection's or a site's Proposals tab asks for what is published on its land.
+        const parcelIds = typeof req.query.parcel_ids === 'string'
+            ? Array.from(new Set(req.query.parcel_ids.split(',').map(id => id.trim()).filter(Boolean))).slice(0, 500)
+            : [];
 
         return {
             city,
+            parcelIds,
             lifecycle,
             lifecycleError: lifecycleRaw && !lifecycle
                 ? 'lifecycle must be one of: Active, Executed, Cancelled, Expired, draft.'
@@ -1159,6 +1165,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
 
     const buildFilterQuery = ({
         city,
+        parcelIds,
         lifecycle,
         type,
         author,
@@ -1198,6 +1205,11 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         if (city) {
             clauses.push(`city = $${params.length + 1}`);
             params.push(city);
+        }
+
+        if (parcelIds && parcelIds.length) {
+            clauses.push(`cadastre_parcel_ids ?| $${params.length + 1}::text[]`);
+            params.push(parcelIds);
         }
 
         if (lifecycle) {

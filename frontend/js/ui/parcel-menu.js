@@ -94,17 +94,14 @@
         const id = String(parcelId);
         const props = (feature && feature.properties) || {};
         const multi = win.multiParcelSelection;
-        let historyIds = [];
+        let cadastreIds = [];
         let groundIds = [];
         try {
             const fabric = win.LiveParcelFabric;
-            if (fabric && typeof fabric.explicitCadastreIds === 'function') historyIds = fabric.explicitCadastreIds(feature);
+            if (fabric && typeof fabric.explicitCadastreIds === 'function') cadastreIds = fabric.explicitCadastreIds(feature);
             if (fabric && typeof fabric.explicitGroundIds === 'function') groundIds = fabric.explicitGroundIds(feature);
-        } catch (_) { historyIds = []; }
-        // A piece on open ground only (PARCEL-OPTIONAL.md phase 3) is no cadastral parcel: it has no
-        // parcel history to show and must never be sent to the backend as a parcel id.
-        const isGround = !historyIds.length && groundIds.length > 0;
-        if (!historyIds.length && !isGround) historyIds = [id];
+        } catch (_) { cadastreIds = []; }
+        const { historyIds, isGround } = model.parcelHistoryIds({ parcelId: id, cadastreIds, groundIds });
         const ownership = model.ownershipFacts({
             ownershipType: props.ownershipType,
             ownershipSummary: props.ownership_summary,
@@ -368,20 +365,14 @@
         win.switchParcelTab(null, tabId);
     }
 
-    // The per-parcel history card (proposals/parcel-history-card.js), mounted under the panel's Info
-    // tab content with this parcel's row open. Not inside #info-content: that is re-rendered when
-    // the owners arrive. The panel drops the card when it moves to another parcel (parcel-panel.js).
+    // The parcel panel always carries its History section (collapsed) at the end of the Info tab;
+    // this opens it, which fetches the history, and brings it into view.
     function showHistory(facts) {
         showPanelTab(facts, 'info-tab');
-        const content = doc.getElementById('info-content');
-        const card = win.ProposalParcelHistoryCard;
-        if (!content || !card) throw new Error('ParcelMenu: the parcel history card is not loaded');
-        const section = card.mountAfter(content, { parcelIds: facts.historyIds });
-        if (!section) return;
-        section.dataset.parcelHistoryFor = facts.parcelId;
-        const first = section.querySelector('details[data-parcel-history]');
-        if (first) first.open = true;
-        try { section.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (_) { }
+        const first = doc.querySelector('#parcel-history-section details[data-parcel-history]');
+        if (!first) throw new Error(`ParcelMenu: the parcel panel shows no history for ${facts.parcelId}`);
+        first.open = true;
+        try { first.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (_) { }
     }
 
     function viewIn3d(facts) {
@@ -399,7 +390,7 @@
     }
 
     const ACTION_RUNNERS = {
-        propose: facts => showPanelTab(facts, 'proposals-tab'),
+        propose: facts => showPanelTab(facts, 'propose-tab'),
         details: facts => showPanelTab(facts, 'info-tab'),
         tools: facts => showPanelTab(facts, 'tools-tab'),
         history: showHistory,

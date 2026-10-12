@@ -1015,9 +1015,10 @@
             "idLabel": "ID:",
             "geometryReferenceNote": "Aplikacijska oznaka izvedena iz geometrije. Izvorni registarski broj nije dostupan; promjena granice stvara novu oznaku.",
             "tabInfo": "Info",
+            "tabPropose": "Predloži",
             "tabProposals": "Prijedlozi",
-            "tabProposalsWithCount": "Prijedlozi ({{count}})",
             "tabTools": "Alati",
+            "historySection": "Povijest",
             "selectMultiple": "Odaberi više čestica",
             "selectManually": "Ručno",
             "detectBlock": "Detektiraj blok",
@@ -1098,7 +1099,7 @@
             "proposalsSection": {
                 "producerPill": "Izvor čestice",
                 "create": "Kreiraj prijedlog",
-                "empty": "Nema prijedloga",
+                "empty": "Na ovoj čestici još nema prijedloga.",
                 "fallbackTitle": "Prijedlog",
                 "roadSuffix": " (Cesta)",
                 "badges": {
@@ -1115,6 +1116,22 @@
                 "status": {
                     "active": "Aktivan"
                 }
+            },
+            "setProposals": {
+                "empty": "Na ovim česticama još nema prijedloga.",
+                "summary": {
+                    "one": "{{count}} prijedlog na ovim česticama",
+                    "few": "{{count}} prijedloga na ovim česticama",
+                    "other": "{{count}} prijedloga na ovim česticama"
+                },
+                "covers": {
+                    "one": "Na {{covered}} od {{count}} čestice",
+                    "few": "Na {{covered}} od {{count}} čestice",
+                    "other": "Na {{covered}} od {{count}} čestica"
+                },
+                "loading": "Provjeravam objavljene prijedloge…",
+                "unavailable": "Objavljeni prijedlozi nisu se mogli učitati: {{reason}}",
+                "publishedHeading": "Također objavljeno ovdje"
             },
             "acceptance": {
                 "parcelTitle": "Prihvaćanje čestice",
@@ -5055,6 +5072,15 @@
             "facingUnnamed": "Pročelje prema neimenovanoj ulici (udaljena {{distance}} m).",
             "longestNoStreet": "Pročelje: najdulji rub (nema ulice unutar {{distance}} m).",
             "longestNoData": "Pročelje: najdulji rub (podaci o ulicama ovdje nisu dostupni)."
+        },
+        "proposals": {
+            "none": "Na česticama ove lokacije još nema prijedloga.",
+            "existing": {
+                "one": "Na ovim česticama već je {{count}} prijedlog",
+                "few": "Na ovim česticama već su {{count}} prijedloga",
+                "other": "Na ovim česticama već je {{count}} prijedloga"
+            },
+            "show": "Prikaži"
         }
     },
     "groundStats": {

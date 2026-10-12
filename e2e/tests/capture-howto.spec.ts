@@ -302,11 +302,11 @@ test.describe('Capture how-to screenshots', () => {
       await page.waitForTimeout(300);
     };
 
-    // The key gains a "WithCount" suffix once the parcel carries proposals — match the prefix.
+    // The build palette lives in the Propose tab.
     const openProposalsTab = async () => {
       await page.evaluate(() => {
-        const btn = document.querySelector('.parcel-tab-btn[data-i18n-key^="panel.parcel.tabProposals"]');
-        if (!btn) throw new Error('Proposals tab button not found');
+        const btn = document.querySelector('#parcel-info-panel .parcel-tab-btn[data-parcel-tab-id="propose-tab"]');
+        if (!btn) throw new Error('Propose tab button not found');
         (btn as HTMLElement).click();
       });
       await page.waitForTimeout(500);

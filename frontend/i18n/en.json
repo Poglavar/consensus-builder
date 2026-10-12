@@ -984,9 +984,10 @@
             "idLabel": "ID:",
             "geometryReferenceNote": "Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.",
             "tabInfo": "Info",
+            "tabPropose": "Propose",
             "tabProposals": "Proposals",
-            "tabProposalsWithCount": "Proposals ({{count}})",
             "tabTools": "Tools",
+            "historySection": "History",
             "selectMultiple": "Select multiple parcels",
             "selectManually": "Manually",
             "detectBlock": "Detect block",
@@ -1067,7 +1068,7 @@
             "proposalsSection": {
                 "producerPill": "Parcel source",
                 "create": "Create proposal",
-                "empty": "No proposals",
+                "empty": "No proposals on this parcel yet.",
                 "fallbackTitle": "Proposal",
                 "roadSuffix": " (Road)",
                 "badges": {
@@ -1084,6 +1085,19 @@
                 "status": {
                     "active": "Active"
                 }
+            },
+            "setProposals": {
+                "empty": "No proposals on these parcels yet.",
+                "summary": {
+                    "one": "{{count}} proposal on these parcels",
+                    "other": "{{count}} proposals on these parcels"
+                },
+                "covers": {
+                    "other": "On {{covered}} of {{count}} parcels"
+                },
+                "loading": "Checking published proposals…",
+                "unavailable": "Published proposals could not be loaded: {{reason}}",
+                "publishedHeading": "Also published here"
             },
             "acceptance": {
                 "parcelTitle": "Parcel acceptance",
@@ -5016,6 +5030,14 @@
             "facingUnnamed": "Frontage facing an unnamed street ({{distance}} m away).",
             "longestNoStreet": "Frontage: the longest edge (no street within {{distance}} m).",
             "longestNoData": "Frontage: the longest edge (street data is unavailable here)."
+        },
+        "proposals": {
+            "none": "No proposals on this site's parcels yet.",
+            "existing": {
+                "one": "{{count}} proposal already on these parcels",
+                "other": "{{count}} proposals already on these parcels"
+            },
+            "show": "Show"
         }
     },
     "groundStats": {

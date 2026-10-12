@@ -414,10 +414,10 @@ async function clearLocalProposalData() {
                 } else {
                     // Fallback manual hiding
                     parcelInfoPanel.classList.remove('visible');
-                    const infoContent = document.getElementById('info-content');
-                    const proposalsContent = document.getElementById('proposals-content');
-                    if (infoContent) infoContent.innerHTML = '';
-                    if (proposalsContent) proposalsContent.innerHTML = '';
+                    ['info-content', 'propose-content', 'proposals-content'].forEach(id => {
+                        const content = document.getElementById(id);
+                        if (content) content.innerHTML = '';
+                    });
                 }
             }
         }

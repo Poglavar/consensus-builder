@@ -638,6 +638,84 @@ above the scroll fold.
     z-index: 1;
 }
 
+/* Four tabs share the parcel bar (Info · Propose · Proposals · Tools; the site panel has the first
+   three). Each starts at its own width and the spare room is shared, so "Info" gives way to
+   "Proposals 12"; only when the bar is too narrow for every label does a label shorten with an
+   ellipsis, never the count badge. Tools is an icon that takes only its own width. */
+.parcel-tabs .parcel-tab-btn {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.parcel-tab-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.parcel-tabs .parcel-tab-btn--icon {
+    flex: 0 0 auto;
+    padding-inline: 14px;
+}
+
+.parcel-tab-count {
+    flex: 0 0 auto;
+    min-width: 18px;
+    margin-left: 4px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--cb-primary);
+    color: var(--cb-primary-ink);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+}
+
+.parcel-tab-count[hidden] {
+    display: none;
+}
+
+/* The Info tab's collapsed History section (js/proposals/parcel-history-card.js renderSection). */
+#parcel-history-section:not(:empty) {
+    margin-top: 12px;
+}
+
+.parcel-history-section summary .fa-clock-rotate-left {
+    color: var(--cb-text-muted);
+}
+
+/* The Proposals tab with nothing in it yet, and the list for a set of parcels (a multi-selection,
+   a site: js/parcels/parcel-set-proposals.js). */
+.parcel-proposals-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 4px 0;
+    color: var(--cb-text-muted);
+}
+
+.parcel-proposals-empty[hidden] {
+    display: none;
+}
+
+.parcel-proposals-empty p,
+.parcel-set-proposals-empty,
+.parcel-set-proposals-summary {
+    margin: 0 0 8px;
+    color: var(--cb-text-muted);
+    font-size: 13px;
+}
+
+.parcel-set-proposal {
+    cursor: pointer;
+}
+
 .parcel-tab-content,
 .block-tab-content {
     display: none;
@@ -1823,6 +1901,17 @@ above the scroll fold.
     .parcel-tab-btn,
     .block-tab-btn {
         padding: 6px 4px; /* Reduced padding for mobile */
+    }
+
+    /* The four-tab bar on a phone: tighter than the generic touch padding (layout.css,
+       utilities.css) so "Propuestas 12" still fits beside Info, Proponer and the Tools icon. */
+    .parcel-tabs .parcel-tab-btn {
+        padding: 10px 6px;
+        font-size: 14px;
+    }
+
+    .parcel-tabs .parcel-tab-btn--icon {
+        padding-inline: 12px;
     }
     
 

@@ -3,21 +3,23 @@
 
     const uiParcelPanel = (global.Parcels && global.Parcels.uiParcelPanel) ? global.Parcels.uiParcelPanel : (global.ParcelsUIParcelPanel || {});
 
-    function onParcelClick(e) {
-        if (global.measureMode) return;
+    // A tool or editor that owns map clicks while it is open; a parcel click (and a box selection,
+    // ui/box-select.js) then does nothing.
+    function parcelClicksOwnedElsewhere() {
+        if (global.measureMode) return true;
         // Pinpoint owns the click: it reports what is on the ground there ("At this spot"); a parcel
         // menu opening on top of that answer was noise.
-        if (typeof global.pinpointToolIsActive === 'function' && global.pinpointToolIsActive()) return;
-        if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
-            return;
-        }
+        if (typeof global.pinpointToolIsActive === 'function' && global.pinpointToolIsActive()) return true;
+        if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) return true;
         // An editing mode owns the map while open — clicks belong to it (placing furniture, moving
         // a node), never to the parcel underneath.
-        if (global.__mapEditLock?.isHeld()) return;
-        if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) {
-            return;
-        }
-        if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        if (global.__mapEditLock?.isHeld()) return true;
+        if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return true;
+        return !!(global.AreaMonitorPaint && global.AreaMonitorPaint.isActive());
+    }
+
+    function onParcelClick(e) {
+        if (parcelClicksOwnedElsewhere()) return;
         const targetLayer = e && e.target ? e.target : null;
         const parcelId = global.ParcelPresenter?.getIdForLayer?.(targetLayer) || null;
         if (!parcelId) return;
@@ -302,5 +304,5 @@
     global.document.addEventListener('keydown', handleMultiSelectEscape);
 
     global.onParcelClick = onParcelClick;
-    global.ParcelsUISelection = Object.assign({}, global.ParcelsUISelection, { onParcelClick });
+    global.ParcelsUISelection = Object.assign({}, global.ParcelsUISelection, { onParcelClick, parcelClicksOwnedElsewhere });
 })(typeof window !== 'undefined' ? window : globalThis);

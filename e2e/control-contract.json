@@ -513,21 +513,6 @@
       "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close parcel info panel\" onclick=\"(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();\">"
     },
     {
-      "id": "control-a859135590a78a-1",
-      "source": "index.html",
-      "markup": "<button class=\"parcel-tab-btn active\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\" data-i18n-key=\"panel.parcel.tabInfo\">"
-    },
-    {
-      "id": "control-71a54aed9faac4-1",
-      "source": "index.html",
-      "markup": "<button class=\"parcel-tab-btn\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')\" data-i18n-key=\"panel.parcel.tabProposals\">"
-    },
-    {
-      "id": "control-82b4c7f533654a-1",
-      "source": "index.html",
-      "markup": "<button class=\"parcel-tab-btn\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')\" data-i18n-key=\"panel.parcel.tabTools\">"
-    },
-    {
       "id": "control-22ef66b70477a1-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"btn btn-primary btn-sm multi-select-detect-btn\" data-i18n-key=\"panel.parcel.detectBlock\" onclick=\"(window.animateFloodfillFromSelected || function(){})();\">"
@@ -868,6 +853,26 @@
       "id": "control-71dd2f84019547-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"status-log-modal-close\" class=\"btn btn-outline\" data-i18n-key=\"hud.statusLogClose\" data-i18n-attr=\"text\">"
+    },
+    {
+      "id": "control-d68be71fff93be-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"parcel-tab-btn active\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\">"
+    },
+    {
+      "id": "control-1cb2a7980de6b8-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"parcel-tab-btn\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\">"
+    },
+    {
+      "id": "control-0f9a2f02057d13-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"parcel-tab-btn\" data-parcel-tab-id=\"proposals-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')\">"
+    },
+    {
+      "id": "control-cb06af47883f60-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"parcel-tab-btn parcel-tab-btn--icon\" data-parcel-tab-id=\"tools-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')\" aria-label=\"Tools\" title=\"Tools\" data-i18n-key=\"panel.parcel.tabTools\" data-i18n-attr=\"aria-label,title\">"
     },
     {
       "id": "control-56ffbf0413da03-1",
@@ -2783,6 +2788,11 @@
       "id": "control-a76a61685bce10-1",
       "source": "js/parcels/ui/parcel-panel.js",
       "markup": "copyTarget.setAttribute('role', 'button')"
+    },
+    {
+      "id": "control-05c155d10f9b49-1",
+      "source": "js/parcels/ui/parcel-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-sm parcel-proposals-empty-btn\" data-i18n-key=\"parcelMenu.actions.propose\" onclick=\"(window.switchParcelTab || function(){})(null, 'propose-tab')\">"
     },
     {
       "id": "control-df2dfc5e7b44d6-1",
@@ -4907,11 +4917,6 @@
       "markup": "<button type=\"button\" class=\"site-panel__btn\" data-site-action=\"undo\" ${state.ring.length ? '' : 'disabled'}>"
     },
     {
-      "id": "control-ffa682f8e9fbc3-1",
-      "source": "js/site-drawing.js",
-      "markup": "<button type=\"button\" class=\"site-panel__btn site-panel__btn--primary\" data-site-action=\"palette\" ${state.site ? '' : 'disabled'} aria-expanded=\"${state.paletteOpen}\">"
-    },
-    {
       "id": "control-cd2153a4b4c0d1-1",
       "source": "js/site-drawing.js",
       "markup": "<button type=\"button\" class=\"site-panel__btn\" data-site-action=\"redraw\">"
@@ -4925,6 +4930,41 @@
       "id": "control-6c9a25d1364de5-1",
       "source": "js/site-drawing.js",
       "markup": "<button type=\"button\" class=\"close-circle-btn site-panel__close\" data-site-action=\"cancel\" aria-label=\"${escapeHtml(closeLabel)}\" title=\"${escapeHtml(closeLabel)}\">"
+    },
+    {
+      "id": "control-8dd65871d4ea83-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg\" data-site-action=\"minimize-propose\" aria-expanded=\"true\">"
+    },
+    {
+      "id": "control-ba0d41093b9fe8-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-site-action=\"close-propose\">"
+    },
+    {
+      "id": "control-6b67b5c36cad82-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"parcel-tab-btn\" data-site-tab=\"info\">"
+    },
+    {
+      "id": "control-7f71c7fce00448-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"parcel-tab-btn\" data-site-tab=\"propose\">"
+    },
+    {
+      "id": "control-2fe6a141c31441-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"parcel-tab-btn\" data-site-tab=\"proposals\">"
+    },
+    {
+      "id": "control-c675354eda38e9-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" class=\"site-panel__mini\" data-site-action=\"show-proposals\">"
+    },
+    {
+      "id": "control-a45dc363d119c1-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" class=\"site-panel__btn site-panel__btn--primary\" data-site-action=\"propose\" ${state.site ? '' : 'disabled'} aria-expanded=\"${state.proposeOpen}\">"
     },
     {
       "id": "control-b17f223d5d7416-1",

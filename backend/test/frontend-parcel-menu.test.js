@@ -323,3 +323,14 @@ describe('the parcel click chain ends in the parcel menu', () => {
         expect(h.open).not.toHaveBeenCalled();
     });
 });
+
+describe('parcel history ids (the menu\'s History and the parcel panel\'s History section)', () => {
+    it('uses the explicit cadastral sources, falls back to the parcel id, and gives open ground none', () => {
+        expect(Model.parcelHistoryIds({ parcelId: 'live-1', cadastreIds: ['HR-1', 'HR-2'], groundIds: [] }))
+            .toEqual({ historyIds: ['HR-1', 'HR-2'], isGround: false });
+        expect(Model.parcelHistoryIds({ parcelId: 'HR-3', cadastreIds: [], groundIds: [] }))
+            .toEqual({ historyIds: ['HR-3'], isGround: false });
+        expect(Model.parcelHistoryIds({ parcelId: 'ground:abc', cadastreIds: [], groundIds: ['ground:abc'] }))
+            .toEqual({ historyIds: [], isGround: true });
+    });
+});

@@ -44,7 +44,7 @@
         infoPanel: null,
         proposeOpen: false,
         proposeMinimized: false,
-        proposeTab: 'proposals',
+        proposeTab: 'propose',
         plotTool: null,
         frontageIndex: null,
         plots: [],
@@ -737,14 +737,17 @@
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-site-action="close-propose"></button>
             </div>
             <div class="parcel-tabs" role="tablist">
-                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="info"></button>
-                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="proposals"></button>
+                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="info"><span class="parcel-tab-label"></span></button>
+                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="propose"><span class="parcel-tab-label"></span></button>
+                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="proposals"><span class="parcel-tab-label"></span><span class="parcel-tab-count" hidden></span></button>
             </div>
             <div class="panel-body">
                 <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="info"></div>
+                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="propose"></div>
                 <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="proposals"></div>
             </div>`;
         panel.addEventListener('click', onInfoPanelClick);
+        if (win.ParcelSetProposals) win.ParcelSetProposals.bindRows(panel.querySelector('[data-site-tab-panel="proposals"]'));
         host.appendChild(panel);
         state.infoPanel = panel;
         return panel;
@@ -774,17 +777,21 @@
         minimize.setAttribute('title', minimizeLabel);
         minimize.setAttribute('aria-expanded', String(!state.proposeMinimized));
         panel.classList.toggle('is-minimized', state.proposeMinimized);
-        const labels = { info: t('panel.parcel.tabInfo', 'Info'), proposals: t('panel.parcel.tabProposals', 'Proposals') };
+        const labels = { info: t('panel.parcel.tabInfo', 'Info'), propose: t('panel.parcel.tabPropose', 'Propose'), proposals: t('panel.parcel.tabProposals', 'Proposals') };
+        const existing = existingProposals();
         panel.querySelectorAll('[data-site-tab]').forEach(button => {
             const tab = button.getAttribute('data-site-tab'), active = tab === state.proposeTab;
-            button.textContent = labels[tab];
+            button.querySelector('.parcel-tab-label').textContent = labels[tab];
+            const badge = button.querySelector('.parcel-tab-count');
+            if (badge) { badge.textContent = existing.entries.length ? String(existing.entries.length) : ''; badge.hidden = !existing.entries.length; }
             button.classList.toggle('active', active);
             button.setAttribute('aria-selected', String(active));
         });
+        const regions = { info: bindingHtml, propose: paletteHtml, proposals: () => existing.html };
         panel.querySelectorAll('[data-site-tab-panel]').forEach(region => {
             const tab = region.getAttribute('data-site-tab-panel');
             region.classList.toggle('active', tab === state.proposeTab);
-            setRegion(region, tab === 'info' ? bindingHtml() : paletteHtml());
+            setRegion(region, regions[tab]());
         });
         panel.style.setProperty('--site-sheet-clearance', '0px');
         panel.classList.add('visible');
@@ -794,6 +801,28 @@
         if (sheet && sheet.width > 0 && own.width > 0 && sheet.left < own.right && own.left < sheet.right) {
             panel.style.setProperty('--site-sheet-clearance', `${Math.ceil(sheet.height) + 8}px`);
         }
+    }
+
+    // The proposals already on the parcels this site binds (ParcelSetProposals, which also asks the
+    // server for the published ones and re-renders the panels when they arrive): the Proposals tab's
+    // list and count, and the site card's line pointing to it.
+    function existingProposals() {
+        const sum = summary();
+        const ids = sum ? sum.bound.map(hit => hit.parcelId) : [];
+        if (!win.ParcelSetProposals || !ids.length) {
+            return { entries: [], html: `<p class="parcel-set-proposals-empty">${escapeHtml(t('siteTool.proposals.none', 'No proposals on this site\'s parcels yet.'))}</p>` };
+        }
+        return win.ParcelSetProposals.view(ids, { emptyText: t('siteTool.proposals.none', 'No proposals on this site\'s parcels yet.'), onPublished: renderPanel });
+    }
+
+    function existingProposalsLineHtml() {
+        if (state.phase !== 'editing' || !state.site) return '';
+        const count = existingProposals().entries.length;
+        if (!count) return '';
+        return `<p class="site-panel__existing">
+            <span>${escapeHtml(t('siteTool.proposals.existing', '{{count}} proposals already on these parcels', { count }))}</span>
+            <button type="button" class="site-panel__mini" data-site-action="show-proposals">${escapeHtml(t('siteTool.proposals.show', 'Show'))}</button>
+        </p>`;
     }
 
     function onInfoPanelClick(event) {
@@ -828,6 +857,7 @@
             ${state.siteError && state.phase !== 'drawing' ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}
             ${state.siteError && state.phase === 'drawing' && state.ring.length >= 3 ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}
             <div class="site-panel__binding">${bindingHtml()}</div>
+            ${existingProposalsLineHtml()}
             ${state.phase === 'plots' ? plotsHtml() : `<div class="site-panel__actions">${actions.join('')}</div>`}`;
         renderInfoPanel();
     }
@@ -842,12 +872,13 @@
         const action = button.getAttribute('data-site-action');
         if (action === 'finish') finishDrawing();
         else if (action === 'undo') { state.ring.pop(); renderLayers(); renderPanel(); }
-        else if (action === 'propose') {
-            // Like a parcel's "Propose here": the proposal panel opens on its Proposals tab.
+        else if (action === 'propose' || action === 'show-proposals') {
+            // Like a parcel's "Propose here": the proposal panel opens on its Propose tab, or on the
+            // list of proposals already here.
             try { if (typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel(); } catch (_) { }
             state.proposeOpen = true;
             state.proposeMinimized = false;
-            state.proposeTab = 'proposals';
+            state.proposeTab = action === 'propose' ? 'propose' : 'proposals';
             renderPanel();
         }
         else if (action === 'close-propose') { state.proposeOpen = false; renderPanel(); }

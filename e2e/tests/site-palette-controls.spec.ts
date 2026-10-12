@@ -1,6 +1,6 @@
 // Exercise every action of the site's proposal panel ("Propose here") through its real UI handlers.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, publishOn, PARCEL_ID } from '../helpers/runtime';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
 
@@ -23,6 +23,26 @@ async function expectActiveDraftSite(page: import('@playwright/test').Page, site
   expect(draft.fields.site).toEqual(site);
   expect(draft.fields.binding.parcels.map((hit: any) => hit.parcelId)).toContain(PARCEL_ID);
 }
+
+test.describe('Site proposals already on its parcels @core', () => {
+  test('the card counts them, Show opens the Proposals tab, and the tabs switch', async ({ mockApi: page }) => {
+    await publishOn(page, PARCEL_ID);
+    await openCity(page);
+    await clickMapPoint(page, 15.9822, 45.80025);
+    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    const card = page.locator('#site-panel');
+    await expect(card.locator('.site-panel__existing')).toContainText('1 proposal already on these parcels');
+    await card.locator('[data-site-action="show-proposals"]').click();
+    const panel = page.locator('#site-info-panel');
+    await expect(panel.locator('[data-site-tab="proposals"]')).toHaveClass(/active/);
+    await expect(panel.locator('[data-site-tab="proposals"] .parcel-tab-count')).toHaveText('1');
+    await expect(panel.locator('[data-site-tab-panel="proposals"] [data-server-id="41"]')).toContainText('Published park');
+    await panel.locator('[data-site-tab="info"]').click();
+    await expect(panel.locator('[data-site-tab-panel="info"]')).toContainText('Bound parcels (1)');
+    await panel.locator('[data-site-tab="propose"]').click();
+    await expect(panel.locator('[data-site-tab-panel="propose"] .parcel-build-btn--park')).toBeVisible();
+  });
+});
 
 test.describe('Site build palette controls @core', () => {
   for (const item of [
