@@ -7,6 +7,7 @@ import { HMLR_BROWSER_GROUND_POLICY, HMLR_BROWSER_GROUND_PREFIX } from '../parce
 import { createHmlrBrowserParcelSource, createMemoryHmlrFeatureStore } from '../parcels/hmlr-browser-source.js';
 import { sha256Hex } from '../parcels/portable-hash.js';
 import { createNodeHmlrFeatureStore } from '../parcels/node-hmlr-feature-store.js';
+import { createHmlrArchiveScopeBuilder, hmlrArchiveScopeIntersects } from '../parcels/hmlr-archive-scope.js';
 
 const SOURCE_DATE = '2026-10-11';
 const DEFAULT_MANIFEST_URL = 'https://metadata.example/hmlr/manifest.json';
@@ -19,17 +20,18 @@ const square = (id, x, y, size) => featureXml(id, x, y, size);
 
 function fixture({ corruptArchiveSha = false, corruptZip = false, badShardHash = false, badShardUrl = false,
     sourceTimestamp = SOURCE_DATE, outOfManifestBounds = false, directoryOverride,
-    versionedManifest = false, bulkFeatureCount = 0, authorityCount = 3 } = {}) {
+    versionedManifest = false, bulkFeatureCount = 0, authorityCount = 3,
+    irrelevantNeighbor = false, contextAcrossBoundary = false, badScopeHash = false, badScopeUrl = false, partialScope = false } = {}) {
     let manifestUrl = versionedManifest
         ? 'https://metadata.example/hmlr/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/manifest.json'
         : DEFAULT_MANIFEST_URL;
     const northRows = bulkFeatureCount
         ? Array.from({ length: bulkFeatureCount }, (_, i) => square(String(10000 + i), 530700 + (i % 100) * 30, 180100 + Math.floor(i / 100) * 30, 20))
-        : [square('1001', 530800, 180200, 20)];
+        : [square('1001', 530800, 180200, contextAcrossBoundary ? 300 : 20)];
     const names = ['North', 'South', 'West'];
     while (names.length < authorityCount) names.push(`West ${names.length + 1}`);
     const archiveRows = names.map((_, index) => index === 0 ? northRows
-        : index === 1 ? [square('1002', 530815, 180205, 20), square('1003', 530805, 180205, 2)]
+        : index === 1 ? [square('1002', irrelevantNeighbor ? 535815 : contextAcrossBoundary ? 531050 : 530815, 180205, contextAcrossBoundary ? 400 : 20), square('1003', irrelevantNeighbor ? 535805 : contextAcrossBoundary ? 531055 : 530805, 180205, 2)]
             : index === 2 ? [square('9001', authorityCount > 3 ? 530800 : 700000, authorityCount > 3 ? 180210 : 600000, 20)]
                 : [square(String(20000 + index), 530750 + (index - 3) * 40, 180150, 10)]);
     const archives = archiveRows.map((rows, index) => zipSync({ [`authority-${index}.gml`]: strToU8(xml(rows, sourceTimestamp)) }))
@@ -55,16 +57,36 @@ function fixture({ corruptArchiveSha = false, corruptZip = false, badShardHash =
     const authorityData = names.map((name, index) => ({ name, endpoint: endpoints[index], etag: `"release-${name.toLowerCase().replaceAll(' ', '_')}"`,
         bytes: archives[index].length, archiveSha256: sha256Hex(archives[index]), featureCount: index === 1 ? 2 : index === 0 ? northRows.length : 1,
         nativeBounds: index === 2 && authorityCount <= 3 ? [699900, 599900, 700100, 600100]
+            : index === 1 && irrelevantNeighbor ? [530700, 180100, 535900, 180300]
+            : contextAcrossBoundary ? [530700, 180100, 531500, 180700]
             : index === 0 && bulkFeatureCount ? [530600, 180000, 533800, 180500]
             : index === 0 && outOfManifestBounds ? [530700, 180100, 530810, 180300] : [530700, 180100, 530900, 180300],
-        bounds: index === 2 && authorityCount <= 3 ? [1, 49, 2, 50]
+        bounds: index === 2 && authorityCount <= 3 ? [2, 55, 4, 57]
+            : index === 1 && irrelevantNeighbor ? [-0.3, 51.3, 0.1, 51.7]
             : index === 0 && bulkFeatureCount ? [-0.3, 51.3, 0, 51.7] : [-0.2, 51.4, -0.1, 51.6] }));
     if (corruptArchiveSha) authorityData[1].archiveSha256 = '0'.repeat(64);
+    const project = proj4('EPSG:27700', 'EPSG:4326');
+    const scopes = archiveRows.map((rows, index) => {
+        const builder = createHmlrArchiveScopeBuilder(point => project.forward(point));
+        for (const xml of rows) {
+            const values = /<g:posList>([^<]+)<\/g:posList>/.exec(xml)[1].split(' ').map(Number);
+            const ring = []; for (let i = 0; i < values.length; i += 2) ring.push([values[i], values[i + 1]]);
+            builder.addGeometry({ type: 'Polygon', coordinates: [ring] });
+        }
+        const scope = builder.finish(authorityData[index].archiveSha256);
+        if (partialScope && index === 1) scope.featureCount--;
+        const bytes = strToU8(JSON.stringify(scope)), sha256 = badScopeHash && index === 1 ? 'f'.repeat(64) : sha256Hex(bytes);
+        authorityData[index].scope = { sha256, bytes: bytes.length };
+        return { bytes, sha256 };
+    });
     const idDirectoryCore = Object.fromEntries([...shards].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
         .map(([bucket, shard]) => [bucket, { sha256: badShardHash && bucket === '1002' ? 'f'.repeat(64) : shard.sha256, bytes: shard.bytes.length }]));
-    const core = { schemaVersion: 1, sourceDate: SOURCE_DATE, policy: HMLR_BROWSER_GROUND_POLICY,
+    const core = { schemaVersion: 2, sourceDate: SOURCE_DATE, policy: HMLR_BROWSER_GROUND_POLICY,
         authorities: authorityData, idDirectory: idDirectoryCore };
     const releaseId = sha256Hex(JSON.stringify(core));
+    authorityData.forEach((authority, index) => {
+        authority.scope.url = `https://metadata.example/hmlr/${releaseId}/${badScopeUrl && index === 1 ? 'wrong' : 'scopes'}/${index}.${authority.scope.sha256}.json`;
+    });
     if (versionedManifest) manifestUrl = `https://metadata.example/hmlr/${releaseId}/manifest.json`;
     const idDirectory = Object.fromEntries([...shards].map(([bucket, shard]) => {
         const sha = badShardHash && bucket === '1002' ? 'f'.repeat(64) : shard.sha256;
@@ -73,13 +95,16 @@ function fixture({ corruptArchiveSha = false, corruptZip = false, badShardHash =
             : `${root}${releaseId}/ids/${bucket}.${sha}.json`;
         return [bucket, { url: `https://metadata.example${path}`, sha256: sha, bytes: shard.bytes.length }];
     }));
-    const manifest = { schemaVersion: 1, sourceDate: SOURCE_DATE, policy: HMLR_BROWSER_GROUND_POLICY, releaseId,
+    const manifest = { schemaVersion: 2, sourceDate: SOURCE_DATE, policy: HMLR_BROWSER_GROUND_POLICY, releaseId,
         authorities: authorityData, idDirectory };
     const manifestBytes = strToU8(JSON.stringify(manifest));
     const archiveCalls = [], calls = [];
     const fetchImpl = async (url, options = {}) => {
         calls.push([String(url), options]);
         if (url === manifestUrl) return response(manifestBytes, { 'content-type': 'application/json' });
+        for (let index = 0; index < authorityData.length; index++) if (url === authorityData[index].scope.url) {
+            return response(scopes[index].bytes, { 'content-type': 'application/json' });
+        }
         for (let index = 0; index < endpoints.length; index++) if (url === endpoints[index]) {
             archiveCalls.push(index);
             return response(archives[index], { etag: authorityData[index].etag });
@@ -94,7 +119,7 @@ function fixture({ corruptArchiveSha = false, corruptZip = false, badShardHash =
     const create = (overrides = {}, options = {}) => createHmlrBrowserParcelSource({ ...descriptor, ...overrides }, {
         fetchImpl, featureStore: storage, cacheStorage: null, indexedDB: null, allowSample: true, ...options
     });
-    return { manifest, releaseId, archives, archiveCalls, calls, fetchImpl, storage, create, authorityData, endpoints, northRows };
+    return { manifest, releaseId, archives, archiveCalls, calls, fetchImpl, storage, create, authorityData, endpoints, northRows, scopes };
 }
 
 beforeAll(() => {
@@ -243,6 +268,60 @@ test('loads only viewport authorities, resolves cross-authority input context, a
     assert.ok(f.calls.filter(([url]) => url.includes('/datasets/inspire/download/')).every(([, options]) => options.headers.Accept === 'application/zip'));
     await source.queryBounds([center[0] - 0.00003, center[1] - 0.00003, center[0] + 0.00003, center[1] + 0.00003]);
     assert.equal(f.archiveCalls.length, 2);
+});
+
+test('land scopes exclude a neighbor with overlapping council bounds from both viewport and exact-ID context downloads', async () => {
+    const f = fixture({ irrelevantNeighbor: true }), source = f.create();
+    const [x, y] = proj4('EPSG:27700', 'EPSG:4326', [530810, 180210]);
+    const result = await source.queryBounds([x - 0.00002, y - 0.00002, x + 0.00002, y + 0.00002]);
+    assert.deepEqual(f.archiveCalls, [0]);
+    assert.deepEqual(result.features.map(item => item.id), [`${HMLR_BROWSER_GROUND_PREFIX}1001`]);
+    const byId = await source.queryIds([`${HMLR_BROWSER_GROUND_PREFIX}1001`]);
+    assert.deepEqual(byId.features, result.features);
+    assert.deepEqual(f.archiveCalls, [0]);
+    assert.equal(f.calls.filter(([url]) => url.includes('/scopes/')).length, 2, 'scope metadata is fetched once and reused');
+});
+
+test('an empty gap inside council extents completes without downloading any council ZIP', async () => {
+    const f = fixture({ irrelevantNeighbor: true });
+    const [x, y] = proj4('EPSG:27700', 'EPSG:4326', [532500, 180210]);
+    const result = await f.create().queryBounds([x - 0.00002, y - 0.00002, x + 0.00002, y + 0.00002]);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.features, []);
+    assert.deepEqual(f.archiveCalls, []);
+});
+
+test('full parcel context loads a required neighboring ZIP outside the viewport and preserves the far-away cut', async () => {
+    const f = fixture({ contextAcrossBoundary: true }), source = f.create();
+    const [x, y] = proj4('EPSG:27700', 'EPSG:4326', [530805, 180250]);
+    const bounds = [x - 0.00002, y - 0.00002, x + 0.00002, y + 0.00002];
+    assert.equal(hmlrArchiveScopeIntersects(JSON.parse(new TextDecoder().decode(f.scopes[1].bytes)), bounds), false);
+    const result = await source.queryBounds(bounds);
+    assert.deepEqual(f.archiveCalls, [0, 1]);
+    assert.deepEqual(result.features.map(item => item.id), [`${HMLR_BROWSER_GROUND_PREFIX}1001`]);
+    const outputArea = geoArea(result.features[0]);
+    assert.ok(outputArea > 73000 && outputArea < 77000, `full parcel cut should retain about 75,250m², got ${outputArea}`);
+    const byId = await source.queryIds([`${HMLR_BROWSER_GROUND_PREFIX}1001`]);
+    assert.deepEqual(byId.features, result.features);
+});
+
+test('missing, corrupt, unpinned, or incomplete land scopes fail before archive download instead of falling back to council bounds', async () => {
+    const [x, y] = proj4('EPSG:27700', 'EPSG:4326', [530810, 180210]);
+    const bounds = [x - 0.00002, y - 0.00002, x + 0.00002, y + 0.00002];
+    for (const options of [{ badScopeHash: true }, { badScopeUrl: true }, { partialScope: true }]) {
+        const f = fixture(options);
+        await assert.rejects(f.create().queryBounds(bounds), /land scope/);
+        assert.deepEqual(f.archiveCalls, []);
+    }
+    const f = fixture(); let missing = true;
+    const source = f.create({}, { fetchImpl: (url, options) => missing && url.includes('/scopes/')
+        ? response(strToU8('missing'), {}, 404) : f.fetchImpl(url, options) });
+    await assert.rejects(source.queryBounds(bounds));
+    assert.deepEqual(f.archiveCalls, []);
+    missing = false;
+    const retried = await source.queryBounds(bounds);
+    assert.equal(retried.complete, true);
+    assert.deepEqual(f.archiveCalls, [0, 1]);
 });
 
 test('cold authority archives load serially while same-authority work remains coalesced', async () => {

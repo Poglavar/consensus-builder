@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { strToU8, zipSync } from 'fflate';
+import { createHash } from 'node:crypto';
 import { bucketForId, buildManifest, canonicalId, makeCore, parseCliArgs, projectNativeBounds } from '../scripts/build-hmlr-browser-manifest.mjs';
 
 const tempDirs=[];
@@ -13,6 +14,7 @@ const names=['Oxford_City_Council','Cardiff_Council'];
 const cat={sourceDate:'2026-10-04',authorities:names.map(name=>({name,endpoint:`https://use-land-property-data.service.gov.uk/datasets/inspire/download/${name}.zip`}))};
 const LR='www.landregistry.gov.uk', GML='http://www.opengis.net/gml/3.2';
 const ring='530800 180200 530810 180200 530810 180210 530800 180210 530800 180200';
+const sha=value=>createHash('sha256').update(value).digest('hex');
 function zipped(id='123456') {const feature=`<wfs:member><lr:PREDEFINED><lr:INSPIREID>${id}</lr:INSPIREID><lr:GEOMETRY><g:MultiSurface srsName="urn:ogc:def:crs:EPSG::27700"><g:surfaceMember><g:Polygon><g:exterior><g:LinearRing><g:posList>${ring}</g:posList></g:LinearRing></g:exterior></g:Polygon></g:surfaceMember></g:MultiSurface></lr:GEOMETRY></lr:PREDEFINED></wfs:member>`;
  const xml=`<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:lr="${LR}" xmlns:g="${GML}" timeStamp="2026-10-04T03:01:14Z" numberMatched="1" numberReturned="1">${feature}</wfs:FeatureCollection>`;
  return zipSync({'native.gml':strToU8(xml)});}
@@ -51,6 +53,12 @@ describe('HMLR browser manifest metadata helpers',()=>{
   expect(manifest.idDirectory['1234']).toMatchObject({sha256:expect.any(String),bytes:expect.any(Number),url:expect.stringContaining(manifest.releaseId)});
   const shard=JSON.parse(await readFile(join(out,manifest.releaseId,'ids',`1234.${manifest.idDirectory['1234'].sha256}.json`),'utf8'));
   expect(shard['123456']).toEqual([0,1]);expect(manifest.scopeSample).toBe(true);
+  expect(manifest.authorities[0].scope).toMatchObject({sha256:expect.stringMatching(/^[a-f0-9]{64}$/),bytes:expect.any(Number),url:expect.any(String)});
+  const scopeInfo=manifest.authorities[0].scope,scopeBody=await readFile(join(out,manifest.releaseId,'scopes',`0.${scopeInfo.sha256}.json`),'utf8');
+  const scope=JSON.parse(scopeBody);
+  expect(scopeInfo).toEqual({sha256:sha(scopeBody),bytes:Buffer.byteLength(scopeBody),url:`https://cdn.example/hmlr/${manifest.releaseId}/scopes/0.${sha(scopeBody)}.json`});
+  expect(scope).toMatchObject({archiveSha256:manifest.authorities[0].archiveSha256,featureCount:manifest.authorities[0].featureCount});
+  expect(scope.featureCount).toBe(1);
   await expect(readFile(join(out,'manifest.json'),'utf8')).rejects.toThrow();
   await buildManifest(args);expect(h.parses).toBe(2);
  });
@@ -61,10 +69,22 @@ describe('HMLR browser manifest metadata helpers',()=>{
    await expect(readFile(join(out,'manifest.json'),'utf8')).rejects.toThrow();
   }
  });
- it('rejects tampered resume checkpoints and reparses the archive',async()=>{
+ it.each(['ids','scope'])('rejects tampered %s resume checkpoints and reparses the archive',async kind=>{
   const out=await temp(),h=harness(),args={out,baseUrl:'https://cdn.example/hmlr',catalogueFn:async()=>cat,fetcher:h.fetcher,parse:h.parse};
-  await buildManifest(args);const checkpoint=join(out,'checkpoints',`${names[0]}.${(await import('node:crypto')).createHash('sha256').update('"rev1"').digest('hex')}.json`);
-  const saved=JSON.parse(await readFile(checkpoint,'utf8'));saved.ids=['999'];await writeFile(checkpoint,JSON.stringify(saved));
+  await buildManifest(args);const checkpoint=join(out,'checkpoints',`${names[0]}.${sha('"rev1"')}.json`);
+  const saved=JSON.parse(await readFile(checkpoint,'utf8'));
+  if(kind==='ids')saved.ids=['999'];
+  else {
+   saved.scope.rows[0][1]++;
+   const scopeJson=JSON.stringify(saved.scope);saved.scopeSha256=sha(scopeJson);saved.scopeBytes=Buffer.byteLength(scopeJson);
+  }
+  await writeFile(checkpoint,JSON.stringify(saved));
+  await buildManifest(args);expect(h.parses).toBe(3);
+ });
+ it('never resumes a schema-version 1 checkpoint',async()=>{
+  const out=await temp(),h=harness(),args={out,baseUrl:'https://cdn.example/hmlr',catalogueFn:async()=>cat,fetcher:h.fetcher,parse:h.parse};
+  await buildManifest(args);const checkpoint=join(out,'checkpoints',`${names[0]}.${sha('"rev1"')}.json`);
+  const saved=JSON.parse(await readFile(checkpoint,'utf8'));saved.schemaVersion=1;await writeFile(checkpoint,JSON.stringify(saved));
   await buildManifest(args);expect(h.parses).toBe(3);
  });
 });

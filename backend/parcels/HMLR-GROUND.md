@@ -19,12 +19,33 @@ GML is parsed incrementally into IndexedDB. A complete validated partition is
 required before any query uses it. The UI remains responsive because parsing,
 projection and GEOS WebAssembly overlays run in the worker.
 
-The static release manifest contains archive revisions and conservative bounds.
-Small native-ID directory shards route exact IDs to their council archives.
-A viewport query first loads intersecting partitions, then loads all partitions
-that intersect the **full** candidate parcel envelopes. Higher-priority overlapping
+The static release manifest pins archive revisions, land-to-ZIP coverage scopes,
+and small native-ID directory shards. Each scope is built from **every polygon
+actually contained in that ZIP**, including parcels crossing council borders.
+Administrative boundaries and a council's enclosing rectangle do not establish
+which archives contain land at a query location.
+
+The adapter first reads the small coverage scopes, then downloads only ZIPs whose
+scopes intersect the viewport. It uses the same scopes to select overlap context
+against the **full** candidate parcel envelopes. Higher-priority overlapping
 polygons are consequently included even outside the viewport or across a council
 boundary. Results keep full parcel footprints; the viewport never clips them.
+
+Scopes conservatively union occupied 0.0005-degree cells (about 35 by 56 metres
+at Oxford). Polygon interiors, holes, disconnected components, slivers and edge
+touches determine occupied cells. Long native edges also contribute the convex
+hull of projected 250 m samples, covering vertices inserted by geometry repair
+before projection. Small numerical padding covers the 1 mm normalization grid.
+Cell rounding can include nearby land at a boundary; it cannot exclude a parcel
+merely because that parcel crosses a council border. This compact routing data
+contains no parcel IDs or individual parcel geometries.
+
+Each scope carries the archive hash, full feature count and coverage policy.
+Its own SHA-256 and byte count are pinned in the v2 manifest's canonical release
+hash. Missing, mismatched or incomplete scopes fail the query; the adapter never
+falls back to downloading ZIPs based on broad council rectangles. Exact-ID reads
+continue to use the native-ID directory, then use scopes for their full overlap
+context.
 
 The reproducible policy repairs polygonal input, ranks by original repaired metric
 area descending and numeric INSPIREID ascending, snaps input to a 1 mm grid, then
@@ -40,12 +61,23 @@ library notices. The policy version pins geometry semantics as well as IDs.
 ## Routing metadata publication
 
 City bindings require a complete, published and qualified release manifest.
-The 2026-10-12 admission binds 20 qualified England/Wales cities to immutable
+The 2026-10-12 city admission originally bound 20 qualified England/Wales cities to
 release `44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90`
-under `/data/hmlr/` on the production origin. It includes all 318 authorities in
-the routing manifest, but only the individually admitted cities are enabled.
-The release admission records the frozen evidence and manifest hash; later
-qualification results remain separate until their next admission.
+under `/data/hmlr/` on the production origin. Its frozen qualification evidence
+and manifest hash remain historical records; later city qualification results
+stay separate until their next admission.
+
+The current v2 routing release is
+`af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263`.
+An independent audit verified all 318 archive pins, 24,453,254 source records and
+5,022 ID directory shards against the original release. Only coverage metadata
+and archive selection changed; the geometry policy, source identities and city
+admissions remain the same. The
+[routing validation record](../../world-parcels/research/hmlr-routing-validation-2026-10-12.json)
+records those checks and exact full-feature comparisons for central Oxford and
+two council-boundary queries. The central view returns the same 406 features
+while downloading one complete 6.6 MB ZIP instead of three totalling 40.5 MB;
+boundary queries still include neighbouring ZIPs when required.
 
 ```sh
 node backend/scripts/build-hmlr-browser-manifest.mjs --run \
@@ -53,10 +85,12 @@ node backend/scripts/build-hmlr-browser-manifest.mjs --run \
 ```
 
 The destination must be supplied explicitly. This one-time/monthly metadata job
-scans all official archives sequentially, checkpoints authority metadata and IDs,
-and publishes immutable content-addressed shards plus an atomic latest manifest
-only after every archive and its final revision checks pass. Geometry is consumed
-and discarded; it is never stored in Postgres or served from a parcel database.
+scans all official archives sequentially, checkpoints authority metadata, coverage
+scopes and IDs, and publishes immutable content-addressed shards plus an atomic latest manifest
+only after every archive and its final revision checks pass. The complete scan
+builds reusable routing metadata; map views fetch the resulting scopes instead
+of repeating that scan. Geometry is consumed and discarded; it is never stored
+in Postgres or served from a parcel database.
 The metadata destination needs normal static HTTPS hosting with CORS when it is
 on a different origin. Configure `manifestUrl` on the source before qualification.
 When publishing under the frontend's `/data/hmlr/`, deployment preserves that

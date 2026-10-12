@@ -1,0 +1,281 @@
+{
+  "purpose": "Validate a routing-only HMLR metadata revision against the previously admitted archive snapshot and unchanged parcel geometry engine.",
+  "schemaVersion": 1,
+  "validatedAt": "2026-10-12T01:51:21.162028+00:00",
+  "sourceId": "gb-hmlr-browser-v1",
+  "previousManifest": {
+    "url": "https://urbangametheory.xyz/data/hmlr/44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90/manifest.json",
+    "sha256": "6fd9c5a04aa698e5b4fb7ca7f39048c6e46bab45e671f3a43d1fc0e87587a93f"
+  },
+  "manifest": {
+    "url": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/manifest.json",
+    "sha256": "24cae8ef79a5cb86ee626e42cbf664814a6df06abe5c23f594cbb20bf590c470",
+    "bytes": 1682648
+  },
+  "validationScope": {
+    "cityAdmissionsChanged": false,
+    "sourceIdentitiesChanged": false,
+    "geometryPolicyChanged": false,
+    "archivePinsAndOrderedMetadataEqual": true,
+    "allIdShardHashesAndByteCountsEqual": true,
+    "allScopeFilesValidated": true,
+    "officialArchivesRemainWhole": true,
+    "parcelGeometriesPublished": false
+  },
+  "coverage": {
+    "policy": "hmlr-land-scope-v1-projected-edge-hull-250m",
+    "gridDegrees": 0.0005,
+    "construction": "Conservative union of cells occupied by every archive polygon, including holes, components and boundary touches; projected long-edge hulls cover geometry-repair vertices.",
+    "limitation": "Cell rounding can select an extra ZIP near a coverage boundary. Administrative borders do not define archive contents.",
+    "viewportAndFullCandidateEnvelopeContext": true
+  },
+  "nationalAudit": {
+    "reportSha256": "88ea9066d1d91064738c36ee03130891a8f11ed903f4c6d5d827d93f8d8530bf",
+    "scriptSha256": "2428bfea3bbddc33daee16606fb48e997e89a6a4c382e0c1bf37c919100edb45",
+    "result": {
+      "ok": true,
+      "schemaVersion": 2,
+      "sourceDate": "2026-10-04",
+      "enginePolicy": "hmlr-browser-v1-area-desc-id-asc-grid1mm-project-before-overlay-geos3.13.0",
+      "scopePolicy": "hmlr-land-scope-v1-projected-edge-hull-250m",
+      "releaseId": "af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263",
+      "sourceModuleSha256": "b7f111f7fbe40e0a8ea741425339d8d60ff64eaffbd7d4faf305778594d096d0",
+      "predecessorReleaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+      "oldManifestSha256": "6fd9c5a04aa698e5b4fb7ca7f39048c6e46bab45e671f3a43d1fc0e87587a93f",
+      "newManifestSha256": "24cae8ef79a5cb86ee626e42cbf664814a6df06abe5c23f594cbb20bf590c470",
+      "engineModuleSha256": "efcbf9ff5154abfe7fcc610215fec3f62b9a973094db0a4f9b3f236386f7d49c",
+      "scopeModuleSha256": "9a7d9a9d1385794c2357b03c4720efe2df01dbfa136d82165984c0cb90b2705a",
+      "metadataOrigin": "https://urbangametheory.xyz",
+      "metadataRoot": "/data/hmlr/",
+      "totals": {
+        "authorities": 318,
+        "expectedAuthorities": 318,
+        "idShards": 5022,
+        "expectedIdShards": 5022,
+        "idEntries": 24362245,
+        "archiveFeatures": 24453254,
+        "archiveBytes": 4968125614,
+        "idAuthorityAssignments": 24453254,
+        "idShardBytes": 405454304,
+        "scopeFiles": 318,
+        "scopeBytes": 9841466,
+        "scopeRows": 155135
+      },
+      "scopeSizeBytes": {
+        "min": 1217,
+        "p50": 17509,
+        "p90": 64560,
+        "p95": 99571,
+        "p99": 201821,
+        "max": 382984,
+        "distribution": {
+          "under16KiB": 149,
+          "from16To64KiB": 138,
+          "from64To256KiB": 29,
+          "atLeast256KiB": 2
+        }
+      },
+      "namedScopes": {
+        "Oxford_City_Council": {
+          "sha256": "569f84312e7d5f1c3eff1d7e6adf32192236d3d9d9532ba53080e6b74535e31b",
+          "bytes": 8020,
+          "featureCount": 43333
+        },
+        "South_Oxfordshire_District_Council": {
+          "sha256": "b53d0b60f182a138e235a533d8a233e863bdb37533787e366c1ba7997316a8f3",
+          "bytes": 33799,
+          "featureCount": 76902
+        },
+        "Vale_of_White_Horse_District_Council": {
+          "sha256": "ca5f308280f1ba8302bae76eaea50beecba14132beb8d4e18b2186b3f3ca4929",
+          "bytes": 34099,
+          "featureCount": 68763
+        }
+      },
+      "failures": []
+    }
+  },
+  "realArchiveReplays": {
+    "method": "Hash-verified cached official ZIPs, old v1 and new v2 sources using the same geometry engine, independent fresh disk stores; unexpected fetches rejected.",
+    "scopeHashesMatchNationalRelease": true,
+    "featureHashSerialization": "SHA-256 of JavaScript JSON.stringify over full feature objects, sorted by feature ID using localeCompare.",
+    "centralOxford": {
+      "generatedAt": "2026-10-12T00:32:06.380Z",
+      "evidenceSha256": "479f5f49b0ed9138270c564027915a4de520560fff2a5109cfb9a3e6ded4caa5",
+      "bounds": [
+        -1.237,
+        51.747,
+        -1.232,
+        51.75
+      ],
+      "cellCount": 15,
+      "perCellResultsEqual": true,
+      "fullFeaturesEqual": true,
+      "suppressedSetsEqual": true,
+      "features": 406,
+      "fullFeatureJsonSha256": "8dce21d5f8067529cdf70c9a9bae3211775c16275dca2007fdd2fdb1fd02661f",
+      "before": {
+        "archiveCount": 3,
+        "archiveBytes": 40489320,
+        "archiveRecords": 188998
+      },
+      "after": {
+        "archiveCount": 1,
+        "archiveBytes": 6594005,
+        "archiveRecords": 43333,
+        "archive": "Oxford_City_Council"
+      },
+      "exactIdLookup": {
+        "id": "GB-HMLR-BROWSER-v1-28537489",
+        "newIdReadEqualsBothViewportResults": true,
+        "oldIdReadPerformed": false
+      }
+    },
+    "councilBoundaries": {
+      "generatedAt": "2026-10-12T00:46:25.337Z",
+      "evidenceSha256": "52560b7b7b4e93e7e0ae0a6c45ef97eb5571220eb62e742840ac267395c148d5",
+      "cases": [
+        {
+          "name": "oxford-south-boundary",
+          "bounds": [
+            -1.234,
+            51.722,
+            -1.233,
+            51.723
+          ],
+          "features": 10,
+          "fullFeatureJsonSha256": "d11d3e37e1150a063797a6fb67c710ca72ab3461919b6d5f22a1439bb093c132",
+          "equality": {
+            "fullFeatureObjects": true,
+            "suppressedSets": true,
+            "absentSets": true
+          },
+          "beforeArchiveCount": 3,
+          "afterArchiveCount": 3,
+          "archiveBytes": 40489320
+        },
+        {
+          "name": "oxford-vale-boundary",
+          "bounds": [
+            -1.245,
+            51.725,
+            -1.244,
+            51.726
+          ],
+          "features": 2,
+          "fullFeatureJsonSha256": "a535eae849335fa520b7ea600371ccdd0d1d8f8c14e0d9902d033157ab649789",
+          "equality": {
+            "fullFeatureObjects": true,
+            "suppressedSets": true,
+            "absentSets": true
+          },
+          "beforeArchiveCount": 3,
+          "afterArchiveCount": 3,
+          "archiveBytes": 40489320
+        }
+      ]
+    },
+    "timingClaim": null
+  },
+  "headlessValidation": {
+    "vitest": {
+      "files": 12,
+      "passed": 154,
+      "tests": [
+        "hmlr-archive-scope",
+        "hmlr-browser-manifest",
+        "hmlr-browser-source",
+        "hmlr-browser-integration",
+        "hmlr-browser-ground",
+        "hmlr-native-gml-reader",
+        "hmlr-zip-member",
+        "node-hmlr-feature-store",
+        "sources-node-hmlr-store",
+        "browser-parcel-bundle",
+        "browser-parcel-client",
+        "parcel-provider-relay"
+      ]
+    },
+    "pythonSeedTestsPassed": 5,
+    "actualNationalManifestAcceptedBySeedVerifier": true,
+    "afterCatalogPin": {
+      "files": 5,
+      "passed": 88,
+      "tests": [
+        "browser-parcel-bundle",
+        "parcel-catalog-startup",
+        "source-default-switch",
+        "frontend-world-coverage",
+        "parcel-provider-relay"
+      ],
+      "actualSourceManifestLoad": {
+        "complete": true,
+        "emptyOutsideCoverage": true,
+        "manifestRequests": 1,
+        "scopeRequests": 0,
+        "archiveRequests": 0
+      }
+    }
+  },
+  "immutablePublication": {
+    "transferVerification": {
+      "utc": "2026-10-12T01:50:02.953127+00:00",
+      "verified": true,
+      "files": 5341,
+      "bytes": 416978418,
+      "inventorySha256": "8d1facfdc6623ea05fab2b6bb4ea86bafac020269643ace75c05a45d2f8c8713",
+      "manifestSha256": "24cae8ef79a5cb86ee626e42cbf664814a6df06abe5c23f594cbb20bf590c470"
+    },
+    "publicVerification": {
+      "utc": "2026-10-12T01:51:04.585Z",
+      "runtime": "v24.14.1",
+      "transport": "Node global fetch default UA",
+      "ok": true,
+      "checks": [
+        {
+          "url": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/manifest.json",
+          "status": 200,
+          "contentType": "application/json",
+          "contentEncoding": "gzip",
+          "decodedBytes": 1682648,
+          "sha256": "24cae8ef79a5cb86ee626e42cbf664814a6df06abe5c23f594cbb20bf590c470"
+        },
+        {
+          "url": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/scopes/203.569f84312e7d5f1c3eff1d7e6adf32192236d3d9d9532ba53080e6b74535e31b.json",
+          "status": 200,
+          "contentType": "application/json",
+          "contentEncoding": "gzip",
+          "decodedBytes": 8020,
+          "sha256": "569f84312e7d5f1c3eff1d7e6adf32192236d3d9d9532ba53080e6b74535e31b"
+        },
+        {
+          "url": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/scopes/247.b53d0b60f182a138e235a533d8a233e863bdb37533787e366c1ba7997316a8f3.json",
+          "status": 200,
+          "contentType": "application/json",
+          "contentEncoding": "gzip",
+          "decodedBytes": 33799,
+          "sha256": "b53d0b60f182a138e235a533d8a233e863bdb37533787e366c1ba7997316a8f3"
+        },
+        {
+          "url": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/scopes/289.ca5f308280f1ba8302bae76eaea50beecba14132beb8d4e18b2186b3f3ca4929.json",
+          "status": 200,
+          "contentType": "application/json",
+          "contentEncoding": "gzip",
+          "decodedBytes": 34099,
+          "sha256": "ca5f308280f1ba8302bae76eaea50beecba14132beb8d4e18b2186b3f3ca4929"
+        },
+        {
+          "url": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/ids/2853.f0fab55643c2d731a8464f311115f4d1003ef02b5ab2ee5acb609d1d3e48e3f9.json",
+          "status": 200,
+          "contentType": "application/json",
+          "contentEncoding": "gzip",
+          "decodedBytes": 122620,
+          "sha256": "f0fab55643c2d731a8464f311115f4d1003ef02b5ab2ee5acb609d1d3e48e3f9"
+        }
+      ],
+      "missingStatus": 404,
+      "rootManifestStillV1": true,
+      "rootManifestSha256": "6fd9c5a04aa698e5b4fb7ca7f39048c6e46bab45e671f3a43d1fc0e87587a93f"
+    }
+  }
+}

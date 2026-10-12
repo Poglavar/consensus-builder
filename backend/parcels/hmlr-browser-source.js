@@ -6,6 +6,7 @@ import { providerHttpError, upstreamError, validateBounds, validateGeometry } fr
 import { sha256Hex } from './portable-hash.js';
 import { readGmlZipMember } from './gml-zip-reader.js';
 import { parseGmlParcels } from './gml-parcel-reader.js';
+import { validateHmlrArchiveScope, hmlrArchiveScopeIntersects } from './hmlr-archive-scope.js';
 import { HMLR_BROWSER_GROUND_POLICY, HMLR_BROWSER_GROUND_PREFIX, HMLR_BROWSER_GROUND_SOURCE,
     createHmlrBrowserGroundEngine } from './hmlr-browser-ground.js';
 
@@ -56,9 +57,13 @@ function expectedAuthority(metadata, index) {
         || !Number.isSafeInteger(metadata.featureCount) || metadata.featureCount < 1 || metadata.featureCount > MAX_AUTHORITY_FEATURES) {
         throw new Error(`Invalid HMLR authority size or revision ${index}.`);
     }
+    if (!metadata.scope || !/^[a-f0-9]{64}$/.test(metadata.scope.sha256 || '')
+        || !Number.isSafeInteger(metadata.scope.bytes) || metadata.scope.bytes < 1 || metadata.scope.bytes > MAX_METADATA_BYTES
+        || typeof metadata.scope.url !== 'string') throw new Error(`Invalid HMLR authority land scope ${index}.`);
     return { name: metadata.name, endpoint: archiveEndpoint(metadata.endpoint), etag, bytes: metadata.bytes,
         archiveSha256: metadata.archiveSha256, featureCount: metadata.featureCount,
-        nativeBounds: box(metadata.nativeBounds, `authority ${index} native`), bounds: validWgsBounds(metadata.bounds, `authority ${index}`) };
+        nativeBounds: box(metadata.nativeBounds, `authority ${index} native`), bounds: validWgsBounds(metadata.bounds, `authority ${index}`),
+        scope: { sha256: metadata.scope.sha256, bytes: metadata.scope.bytes, url: metadata.scope.url } };
 }
 function withinBounds(inner, outer) {
     return Array.isArray(inner) && inner.length === 4 && inner.every(Number.isFinite)
@@ -67,7 +72,7 @@ function withinBounds(inner, outer) {
 }
 function validateManifest(manifest, manifestUrl, { allowSample, snapshotId }) {
     const parsedDate = /^\d{4}-\d{2}-\d{2}$/.test(manifest?.sourceDate || '') ? new Date(`${manifest.sourceDate}T00:00:00Z`) : null;
-    if (!manifest || manifest.schemaVersion !== 1 || !/^\d{4}-\d{2}-\d{2}$/.test(manifest.sourceDate || '')
+    if (!manifest || manifest.schemaVersion !== 2 || !/^\d{4}-\d{2}-\d{2}$/.test(manifest.sourceDate || '')
         || !parsedDate || !Number.isFinite(parsedDate.valueOf()) || parsedDate.toISOString().slice(0, 10) !== manifest.sourceDate
         || manifest.policy !== HMLR_BROWSER_GROUND_POLICY
         || !/^[a-f0-9]{64}$/.test(manifest.releaseId || '') || !Array.isArray(manifest.authorities)
@@ -89,6 +94,12 @@ function validateManifest(manifest, manifestUrl, { allowSample, snapshotId }) {
     const manifestPath = new URL(manifestUrl).pathname;
     let releaseRoot = manifestPath.slice(0, manifestPath.lastIndexOf('/') + 1);
     if (releaseRoot.endsWith(`/${manifest.releaseId}/`)) releaseRoot = releaseRoot.slice(0, -manifest.releaseId.length - 1);
+    for (const [index, authority] of authorities.entries()) {
+        const item = authority.scope, url = new URL(item.url, manifestUrl);
+        const expectedPath = `${releaseRoot}${manifest.releaseId}/scopes/${index}.${item.sha256}.json`;
+        if (url.protocol !== 'https:' || url.origin !== new URL(manifestUrl).origin || url.search || url.hash
+            || url.href !== item.url || url.pathname !== expectedPath) throw upstreamError('HMLR land scope URL escapes its immutable metadata release.');
+    }
     const directory = new Map();
     for (const [bucket, item] of Object.entries(manifest.idDirectory)) {
         if (!/^[0-9]{1,4}$/.test(bucket) || !item || typeof item.url !== 'string'
@@ -101,16 +112,16 @@ function validateManifest(manifest, manifestUrl, { allowSample, snapshotId }) {
             || url.href !== item.url || url.pathname !== expectedPath) throw upstreamError('HMLR ID shard URL escapes its immutable metadata release.');
         directory.set(bucket, { url: url.href, sha256: item.sha256, bytes: item.bytes });
     }
-    const coreAuthorities = authorities.map(({ name, endpoint, etag, bytes, archiveSha256, featureCount, nativeBounds, bounds }) =>
-        ({ name, endpoint, etag, bytes, archiveSha256, featureCount, nativeBounds, bounds }));
+    const coreAuthorities = authorities.map(({ name, endpoint, etag, bytes, archiveSha256, featureCount, nativeBounds, bounds, scope }) =>
+        ({ name, endpoint, etag, bytes, archiveSha256, featureCount, nativeBounds, bounds, scope: { sha256: scope.sha256, bytes: scope.bytes } }));
     const coreDirectory = Object.fromEntries([...directory.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
         .map(([bucket, { sha256, bytes }]) => [bucket, { sha256, bytes }]));
-    const core = { schemaVersion: 1, sourceDate: manifest.sourceDate, policy: manifest.policy,
+    const core = { schemaVersion: 2, sourceDate: manifest.sourceDate, policy: manifest.policy,
         authorities: coreAuthorities, idDirectory: coreDirectory };
     const versionedRelease = new URL(manifestUrl).pathname.split('/').at(-2);
     if ((/^[a-f0-9]{64}$/.test(versionedRelease || '') && versionedRelease !== manifest.releaseId)
         || sha256Hex(JSON.stringify(core)) !== manifest.releaseId) throw upstreamError('HMLR release manifest ID does not match its canonical content.');
-    return { schemaVersion: 1, sourceDate: manifest.sourceDate, policy: manifest.policy, releaseId: manifest.releaseId, authorities, directory };
+    return { schemaVersion: 2, sourceDate: manifest.sourceDate, policy: manifest.policy, releaseId: manifest.releaseId, authorities, directory };
 }
 
 function packIndex(ids, bboxWgs84, bboxNative) {
@@ -332,6 +343,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     const store = featureStore || (indexedDB ? createIndexedDbFeatureStore(indexedDB) : createMemoryHmlrFeatureStore());
     const archiveCache = cachedArchiveStore(cacheStorage, manifestUrl.href);
     const authorityState = new Map(), authorityPending = new Map(), shardPending = new Map(), shardCache = new Map();
+    const scopeCache = new Map(), scopePending = new Map();
     let manifestPromise, enginePromise;
     let authorityLoadQueue = Promise.resolve();
     let lastProgress, lastProgressTime = -Infinity;
@@ -361,6 +373,35 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         return manifestPromise;
     }
     async function getEngine() { if (!enginePromise) enginePromise = engineFactory(); return enginePromise; }
+    async function getScope(manifest, index) {
+        if (scopeCache.has(index)) return scopeCache.get(index);
+        if (scopePending.has(index)) return scopePending.get(index);
+        const task = (async () => {
+            const authority = manifest.authorities[index], item = authority.scope, signal = AbortSignal.timeout(30000);
+            let response;
+            try { response = await fetchImpl(item.url, { signal, redirect: 'follow', headers: { Accept: 'application/json' } }); }
+            catch (error) { if (error.status) throw error; throw upstreamError('HMLR land scope is unavailable.', signal.aborted ? 504 : 502); }
+            const bytes = await responseBytes(response, item.bytes, MAX_METADATA_BYTES, 'HMLR land scope');
+            if (sha256Hex(bytes) !== item.sha256) throw upstreamError('HMLR land scope SHA-256 does not match its release manifest.');
+            let scope;
+            try { scope = validateHmlrArchiveScope(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)), authority); }
+            catch { throw upstreamError('HMLR land scope is malformed or does not describe the complete archive.'); }
+            scopeCache.set(index, scope); return scope;
+        })();
+        scopePending.set(index, task);
+        try { return await task; } finally { scopePending.delete(index); }
+    }
+    async function authoritiesForBounds(manifest, boxes) {
+        const possible = [];
+        manifest.authorities.forEach((authority, index) => {
+            if (boxes.some(bounds => overlaps(authority.bounds, bounds))) possible.push(index);
+        });
+        if (possible.reduce((total, index) => total + manifest.authorities[index].scope.bytes, 0) > MAX_METADATA_BYTES) {
+            throw upstreamError('HMLR land scope metadata exceeds its safe byte limit; use a smaller query.', 413);
+        }
+        const scopes = await Promise.all(possible.map(index => getScope(manifest, index)));
+        return possible.filter((index, position) => boxes.some(bounds => hmlrArchiveScopeIntersects(scopes[position], bounds)));
+    }
     async function getArchiveBytes(manifest, authority, signal) {
         let bytes = await archiveCache.get(manifest.releaseId, authority.archiveSha256, authority.bytes);
         if (bytes && (bytes.byteLength !== authority.bytes || sha256Hex(bytes) !== authority.archiveSha256)) {
@@ -558,11 +599,10 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         }
         return selected;
     }
-    async function resolveCandidates(manifest, loadedIndices, candidates) {
+    async function resolveCandidates(manifest, candidates) {
         if (!candidates.length) return { features: [], suppressedIds: [] };
         if (candidates.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
-        const boxes = candidates.map(item => item.bboxWgs), needed = [];
-        manifest.authorities.forEach((authority, index) => { if (boxes.some(candidateBox => overlaps(authority.bounds, candidateBox))) needed.push(index); });
+        const boxes = candidates.map(item => item.bboxWgs), needed = await authoritiesForBounds(manifest, boxes);
         if (needed.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR overlap context spans too many authority archives; use a smaller query.', 413);
         await Promise.all(needed.map(loadAuthority));
         reportProgress({ phase: 'source-prepare' });
@@ -585,8 +625,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     }
     async function queryBounds(bounds) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 25, descriptor);
-        const manifest = await getManifest(), viewport = bboxPolygon(bounds), initial = [];
-        manifest.authorities.forEach((authority, index) => { if (overlaps(authority.bounds, bounds)) initial.push(index); });
+        const manifest = await getManifest(), viewport = bboxPolygon(bounds), initial = await authoritiesForBounds(manifest, [bounds]);
         if (initial.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR viewport spans too many authority archives; use a smaller query.', 413);
         await Promise.all(initial.map(loadAuthority));
         reportProgress({ phase: 'source-prepare' });
@@ -599,7 +638,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             const features = await Promise.all(rows.map(row => featureFrom(manifest.releaseId, row.authorityIndex, row.nativeId, row)));
             features.forEach((feature, index) => candidates.push({ ...rows[index], feature }));
         }
-        const result = await resolveCandidates(manifest, loaded, candidates);
+        const result = await resolveCandidates(manifest, candidates);
         return outputForQuery(result, viewport, manifest);
     }
     async function queryGeometry(geometry) {
@@ -647,7 +686,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             const batch = await Promise.all(targetRows.slice(offset, offset + 250).map(row => featureFrom(manifest.releaseId, row.authorityIndex, row.nativeId, row)));
             batch.forEach((feature, index) => candidates.push({ ...targetRows[offset + index], feature }));
         }
-        const result = await resolveCandidates(manifest, [...authorityState.entries()], candidates);
+        const result = await resolveCandidates(manifest, candidates);
         const found = new Set(result.features.map(feature => feature.id)), suppressed = new Set(result.suppressedIds);
         const absentIds = requested.filter(item => !declared.has(item.nativeId) || suppressed.has(item.id)).map(item => item.id);
         for (const item of requested) if (declared.has(item.nativeId)

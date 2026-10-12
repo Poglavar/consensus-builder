@@ -118,6 +118,29 @@ describe('parcel provider relay validation', () => {
         expect(() => validateParcelProviderRelayRequest(descriptor.id, { url: `${descriptor.endpoint}?download=1` }, { sources: [descriptor] })).toThrow();
     });
 
+    it('allows only canonical scope paths in the descriptor-pinned HMLR release', () => {
+        const release = 'a'.repeat(64), hash = 'b'.repeat(64);
+        const descriptor = { ...parcelSourceCatalog.sources.find(source => source.adapter === 'hmlr-browser'),
+            snapshotId: release, manifestUrl: `https://metadata.example/hmlr/${release}/manifest.json` };
+        const scopeRoot = `https://metadata.example/hmlr/${release}/scopes/`;
+        const valid = `${scopeRoot}203.${hash}.json`;
+        expect(validateParcelProviderRelayRequest(descriptor.id, { url: valid }, { sources: [descriptor] }))
+            .toMatchObject({ hmlr: false, maxResponseBytes: 16 * 1024 * 1024 });
+        for (const url of [valid.replace(release, 'c'.repeat(64)), valid.replace('metadata.example', 'other.example'),
+            valid.replace('/hmlr/', '/other/'), `${valid}?token=x`, `${valid}#fragment`,
+            `${scopeRoot}0203.${hash}.json`, `${scopeRoot}-1.${hash}.json`, `${scopeRoot}1000.${hash}.json`,
+            `${scopeRoot}203.${'B'.repeat(64)}.json`, `${scopeRoot}203.${hash.slice(1)}.json`,
+            `${scopeRoot}203.not-a-hash.json`, `${scopeRoot}203.${hash}.zip`, `${scopeRoot}nested/203.${hash}.json`]) {
+            expect(() => validateParcelProviderRelayRequest(descriptor.id, { url }, { sources: [descriptor] }), url).toThrow();
+        }
+        for (const unpinned of [{ ...descriptor, snapshotId: undefined }, { ...descriptor, snapshotId: 'c'.repeat(64) },
+            { ...descriptor, manifestUrl: 'https://metadata.example/hmlr/manifest.json' }]) {
+            expect(() => validateParcelProviderRelayRequest(descriptor.id, { url: valid }, { sources: [unpinned] })).toThrow();
+        }
+        const limited = { ...descriptor, maxResponseBytes: 1024 };
+        expect(validateParcelProviderRelayRequest(descriptor.id, { url: valid }, { sources: [limited] }).maxResponseBytes).toBe(1024);
+    });
+
     it('forwards only pinned HMLR headers to the verified S3 archive hop', async () => {
         const originalFetch = globalThis.fetch, calls = [];
         const bytes = 'zipbytes';

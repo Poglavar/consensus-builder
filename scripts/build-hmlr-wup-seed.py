@@ -8,6 +8,7 @@ import gzip
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -26,7 +27,7 @@ def sha256_file(path: Path) -> str:
 
 
 def verify_manifest(manifest: dict, authority_count: int) -> None:
-    if not isinstance(manifest, dict) or manifest.get("schemaVersion") != 1:
+    if not isinstance(manifest, dict) or manifest.get("schemaVersion") != 2:
         raise ValueError("HMLR release manifest schema is invalid")
     authorities = manifest.get("authorities")
     if (not isinstance(authorities, list)
@@ -37,6 +38,7 @@ def verify_manifest(manifest: dict, authority_count: int) -> None:
         raise ValueError("HMLR release publication date is missing")
     if not isinstance(manifest.get("releaseId"), str) or len(manifest["releaseId"]) != 64:
         raise ValueError("HMLR immutable release ID is invalid")
+    core_authorities = []
     for authority in authorities:
         bounds = authority.get("bounds") if isinstance(authority, dict) else None
         if (not isinstance(bounds, list) or len(bounds) != 4
@@ -44,7 +46,19 @@ def verify_manifest(manifest: dict, authority_count: int) -> None:
                 or bounds[0] >= bounds[2] or bounds[1] >= bounds[3]
                 or not (-180 <= bounds[0] < bounds[2] <= 180 and -90 <= bounds[1] < bounds[3] <= 90)):
             raise ValueError("HMLR authority contains invalid WGS84 screening bounds")
-    # Recreate the builder's release core. URLs are added to idDirectory only after its
+        scope = authority.get("scope")
+        if (not isinstance(scope, dict) or not isinstance(scope.get("sha256"), str)
+                or not re.fullmatch(r"[a-f0-9]{64}", scope["sha256"])
+                or type(scope.get("bytes")) is not int or not 0 < scope["bytes"] <= 16 * 1024 * 1024):
+            raise ValueError("HMLR authority contains malformed land-scope metadata")
+        try:
+            core_authority = {key: authority[key] for key in (
+                "name", "endpoint", "etag", "bytes", "archiveSha256", "featureCount", "nativeBounds", "bounds")}
+        except KeyError as error:
+            raise ValueError("HMLR authority metadata is incomplete") from error
+        core_authority["scope"] = {"sha256": scope["sha256"], "bytes": scope["bytes"]}
+        core_authorities.append(core_authority)
+    # Recreate the builder's release core. URLs are added to scopes and idDirectory only after its
     # content hash is calculated, so they are omitted here by design.
     directory = manifest.get("idDirectory")
     if not isinstance(directory, dict) or not directory:
@@ -54,8 +68,8 @@ def verify_manifest(manifest: dict, authority_count: int) -> None:
         if not isinstance(item, dict) or not isinstance(item.get("sha256"), str) or not isinstance(item.get("bytes"), int):
             raise ValueError("HMLR release contains malformed ID-directory metadata")
         core_directory[bucket] = {"sha256": item["sha256"], "bytes": item["bytes"]}
-    core = {"schemaVersion": 1, "sourceDate": manifest["sourceDate"], "policy": manifest["policy"],
-            "authorities": authorities, "idDirectory": core_directory}
+    core = {"schemaVersion": 2, "sourceDate": manifest["sourceDate"], "policy": manifest["policy"],
+            "authorities": core_authorities, "idDirectory": core_directory}
     release_id = hashlib.sha256(json.dumps(core, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
     if release_id != manifest["releaseId"]:
         raise ValueError("HMLR release ID does not match its immutable metadata core")

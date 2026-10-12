@@ -155,6 +155,12 @@ function hmlrMetadataResourceAllowed(url, descriptor) {
         if (versioned) root = root.slice(0, -versioned[1].length - 1);
         if (url.origin !== manifest.origin || url.username || url.password || url.search || url.hash) return false;
         if (url.pathname === manifest.pathname) return true;
+        if (url.pathname.includes('/scopes/')) {
+            if (!versioned || descriptor.snapshotId !== versioned[1]) return false;
+            const scopeRoot = `${root}${versioned[1]}/scopes/`;
+            return url.pathname.startsWith(scopeRoot)
+                && /^(?:0|[1-9][0-9]{0,2})\.[a-f0-9]{64}\.json$/.test(url.pathname.slice(scopeRoot.length));
+        }
         return new RegExp(`^${root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[a-f0-9]{64}/ids/(?:[0-9]{1,4})\\.[a-f0-9]{64}\\.json$`).test(url.pathname);
     } catch { return false; }
 }
