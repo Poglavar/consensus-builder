@@ -107,6 +107,23 @@ describe('createBrowserParcelRuntime', () => {
         expect(secondProgress).toHaveBeenCalledTimes(2);
     });
 
+    it('passes the request signal to the adapter and refuses an already-cancelled request', async () => {
+        const seen = [];
+        const customDescriptor = { id: 'custom.signal', adapter: 'test', endpoint: 'https://provider.test/data' };
+        const runtime = createBrowserParcelRuntime({ factories: { test: async () => ({
+            queryBounds: async (bounds, { signal }) => { seen.push([bounds, signal]); return { complete: true, features: [] }; }
+        }) } });
+        const controller = new AbortController();
+        await runtime.query(customDescriptor.id, 'queryBounds', [[0, 0, 1, 1]], customDescriptor, { signal: controller.signal });
+        expect(seen).toHaveLength(1);
+        expect(seen[0][0]).toEqual([0, 0, 1, 1]);
+        expect(seen[0][1]).toBe(controller.signal);
+        controller.abort();
+        await expect(runtime.query(customDescriptor.id, 'queryBounds', [[0, 0, 1, 1]], customDescriptor, { signal: controller.signal }))
+            .rejects.toMatchObject({ name: 'AbortError' });
+        expect(seen).toHaveLength(1);
+    });
+
     it('isolates source progress and swallows observer errors while still unsubscribing on query errors', async () => {
         const broadcasters = new Map();
         let rejectQuery;

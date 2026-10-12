@@ -117,6 +117,17 @@
             : { type: 'MultiPolygon', coordinates: polygons };
     }
 
+    // Stops one caller waiting when its signal aborts, without cancelling the shared work itself.
+    function untilCancelled(promise, signal) {
+        if (!signal) return promise;
+        if (signal.aborted) return Promise.reject(signal.reason);
+        return new Promise((resolve, reject) => {
+            const cancel = () => reject(signal.reason);
+            signal.addEventListener('abort', cancel, { once: true });
+            promise.then(resolve, reject).finally(() => signal.removeEventListener('abort', cancel));
+        });
+    }
+
     function createCadastralParcelRepository(dependencies = {}) {
         const root = dependencies.root || defaultRoot || {};
         const source = dependencies.transport || null;
@@ -691,7 +702,13 @@
             return { ...profile, elapsed };
         }
 
+        // Every caller that needs a grid cell shares one request for it, and joins any in-flight
+        // request synchronously, before the first await. A caller that passes `signal` (a viewport
+        // the next one supersedes) stops waiting when it aborts; the cell request itself, and the
+        // archive work behind it, is cancelled only once no caller still wants that cell.
         async function ensureBounds(bounds, options = {}) {
+            const signal = options.signal || null;
+            if (signal && signal.aborted) throw signal.reason;
             const city = normalizeId(options.city) || cityKey();
             const rawKeys = typeof dependencies.boundsKeysOf === 'function'
                 ? dependencies.boundsKeysOf(bounds)
@@ -722,9 +739,22 @@
 
             const waits = new Set();
             const ownKeys = [];
+            const join = cell => {
+                waits.add(untilCancelled(cell.promise, signal));
+                if (typeof options.onProgress === 'function') cell.progress.add(options.onProgress);
+                if (!signal) { cell.pinned = true; return; }
+                cell.interest += 1;
+                signal.addEventListener('abort', () => {
+                    cell.progress.delete(options.onProgress);
+                    cell.interest -= 1;
+                    if (cell.settled || cell.pinned || cell.interest > 0) return;
+                    if (boundsInFlight.get(cell.cacheKey) === cell) boundsInFlight.delete(cell.cacheKey);
+                    cell.controller.abort(signal.reason);
+                }, { once: true });
+            };
             pendingKeys.forEach(key => {
                 const pending = boundsInFlight.get(scoped(city, key));
-                if (pending) waits.add(pending);
+                if (pending) join(pending);
                 else ownKeys.push(key);
             });
             const provision = { city, mutation: options.mutation || null };
@@ -752,10 +782,16 @@
                 let done = 0;
                 ownKeys.forEach(key => {
                     const cacheKey = scoped(city, key);
+                    const cell = { cacheKey, controller: new AbortController(), interest: 0, pinned: false, settled: false, progress: new Set() };
+                    const cellSignal = cell.controller.signal;
                     const own = acquire()
-                        .then(() => fetchBounds(bounds, { city, keys: [key], onProgress: detail => {
-                            if (detail?.phase) emit(options.onProgress, detail);
-                        } }))
+                        .then(() => {
+                            // A cell nobody wants any more is never sent.
+                            if (cellSignal.aborted) throw cellSignal.reason;
+                            return fetchBounds(bounds, { city, keys: [key], signal: cellSignal, onProgress: detail => {
+                                if (detail?.phase) cell.progress.forEach(listener => emit(listener, detail));
+                            } });
+                        })
                         .then(result => acceptTransportResult(result, {
                             city,
                             skipConversion: result && result.returnsWGS84 === true
@@ -770,11 +806,13 @@
                             return result;
                         })
                         .finally(() => {
+                            cell.settled = true;
                             release();
-                            if (boundsInFlight.get(cacheKey) === own) boundsInFlight.delete(cacheKey);
+                            if (boundsInFlight.get(cacheKey) === cell) boundsInFlight.delete(cacheKey);
                         });
-                    boundsInFlight.set(cacheKey, own);
-                    waits.add(own);
+                    cell.promise = own;
+                    boundsInFlight.set(cacheKey, cell);
+                    join(cell);
                 });
             }
             // Every cell arrival schedules a corridor strip refresh after its commit; hold them so a
@@ -784,6 +822,7 @@
                 ? root.withCorridorStripRefreshHeld
                 : run => run();
             const settled = await held(() => Promise.allSettled(waits));
+            if (signal && signal.aborted) throw signal.reason;
             const failure = settled.find(entry => entry.status === 'rejected');
             if (failure) throw failure.reason;
             const resolvedIds = new Set(keys.flatMap(key => Array.from(loaded.get(key) || [])));

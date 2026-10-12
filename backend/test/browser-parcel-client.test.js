@@ -67,6 +67,24 @@ describe('browser parcel worker client', () => {
         await expect(second).resolves.toEqual({ complete: true, absentIds: [] });
     });
 
+    it('a cancelled request rejects at once, tells the worker to stop it, and ignores its late answer', async () => {
+        const { client } = boot();
+        const view = new AbortController();
+        const cancelled = client.queryBounds('source-a', [0, 0, 1, 1], { city: 'city-a', signal: view.signal });
+        const kept = client.queryBounds('source-a', [1, 1, 2, 2], { city: 'city-a' });
+        const worker = FakeWorker.instances[0];
+        view.abort();
+        await expect(cancelled).rejects.toMatchObject({ name: 'AbortError' });
+        expect(worker.messages.at(-1)).toEqual({ cancel: 1 });
+        worker.emit('message', { data: { id: 1, result: { complete: true, features: ['late'] } } });
+        worker.emit('message', { data: { id: 2, result: { complete: true, features: [] } } });
+        await expect(kept).resolves.toEqual({ complete: true, features: [] });
+
+        const already = new AbortController(); already.abort();
+        await expect(client.queryBounds('source-a', [0, 0, 1, 1], { signal: already.signal })).rejects.toMatchObject({ name: 'AbortError' });
+        expect(worker.messages.filter(message => message.method)).toHaveLength(2);
+    });
+
     it('versions the worker URL with the executing frontend script', async () => {
         const { client } = boot('?v=release-a');
         const pending = client.queryIds('source-a', ['A-1']);

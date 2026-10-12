@@ -21,7 +21,8 @@ function bootPage(city, fetch, parcels = { source: 'parcel-bg' }, BrowserParcelS
         URL,
         URLSearchParams,
         console,
-        setTimeout
+        setTimeout,
+        AbortController
     });
     vm.runInContext(progressSource, context);
     vm.runInContext(source, context);

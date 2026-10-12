@@ -22,7 +22,7 @@ function boot(city = 'explore') {
         updateStatus: vi.fn(),
         ParcelSourceSettings: { clearFailure: vi.fn() }
     };
-    const context = vm.createContext({ window, console, URL, URLSearchParams, setTimeout });
+    const context = vm.createContext({ window, console, URL, URLSearchParams, setTimeout, AbortController });
     for (const path of ['schelling-grid.js', 'ground-fallback.js', 'fetch.js']) {
         vm.runInContext(readFileSync(new URL(`../../frontend/js/parcels/${path}`, import.meta.url), 'utf8'), context);
     }

@@ -31,7 +31,7 @@ function boot({ features, absent = [], mutation } = {}) {
         ProposalManager: { integrateCadastralGround: integrate },
         withCorridorStripRefreshHeld: run => run()
     };
-    vm.runInNewContext(source, { window, Promise, console, performance });
+    vm.runInNewContext(source, { window, Promise, console, performance, AbortController });
     return { window, fabric, fetchBounds, integrate, mutation };
 }
 

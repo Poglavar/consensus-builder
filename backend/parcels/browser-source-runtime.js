@@ -157,7 +157,7 @@ export function createBrowserParcelRuntime(options = {}) {
         return instancePromise;
     }
     return Object.freeze({
-        async query(sourceId, method, args, customDescriptor, { onProgress } = {}) {
+        async query(sourceId, method, args, customDescriptor, { onProgress, signal } = {}) {
             if (!['queryBounds', 'queryIds', 'queryGeometry', 'queryPoint'].includes(method)) throw upstreamError('Unknown browser parcel operation.', 400);
             // Cached adapters can serve several viewport cells. Subscribe for each query's
             // lifetime, including time spent waiting for a shared authority download.
@@ -169,7 +169,9 @@ export function createBrowserParcelRuntime(options = {}) {
             try {
                 const instance = await adapter(sourceId, customDescriptor);
                 if (typeof instance[method] !== 'function') throw upstreamError('Parcel source does not support this operation.', 422);
-                const result = await instance[method](...args);
+                signal?.throwIfAborted();
+                // Adapters that support cancellation read the signal from the options argument.
+                const result = await instance[method](args[0], { signal });
                 if (result.complete !== true || !Array.isArray(result.features)) throw upstreamError('Browser parcel source returned incomplete data.');
                 return result;
             } finally {

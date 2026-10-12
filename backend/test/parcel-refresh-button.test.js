@@ -17,7 +17,7 @@ function boot(ensureBounds) {
     };
     vm.runInNewContext(source, {
         window, document: { getElementById: () => button },
-        URL, URLSearchParams, setTimeout, Promise, console: { log() {}, warn() {}, error() {} }
+        URL, URLSearchParams, setTimeout, Promise, AbortController, console: { log() {}, warn() {}, error() {} }
     });
     return { window, statuses, button };
 }

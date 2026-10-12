@@ -78,6 +78,24 @@ function bounds(geometry) {
     return out;
 }
 function overlaps(a, b) { return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1]; }
+// Absorbs overlay rounding when a policy input is compared with a query rectangle (about 1 cm).
+const BOUNDS_TEST_PAD_DEGREES = 1e-7;
+function polygonalResult(geos, pointer) { return polygonal(geosGeomToGeojson(pointer, geos)); }
+// The policy's input normalization, shared by resolution and rectangle tests: repair, keep the
+// polygonal part, normalize, then snap to the 1 mm grid. `own` registers pointers for disposal.
+function normalizeNativeInput(geos, own, raw, id) {
+    const wasValid = geos.GEOSisValid(raw) === 1;
+    const valid = own(geos.GEOSMakeValid(raw));
+    const validGeo = polygonalResult(geos, valid);
+    if (!validGeo) throw new Error(`HMLR geometry ${id} has no polygonal area after repair.`);
+    const polygon = own(geojsonToGeosGeom(validGeo, geos));
+    geos.GEOSNormalize(polygon);
+    const normalized = own(geos.GEOSGeom_setPrecision(polygon, HMLR_BROWSER_GROUND_GRID_METERS, 0));
+    if (geos.GEOSisEmpty(normalized) || geos.GEOSisValid(normalized) !== 1) throw new Error(`HMLR geometry ${id} collapsed or became invalid on the 1 mm grid.`);
+    const normalizedGeo = polygonalResult(geos, normalized);
+    if (!normalizedGeo) throw new Error(`HMLR geometry ${id} has no polygon after grid normalization.`);
+    return { wasValid, valid, polygon, normalized, normalizedGeo };
+}
 
 // A packed binary bbox tree keeps candidate lookup near O(log N + matches), including large parcels.
 function buildIndex(items) {
@@ -109,16 +127,35 @@ function searchIndex(root, box, result = []) {
 
 export async function createHmlrBrowserGroundEngine() {
     const geos = await initGeos();
-    return Object.freeze({ async resolve(featuresNative27700, { selectedIds } = {}) {
+    return Object.freeze({ async intersectsBounds(featuresNative27700, wgsBounds) {
+        // Derived ground is a subset of its normalized projected input, so an input that misses
+        // the rectangle can never publish ground inside it. Answers align with the input order.
+        if (!Array.isArray(featuresNative27700)) throw new TypeError('Expected native HMLR features.');
+        if (!Array.isArray(wgsBounds) || wgsBounds.length !== 4 || !wgsBounds.every(Number.isFinite)
+            || wgsBounds[0] > wgsBounds[2] || wgsBounds[1] > wgsBounds[3]) throw new TypeError('Expected WGS84 bounds.');
+        const [west, south, east, north] = [wgsBounds[0] - BOUNDS_TEST_PAD_DEGREES, wgsBounds[1] - BOUNDS_TEST_PAD_DEGREES,
+            wgsBounds[2] + BOUNDS_TEST_PAD_DEGREES, wgsBounds[3] + BOUNDS_TEST_PAD_DEGREES];
+        const rectangle = geojsonToGeosGeom({ type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] }, geos);
+        if (!rectangle) throw new Error('GEOS failed to create a geometry.');
+        try {
+            return featuresNative27700.map(feature => {
+                const owned = new Set();
+                const own = pointer => { if (!pointer) throw new Error('GEOS failed to create a geometry.'); owned.add(pointer); return pointer; };
+                try {
+                    const id = nativeId(feature);
+                    validateNativeGeometry(feature.geometry, id);
+                    const raw = own(geojsonToGeosGeom(feature.geometry, geos));
+                    const { normalizedGeo } = normalizeNativeInput(geos, own, raw, id);
+                    return geos.GEOSIntersects(own(geojsonToGeosGeom(projectGeometry(normalizedGeo), geos)), rectangle) === 1;
+                } finally { for (const pointer of owned) geos.GEOSGeom_destroy(pointer); }
+            });
+        } finally { geos.GEOSGeom_destroy(rectangle); }
+    }, async resolve(featuresNative27700, { selectedIds } = {}) {
         if (!Array.isArray(featuresNative27700)) throw new TypeError('Expected the complete native HMLR feature context.');
         const owned = new Set();
         const own = pointer => { if (!pointer) throw new Error('GEOS failed to create a geometry.'); owned.add(pointer); return pointer; };
         const dispose = pointer => { if (pointer && owned.delete(pointer)) geos.GEOSGeom_destroy(pointer); };
-        const result = pointer => {
-            const geometry = geosGeomToGeojson(pointer, geos);
-            const output = polygonal(geometry);
-            return output;
-        };
+        const result = pointer => polygonalResult(geos, pointer);
         const area = pointer => {
             const at = geos.Module._malloc(8);
             try { if (!geos.GEOSArea(pointer, at)) throw new Error('GEOS could not measure HMLR area.'); return geos.Module.getValue(at, 'double'); }
@@ -144,17 +181,10 @@ export async function createHmlrBrowserGroundEngine() {
                 const raw = own(geojsonToGeosGeom(feature.geometry, geos));
                 let valid, polygon, normalized;
                 try {
-                    const wasValid = geos.GEOSisValid(raw) === 1;
-                    valid = own(geos.GEOSMakeValid(raw));
-                    const validGeo = result(valid);
-                    if (!validGeo) throw new Error(`HMLR geometry ${id} has no polygonal area after repair.`);
-                    polygon = own(geojsonToGeosGeom(validGeo, geos));
-                    geos.GEOSNormalize(polygon);
+                    const input = normalizeNativeInput(geos, own, raw, id);
+                    ({ valid, polygon, normalized } = input);
+                    const { wasValid, normalizedGeo } = input;
                     const originalValidAreaM2 = area(polygon);
-                    normalized = own(geos.GEOSGeom_setPrecision(polygon, HMLR_BROWSER_GROUND_GRID_METERS, 0));
-                    if (geos.GEOSisEmpty(normalized) || geos.GEOSisValid(normalized) !== 1) throw new Error(`HMLR geometry ${id} collapsed or became invalid on the 1 mm grid.`);
-                    const normalizedGeo = result(normalized);
-                    if (!normalizedGeo) throw new Error(`HMLR geometry ${id} has no polygon after grid normalization.`);
                     const normalizedAreaM2 = area(normalized);
                     const duplicate = unique.get(id);
                     if (duplicate) {

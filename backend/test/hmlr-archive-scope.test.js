@@ -6,6 +6,7 @@ import {
     HMLR_SCOPE_POLICY,
     createHmlrArchiveScopeBuilder,
     hmlrArchiveScopeIntersects,
+    hmlrArchiveScopesShareCell,
     validateHmlrArchiveScope
 } from '../parcels/hmlr-archive-scope.js';
 
@@ -156,5 +157,37 @@ describe('HMLR archive occupied-cell scope', () => {
         expect(() => validateHmlrArchiveScope(scope, {
             archiveSha256: HASH, featureCount: 1, bounds: [0.01, 0.01, 0.02, 0.02]
         })).toThrow(/exceeds its authority extent/);
+    });
+});
+
+describe('scope-to-scope cell sharing', () => {
+    const identity = point => point;
+    it('finds a shared cell in the same row and ignores cells that are only near each other', () => {
+        const left = build([polygon(square(-1.2501, 51.7301, -1.2493, 51.7303))], identity);
+        const touching = build([polygon(square(-1.2496, 51.7302, -1.2490, 51.7304))], identity);
+        const sameRowApart = build([polygon(square(-1.2461, 51.7301, -1.2458, 51.7303))], identity);
+        const rowAbove = build([polygon(square(-1.2501, 51.7311, -1.2493, 51.7313))], identity);
+        expect(hmlrArchiveScopesShareCell(left, touching)).toBe(true);
+        expect(hmlrArchiveScopesShareCell(touching, left)).toBe(true);
+        expect(hmlrArchiveScopesShareCell(left, sameRowApart)).toBe(false);
+        expect(hmlrArchiveScopesShareCell(left, rowAbove)).toBe(false);
+    });
+
+    it('agrees with a cell-by-cell comparison across multi-span rows', () => {
+        const ringA = polygon(square(-1.26, 51.73, -1.25, 51.74), square(-1.258, 51.732, -1.252, 51.738));
+        const a = build([ringA], identity);
+        const cells = scope => new Set(scope.rows.flatMap(([y, ...spans]) => {
+            const out = [];
+            for (let i = 0; i < spans.length; i += 2) for (let x = spans[i]; x <= spans[i + 1]; x++) out.push(`${x},${y}`);
+            return out;
+        }));
+        const insideHole = build([polygon(square(-1.256, 51.734, -1.254, 51.736))], identity);
+        const onRing = build([polygon(square(-1.2595, 51.735, -1.2590, 51.7355))], identity);
+        for (const other of [insideHole, onRing]) {
+            const expected = [...cells(other)].some(cell => cells(a).has(cell));
+            expect(hmlrArchiveScopesShareCell(a, other)).toBe(expected);
+        }
+        expect(hmlrArchiveScopesShareCell(a, insideHole)).toBe(false);
+        expect(hmlrArchiveScopesShareCell(a, onRing)).toBe(true);
     });
 });

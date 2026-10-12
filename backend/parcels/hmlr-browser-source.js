@@ -6,7 +6,7 @@ import { providerHttpError, upstreamError, validateBounds, validateGeometry } fr
 import { sha256Hex } from './portable-hash.js';
 import { readGmlZipMember } from './gml-zip-reader.js';
 import { parseGmlParcels } from './gml-parcel-reader.js';
-import { validateHmlrArchiveScope, hmlrArchiveScopeIntersects } from './hmlr-archive-scope.js';
+import { createHmlrArchiveScopeBuilder, validateHmlrArchiveScope, hmlrArchiveScopeIntersects, hmlrArchiveScopesShareCell } from './hmlr-archive-scope.js';
 import { HMLR_BROWSER_GROUND_POLICY, HMLR_BROWSER_GROUND_PREFIX, HMLR_BROWSER_GROUND_SOURCE,
     createHmlrBrowserGroundEngine } from './hmlr-browser-ground.js';
 
@@ -19,6 +19,9 @@ const MAX_METADATA_BYTES = 16 * 1024 * 1024;
 const MAX_QUERY_AUTHORITIES = 32;
 const ARCHIVE_TIMEOUT_MS = 180_000;
 const PARSE_TIMEOUT_MS = 300_000;
+// A superseded view's cancellations reach the worker just before the next view's queries, which
+// then need a moment (scope reads, the per-source query queue) to claim the archives they share.
+const ORPHANED_LOAD_GRACE_MS = 2000;
 const ID_PREFIX = HMLR_BROWSER_GROUND_PREFIX;
 const ARCHIVE_HOST = 'use-land-property-data.service.gov.uk';
 const ALLOWED_ARCHIVE_REDIRECT_HOST = 'datapub-prd-s3-bucket.s3.amazonaws.com';
@@ -321,6 +324,17 @@ async function responseBytes(response, expectedBytes, limit, label, onBytes) {
     return bytes;
 }
 
+// Lets one cancelled query stop waiting without cancelling the shared work it was waiting for.
+function untilCancelled(promise, signal) {
+    if (!signal) return promise;
+    if (signal.aborted) return Promise.reject(signal.reason);
+    return new Promise((resolve, reject) => {
+        const cancel = () => reject(signal.reason);
+        signal.addEventListener('abort', cancel, { once: true });
+        promise.then(resolve, reject).finally(() => signal.removeEventListener('abort', cancel));
+    });
+}
+
 async function* withBatchWriteBackpressure(chunks, drainWrites) {
     for await (const chunk of chunks) {
         yield chunk;
@@ -330,7 +344,8 @@ async function* withBatchWriteBackpressure(chunks, drainWrites) {
 
 export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalThis.fetch?.bind(globalThis), featureStore,
     cacheStorage = globalThis.caches, indexedDB = globalThis.indexedDB, allowSample = false, now = Date.now,
-    engineFactory = createHmlrBrowserGroundEngine, maxContextFeatures = MAX_CONTEXT_FEATURES, onProgress } = {}) {
+    engineFactory = createHmlrBrowserGroundEngine, maxContextFeatures = MAX_CONTEXT_FEATURES, onProgress,
+    orphanedLoadGraceMs = ORPHANED_LOAD_GRACE_MS } = {}) {
     if (!descriptor || descriptor.id !== HMLR_BROWSER_GROUND_SOURCE || descriptor.adapter !== 'hmlr-browser'
         || descriptor.idPrefix !== ID_PREFIX || typeof descriptor.manifestUrl !== 'string' || typeof fetchImpl !== 'function'
         || typeof engineFactory !== 'function' || typeof now !== 'function' || !Number.isSafeInteger(maxContextFeatures)
@@ -391,7 +406,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         scopePending.set(index, task);
         try { return await task; } finally { scopePending.delete(index); }
     }
-    async function authoritiesForBounds(manifest, boxes) {
+    async function scopesNear(manifest, boxes) {
         const possible = [];
         manifest.authorities.forEach((authority, index) => {
             if (boxes.some(bounds => overlaps(authority.bounds, bounds))) possible.push(index);
@@ -400,9 +415,23 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             throw upstreamError('HMLR land scope metadata exceeds its safe byte limit; use a smaller query.', 413);
         }
         const scopes = await Promise.all(possible.map(index => getScope(manifest, index)));
-        return possible.filter((index, position) => boxes.some(bounds => hmlrArchiveScopeIntersects(scopes[position], bounds)));
+        return possible.map((index, position) => ({ index, scope: scopes[position] }));
     }
-    async function getArchiveBytes(manifest, authority, signal) {
+    async function authoritiesForBounds(manifest, boxes) {
+        return (await scopesNear(manifest, boxes))
+            .filter(({ scope }) => boxes.some(bounds => hmlrArchiveScopeIntersects(scope, bounds))).map(({ index }) => index);
+    }
+    // Overlap context comes from archives holding land in the cells the candidates' own polygons
+    // occupy, built by the archive scope policy. A candidate's enclosing rectangle can reach a
+    // neighbouring council's land without any of its polygon doing so; that must not download it.
+    async function authoritiesForParcels(manifest, candidates) {
+        const project = proj4('EPSG:27700', 'EPSG:4326'), cells = createHmlrArchiveScopeBuilder(point => project.forward(point));
+        for (const candidate of candidates) cells.addGeometry(candidate.feature.geometry);
+        const occupied = cells.finish(null);
+        return (await scopesNear(manifest, candidates.map(item => item.bboxWgs)))
+            .filter(({ scope }) => hmlrArchiveScopesShareCell(scope, occupied)).map(({ index }) => index);
+    }
+    async function getArchiveBytes(manifest, authority, signal, cancelSignal) {
         let bytes = await archiveCache.get(manifest.releaseId, authority.archiveSha256, authority.bytes);
         if (bytes && (bytes.byteLength !== authority.bytes || sha256Hex(bytes) !== authority.archiveSha256)) {
             await archiveCache.delete(manifest.releaseId, authority.archiveSha256);
@@ -416,6 +445,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 Accept: 'application/zip', 'If-Match': authority.etag
             } }); }
             catch (error) {
+                if (cancelSignal?.aborted) throw cancelSignal.reason;
                 if (error.status || error.code === 'provider-probe-request-budget' || error.code === 'qualification-request-budget') throw error;
                 const failure = upstreamError(signal.aborted ? 'HMLR authority archive download timed out.' : 'HMLR authority archive is unavailable.', signal.aborted ? 504 : 502);
                 failure.cause = error;
@@ -425,8 +455,10 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             if (finalUrl && (finalUrl.protocol !== 'https:' || ![ARCHIVE_HOST, ALLOWED_ARCHIVE_REDIRECT_HOST].includes(finalUrl.hostname)
                 || finalUrl.username || finalUrl.password)) { await response.body?.cancel(); throw upstreamError('HMLR archive redirected outside the verified publisher.'); }
             if (response.headers?.get?.('etag') !== authority.etag) throw upstreamError('HMLR authority archive ETag changed.');
-            bytes = await responseBytes(response, authority.bytes, MAX_ARCHIVE_BYTES, 'HMLR authority archive',
-                loadedBytes => reportProgress({ ...progress, loadedBytes }));
+            try {
+                bytes = await responseBytes(response, authority.bytes, MAX_ARCHIVE_BYTES, 'HMLR authority archive',
+                    loadedBytes => reportProgress({ ...progress, loadedBytes }));
+            } catch (error) { throw cancelSignal?.aborted ? cancelSignal.reason : error; }
             if (sha256Hex(bytes) !== authority.archiveSha256) throw upstreamError('HMLR authority archive SHA-256 does not match its release manifest.');
             await archiveCache.put(manifest.releaseId, authority.archiveSha256, bytes);
         }
@@ -437,100 +469,138 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         rawRows.forEach((row, index) => { bboxWgs84.set(row.bboxWgs, index * 4); bboxNative.set(row.bboxNative, index * 4); });
         return packIndex(ids, bboxWgs84, bboxNative);
     }
-    async function loadAuthority(index) {
+    // One load per authority serves every query that needs it. A query that passes a signal can
+    // be cancelled; the load stops only once no query wants it. A running load nobody claims
+    // again within the grace period is aborted, and a queued one nobody wants is skipped.
+    function abandonAuthorityLoad(index, entry, reason) {
+        clearTimeout(entry.graceTimer);
+        if (authorityPending.get(index) === entry) authorityPending.delete(index);
+        entry.controller.abort(reason ?? undefined);
+    }
+    const unwanted = entry => entry.interest === 0 && !entry.pinned;
+    async function loadAuthority(index, signal) {
         const manifest = await getManifest(), authority = manifest.authorities[index];
         if (!authority) throw upstreamError('HMLR ID directory references an unknown authority.');
+        signal?.throwIfAborted();
         if (authorityState.has(index)) return authorityState.get(index);
-        if (authorityPending.has(index)) return authorityPending.get(index);
-        const task = authorityLoadQueue.catch(() => {}).then(async () => {
-            const load = async () => {
-                let stored = await store.getAuthority(manifest.releaseId, index);
-                if (stored?.ready && stored.archiveSha256 === authority.archiveSha256 && stored.featureCount === authority.featureCount
-                    && stored.sourceDate === manifest.sourceDate) {
-                    reportProgress({ phase: 'source-cache', authority: authority.name });
-                    const storedRows = await store.getIndex(manifest.releaseId, index);
-                    const storedIds = new Set();
-                    const validStoredRows = storedRows.length === authority.featureCount && storedRows.every(row => {
-                        const nativeId = decimalId(row?.nativeId, true);
-                        if (nativeId === null || storedIds.has(nativeId) || !withinBounds(row.bboxNative, authority.nativeBounds)
-                            || !withinBounds(row.bboxWgs, authority.bounds)) return false;
-                        storedIds.add(nativeId); return true;
-                    });
-                    if (validStoredRows) {
-                        const built = makeAuthorityIndex(storedRows.map(row => ({ nativeId: row.nativeId, bboxWgs: row.bboxWgs, bboxNative: row.bboxNative })));
-                        authorityState.set(index, built); return built;
-                    }
+        let entry = authorityPending.get(index);
+        if (!entry) {
+            const created = { controller: new AbortController(), interest: 0, pinned: false, graceTimer: null, reason: null };
+            created.task = authorityLoadQueue.catch(() => {}).then(() => {
+                if (unwanted(created)) abandonAuthorityLoad(index, created, created.reason);
+                return runAuthorityLoad(manifest, authority, index, created.controller.signal);
+            });
+            authorityLoadQueue = created.task.then(() => undefined, () => undefined);
+            authorityPending.set(index, created);
+            const settled = () => { clearTimeout(created.graceTimer); if (authorityPending.get(index) === created) authorityPending.delete(index); };
+            created.task.then(settled, settled);
+            entry = created;
+        }
+        clearTimeout(entry.graceTimer);
+        if (!signal) { entry.pinned = true; return entry.task; }
+        entry.interest++;
+        let counted = true;
+        const leave = cancelled => {
+            if (!counted) return;
+            counted = false; entry.interest--;
+            if (!cancelled || !unwanted(entry)) return;
+            entry.reason = signal.reason;
+            entry.graceTimer = setTimeout(() => { if (unwanted(entry)) abandonAuthorityLoad(index, entry, entry.reason); }, orphanedLoadGraceMs);
+            entry.graceTimer.unref?.();
+        };
+        const cancel = () => leave(true);
+        signal.addEventListener('abort', cancel, { once: true });
+        try { return await untilCancelled(entry.task, signal); }
+        finally { signal.removeEventListener('abort', cancel); leave(false); }
+    }
+    async function runAuthorityLoad(manifest, authority, index, cancelSignal) {
+        cancelSignal.throwIfAborted();
+        const load = async () => {
+            let stored = await store.getAuthority(manifest.releaseId, index);
+            if (stored?.ready && stored.archiveSha256 === authority.archiveSha256 && stored.featureCount === authority.featureCount
+                && stored.sourceDate === manifest.sourceDate) {
+                reportProgress({ phase: 'source-cache', authority: authority.name });
+                const storedRows = await store.getIndex(manifest.releaseId, index);
+                const storedIds = new Set();
+                const validStoredRows = storedRows.length === authority.featureCount && storedRows.every(row => {
+                    const nativeId = decimalId(row?.nativeId, true);
+                    if (nativeId === null || storedIds.has(nativeId) || !withinBounds(row.bboxNative, authority.nativeBounds)
+                        || !withinBounds(row.bboxWgs, authority.bounds)) return false;
+                    storedIds.add(nativeId); return true;
+                });
+                if (validStoredRows) {
+                    const built = makeAuthorityIndex(storedRows.map(row => ({ nativeId: row.nativeId, bboxWgs: row.bboxWgs, bboxNative: row.bboxNative })));
+                    authorityState.set(index, built); return built;
                 }
+            }
+            await store.clearAuthority(manifest.releaseId, index);
+            await store.setAuthority(manifest.releaseId, index, { ready: false, archiveSha256: authority.archiveSha256, featureCount: authority.featureCount });
+            // Download and local parsing have separate budgets. A completed download's
+            // timer must not abort a large council while it is being indexed locally.
+            const bytes = await getArchiveBytes(manifest, authority,
+                AbortSignal.any([AbortSignal.timeout(ARCHIVE_TIMEOUT_MS), cancelSignal]), cancelSignal);
+            reportProgress({ phase: 'source-decompress', authority: authority.name });
+            const signal = AbortSignal.any([AbortSignal.timeout(PARSE_TIMEOUT_MS), cancelSignal]);
+            const project = proj4('EPSG:27700', 'EPSG:4326');
+            const seen = new Set(), rows = [], pendingWrites = []; let batch = [], writeFailure = null;
+            const drainWrites = async () => {
+                if (pendingWrites.length) await Promise.all(pendingWrites.splice(0));
+                if (writeFailure) throw writeFailure;
+            };
+            const flush = () => {
+                if (!batch.length) return;
+                const current = batch; batch = [];
+                const pending = store.putBatch(manifest.releaseId, index, current).catch(error => { writeFailure = error; });
+                pendingWrites.push(pending);
+            };
+            try {
+                const parsed = await parseGmlParcels(withBatchWriteBackpressure(
+                    readGmlZipMember(bytes, MAX_GML_BYTES, signal), drainWrites), {
+                    coordinateMode: 'native', maxBytes: MAX_GML_BYTES, maxFeatures: authority.featureCount, signal,
+                    onFeature: feature => {
+                        const nativeId = decimalId(feature.properties?.INSPIREID);
+                        if (nativeId === null || seen.has(nativeId)) throw upstreamError('HMLR authority archive has invalid or repeated INSPIREIDs.');
+                        seen.add(nativeId);
+                        const bounds = collectBoxes(feature.geometry, project);
+                        if (!withinBounds(bounds.bboxNative, authority.nativeBounds)) {
+                            throw upstreamError('HMLR authority feature exceeds its manifest native extent.');
+                        }
+                        if (!withinBounds(bounds.bboxWgs, authority.bounds)) {
+                            throw upstreamError('HMLR authority feature exceeds its manifest projected extent.');
+                        }
+                        const record = { nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative, feature };
+                        rows.push({ nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative });
+                        batch.push(record); if (batch.length >= 250) flush();
+                        // Decompression and parsing stream together; report actual accepted
+                        // features, without inventing a separate completed unpacking phase.
+                        if (rows.length === 1 || rows.length % 250 === 0 || rows.length === authority.featureCount) {
+                            reportProgress({ phase: 'source-process', authority: authority.name,
+                                processedFeatures: rows.length, totalFeatures: authority.featureCount });
+                        }
+                    }
+                });
+                flush(); await drainWrites();
+                if (parsed.sourceCrs !== 'EPSG:27700' || parsed.featureCount !== authority.featureCount
+                    || parsed.numberMatched !== authority.featureCount || parsed.numberReturned !== authority.featureCount
+                    || parsed.sourceTimestamp?.slice(0, 10) !== manifest.sourceDate || rows.length !== authority.featureCount) {
+                    throw upstreamError('HMLR authority GML date, CRS, or complete feature count disagrees with its release manifest.');
+                }
+                const built = makeAuthorityIndex(rows);
+                await store.setAuthority(manifest.releaseId, index, { ready: true, archiveSha256: authority.archiveSha256,
+                    featureCount: authority.featureCount, sourceDate: manifest.sourceDate });
+                authorityState.set(index, built); return built;
+            } catch (error) {
+                await Promise.allSettled(pendingWrites.splice(0));
                 await store.clearAuthority(manifest.releaseId, index);
                 await store.setAuthority(manifest.releaseId, index, { ready: false, archiveSha256: authority.archiveSha256, featureCount: authority.featureCount });
-                // Download and local parsing have separate budgets. A completed download's
-                // timer must not abort a large council while it is being indexed locally.
-                const bytes = await getArchiveBytes(manifest, authority, AbortSignal.timeout(ARCHIVE_TIMEOUT_MS));
-                reportProgress({ phase: 'source-decompress', authority: authority.name });
-                const signal = AbortSignal.timeout(PARSE_TIMEOUT_MS);
-                const project = proj4('EPSG:27700', 'EPSG:4326');
-                const seen = new Set(), rows = [], pendingWrites = []; let batch = [], writeFailure = null;
-                const drainWrites = async () => {
-                    if (pendingWrites.length) await Promise.all(pendingWrites.splice(0));
-                    if (writeFailure) throw writeFailure;
-                };
-                const flush = () => {
-                    if (!batch.length) return;
-                    const current = batch; batch = [];
-                    const pending = store.putBatch(manifest.releaseId, index, current).catch(error => { writeFailure = error; });
-                    pendingWrites.push(pending);
-                };
-                try {
-                    const parsed = await parseGmlParcels(withBatchWriteBackpressure(
-                        readGmlZipMember(bytes, MAX_GML_BYTES, signal), drainWrites), {
-                        coordinateMode: 'native', maxBytes: MAX_GML_BYTES, maxFeatures: authority.featureCount, signal,
-                        onFeature: feature => {
-                            const nativeId = decimalId(feature.properties?.INSPIREID);
-                            if (nativeId === null || seen.has(nativeId)) throw upstreamError('HMLR authority archive has invalid or repeated INSPIREIDs.');
-                            seen.add(nativeId);
-                            const bounds = collectBoxes(feature.geometry, project);
-                            if (!withinBounds(bounds.bboxNative, authority.nativeBounds)) {
-                                throw upstreamError('HMLR authority feature exceeds its manifest native extent.');
-                            }
-                            if (!withinBounds(bounds.bboxWgs, authority.bounds)) {
-                                throw upstreamError('HMLR authority feature exceeds its manifest projected extent.');
-                            }
-                            const record = { nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative, feature };
-                            rows.push({ nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative });
-                            batch.push(record); if (batch.length >= 250) flush();
-                            // Decompression and parsing stream together; report actual accepted
-                            // features, without inventing a separate completed unpacking phase.
-                            if (rows.length === 1 || rows.length % 250 === 0 || rows.length === authority.featureCount) {
-                                reportProgress({ phase: 'source-process', authority: authority.name,
-                                    processedFeatures: rows.length, totalFeatures: authority.featureCount });
-                            }
-                        }
-                    });
-                    flush(); await drainWrites();
-                    if (parsed.sourceCrs !== 'EPSG:27700' || parsed.featureCount !== authority.featureCount
-                        || parsed.numberMatched !== authority.featureCount || parsed.numberReturned !== authority.featureCount
-                        || parsed.sourceTimestamp?.slice(0, 10) !== manifest.sourceDate || rows.length !== authority.featureCount) {
-                        throw upstreamError('HMLR authority GML date, CRS, or complete feature count disagrees with its release manifest.');
-                    }
-                    const built = makeAuthorityIndex(rows);
-                    await store.setAuthority(manifest.releaseId, index, { ready: true, archiveSha256: authority.archiveSha256,
-                        featureCount: authority.featureCount, sourceDate: manifest.sourceDate });
-                    authorityState.set(index, built); return built;
-                } catch (error) {
-                    await Promise.allSettled(pendingWrites.splice(0));
-                    await store.clearAuthority(manifest.releaseId, index);
-                    await store.setAuthority(manifest.releaseId, index, { ready: false, archiveSha256: authority.archiveSha256, featureCount: authority.featureCount });
-                    throw error.status ? error : upstreamError('HMLR authority archive is malformed or incomplete.');
-                }
-            };
-            const built = typeof store.withAuthorityLoad === 'function'
-                ? await store.withAuthorityLoad(manifest.releaseId, index, load) : await load();
-            authorityState.set(index, built);
-            return built;
-        });
-        authorityLoadQueue = task.then(() => undefined, () => undefined);
-        authorityPending.set(index, task);
-        try { return await task; } finally { authorityPending.delete(index); }
+                if (cancelSignal.aborted) throw cancelSignal.reason;
+                throw error.status ? error : upstreamError('HMLR authority archive is malformed or incomplete.');
+            }
+        };
+        const built = typeof store.withAuthorityLoad === 'function'
+            ? await store.withAuthorityLoad(manifest.releaseId, index, load) : await load();
+        authorityState.set(index, built);
+        return built;
     }
     async function getShard(manifest, bucket) {
         if (shardCache.has(bucket)) return shardCache.get(bucket);
@@ -599,19 +669,21 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         }
         return selected;
     }
-    async function resolveCandidates(manifest, candidates) {
+    async function resolveCandidates(manifest, candidates, signal) {
         if (!candidates.length) return { features: [], suppressedIds: [] };
         if (candidates.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
-        const boxes = candidates.map(item => item.bboxWgs), needed = await authoritiesForBounds(manifest, boxes);
+        const boxes = candidates.map(item => item.bboxWgs), needed = await authoritiesForParcels(manifest, candidates);
         if (needed.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR overlap context spans too many authority archives; use a smaller query.', 413);
-        await Promise.all(needed.map(loadAuthority));
+        await Promise.all(needed.map(index => loadAuthority(index, signal)));
         reportProgress({ phase: 'source-prepare' });
         const fullIndexes = needed.map(index => [index, authorityState.get(index)]);
         const contextRows = rowsMatching(fullIndexes, boxes), context = [];
         for (let offset = 0; offset < contextRows.length; offset += 250) {
+            signal?.throwIfAborted();
             const batch = await Promise.all(contextRows.slice(offset, offset + 250).map(row => featureFrom(manifest.releaseId, row.authorityIndex, row.nativeId, row)));
             context.push(...batch);
         }
+        signal?.throwIfAborted();
         const targetIds = [...new Set(candidates.map(item => item.nativeId))];
         const resolved = await (await getEngine()).resolve(context, { selectedIds: targetIds.map(id => `${ID_PREFIX}${id}`) });
         return resolved;
@@ -623,31 +695,40 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             normalizationPolicy: HMLR_BROWSER_GROUND_POLICY, snapshotId: manifest.releaseId, sourceDate: manifest.sourceDate,
             returnsWGS84: true, features, suppressedIds: result.suppressedIds };
     }
-    async function queryBounds(bounds) {
+    async function queryBounds(bounds, { signal } = {}) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 25, descriptor);
         const manifest = await getManifest(), viewport = bboxPolygon(bounds), initial = await authoritiesForBounds(manifest, [bounds]);
         if (initial.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR viewport spans too many authority archives; use a smaller query.', 413);
-        await Promise.all(initial.map(loadAuthority));
+        await Promise.all(initial.map(index => loadAuthority(index, signal)));
         reportProgress({ phase: 'source-prepare' });
         const loaded = initial.map(index => [index, authorityState.get(index)]);
         const candidateRows = rowsMatching(loaded, [bounds]);
         if (candidateRows.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
-        const candidates = [];
+        const features = [];
         for (let offset = 0; offset < candidateRows.length; offset += 250) {
-            const rows = candidateRows.slice(offset, offset + 250);
-            const features = await Promise.all(rows.map(row => featureFrom(manifest.releaseId, row.authorityIndex, row.nativeId, row)));
-            features.forEach((feature, index) => candidates.push({ ...rows[index], feature }));
+            signal?.throwIfAborted();
+            features.push(...await Promise.all(candidateRows.slice(offset, offset + 250)
+                .map(row => featureFrom(manifest.releaseId, row.authorityIndex, row.nativeId, row))));
         }
-        const result = await resolveCandidates(manifest, candidates);
+        // An enclosing rectangle that overlaps the query does not make a parcel part of it. Only
+        // polygons whose policy input meets the query become candidates, so an offscreen parcel
+        // cannot pull its overlap context (and neighbouring ZIPs) into this view. A rectangle
+        // wholly inside the query already proves it.
+        const undecided = candidateRows.map((row, index) => index).filter(index => !withinBounds(candidateRows[index].bboxWgs, bounds));
+        const meets = undecided.length ? await (await getEngine()).intersectsBounds(undecided.map(index => features[index]), bounds) : [];
+        const outside = new Set(undecided.filter((index, position) => !meets[position]));
+        const candidates = candidateRows.map((row, index) => ({ ...row, feature: features[index] })).filter((_, index) => !outside.has(index));
+        signal?.throwIfAborted();
+        const result = await resolveCandidates(manifest, candidates, signal);
         return outputForQuery(result, viewport, manifest);
     }
-    async function queryGeometry(geometry) {
+    async function queryGeometry(geometry, options = {}) {
         if (!validateGeometry(geometry)) throw new HttpError(400, 'Provide valid polygon geometry.');
         validateBounds(geometryBbox(geometry), descriptor.maxBboxKm2 ?? 25, descriptor);
-        const result = await queryBounds(geometryBbox(geometry));
+        const result = await queryBounds(geometryBbox(geometry), options);
         return { ...result, features: result.features.filter(feature => booleanIntersects(feature, geoFeature(geometry))) };
     }
-    async function queryIds(ids) {
+    async function queryIds(ids, { signal } = {}) {
         if (!Array.isArray(ids) || !ids.length || ids.length > 80 || ids.some(id => typeof id !== 'string'
             || !id.startsWith(ID_PREFIX) || decimalId(id.slice(ID_PREFIX.length), true) === null)) {
             throw new HttpError(400, 'Provide between 1 and 80 canonical HMLR browser parcel IDs.');
@@ -669,7 +750,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         if (authorities.size > MAX_QUERY_AUTHORITIES || declaredReferences > MAX_QUERY_FEATURES) {
             throw upstreamError('HMLR ID lookup spans too many authority parcels; use fewer IDs.', 413);
         }
-        await Promise.all([...authorities].map(loadAuthority));
+        await Promise.all([...authorities].map(index => loadAuthority(index, signal)));
         reportProgress({ phase: 'source-prepare' });
         const targetRows = [];
         for (const [nativeId, indices] of declared) {
@@ -686,7 +767,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             const batch = await Promise.all(targetRows.slice(offset, offset + 250).map(row => featureFrom(manifest.releaseId, row.authorityIndex, row.nativeId, row)));
             batch.forEach((feature, index) => candidates.push({ ...targetRows[offset + index], feature }));
         }
-        const result = await resolveCandidates(manifest, candidates);
+        const result = await resolveCandidates(manifest, candidates, signal);
         const found = new Set(result.features.map(feature => feature.id)), suppressed = new Set(result.suppressedIds);
         const absentIds = requested.filter(item => !declared.has(item.nativeId) || suppressed.has(item.id)).map(item => item.id);
         for (const item of requested) if (declared.has(item.nativeId)

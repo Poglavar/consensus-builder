@@ -304,7 +304,8 @@
         if (provider?.source === 'parcel-source') {
             if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
             const payload = await global.BrowserParcelSources.queryBounds(provider.sourceId, latLonBbox.split(',').map(Number), {
-                city: context.city, ...(typeof context.onProgress === 'function' ? { onProgress: context.onProgress } : {})
+                city: context.city, ...(context.signal ? { signal: context.signal } : {}),
+                ...(typeof context.onProgress === 'function' ? { onProgress: context.onProgress } : {})
             });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
             return { features: payload.features, returnsWGS84: true };
@@ -361,10 +362,11 @@
             ?? global.CityConfigManager?.getParcelGridSize?.()
             ?? global.PARCELS_GRID_SIZE);
         const builder = typeof global.buildParcelRequestParams === 'function' ? global.buildParcelRequestParams : null;
-        const context = Object.freeze({ city, gridSize, builder, onProgress: options.onProgress });
+        const context = Object.freeze({ city, gridSize, builder, onProgress: options.onProgress, signal: options.signal });
         const results = [];
         let done = 0;
         for (const batch of chunks(keys, 6)) {
+            options.signal?.throwIfAborted();
             const part = await Promise.all(batch.map(cell => fetchCell(cell, context)));
             results.push(...part);
             done += batch.length;
@@ -452,6 +454,10 @@
         return text && text !== fullKey ? text : fallback;
     }
 
+    // The newest whole-view fetch supersedes the previous one. Cells only the older view wanted
+    // are cancelled, including their archive downloads; cells both views want keep loading.
+    let currentViewFetch = null;
+
     async function fetchParcelData(customBounds) {
         if (cityConfig(currentCity())?.parcels?.strategy === 'point' && !groundOverride(currentCity())) {
             global.PointParcelMap?.sync?.();
@@ -478,13 +484,20 @@
             ? Number(global.ParcelFetchConfig?.getPadding?.() ?? global.PARCEL_FETCH_LATLNG_PADDING ?? 0.12)
             : 0;
         const requestedBounds = padding > 0 ? viewBounds.pad(padding) : viewBounds;
+        const view = new AbortController();
+        const superseded = currentViewFetch;
+        currentViewFetch = view;
         global._fetchParcelDataInProgress = true;
         global.ParcelsState?.setIsFetchingParcels?.(true);
         global.updateStatus?.(statusText('checking_cadastral_ground', 'Checking cadastral ground…'));
         let lastProgressText;
         try {
-            const result = await repository.ensureBounds(requestedBounds, {
+            // ensureBounds joins in-flight cells before its first await, so the older view is
+            // cancelled only after this one has claimed the cells they share.
+            const pending = repository.ensureBounds(requestedBounds, {
+                signal: view.signal,
                 onProgress: detail => {
+                    if (currentViewFetch !== view) return;
                     const message = global.ParcelSourceProgress?.format(detail, {
                         language: global.i18n?.getLanguage?.() || 'en',
                         translate: (key, params) => global.i18n?.t?.(key, params)
@@ -499,6 +512,9 @@
                     }
                 }
             });
+            superseded?.abort();
+            const result = await pending;
+            if (view.signal.aborted) return result;
             const count = result.features.length;
             const source = groundOverride(currentCity());
             global.updateStatus?.(result.cached
@@ -509,6 +525,7 @@
             global.ParcelSourceSettings?.clearFailure?.(global);
             return result;
         } catch (error) {
+            if (view.signal.aborted) return null;
             // The visitor sees the register attempted first; only when that fails are they offered
             // a way on (retry, their own link, satellite boundary recognition, a Schelling plan). The error still
             // propagates: callers decide what a failed viewport fetch means for them.
@@ -524,8 +541,11 @@
             }
             throw error;
         } finally {
-            global._fetchParcelDataInProgress = false;
-            global.ParcelsState?.setIsFetchingParcels?.(false);
+            if (currentViewFetch === view) {
+                currentViewFetch = null;
+                global._fetchParcelDataInProgress = false;
+                global.ParcelsState?.setIsFetchingParcels?.(false);
+            }
         }
     }
 

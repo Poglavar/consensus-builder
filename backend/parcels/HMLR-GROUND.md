@@ -26,10 +26,25 @@ Administrative boundaries and a council's enclosing rectangle do not establish
 which archives contain land at a query location.
 
 The adapter first reads the small coverage scopes, then downloads only ZIPs whose
-scopes intersect the viewport. It uses the same scopes to select overlap context
-against the **full** candidate parcel envelopes. Higher-priority overlapping
-polygons are consequently included even outside the viewport or across a council
-boundary. Results keep full parcel footprints; the viewport never clips them.
+scopes intersect the viewport. A parcel becomes a candidate only when its policy
+input polygon (repaired, 1 mm-snapped, projected) meets the query rectangle; an
+enclosing rectangle that merely overlaps the view does not qualify, because derived
+ground is always a subset of that input. Overlap context comes from the ZIPs whose
+scopes share a cell with the cells the candidates' **full** polygons occupy, built
+by the same scope policy. Any polygon touching a candidate lies in such a shared
+cell, so higher-priority overlapping polygons are still included outside the
+viewport or across a council boundary, while a long parcel's rectangle cannot pull
+in a neighbouring ZIP. Results keep full parcel footprints; the viewport never
+clips them.
+
+Grid cells and council loads are shared and cancellable. A newer whole-view fetch
+supersedes the previous one: cells only the older view wanted are cancelled (queued
+ones are never sent), and cells both views want keep loading. In the worker, a
+council load stops only when no query wants it: a running download or parse that no
+newer query claims within two seconds is aborted, and a queued load nobody wants is
+skipped. A cancelled load leaves no ready partition and no cached ZIP. Callers that
+pass no signal (proposal footprints, block searches, Node qualification) are never
+cancelled.
 
 Scopes conservatively union occupied 0.0005-degree cells (about 35 by 56 metres
 at Oxford). Polygon interiors, holes, disconnected components, slivers and edge

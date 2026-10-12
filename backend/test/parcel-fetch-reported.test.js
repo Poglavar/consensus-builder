@@ -17,7 +17,7 @@ function boot(ensureBounds, fabric = null, ParcelSourceHealth = null) {
         updateStatus: message => statuses.push(message),
         isZoomWithinParcelRange: () => true
     };
-    const context = vm.createContext({ window, URL, URLSearchParams, console, setTimeout, Promise });
+    const context = vm.createContext({ window, URL, URLSearchParams, console, setTimeout, Promise, AbortController });
     vm.runInContext(fetchSource, context);
     vm.runInContext(visibilitySource, context);
     return { window, statuses };
@@ -86,6 +86,8 @@ describe('fetchParcelDataReported', () => {
 
         const unhandled = await collectUnhandled(async () => {
             window.showAllParcels();
+            // Let the first fetch settle: a second whole-view fetch would supersede it.
+            await new Promise(resolve => setImmediate(resolve));
             window.showOnlyRoadParcels();
         });
 
@@ -93,5 +95,30 @@ describe('fetchParcelDataReported', () => {
         expect(statuses).toContain('Cadastral ground failed to load: offline');
         expect(statuses.at(-1)).toBe('No parcel layer loaded yet; road parcels cannot be shown.');
         expect(errors.mock.calls.map(call => call[0]).join('\n')).toMatch(/show all parcels[\s\S]*show road parcels/);
+    });
+
+    it('a newer whole-view fetch supersedes the older one, which resolves null without reporting', async () => {
+        const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const signals = [], gates = [];
+        const { window, statuses } = boot((_bounds, { signal }) => {
+            signals.push(signal);
+            return new Promise((resolve, reject) => {
+                gates.push({ resolve, reject });
+                signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+            });
+        });
+        window.ParcelsState = { isFetching: false, setIsFetchingParcels(value) { this.isFetching = value; } };
+        const older = window.fetchParcelDataReported(undefined, 'older view');
+        const newer = window.fetchParcelDataReported(undefined, 'newer view');
+        await expect(older).resolves.toBeNull();
+        expect(signals[0].aborted).toBe(true);
+        expect(signals[1].aborted).toBe(false);
+        expect(window.ParcelsState.isFetching).toBe(true);
+        gates[1].reject(new Error('offline'));
+        await expect(newer).resolves.toBeNull();
+        expect(errors.mock.calls.map(call => call[0]).join('\n')).not.toMatch(/older view/);
+        expect(errors.mock.calls.map(call => call[0]).join('\n')).toMatch(/newer view/);
+        expect(statuses.at(-1)).toBe('Cadastral ground failed to load: offline');
+        expect(window.ParcelsState.isFetching).toBe(false);
     });
 });

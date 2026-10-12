@@ -88,3 +88,15 @@ test('rejects non-finite or unclosed native rings before GEOS conversion', async
     await assert.rejects(engine.resolve([feature('1', [[[1, 2], [2, 2], [2, 3], [1, 2.5]]])]), /Invalid native HMLR ring/);
     await assert.rejects(engine.resolve([feature('1', [[[1, 2], [2, 2], [2, Infinity], [1, 2]]])]), /Invalid native HMLR ring/);
 });
+
+test('rectangle tests use the policy input: an L around the rectangle misses it, a parcel inside meets it', async () => {
+    const proj4 = (await import('proj4')).default;
+    const [x, y] = proj4('EPSG:27700', 'EPSG:4326', [530810, 180210]);
+    const bounds = [x - 0.00002, y - 0.00002, x + 0.00002, y + 0.00002];
+    const ell = feature('7', [[[530790, 180150], [531000, 180150], [531000, 180160], [530800, 180160], [530800, 180300], [530790, 180300], [530790, 180150]]]);
+    const inside = square('8', 530805, 180205, 10);
+    const far = square('9', 531500, 180205, 10);
+    assert.deepEqual(await engine.intersectsBounds([ell, inside, far], bounds), [false, true, false]);
+    await assert.rejects(engine.intersectsBounds([ell], [1, 2, 0, 3]), /WGS84 bounds/);
+});
+

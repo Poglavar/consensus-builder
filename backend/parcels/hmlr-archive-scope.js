@@ -140,6 +140,26 @@ export function validateHmlrArchiveScope(value, authority) {
     return value;
 }
 
+// True when two scopes built by this policy share an occupied cell. A query scope built from
+// parcels' own polygons shares a cell with every archive holding a polygon that touches them.
+export function hmlrArchiveScopesShareCell(scope, other) {
+    const a = scope.rows, b = other.rows;
+    let i = 0, j = 0;
+    while (i < a.length && j < b.length) {
+        if (a[i][0] < b[j][0]) { i++; continue; }
+        if (a[i][0] > b[j][0]) { j++; continue; }
+        const left = a[i], right = b[j];
+        let p = 1, q = 1;
+        while (p < left.length && q < right.length) {
+            if (left[p + 1] < right[q]) p += 2;
+            else if (right[q + 1] < left[p]) q += 2;
+            else return true;
+        }
+        i++; j++;
+    }
+    return false;
+}
+
 export function hmlrArchiveScopeIntersects(scope, bounds) {
     const minY = cell(bounds[1] - EPSILON), maxY = cell(bounds[3] + EPSILON);
     const minX = cell(bounds[0] - EPSILON), maxX = cell(bounds[2] + EPSILON);

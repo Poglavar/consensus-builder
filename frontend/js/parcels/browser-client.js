@@ -28,7 +28,9 @@
         worker.addEventListener('messageerror', () => reset(new Error('Parcel adapter worker returned unreadable data.')));
         return worker;
     }
-    function query(sourceId, method, args, { city, onProgress } = {}) {
+    // An aborted signal rejects with its reason at once and tells the worker to stop the request.
+    function query(sourceId, method, args, { city, onProgress, signal } = {}) {
+        if (signal?.aborted) return Promise.reject(signal.reason);
         const active = getWorker(), id = ++sequence;
         const customDescriptor = sourceId.startsWith('custom.')
             ? global.ParcelSourceSettings?.choiceForCity?.(city || global.CityConfigManager?.getCurrentCityId?.(), global) : undefined;
@@ -36,11 +38,19 @@
             const timer = setTimeout(() => {
                 reset(Object.assign(new Error('Parcel provider processing timed out.'), { code: 'parcel-source-unavailable', status: 504 }));
             }, 10 * 60 * 1000);
+            const cancel = () => {
+                if (!pending.has(id)) return;
+                pending.delete(id); clearTimeout(timer);
+                try { active.postMessage({ cancel: id }); } catch (_) { /* A failed worker has already dropped the request. */ }
+                reject(signal.reason);
+            };
+            const settle = done => value => { signal?.removeEventListener('abort', cancel); done(value); };
             const trackProgress = typeof onProgress === 'function';
-            pending.set(id, { resolve, reject, timer, onProgress: trackProgress ? onProgress : undefined });
+            pending.set(id, { resolve: settle(resolve), reject: settle(reject), timer, onProgress: trackProgress ? onProgress : undefined });
+            signal?.addEventListener('abort', cancel, { once: true });
             try { active.postMessage({ id, sourceId, method, args, customDescriptor,
                 relayBase: global.getBackendBase?.(), ...(trackProgress ? { trackProgress: true } : {}) }); }
-            catch (error) { clearTimeout(timer); pending.delete(id); reject(error); }
+            catch (error) { clearTimeout(timer); pending.delete(id); signal?.removeEventListener('abort', cancel); reject(error); }
         });
     }
     global.BrowserParcelSources = Object.freeze({ query,

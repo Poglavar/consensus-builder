@@ -44,15 +44,26 @@ export function withSourceConcurrency(adapter, { limit = 2 } = {}) {
             else active--;
         };
     };
-    const acquire = () => {
+    // Query methods take (input, { signal }); a cancelled query leaves the queue without a slot.
+    const acquire = signal => {
+        if (signal?.aborted) return Promise.reject(signal.reason);
         if (active < limit) {
             active++;
             return Promise.resolve(makeRelease());
         }
-        return new Promise(resolve => waiting.push(resolve));
+        return new Promise((resolve, reject) => {
+            const cancel = () => {
+                const position = waiting.indexOf(waiter);
+                if (position >= 0) waiting.splice(position, 1);
+                reject(signal.reason);
+            };
+            const waiter = release => { signal?.removeEventListener('abort', cancel); resolve(release); };
+            signal?.addEventListener('abort', cancel, { once: true });
+            waiting.push(waiter);
+        });
     };
     const invoke = method => async (...args) => {
-        const release = await acquire();
+        const release = await acquire(args[1]?.signal);
         try { return await adapter[method](...args); }
         finally { release(); }
     };

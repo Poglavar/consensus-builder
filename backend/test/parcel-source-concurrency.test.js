@@ -65,6 +65,22 @@ describe('withSourceConcurrency', () => {
         expect(raw.queryIds).toHaveBeenCalledOnce();
     });
 
+    it('drops a cancelled queued call without giving it a slot', async () => {
+        const firstGate = deferred();
+        const raw = adapterWith({ queryBounds: vi.fn(() => firstGate.promise), queryIds: vi.fn(async () => 'next') });
+        const wrapped = withSourceConcurrency(raw, { limit: 1 });
+        const first = wrapped.queryBounds([]);
+        const stale = new AbortController();
+        const cancelled = wrapped.queryIds(['stale'], { signal: stale.signal });
+        const after = wrapped.queryIds(['after']);
+        stale.abort();
+        await expect(cancelled).rejects.toMatchObject({ name: 'AbortError' });
+        firstGate.resolve('one');
+        await expect(first).resolves.toBe('one');
+        await expect(after).resolves.toBe('next');
+        expect(raw.queryIds.mock.calls.map(([ids]) => ids)).toEqual([['after']]);
+    });
+
     it('checks cooldown only after a queued call receives a slot', async () => {
         const firstGate = deferred();
         const upstream = adapterWith({ queryBounds: vi.fn(() => firstGate.promise), queryIds: vi.fn(async () => 'unexpected') });
