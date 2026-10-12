@@ -300,19 +300,23 @@
     color: var(--cb-text-muted);
 }
 
-/* Rows nothing can be done with fold away under a count. */
-.bets-more {
+/* Rows nothing can be done with fold away under a count; a plan's older versions fold the same way
+   under its row (.bets-versions). */
+.bets-more,
+.bets-versions {
     margin-top: var(--cb-space-2);
     font-size: var(--cb-text-sm);
     color: var(--cb-text-muted);
 }
 
-.bets-more > summary {
+.bets-more > summary,
+.bets-versions > summary {
     cursor: pointer;
     padding: var(--cb-space-1) 0;
 }
 
-.bets-more > .bets-rows {
+.bets-more > .bets-rows,
+.bets-versions > .bets-rows {
     margin-top: var(--cb-space-1);
 }
 

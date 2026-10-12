@@ -5382,7 +5382,8 @@
             "toWinNote": "El pago final depende del fondo al liquidar.",
             "members": "Qué construye el plan: {{count}} propuestas",
             "openPlan": "Abrir el plan",
-            "onThisLandCount": "{{entries}} en este terreno"
+            "onThisLandCount": "{{entries}} en este terreno",
+            "superseded": "Versión anterior: las apuestas nuevas van a la versión actual"
         },
         "error": {
             "load": "No se pudieron cargar las apuestas.",
@@ -5397,6 +5398,7 @@
             "landMore": "Parcela {{parcel}} y {{count}} más",
             "site": "Sitio dibujado",
             "withoutPool": "Sin fondo: {{count}}",
+            "olderVersions": "Versiones anteriores: {{count}}",
             "titlePlans": "¿Qué plan se construirá?",
             "titleSinglePlan": "¿Se construirá este plan?",
             "planCount": "{{count}} planes"

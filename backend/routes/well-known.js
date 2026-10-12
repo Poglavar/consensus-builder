@@ -312,7 +312,7 @@ export function buildOpenApi(base, env) {
             },
             '/lenses/schemas': {
                 get: {
-                    summary: 'The lens SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1): layout strings and field lists. An owner\'s yes is not an attestation: the owner signs accept_with_attestations with an optional payout key',
+                    summary: 'The lens SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1, MarketEvidence-v1): layout strings and field lists. An owner\'s yes is not an attestation: the owner signs accept_with_attestations with an optional payout key',
                     operationId: 'getLensSchemas',
                     responses: { 200: { description: '{ sasProgram, schemas: [{ kind, id, name, version, layout, fields, sasLayout }] }' } }
                 }

@@ -103,7 +103,12 @@ schema 32 | data (u32 + bytes) | signer 32 | expiry i64 | token_account 32`. Pay
 ```
 ParcelOwnership-v1:  string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt
 ProposalVerdict-v1:  string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt
+MarketEvidence-v1:   string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef
 ```
+
+`MarketEvidence-v1` settles proposal_market's recipe-bound LMSR markets (`../../lmsr-market.md`):
+`recipeHash` is `sha256:` plus the recipe digest in lowercase hex and must equal the market's
+`recipe_hash`; `subject` and `value` are hashed against its committed subject and outcome hashes.
 
 ### Localnet tests
 

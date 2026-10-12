@@ -102,6 +102,29 @@ describe('GET /markets', () => {
         expect(contest.proposals[0].members.map(member => member.proposalId)).toEqual(['local-rival']);
     });
 
+    it('reads which plan version supersedes which, and serves one row per plan with the older versions folded', async () => {
+        const V1 = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
+        const V2 = 'Fh3K8apDKKKjPUPLVV5Y327Hd5s2HY9Y7bqAvjidFcC5';
+        const version = (slug, supersedes, account, at) => ({ slug, title: 'UPU Borovje', place: 'Borovje', author: 'Grad Zagreb',
+            created_at: new Date(at), proposal_ids: ['790'], supersedes, onchain_data: { chainId: 'solana-devnet', proposalId: account } });
+        const pool = poolFor(rows(), [version('upu-borovje-v2', 'upu-borovje', V2, '2026-10-10T18:17:15Z'), version('upu-borovje', null, V1, '2026-10-10T14:08:54Z')]);
+        const res = await request(appFor({
+            pool,
+            readMarkets: async () => new Map([[ACCOUNT, { address: 'MKT', market: null }],
+                [V1, { address: 'M1', market: { yesPool: 3n, noPool: 1n, resolved: false, outcome: 0 } }],
+                [V2, { address: 'M2', market: { yesPool: 2n, noPool: 0n, resolved: false, outcome: 0 } }]]),
+            readProposalStatuses: async () => new Map([[ACCOUNT, 'Active'], [V1, 'Active'], [V2, 'Active']])
+        })).get('/markets?city=zagreb');
+        expect(pool.query.mock.calls.find(([sql]) => /FROM ens_plan/.test(sql))[0]).toMatch(/\bsupersedes\b/);
+        const [contest] = res.body.contests;
+        expect(contest.proposals.filter(entry => entry.kind === 'plan').map(entry => entry.planSlug)).toEqual(['upu-borovje-v2']);
+        expect(contest).toMatchObject({ planCount: 1, proposalCount: 2 });
+        expect(contest.proposals[0].olderVersions).toEqual([expect.objectContaining({
+            slug: 'upu-borovje', supersededBy: 'upu-borovje-v2', proposalAccount: V1, state: 'open', bettable: false, canOpenMarket: false,
+            createdAt: '2026-10-10T14:08:54.000Z', market: expect.objectContaining({ poolAtomic: '4' })
+        })]);
+    });
+
     it('lets the proposal account, not the database word, decide whether a bet is open', async () => {
         const pool = { query: vi.fn(async () => ({ rows: rows().map(row => ({ ...row, lifecycle_status: 'Expired' })) })) };
         const stillActive = await request(appFor({ pool })).get('/markets?city=zagreb');

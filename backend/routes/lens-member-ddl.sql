@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS consensus.lens_devnet_owner (
 -- (NULL when the RPC did not report a block time), never the insert time.
 CREATE TABLE IF NOT EXISTS consensus.lens_attestation (
     address            text PRIMARY KEY,         -- SAS attestation PDA
-    kind               text        NOT NULL CHECK (kind IN ('ownership', 'verdict')),
+    kind               text        NOT NULL CHECK (kind IN ('ownership', 'verdict', 'evidence')),
     credential         text        NOT NULL,
     schema             text        NOT NULL,
     authority          text        NOT NULL,
@@ -40,6 +40,22 @@ CREATE TABLE IF NOT EXISTS consensus.lens_attestation (
     created_at         timestamptz NOT NULL DEFAULT now(),
     updated_at         timestamptz NOT NULL DEFAULT now()
 );
+
+-- MarketEvidence-v1 (kind 'evidence') joined on 2026-10-12. Tables created before then carry the
+-- two-kind check; widen it once. A no-op when the check already admits 'evidence'.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conrelid = 'consensus.lens_attestation'::regclass
+          AND conname = 'lens_attestation_kind_check'
+          AND pg_get_constraintdef(oid) LIKE '%''evidence''%'
+    ) THEN
+        ALTER TABLE consensus.lens_attestation DROP CONSTRAINT IF EXISTS lens_attestation_kind_check;
+        ALTER TABLE consensus.lens_attestation ADD CONSTRAINT lens_attestation_kind_check
+            CHECK (kind IN ('ownership', 'verdict', 'evidence'));
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS lens_attestation_parcel_idx ON consensus.lens_attestation (parcel_uid) WHERE parcel_uid IS NOT NULL;
 CREATE INDEX IF NOT EXISTS lens_attestation_proposal_idx ON consensus.lens_attestation (proposal_account) WHERE proposal_account IS NOT NULL;

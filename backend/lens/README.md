@@ -9,12 +9,13 @@ office, a permit register or an imagery service, that states facts about parcels
 has attested as the owner of a parcel; owners say yes by signing `accept_with_attestations`
 themselves. Lens members never accept proposals. Design of record: `../../lens-model.md`.
 
-This directory is one lens member as a process: one key, one SAS credential, two schemas.
+This directory is one lens member as a process: one key, one SAS credential, three schemas.
 
-| Attestation | Layout | Who can get it |
-|---|---|---|
-| `ParcelOwnership-v1` | `string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt` | an owner wallet that passes the identity check; x402-priced |
-| `ProposalVerdict-v1` | `string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt` | the member's operator only (`executed` or `expired`) |
+| Attestation | Kind | Layout | Who can get it |
+|---|---|---|---|
+| `ParcelOwnership-v1` | `ownership` | `string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt` | an owner wallet that passes the identity check; x402-priced |
+| `ProposalVerdict-v1` | `verdict` | `string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt` | the member's operator only (`executed` or `expired`) |
+| `MarketEvidence-v1` | `evidence` | `string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef` | the member's operator only, with a fact from a source adapter |
 
 ## Files
 
@@ -30,6 +31,34 @@ This directory is one lens member as a process: one key, one SAS credential, two
 - `pricing.js`: x402 gate for `POST /lens/ownership`, same pattern as the other paid agent routes.
 - `server.js`: the Express app (`createLensMemberApp`). `run.mjs`: the CLI.
 - DDL: `../routes/lens-member-ddl.sql` (applied by `deploy-backend.sh`).
+- `../evidence/sf-dbi-permits.js`: the first market evidence adapter (San Francisco DBI building
+  permits); `../scripts/check-permit-evidence.mjs` runs it against a recipe and prints the fact.
+
+## Market evidence rules
+
+`MarketEvidence-v1` answers a milestone market's recipe (`lmsr-market.md`, "Evidence for kind 1"):
+
+- `recipeHash` is the recipe's `sha256:` hash and `subject` its subject text; `value` is the outcome
+  text the record supports (`outcomes.yes` or `outcomes.no`; the permit adapter only ever finds yes,
+  because no is the absence of a record by the deadline). The program hashes `subject` and `value`
+  and compares them with the market's commitments, so they are passed byte for byte, never trimmed.
+- `eventTime` is the source's own time of the event (a permit's issued date), `sourceObservedAt` when
+  the adapter read the source. `eventTime ≤ sourceObservedAt ≤ now`; neither is ever invented.
+- The address is deterministic per (recipe hash, value, event time): a retry, even with a later
+  `sourceObservedAt`, returns the stored attestation; the same key with another subject is refused (409).
+- The payload travels in the `create_attestation` instruction, so it must fit one transaction: at most
+  883 bytes, which leaves 780 for `subject`, `value` and `sourceRef` together. That is why a subject
+  is the jurisdiction and the canonical parcel-set hash (`US-CA-SF|sha256:…`, about 80 bytes) and
+  never the parcel ids; an oversized payload is still refused before anything is sent.
+
+```bash
+cd backend
+# dry run over saved rows (the observation time is stated, never read from a row), or --live-fetch
+node scripts/check-permit-evidence.mjs --recipe recipe.json --fixture rows.json --observed-at 2026-10-12T01:12:30Z
+# with the served recipe (it carries hash) and evidence found, it prints the body to post:
+curl -s -H "x-lens-operator-token: $LENS_OPERATOR_TOKEN" -H 'content-type: application/json' \
+  -d @evidence.json localhost:3095/lens/market-evidence
+```
 
 ## Ownership rules
 
@@ -51,7 +80,8 @@ This directory is one lens member as a process: one key, one SAS credential, two
 | `POST /lens/challenge {parcelUid, owner}` | `{challenge, message, expiresAt}`; the wallet signs `message` (UTF-8). 404 unknown parcel, 403 wallet not recorded. Valid 5 minutes. |
 | `POST /lens/ownership {parcelUid, owner, signature, challenge}` | signature base58 or base64. Signature, registry and source-time checks run before the x402 gate, so refusals are free. 201 with `address`, `payload`, `accountHash` (sha256 over the account bytes), `issuedAt` (chain time), `payment`. |
 | `POST /lens/verdict {proposalAccount, verdict, evidenceRef, sourceObservedAt}` | header `x-lens-operator-token: $LENS_OPERATOR_TOKEN`; 503 when the token is unset. |
-| `GET /lens/attestations?parcelUid=&proposalAccount=&owner=&kind=` | issued attestations from the store |
+| `POST /lens/market-evidence {recipeHash, subject, value, eventTime, sourceObservedAt, sourceRef}` | same operator header as verdicts. Times are Unix seconds (integers only). 201 issued, 200 already issued (`reused`), 409 same key with another subject, 422 invalid or too large. |
+| `GET /lens/attestations?parcelUid=&proposalAccount=&owner=&recipeHash=&kind=` | issued attestations from the store; `kind` is `ownership`, `verdict` or `evidence` |
 
 ## Run in dry-run
 
@@ -68,8 +98,8 @@ Without `--owners` the registry is read from `consensus.lens_devnet_owner` via t
 
 ## Register the schemas, then run live
 
-1. Register the credential and the two schemas under the member's key (dry run first):
-   `node scripts/register-lens-schemas.mjs --keypair <member.json> --schemas ownership,verdict`,
+1. Register the credential and the schemas under the member's key (dry run first):
+   `node scripts/register-lens-schemas.mjs --keypair <member.json> --schemas ownership,verdict,evidence`,
    then the same with `--live`. Use the same `--credential-name` as the member (default `LensMember`).
 2. Run `npm ci` in `backend/`; `sas-lib` is a declared dependency, loaded by the live issuer.
 3. Set `X402_NETWORK`, `X402_FACILITATOR_URL`, `X402_PAY_TO` (and CDP credentials for the CDP

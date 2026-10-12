@@ -6,13 +6,15 @@
 import fs from 'node:fs';
 
 function emptyCounts() {
-    return { ownership: 0, verdict: 0, parcels: 0, proposals: 0 };
+    return { ownership: 0, verdict: 0, evidence: 0, parcels: 0, proposals: 0 };
 }
 
-function matches(record, { parcelUid, proposalAccount, owner, kind }) {
+// recipeHash selects MarketEvidence-v1 records by the recipe they answer (it lives in the payload).
+function matches(record, { parcelUid, proposalAccount, owner, recipeHash, kind }) {
     return (!parcelUid || record.parcelUid === parcelUid)
         && (!proposalAccount || record.proposalAccount === proposalAccount)
         && (!owner || record.owner === owner)
+        && (!recipeHash || record.payload?.recipeHash === recipeHash)
         && (!kind || record.kind === kind);
 }
 
@@ -104,22 +106,24 @@ export function createPgStore(pool) {
                 r.payment ? JSON.stringify(r.payment) : null, r.issuedAt]);
             if (rowCount !== 1) throw new Error(`attestation ${r.address} is already recorded`);
         },
-        async list({ parcelUid = null, proposalAccount = null, owner = null, kind = null, limit = 200 } = {}) {
+        async list({ parcelUid = null, proposalAccount = null, owner = null, recipeHash = null, kind = null, limit = 200 } = {}) {
             const { rows } = await pool.query(`
                 SELECT ${COLUMNS} FROM consensus.lens_attestation
                 WHERE ($1::text IS NULL OR parcel_uid = $1)
                   AND ($2::text IS NULL OR proposal_account = $2)
                   AND ($3::text IS NULL OR owner = $3)
                   AND ($4::text IS NULL OR kind = $4)
+                  AND ($5::text IS NULL OR payload->>'recipeHash' = $5)
                 ORDER BY issued_at DESC NULLS LAST, address
-                LIMIT $5
-            `, [parcelUid, proposalAccount, owner, kind, limit]);
+                LIMIT $6
+            `, [parcelUid, proposalAccount, owner, kind, recipeHash, limit]);
             return rows.map(recordOf);
         },
         async counts() {
             const { rows } = await pool.query(`
                 SELECT count(*) FILTER (WHERE kind = 'ownership')::int AS ownership,
                        count(*) FILTER (WHERE kind = 'verdict')::int AS verdict,
+                       count(*) FILTER (WHERE kind = 'evidence')::int AS evidence,
                        count(DISTINCT parcel_uid)::int AS parcels,
                        count(DISTINCT proposal_account)::int AS proposals
                 FROM consensus.lens_attestation

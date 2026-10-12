@@ -1,5 +1,5 @@
 // The reference lens member (lens-model.md, "Reference lens member") as a library: one key, one SAS
-// credential, issuing ParcelOwnership-v1 and ProposalVerdict-v1 attestations. Identity proof, the
+// credential, issuing ParcelOwnership-v1, ProposalVerdict-v1 and MarketEvidence-v1 attestations. Identity proof, the
 // SAS issuer, the attestation store and the clock are injected, so every rule here runs headless.
 
 import { createHash } from 'node:crypto';
@@ -13,6 +13,7 @@ import {
     encodeLensPayload,
     parseLensAttestation,
     sha256Hex,
+    validateMarketEvidence,
     validateOwnership,
     validateVerdict
 } from '../oracle/lens-schemas.js';
@@ -70,7 +71,14 @@ export function ownershipFromOwnerSet(rows, { parcelUid, owner }) {
 
 function schemaAddresses(credential) {
     const derive = kind => deriveSchemaPda({ credential, name: LENS_SCHEMAS[kind].name, version: LENS_SCHEMAS[kind].version });
-    return { ownership: derive('ownership'), verdict: derive('verdict') };
+    return { ownership: derive('ownership'), verdict: derive('verdict'), evidence: derive('evidence') };
+}
+
+// What an issued attestation states, for its log line.
+function describeFact(kind, fields) {
+    if (kind === 'ownership') return `parcel ${fields.parcelUid}, owner ${fields.owner}`;
+    if (kind === 'verdict') return `proposal ${fields.proposalAccount}, ${fields.verdict}`;
+    return `recipe ${fields.recipeHash}, "${fields.value}", event ${new Date(fields.eventTime * 1000).toISOString()}`;
 }
 
 // What a member attests about, reported as `kind` by /lens/status (lens-model.md member kinds).
@@ -142,7 +150,7 @@ export function createLensMember({
                 ? new Date(result.issuedAt * 1000).toISOString() : null
         };
         await store.record(record);
-        lensLog(`issued ${schemaKind} ${address} (${schemaKind === 'ownership' ? `parcel ${record.parcelUid}, owner ${record.owner}` : `proposal ${record.proposalAccount}, ${fields.verdict}`})`);
+        lensLog(`issued ${schemaKind} ${address} (${describeFact(schemaKind, fields)})`);
         return { ...record, reused: false };
     }
 
@@ -166,6 +174,36 @@ export function createLensMember({
         const nonce = factNonce([LENS_SCHEMAS.ownership.id, parcelUid, owner, fields.ownerCount, fields.sourceObservedAt]);
         const address = deriveAttestationPda({ credential, schema: schemas.ownership, nonce });
         return { fields, nonce, address, existing: await store.get(address) };
+    }
+
+    // The MarketEvidence-v1 the member would issue. recipe: { recipeHash, subject }, the recipe's hash
+    // and its subject text, both committed by the market; fact: { value, eventTime, sourceObservedAt,
+    // sourceRef } as a source adapter reports it (../evidence/sf-dbi-permits.js). The address is per
+    // (recipeHash, value, eventTime), so a retry, even one with a later sourceObservedAt, finds the
+    // stored attestation. A recipe has one subject: the same key stated for another subject is a
+    // conflicting request, not a retry.
+    async function planMarketEvidence({ recipe, fact } = {}) {
+        const fields = {
+            recipeHash: recipe?.recipeHash,
+            subject: recipe?.subject,
+            value: fact?.value,
+            eventTime: fact?.eventTime,
+            sourceObservedAt: fact?.sourceObservedAt,
+            sourceRef: fact?.sourceRef
+        };
+        try {
+            validateMarketEvidence(fields, { nowSeconds: clock.nowSeconds() });
+        } catch (error) {
+            throw new LensError(422, 'invalid_market_evidence', error.message);
+        }
+        const nonce = factNonce([LENS_SCHEMAS.evidence.id, fields.recipeHash, fields.value, fields.eventTime]);
+        const address = deriveAttestationPda({ credential, schema: schemas.evidence, nonce });
+        const existing = await store.get(address);
+        if (existing && existing.payload?.subject !== fields.subject) {
+            throw new LensError(409, 'evidence_conflict',
+                `attestation ${address} already states recipe ${fields.recipeHash} for subject ${JSON.stringify(existing.payload?.subject)}`);
+        }
+        return { fields, nonce, address, existing };
     }
 
     return {
@@ -208,6 +246,11 @@ export function createLensMember({
             }
             const nonce = factNonce([LENS_SCHEMAS.verdict.id, proposalAccount, verdict, sourceObservedAt]);
             return issue('verdict', fields, nonce, {});
+        },
+
+        async issueMarketEvidence({ recipe, fact } = {}) {
+            const plan = await planMarketEvidence({ recipe, fact });
+            return issue('evidence', plan.fields, plan.nonce, {});
         }
     };
 }

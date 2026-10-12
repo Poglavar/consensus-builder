@@ -389,8 +389,10 @@
             fact(t('bets.dialog.paysLabel', 'Pays'), `${t('bets.dialog.yesPays', 'Yes {{multiple}}×', { multiple: row.paysYes.toFixed(2) })} · ${t('bets.dialog.noPays', 'No {{multiple}}×', { multiple: row.paysNo.toFixed(2) })}`);
         }
         if (row.outcome === null) {
-            fact(t('bets.dialog.settlesLabel', 'Settles'), row.closesAt
-                ? t('bets.dialog.settlesBy', 'By {{date}} at the latest', { date: dateText(row.closesAt) })
+            // The market's deadline; a legacy pool has none, and then the proposal's own expiry is the date.
+            const deadline = row.closesAt || row.expiresAt;
+            fact(t('bets.dialog.settlesLabel', 'Settles'), deadline
+                ? t('bets.dialog.settlesBy', 'By {{date}} at the latest', { date: dateText(deadline) })
                 : t('bets.dialog.noDeadline', 'No deadline set; when the proposal is executed or dropped'));
         }
         const author = model() ? model().authorLabel(row.author) : row.author;
@@ -425,7 +427,11 @@
         const words = lifecycleWords(row);
         if (words) {
             const rule = el('div', 'bets-dialog__rule');
-            rule.append(el('strong', null, words.state), el('span', null, words.next), el('span', null, words.rule));
+            // An older plan version's pool can still be open on-chain, but the bet is on the current version.
+            const stateWord = row.superseded && row.state === 'open'
+                ? t('bets.dialog.superseded', 'Older version: new bets go to the current version')
+                : words.state;
+            rule.append(el('strong', null, stateWord), el('span', null, words.next), el('span', null, words.rule));
             p.body.append(rule);
         }
 
@@ -456,12 +462,13 @@
                 if (sheet() && typeof sheet().openProposal === 'function') sheet().openProposal(target);
             }));
         }
-        if (row.state === 'open') {
+        // An older plan version is never offered for a new bet or a new pool; settling and collecting stay.
+        if (row.state === 'open' && !row.superseded) {
             // The pair takes a footer row of its own, so it never wraps apart from the quiet actions.
             const sides = el('div', 'bets-dialog__sides');
             sides.append(betButton(row, 1), betButton(row, 0));
             p.footer.append(sides);
-        } else if (row.state === 'needs-market') {
+        } else if (row.state === 'needs-market' && !row.superseded) {
             p.footer.append(button('btn btn-primary', t('bets.row.openMarket', 'Open the pool'), event => transact('createMarket', null, event.currentTarget)));
         } else if (row.state === 'settling') {
             p.footer.append(button('btn btn-primary', t('bets.row.settle', 'Settle the pool'), event => transact('resolve', null, event.currentTarget)));
@@ -725,7 +732,8 @@
         state.contest = found.contest;
         state.positions = await loadPositions(proposalAccount) || state.positions;
         if (state.overlay !== overlay) return overlay;
-        if (side !== null) renderStake(side); else renderOverview();
+        // An older plan version takes no new bet: a link with a side still lands on its overview.
+        if (side !== null && !state.row.superseded) renderStake(side); else renderOverview();
         return overlay;
     }
 

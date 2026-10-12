@@ -143,8 +143,10 @@
     async function loadPositions(payload) {
         const bridge = root.SolanaMarketBridge;
         if (!bridge || typeof bridge.readPositions !== 'function') return;
+        // A plan's older versions count too: a bet in one of their pools is still the wallet's to collect.
         const accounts = (payload && payload.contests ? payload.contests : [])
             .flatMap(contest => contest.proposals || [])
+            .flatMap(entry => [entry, ...(entry.olderVersions || [])])
             .filter(entry => entry.proposalAccount && entry.market)
             .map(entry => entry.proposalAccount);
         if (!walletConnected() || !accounts.length) { state.positions = {}; }
@@ -202,6 +204,9 @@
         const li = container.querySelector(`.bets-row[data-proposal-account="${state.changed}"]`);
         state.changed = null;
         if (!li) return;
+        // A row inside a fold (an older plan version) is opened up, or the mark would not be seen.
+        const fold = li.closest('details');
+        if (fold) fold.open = true;
         li.classList.add('is-updated');
         if (typeof li.scrollIntoView === 'function') { try { li.scrollIntoView({ block: 'nearest' }); } catch (_) { } }
     }
@@ -213,11 +218,12 @@
         return (payload.contests || []).map(contest => root.BetsModel.contest(contest, { decimals: payload.stakeDecimals }));
     }
 
-    // The contest and row of one proposal account in the loaded city, as the model shapes them.
+    // The contest and row of one proposal account in the loaded city, as the model shapes them; an
+    // older plan version is found under the row of its current version.
     function rowFor(proposalAccount) {
         if (!proposalAccount) return null;
         for (const contest of contests()) {
-            const row = contest.rows.find(item => item.proposalAccount === proposalAccount);
+            const row = contest.rows.flatMap(item => [item, ...item.olderVersions]).find(item => item.proposalAccount === proposalAccount);
             if (row) return { contest, row };
         }
         return null;
@@ -376,7 +382,9 @@
         const meta = el('div', 'bets-row__meta');
         if (row.kind === 'plan') meta.append(el('span', 'bets-row__plan', t('bets.row.plan', 'Plan of {{count}} proposals', { count: row.memberCount })));
         if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
-        if (row.closesAt) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(row.closesAt) })));
+        // The market's deadline; a legacy pool has none, and then the proposal's own expiry is the date.
+        const closes = row.closesAt || row.expiresAt;
+        if (closes) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(closes) })));
         if (row.agent) meta.append(el('span', null, t('panel.proposal.agent.badge', 'Agent proposal')));
         if (row.proposalAccount) {
             // Every bet has a link worth passing on, whatever state its pool is in.
@@ -408,7 +416,48 @@
             li.append(el('p', 'bets-row__note', t('bets.row.closed', 'Decided on-chain before a pool was opened')));
         }
         if (actions.childElementCount) li.append(actions);
+        if (row.olderVersions && row.olderVersions.length) li.append(renderVersions(row.olderVersions));
         return li;
+    }
+
+    // Where an older version's pool stands, in the words its row would use; a version without a pool
+    // says so instead of "No bets yet".
+    function versionStateLabel(row) {
+        if (row.state === 'closed') return t('panel.proposal.market.state.closed', 'Not open for bets');
+        if (row.state === 'not-minted') return t('bets.row.notMinted', 'Not minted yet, so no pool');
+        return chanceLabel(row);
+    }
+
+    // One older version: its title (into its own bet dialog, where a bet still in its pool can be
+    // settled or collected), when it was named, and where its pool stands. Never a bet button: a newer
+    // version replaced it.
+    function renderVersion(row) {
+        const li = el('li', `bets-row bets-version is-${row.state}`);
+        li.dataset.proposalId = row.proposalId;
+        if (row.proposalAccount) li.dataset.proposalAccount = row.proposalAccount;
+        const head = el('div', 'bets-row__head');
+        const title = el('button', 'btn btn-quiet bets-row__title', row.title || t('bets.row.untitled', 'Untitled proposal'));
+        title.type = 'button';
+        title.addEventListener('click', () => (row.proposalAccount ? openBet(row) : openProposal(row)));
+        head.append(title, el('span', 'bets-row__chance', versionStateLabel(row)));
+        li.append(head);
+        if (row.createdAt) li.append(el('p', 'bets-row__who', dateText(row.createdAt, true)));
+        if (row.state === 'settling') li.append(el('p', 'bets-row__note', t('bets.row.settling', 'Decided on-chain; anyone can settle the pool')));
+        renderMine(li, row);
+        return li;
+    }
+
+    // A plan's older versions (plans.md: a revision supersedes them) fold under its row the way rows
+    // without a pool fold under their contest: collapsed, under a count, unless the wallet's positions
+    // are known and one of its bets sits in an older pool.
+    function renderVersions(versions) {
+        const more = el('details', 'bets-versions');
+        more.open = versions.some(version => version.proposalAccount && root.BetsModel.hasPosition(state.positions[version.proposalAccount]));
+        more.append(el('summary', null, t('bets.contest.olderVersions', 'Older versions: {{count}}', { count: versions.length })));
+        const list = el('ul', 'bets-rows');
+        versions.forEach(version => list.append(renderVersion(version)));
+        more.append(list);
+        return more;
     }
 
     function landText(contest) {

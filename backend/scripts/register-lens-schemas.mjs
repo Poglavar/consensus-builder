@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Registers the lens-model SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1) under one lens
+// Registers the lens-model SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1, MarketEvidence-v1) under one lens
 // member's own SAS credential. Dry run by default: prints the derived credential and schema PDAs
 // and the exact layouts, sends nothing. --live creates whatever is missing with sas-lib (the same
 // library and derivations as the court oracle's registration).

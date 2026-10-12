@@ -50,14 +50,15 @@ describe('GET /lenses/members', () => {
 });
 
 describe('GET /lenses/schemas', () => {
-    it('lists the two schema definitions with layouts and fields', async () => {
+    it('lists the schema definitions with layouts and fields', async () => {
         const res = await request(appWith({ query: vi.fn() })).get('/lenses/schemas');
         expect(res.status).toBe(200);
         expect(res.headers['cache-control']).toBe('no-store');
         expect(res.body.sasProgram).toBe('22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG');
         expect(res.body.schemas.map(s => [s.id, s.name, s.version])).toEqual([
             ['ParcelOwnership-v1', 'ParcelOwnership', 1],
-            ['ProposalVerdict-v1', 'ProposalVerdict', 1]
+            ['ProposalVerdict-v1', 'ProposalVerdict', 1],
+            ['MarketEvidence-v1', 'MarketEvidence', 1]
         ]);
         expect(res.body.schemas[0].fields).toContainEqual({ name: 'ownerCount', type: 'uint8' });
         expect(res.body.schemas[1].layout).toBe('string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt');

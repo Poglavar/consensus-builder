@@ -379,8 +379,13 @@ The repository's `backend/scripts/oracle-fact-demo.mjs` performs the complete dr
 `GET /markets?city={city}` lists every **contest** in a city: proposals that share parcels, grouped, each
 with its yes/no pool when one exists. Per proposal you get `proposalAccount`, `chainStatus` (what the
 market program will resolve from), `bettable` (Active on-chain with an open pool), `canOpenMarket`
-(minted and Active, no pool yet) and `market` (`address`, `yesPool`, `noPool` and `poolAtomic` in
+(minted and Active, no pool yet), `closesAt` (the market's own deadline as an ISO instant; `null` for
+a pool without one) and `market` (`address`, `yesPool`, `noPool` and `poolAtomic` in
 atomic USDC as decimal strings, `resolved`, `outcome`). Contests with no minted proposal are omitted.
+A named plan's older versions are not entries: they sit under the current version as `olderVersions`
+(`slug`, `supersededBy`, `state`, `proposalAccount`, `market`), never `bettable`, kept so bets already
+in their pools can be settled and claimed. Entries in play come first, the soonest `closesAt` leading,
+then the bigger pool; settled ones follow.
 The answer is cached for 20 seconds; add `&fresh=1` right after your own transaction.
 
 

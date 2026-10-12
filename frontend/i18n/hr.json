@@ -5374,7 +5374,8 @@
             "toWinNote": "Konačna isplata ovisi o fondu pri namirenju.",
             "members": "Što plan gradi: {{count}} prijedloga",
             "openPlan": "Otvori plan",
-            "onThisLandCount": "{{entries}} na ovom zemljištu"
+            "onThisLandCount": "{{entries}} na ovom zemljištu",
+            "superseded": "Prethodna verzija: nove oklade idu na aktualnu verziju"
         },
         "error": {
             "load": "Oklade se nisu mogle učitati.",
@@ -5389,6 +5390,7 @@
             "landMore": "Čestica {{parcel}} i još {{count}}",
             "site": "Nacrtano zemljište",
             "withoutPool": "Bez fonda: {{count}}",
+            "olderVersions": "Prethodne verzije: {{count}}",
             "titlePlans": "Koji će plan biti izgrađen?",
             "titleSinglePlan": "Hoće li ovaj plan biti izgrađen?",
             "planCount": "{{count}} plana"

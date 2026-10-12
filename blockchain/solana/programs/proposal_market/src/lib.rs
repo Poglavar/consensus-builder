@@ -4,12 +4,23 @@
 // stake, resolve and claim. The proposal is read directly from its account (owner, discriminator
 // and layout checked) rather than through declare_program!, the same way proposal_nft reads
 // parcel_nft accounts, so this crate stays on the workspace's single anchor-lang version.
+//
+// The same program also hosts the LMSR market (lmsr-market.md, handlers in lmsr_market.rs): dated
+// markets priced by an automated market maker whose worst-case loss the creator deposits, settled
+// from the proposal's state or from MarketEvidence-v1 attestations. The parimutuel instructions and
+// the Market, ExternalMarket and Position layouts above stay as deployed.
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 use sas_attestation::SasError;
+
+/// Fixed-point market maker shared with the JavaScript reference (lmsr-market.md).
+pub mod lmsr;
+/// LMSR market accounts and handlers (lmsr-market.md); the instructions are declared below.
+pub mod lmsr_market;
+pub use lmsr_market::*;
 
 declare_id!("GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB");
 
@@ -314,6 +325,86 @@ pub mod proposal_market {
         )?;
         Ok(())
     }
+
+    // ========================
+    // LMSR market (lmsr-market.md); handlers in lmsr_market.rs
+    // ========================
+
+    /// Open the LMSR market of an Active proposal (kind 0, PDA ["lmsr", proposal]). Anyone may
+    /// open it; the creator deposits the seed max_loss(b) and reclaims what the payouts leave.
+    /// Trading closes at `closes_at`; an Active proposal settles NO after `closes_at + grace_seconds`.
+    /// `max_position` caps shares per wallet per side (0: no cap).
+    pub fn create_lmsr_market(
+        ctx: Context<CreateLmsrMarket>,
+        b: u64,
+        closes_at: i64,
+        grace_seconds: u32,
+        max_position: u64,
+    ) -> Result<()> {
+        lmsr_market::handle_create_lmsr_market(ctx, b, closes_at, grace_seconds, max_position)
+    }
+
+    /// Open a recipe-bound LMSR market (kind 1, PDA ["lmsr", recipe_hash]) that settles from
+    /// MarketEvidence-v1 attestations against these commitments, as create_external_market does
+    /// for the court schema. Optional remaining account 0: a proposal_nft Proposal whose lens must
+    /// contain `trusted_attester`; it is stored, and its owner and lens may not trade.
+    #[allow(clippy::too_many_arguments)]
+    pub fn create_lmsr_external_market(
+        ctx: Context<CreateLmsrExternalMarket>,
+        recipe_hash: [u8; 32],
+        subject_hash: [u8; 32],
+        yes_value_hash: [u8; 32],
+        no_value_hash: [u8; 32],
+        trusted_attester: Pubkey,
+        b: u64,
+        closes_at: i64,
+        grace_seconds: u32,
+        max_position: u64,
+    ) -> Result<()> {
+        lmsr_market::handle_create_lmsr_external_market(
+            ctx,
+            recipe_hash,
+            subject_hash,
+            yes_value_hash,
+            no_value_hash,
+            trusted_attester,
+            b,
+            closes_at,
+            grace_seconds,
+            max_position,
+        )
+    }
+
+    /// Buy `shares` of `side` at the maker's price; fails if the quote exceeds `max_cost` (the
+    /// client's slippage guard). `proposal` is market.proposal (the System Program id when an
+    /// external market is unbound).
+    pub fn buy(ctx: Context<Buy>, side: u8, shares: u64, max_cost: u64) -> Result<()> {
+        lmsr_market::handle_buy(ctx, side, shares, max_cost)
+    }
+
+    /// Sell `shares` of a held position back to the maker; fails if the return is below
+    /// `min_return`. Same open-market and insider checks as buy.
+    pub fn sell(ctx: Context<Sell>, side: u8, shares: u64, min_return: u64) -> Result<()> {
+        lmsr_market::handle_sell(ctx, side, shares, min_return)
+    }
+
+    /// Permissionless. Kind 0 settles from the proposal's status; kind 1 from the MarketEvidence-v1
+    /// attestations passed as remaining accounts (one settles, two that disagree void). Without a
+    /// settling state or evidence, NO once `closes_at + grace_seconds` has passed.
+    pub fn resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
+        lmsr_market::handle_resolve_lmsr(ctx)
+    }
+
+    /// Pay a resolved position: one unit per winning share, or one half per share, floored, on VOID.
+    pub fn claim_lmsr(ctx: Context<ClaimLmsr>) -> Result<()> {
+        lmsr_market::handle_claim_lmsr(ctx)
+    }
+
+    /// Creator only, after resolution: everything in the vault beyond what unclaimed positions are
+    /// owed goes back to the creator.
+    pub fn reclaim_seed(ctx: Context<ReclaimSeed>) -> Result<()> {
+        lmsr_market::handle_reclaim_seed(ctx)
+    }
 }
 
 /// Parimutuel payout, in u128 so `amount * total` cannot overflow. Floors, so the sum of all
@@ -387,12 +478,17 @@ struct ProposalLensView {
 
 /// Verify that `proposal` is a proposal_nft Proposal and return its lens.
 fn read_proposal_lens(proposal: &AccountInfo) -> Result<Vec<Pubkey>> {
+    Ok(read_proposal_view(proposal)?.lens)
+}
+
+/// Verify that `proposal` is a proposal_nft Proposal and return its mirrored prefix: the owner,
+/// status and lens the LMSR insider rule and kind 0 trading read.
+fn read_proposal_view(proposal: &AccountInfo) -> Result<ProposalLensView> {
     require_keys_eq!(*proposal.owner, PROPOSAL_NFT_PROGRAM_ID, MarketError::InvalidProposalAccount);
     let data = proposal.try_borrow_data()?;
     require!(data.len() > 8 && data[..8] == PROPOSAL_DISCRIMINATOR, MarketError::InvalidProposalAccount);
     let mut body: &[u8] = &data[8..];
-    let view = ProposalLensView::deserialize(&mut body).map_err(|_| error!(MarketError::InvalidProposalAccount))?;
-    Ok(view.lens)
+    ProposalLensView::deserialize(&mut body).map_err(|_| error!(MarketError::InvalidProposalAccount))
 }
 
 /// Map a shared SAS parser error onto this program's error codes.
@@ -763,6 +859,41 @@ pub enum MarketError {
     EvidenceFromFuture,
     #[msg("The trusted attester is not a member of the bound proposal's lens")]
     AttesterNotInProposalLens,
+    // LMSR market (lmsr-market.md). Appended after the deployed variants so their codes stay fixed.
+    #[msg("Liquidity b must be positive")]
+    ZeroLiquidity,
+    #[msg("Liquidity b exceeds the market maker's bound of 10^16")]
+    LiquidityTooLarge,
+    #[msg("The creator's token balance cannot fund the seed, max_loss(b)")]
+    SeedTooSmall,
+    #[msg("The buy costs more than max_cost")]
+    CostExceedsMax,
+    #[msg("The sale returns less than min_return")]
+    ReturnBelowMin,
+    #[msg("The position holds fewer shares than this sale")]
+    SellExceedsPosition,
+    #[msg("The position would exceed this market's per-wallet cap")]
+    PositionCapExceeded,
+    #[msg("The proposal owner, its lens members and the market's attester cannot trade it")]
+    InsiderTrade,
+    #[msg("No settling state or evidence, and the deadline plus grace has not passed")]
+    GraceNotElapsed,
+    #[msg("The attestation answers a different recipe")]
+    WrongEvidenceRecipe,
+    #[msg("The attestation payload does not match MarketEvidence-v1")]
+    InvalidMarketEvidencePayload,
+    #[msg("The attested event happened after the market's deadline")]
+    EventAfterDeadline,
+    #[msg("The source was observed before the event it reports")]
+    EvidenceObservedBeforeEvent,
+    #[msg("Pass at most two evidence attestations")]
+    TooMuchEvidence,
+    #[msg("This position pays nothing under the market's outcome")]
+    PositionPaysNothing,
+    #[msg("Only the market's creator can reclaim its seed")]
+    NotCreator,
+    #[msg("The vault holds nothing beyond what open positions are owed")]
+    NothingToReclaim,
 }
 
 #[cfg(test)]

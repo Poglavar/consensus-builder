@@ -41,7 +41,7 @@ function usage(code = 0) {
         '  --port <n>                HTTP port (default 3095); binds 127.0.0.1 unless --host is given.',
         '  --host <addr>             Bind address (default 127.0.0.1).',
         `  --credential-name <name>  SAS credential name (default ${DEFAULT_CREDENTIAL_NAME}); register it first with`,
-        '                            scripts/register-lens-schemas.mjs --schemas ownership,verdict.',
+        '                            scripts/register-lens-schemas.mjs --schemas ownership,verdict,evidence.',
         `  --kind <kind>             ${LENS_MEMBER_KINDS.join(' | ')} (default owner-consent);`,
         '                            what /lens/status reports this member attests.',
         '  --identity <adapter>      devnet-registry (default) | certilia (not configured yet).',
@@ -59,7 +59,7 @@ function usage(code = 0) {
         '  --help                    This text.',
         '',
         'Env: PG* (Postgres), X402_NETWORK, X402_FACILITATOR_URL, X402_PAY_TO, LENS_OWNERSHIP_PRICE_USDC (0.01),',
-        '     LENS_OPERATOR_TOKEN (enables POST /lens/verdict).'
+        '     LENS_OPERATOR_TOKEN (enables POST /lens/verdict and POST /lens/market-evidence).'
     ].join('\n'));
     process.exit(code);
 }

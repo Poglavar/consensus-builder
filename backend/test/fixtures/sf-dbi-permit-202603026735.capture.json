@@ -1,0 +1,15 @@
+{
+  "description": "Capture of one live read of the DBI building permits dataset by fetchPermitRows: the request URL, status, the response headers the adapter reads, and the sha256 of the exact body bytes stored beside it in sf-dbi-permit-202603026735.json.",
+  "capturedAt": "2026-10-12T01:12:30.589Z",
+  "url": "https://data.sf.gov/resource/i98e-djp9.json?%24select=permit_number%2Cpermit_type_definition%2Cblock%2Clot%2Cstreet_number%2Cstreet_name%2Cfiled_date%2Cissued_date%2Ccompleted_date%2Cstatus%2Cdescription%2Cestimated_cost%2Clocation&%24where=permit_number%3D%27202603026735%27&%24order=permit_number%2Cblock%2Clot&%24limit=51",
+  "status": 200,
+  "headers": {
+    "date": "Mon, 12 Oct 2026 01:12:30 GMT",
+    "last-modified": "Sun, 11 Oct 2026 12:45:03 GMT",
+    "content-type": "application/json;charset=utf-8",
+    "x-soda2-fields": "[\"permit_number\",\"permit_type_definition\",\"block\",\"lot\",\"street_number\",\"street_name\",\"filed_date\",\"issued_date\",\"completed_date\",\"status\",\"description\",\"estimated_cost\",\"location\"]",
+    "x-soda2-types": "[\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"floating_timestamp\",\"floating_timestamp\",\"floating_timestamp\",\"text\",\"text\",\"text\",\"point\"]"
+  },
+  "bodyBytes": 568,
+  "bodySha256": "3cc9e6c5947f62b404f81486846f99a6dff777151e4798eb8312d0031abe3d18"
+}

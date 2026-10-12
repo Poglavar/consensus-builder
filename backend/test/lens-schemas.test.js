@@ -34,7 +34,7 @@ describe('lens schema definitions', () => {
         expect(LENS_SCHEMAS.verdict.layout).toBe('string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt');
         expect(LENS_SCHEMAS.ownership.sasLayout).toEqual([12, 12, 0, 12, 8]);
         expect(LENS_SCHEMAS.verdict.sasLayout).toEqual([12, 12, 12, 8]);
-        expect(describeLensSchemas().map(s => s.id)).toEqual(['ParcelOwnership-v1', 'ProposalVerdict-v1']);
+        expect(describeLensSchemas().map(s => s.id)).toEqual(['ParcelOwnership-v1', 'ProposalVerdict-v1', 'MarketEvidence-v1']);
     });
 });
 
@@ -128,7 +128,8 @@ describe('PDA derivation', () => {
             credential: '8xXFCwX7ktNopNTi2LxNrNwAUhnpCjzU76V8KetnFAMJ',
             schemas: {
                 ownership: 'Hzs9t2CcHVNSJYxrgcBY7sCpr8MoY6VM95Xm5K54m7pv',
-                verdict: 'DHvDAKSvUAkPqwhgeaZ9f2KY2hFjRtzeWtGxhKcpBNMe'
+                verdict: 'DHvDAKSvUAkPqwhgeaZ9f2KY2hFjRtzeWtGxhKcpBNMe',
+                evidence: 'C9Cyyr5HcjUdbBBjsY84Tm1gvPsCrsprc2SPk2EoVjTD'
             }
         });
     });

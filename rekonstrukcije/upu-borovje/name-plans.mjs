@@ -10,7 +10,10 @@
 //
 //   node name-plans.mjs --backend <api> --origin <app origin>           # dry run: resolve and print
 //   node name-plans.mjs --backend <api> --origin <app origin> --apply
+//
+// Imported, it only lends PLANS (backend/scripts/backfill-plan-supersedes.mjs reads the version chain).
 import { parseArgs } from 'node:util';
+import { pathToFileURL } from 'node:url';
 import { request } from '../../backend/scripts/lib/candlestick-common.mjs';
 
 const log = message => console.log(`[${new Date().toISOString()}] ${message}`);
@@ -60,44 +63,48 @@ for (const plan of PLANS.slice(0, 2)) {
         newestUpTo: 3 });
 }
 
-const { values } = parseArgs({ options: {
-    backend: { type: 'string' }, origin: { type: 'string' }, apply: { type: 'boolean' }, help: { type: 'boolean' }
-} });
-if (values.help || !values.backend || !values.origin) {
-    console.log('Usage: node name-plans.mjs --backend <api> --origin <app origin> [--apply]');
-    process.exit(values.help ? 0 : 1);
+async function main() {
+    const { values } = parseArgs({ options: {
+        backend: { type: 'string' }, origin: { type: 'string' }, apply: { type: 'boolean' }, help: { type: 'boolean' }
+    } });
+    if (values.help || !values.backend || !values.origin) {
+        console.log('Usage: node name-plans.mjs --backend <api> --origin <app origin> [--apply]');
+        process.exit(values.help ? 0 : 1);
+    }
+
+    for (const plan of PLANS) {
+        const existing = await request(values.backend, values.origin, 'GET', `/plans/${plan.slug}`);
+        if (existing.status === 200) {
+            log(`${plan.slug} already named (${existing.json.proposalIds.length} members, hash ${existing.json.planHash}); left alone`);
+            continue;
+        }
+        const ids = [];
+        const chosen = [];
+        for (const proposalId of plan.members) {
+            const candidates = plan.newestUpTo
+                ? Array.from({ length: plan.newestUpTo - 1 }, (_, i) => `${proposalId}-v${plan.newestUpTo - i}`).concat(proposalId)
+                : [proposalId];
+            let found = null;
+            for (const candidate of candidates) {
+                const response = await request(values.backend, values.origin, 'GET', `/proposals/${encodeURIComponent(candidate)}`);
+                const id = response.json && (response.json.id ?? response.json.proposal?.id);
+                if (response.status === 200 && id) { found = { candidate, id }; break; }
+            }
+            if (!found) throw new Error(`${values.backend} has no ${candidates.join(' / ')}`);
+            ids.push(String(found.id));
+            chosen.push(found.candidate);
+        }
+        if (plan.newestUpTo) log(`${plan.slug} members: ${chosen.join(', ')}`);
+        log(`${plan.slug}: ${ids.length} members → ${ids.join(',')}`);
+        if (!values.apply) continue;
+        const created = await request(values.backend, values.origin, 'POST', '/plans', {
+            slug: plan.slug, proposalIds: ids, title: plan.title, description: plan.description, author: plan.author,
+            place: 'Borovje', city: 'zagreb', ...(plan.supersedes ? { supersedes: plan.supersedes } : {})
+        });
+        if (created.status !== 201) throw new Error(`naming ${plan.slug} failed (${created.status}): ${created.text.slice(0, 300)}`);
+        log(`named ${plan.slug} · hash ${created.json.planHash} · mintable ${created.json.mintable}`);
+    }
+    if (!values.apply) log('DRY RUN: nothing named (add --apply).');
 }
 
-for (const plan of PLANS) {
-    const existing = await request(values.backend, values.origin, 'GET', `/plans/${plan.slug}`);
-    if (existing.status === 200) {
-        log(`${plan.slug} already named (${existing.json.proposalIds.length} members, hash ${existing.json.planHash}); left alone`);
-        continue;
-    }
-    const ids = [];
-    const chosen = [];
-    for (const proposalId of plan.members) {
-        const candidates = plan.newestUpTo
-            ? Array.from({ length: plan.newestUpTo - 1 }, (_, i) => `${proposalId}-v${plan.newestUpTo - i}`).concat(proposalId)
-            : [proposalId];
-        let found = null;
-        for (const candidate of candidates) {
-            const response = await request(values.backend, values.origin, 'GET', `/proposals/${encodeURIComponent(candidate)}`);
-            const id = response.json && (response.json.id ?? response.json.proposal?.id);
-            if (response.status === 200 && id) { found = { candidate, id }; break; }
-        }
-        if (!found) throw new Error(`${values.backend} has no ${candidates.join(' / ')}`);
-        ids.push(String(found.id));
-        chosen.push(found.candidate);
-    }
-    if (plan.newestUpTo) log(`${plan.slug} members: ${chosen.join(', ')}`);
-    log(`${plan.slug}: ${ids.length} members → ${ids.join(',')}`);
-    if (!values.apply) continue;
-    const created = await request(values.backend, values.origin, 'POST', '/plans', {
-        slug: plan.slug, proposalIds: ids, title: plan.title, description: plan.description, author: plan.author,
-        place: 'Borovje', city: 'zagreb', ...(plan.supersedes ? { supersedes: plan.supersedes } : {})
-    });
-    if (created.status !== 201) throw new Error(`naming ${plan.slug} failed (${created.status}): ${created.text.slice(0, 300)}`);
-    log(`named ${plan.slug} · hash ${created.json.planHash} · mintable ${created.json.mintable}`);
-}
-if (!values.apply) log('DRY RUN: nothing named (add --apply).');
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();

@@ -1,6 +1,6 @@
-// The two lens-model SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1) as data, with their borsh payload codec, a generic SAS attestation account parser, payload
+// The two lens-model SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1) and the milestone markets' MarketEvidence-v1 (lmsr-market.md) as data, with their borsh payload codec, a generic SAS attestation account parser, payload
 // validators and the sas-lib credential/schema PDA derivations. Pure: no network, no database.
-// Layout strings are frozen by lens-model.md; programs, parsers and the frontend must agree on bytes.
+// Layout strings are frozen by lens-model.md and lmsr-market.md; programs, parsers and the frontend must agree on bytes.
 
 import { createHash } from 'node:crypto';
 import { PublicKey } from '@solana/web3.js';
@@ -41,6 +41,14 @@ export const LENS_SCHEMAS = Object.freeze({
         'ProposalVerdict',
         'A lens member attests that a proposal was executed or has expired.',
         'string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt'
+    ),
+    // One schema for every milestone market source: the member's adapter reads the source (a permits
+    // dataset, legislation records, a gazette) and states which outcome text it supports and when.
+    evidence: schemaDefinition(
+        'evidence',
+        'MarketEvidence',
+        'A lens member attests the outcome a public record gives a market recipe, with the time of the event at the source.',
+        'string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef'
     )
 });
 
@@ -209,9 +217,48 @@ export function validateVerdict(fields, { nowSeconds } = {}) {
     return fields;
 }
 
+// MarketEvidence-v1 travels as create_attestation instruction data, so it must fit one legacy
+// transaction (one signer, the SAS instruction's six accounts): 349 bytes of transaction around the
+// payload plus the payload may not exceed 1232 (measured with sas-lib 1.0.10 and web3.js, 2026-10-12).
+// The fixed part (recipeHash, two int64s, three length prefixes) takes 103 of the 883, leaving 780 for
+// subject, value and sourceRef together; the validator enforces the total so every valid payload issues.
+export const MARKET_EVIDENCE_MAX_PAYLOAD_BYTES = 883;
+export const RECIPE_HASH_PATTERN = /^sha256:[a-f0-9]{64}$/;
+
+// Hash-committed text: the program hashes these exact bytes, so blank or padded text is refused rather
+// than trimmed into a different commitment.
+function requireExactText(value, label) {
+    requireText(value, label);
+    if (value !== value.trim()) throw new Error(`${label} must not start or end with whitespace (its exact bytes are hashed)`);
+}
+
+export function marketEvidencePayloadBytes(fields) {
+    const text = name => 4 + Buffer.byteLength(fields[name], 'utf8');
+    return text('recipeHash') + text('subject') + text('value') + 8 + 8 + text('sourceRef');
+}
+
+export function validateMarketEvidence(fields, { nowSeconds } = {}) {
+    if (typeof fields?.recipeHash !== 'string' || !RECIPE_HASH_PATTERN.test(fields.recipeHash)) {
+        throw new Error('recipeHash must be sha256: followed by 64 lowercase hex digits');
+    }
+    requireExactText(fields.subject, 'subject');
+    requireExactText(fields.value, 'value');
+    requireExactText(fields.sourceRef, 'sourceRef');
+    requireTime(fields.eventTime, 'eventTime');
+    requireTime(fields.sourceObservedAt, 'sourceObservedAt', nowSeconds);
+    if (fields.eventTime > fields.sourceObservedAt) throw new Error('eventTime is after sourceObservedAt: an event cannot be observed before it happens');
+    const size = marketEvidencePayloadBytes(fields);
+    if (size > MARKET_EVIDENCE_MAX_PAYLOAD_BYTES) {
+        const bytes = name => Buffer.byteLength(fields[name], 'utf8');
+        throw new Error(`MarketEvidence payload is ${size} bytes (subject ${bytes('subject')}, value ${bytes('value')}, sourceRef ${bytes('sourceRef')}); one create_attestation transaction carries at most ${MARKET_EVIDENCE_MAX_PAYLOAD_BYTES}`);
+    }
+    return fields;
+}
+
 export const LENS_VALIDATORS = Object.freeze({
     ownership: validateOwnership,
-    verdict: validateVerdict
+    verdict: validateVerdict,
+    evidence: validateMarketEvidence
 });
 
 // Parse + decode + validate in one step, for a caller that already knows which schema it expects.

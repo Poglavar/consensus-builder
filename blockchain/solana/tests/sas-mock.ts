@@ -12,6 +12,8 @@ export const PARCEL_NFT_PROGRAM_ID = new PublicKey("4zadC1FgWPQLv6qv66mjEBthBqTv
 
 export const OWNERSHIP_SCHEMA = "ParcelOwnership";
 export const VERDICT_SCHEMA = "ProposalVerdict";
+/** The one schema every LMSR recipe-bound market settles from (lmsr-market.md). */
+export const MARKET_EVIDENCE_SCHEMA = "MarketEvidence";
 
 /** Far enough ahead that no test run reaches it. */
 export const FAR_EXPIRY = 4_000_000_000;
@@ -95,6 +97,14 @@ export function verdictPayload(p: { proposalAccount: PublicKey | string; verdict
     return Buffer.concat([
         borshBytes(p.proposalAccount.toString()), borshBytes(p.verdict),
         borshBytes(p.evidenceRef ?? "case-ref"), i64(p.sourceObservedAt),
+    ]);
+}
+
+/** MarketEvidence-v1: string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef. */
+export function marketEvidencePayload(p: { recipeHash: string; subject: string; value: string; eventTime: number; sourceObservedAt: number; sourceRef?: string }): Buffer {
+    return Buffer.concat([
+        borshBytes(p.recipeHash), borshBytes(p.subject), borshBytes(p.value),
+        i64(p.eventTime), i64(p.sourceObservedAt), borshBytes(p.sourceRef ?? "dataset-row-1"),
     ]);
 }
 

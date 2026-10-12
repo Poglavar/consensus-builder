@@ -1,11 +1,12 @@
 // HTTP face of the reference lens member: status, challenge, x402-priced ownership attestation,
-// operator-only verdicts and the list of issued attestations. Every refusal the member can make
+// operator-only verdicts and market evidence, and the list of issued attestations. Every refusal the member can make
 // (unknown parcel, wrong signature, missing source time) happens before the payment gate.
 
 import { timingSafeEqual, createHash } from 'node:crypto';
 import cors from 'cors';
 import express from 'express';
 import { PublicKey } from '@solana/web3.js';
+import { LENS_SCHEMA_KINDS } from '../oracle/lens-schemas.js';
 import { LensError, lensLog } from './errors.js';
 import { LENS_OWNERSHIP_PATH, describePricing } from './pricing.js';
 
@@ -35,9 +36,30 @@ function sourceTimeOf(value) {
     throw new LensError(400, 'bad_request', 'sourceObservedAt is required (Unix seconds or ISO 8601)');
 }
 
+// Unix seconds only. An ISO date without a zone would be read as UTC midnight, the very shift the
+// evidence adapters avoid by reading source dates in the source's own time zone.
+function unixSecondsOf(body, name) {
+    const value = body?.[name];
+    if (!Number.isSafeInteger(value)) throw new LensError(400, 'bad_request', `${name} must be Unix seconds (an integer)`);
+    return value;
+}
+
+// Hash-committed text is passed on byte for byte, never trimmed; the member refuses padded text.
+function exactString(body, name) {
+    const value = body?.[name];
+    if (typeof value !== 'string' || !value.trim()) throw new LensError(400, 'bad_request', `${name} is required`);
+    return value;
+}
+
 function tokensEqual(a, b) {
     const digest = value => createHash('sha256').update(String(value)).digest();
     return timingSafeEqual(digest(a), digest(b));
+}
+
+function requireOperator(req, operatorToken, refusal) {
+    if (!operatorToken) throw new LensError(503, 'operator_not_configured', 'LENS_OPERATOR_TOKEN is not set on this lens member');
+    const supplied = req.get(OPERATOR_TOKEN_HEADER);
+    if (!supplied || !tokensEqual(supplied, operatorToken)) throw new LensError(401, 'operator_only', refusal);
 }
 
 function publicRecord(record) {
@@ -114,9 +136,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
     }));
 
     app.post('/lens/verdict', wrap(async (req, res) => {
-        if (!operatorToken) throw new LensError(503, 'operator_not_configured', 'LENS_OPERATOR_TOKEN is not set on this lens member');
-        const supplied = req.get(OPERATOR_TOKEN_HEADER);
-        if (!supplied || !tokensEqual(supplied, operatorToken)) throw new LensError(401, 'operator_only', 'verdicts require the operator token');
+        requireOperator(req, operatorToken, 'verdicts require the operator token');
         const proposalAccount = requireString(req.body, 'proposalAccount');
         const verdict = requireString(req.body, 'verdict');
         const evidenceRef = typeof req.body.evidenceRef === 'string' ? req.body.evidenceRef : '';
@@ -125,13 +145,28 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
     }));
 
+    // Operator-only, like verdicts: the operator runs a source adapter (scripts/check-permit-evidence.mjs
+    // for the DBI permits dataset) and posts the fact it found for the recipe.
+    app.post('/lens/market-evidence', wrap(async (req, res) => {
+        requireOperator(req, operatorToken, 'market evidence requires the operator token');
+        const recipe = { recipeHash: exactString(req.body, 'recipeHash'), subject: exactString(req.body, 'subject') };
+        const fact = {
+            value: exactString(req.body, 'value'),
+            eventTime: unixSecondsOf(req.body, 'eventTime'),
+            sourceObservedAt: unixSecondsOf(req.body, 'sourceObservedAt'),
+            sourceRef: exactString(req.body, 'sourceRef')
+        };
+        const record = await member.issueMarketEvidence({ recipe, fact });
+        res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
+    }));
+
     app.get('/lens/attestations', wrap(async (req, res) => {
         const text = name => (typeof req.query[name] === 'string' && req.query[name].trim() ? req.query[name].trim() : null);
         const kind = text('kind');
-        if (kind && !['ownership', 'verdict'].includes(kind)) throw new LensError(400, 'bad_request', 'kind must be ownership or verdict');
+        if (kind && !LENS_SCHEMA_KINDS.includes(kind)) throw new LensError(400, 'bad_request', `kind must be one of ${LENS_SCHEMA_KINDS.join(', ')}`);
         const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 200, 1), 500);
         const attestations = await member.listAttestations({
-            parcelUid: text('parcelUid'), proposalAccount: text('proposalAccount'), owner: text('owner'), kind, limit
+            parcelUid: text('parcelUid'), proposalAccount: text('proposalAccount'), owner: text('owner'), recipeHash: text('recipeHash'), kind, limit
         });
         res.json({ attestations: attestations.map(publicRecord) });
     }));
