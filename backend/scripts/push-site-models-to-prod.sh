@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# Copies the locally built floor-plan site models (floor_plan.site_model) to production. Collection
+# and paid readings run on the laptop (production collection is stopped), so production cannot build
+# these; it only serves them to the archive page's Sites tab. The table is derived, so prod's set is
+# REPLACED by the local one in one transaction: a site no longer located disappears there too.
+#
+# Usage:
+#   backend/scripts/push-site-models-to-prod.sh          # compare local and prod, change nothing
+#   backend/scripts/push-site-models-to-prod.sh --run    # replace prod's site models, then read back
+#
+# Local connection: backend/.env with PGHOST overridden by LOCAL_PGHOST (default localhost, the
+# Docker database). Prod: `ssh $SSH_HOST` (default do), psql as postgres with SET ROLE geo_user.
+
+set -euo pipefail
+
+BACKEND_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SSH_HOST="${SSH_HOST:-do}"
+RUN=0
+case "${1:-}" in
+    --run) RUN=1 ;;
+    "") ;;
+    -h|--help) sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) echo "unknown argument: $1" >&2; exit 2 ;;
+esac
+
+ts() { date -u +%Y-%m-%dT%H:%M:%SZ; }
+
+# shellcheck disable=SC1091
+set -a; . "$BACKEND_DIR/.env"; set +a
+export PGHOST="${LOCAL_PGHOST:-localhost}"
+PROD_PSQL="sudo -u postgres psql -X -q -v ON_ERROR_STOP=1 geodata"
+LIST_SQL="SELECT site_key || ' ' || model_hash FROM floor_plan.site_model"
+# comm needs both lists in one byte order, whatever collation either database uses.
+export LC_ALL=C
+
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
+psql -X -At -v ON_ERROR_STOP=1 -c "$LIST_SQL" | sort > "$work/local"
+ssh "$SSH_HOST" "$PROD_PSQL -At -c \"$LIST_SQL\"" | sort > "$work/prod"
+
+report() {
+    local local_n prod_n added removed changed
+    local_n=$(wc -l < "$work/local" | tr -d ' ')
+    prod_n=$(wc -l < "$work/prod" | tr -d ' ')
+    added=$(comm -23 <(cut -d' ' -f1 "$work/local") <(cut -d' ' -f1 "$work/prod") | wc -l | tr -d ' ')
+    removed=$(comm -13 <(cut -d' ' -f1 "$work/local") <(cut -d' ' -f1 "$work/prod") | wc -l | tr -d ' ')
+    changed=$(( $(comm -23 "$work/local" "$work/prod" | wc -l) - added ))
+    echo "[$(ts)] $1: local ${local_n}, prod ${prod_n}; to add ${added}, to remove ${removed}, changed ${changed}"
+}
+report "site models"
+
+[ -s "$work/local" ] || { echo "[$(ts)] Refusing: no local site models — pushing would empty production's set." >&2; exit 1; }
+[ "$RUN" -eq 1 ] || { echo "[$(ts)] DRY RUN — pass --run to replace production's site models"; exit 0; }
+
+# One psql session on prod: stage into a temp table, then delete-and-upsert in ONE implicit
+# transaction (a multi-statement -c string), so a failure leaves prod's previous set intact.
+# built_at is the local build time (when the model was derived); created_at/updated_at are prod's own.
+psql -X -v ON_ERROR_STOP=1 \
+    -c "\\copy (SELECT site_key, listing_urls, model, model_hash, built_at FROM floor_plan.site_model) TO STDOUT" \
+  | gzip -1 \
+  | ssh "$SSH_HOST" "gunzip | $PROD_PSQL \
+      -c 'SET ROLE geo_user' \
+      -c 'CREATE TEMP TABLE site_model_push AS SELECT site_key, listing_urls, model, model_hash, built_at FROM floor_plan.site_model WITH NO DATA' \
+      -c '\\copy site_model_push FROM STDIN' \
+      -c 'DELETE FROM floor_plan.site_model m WHERE NOT EXISTS (SELECT 1 FROM site_model_push p WHERE p.site_key = m.site_key);
+          INSERT INTO floor_plan.site_model (site_key, listing_urls, model, model_hash, built_at)
+          SELECT site_key, listing_urls, model, model_hash, built_at FROM site_model_push
+          ON CONFLICT (site_key) DO UPDATE SET listing_urls = excluded.listing_urls, model = excluded.model,
+              model_hash = excluded.model_hash, built_at = excluded.built_at, updated_at = now()
+          WHERE floor_plan.site_model.model_hash IS DISTINCT FROM excluded.model_hash'"
+
+# Read the result back: prod must now hold exactly the local keys and hashes.
+ssh "$SSH_HOST" "$PROD_PSQL -At -c \"$LIST_SQL\"" | sort > "$work/prod"
+report "after push"
+if ! cmp -s "$work/local" "$work/prod"; then
+    echo "[$(ts)] Production's site models differ from local after the push." >&2
+    exit 1
+fi
+echo "[$(ts)] Production holds the same $(wc -l < "$work/prod" | tr -d ' ') site models as local."

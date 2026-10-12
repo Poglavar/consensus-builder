@@ -189,8 +189,9 @@ export async function siteModel(db, listingUrl) {
 
 // Build and store one model per located site (grouped by site key). Idempotent: an unchanged model
 // keeps its row; a changed one replaces it. Sites whose postings carry no plans are still stored,
-// because their envelope and location are reviewable on their own.
-export async function buildSiteModels(db, { limit = 500, log = console.log } = {}) {
+// because their envelope and location are reviewable on their own. A pass over every site also
+// removes the models of sites no longer located (the table is derived, so nothing is lost).
+export async function buildSiteModels(db, { limit = 500, log = console.log, build = siteModel } = {}) {
     const rows = (await db.query(`SELECT url, location FROM floor_plan.listing
         WHERE location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL ORDER BY url`)).rows;
     const bySite = new Map();
@@ -198,12 +199,12 @@ export async function buildSiteModels(db, { limit = 500, log = console.log } = {
         const key = siteKey(row.location.candidates[0]);
         if (key && !bySite.has(key)) bySite.set(key, row.url);
     }
-    const result = { sites: bySite.size, built: 0, changed: 0, failed: 0 };
+    const result = { sites: bySite.size, built: 0, changed: 0, failed: 0, retired: 0 };
     let index = 0;
     for (const [key, url] of [...bySite].slice(0, limit)) {
         index++;
         try {
-            const model = await siteModel(db, url);
+            const model = await build(db, url);
             const hash = fingerprint(model);
             const saved = await db.query(`INSERT INTO floor_plan.site_model(site_key, listing_urls, model, model_hash) VALUES($1,$2,$3,$4)
                 ON CONFLICT(site_key) DO UPDATE SET listing_urls=excluded.listing_urls, model=excluded.model, model_hash=excluded.model_hash,
@@ -216,6 +217,11 @@ export async function buildSiteModels(db, { limit = 500, log = console.log } = {
             log(JSON.stringify({ at: new Date().toISOString(), stage: 'site-models', site: key, error: error.message }));
         }
         if (index % 25 === 0) log(JSON.stringify({ at: new Date().toISOString(), stage: 'site-models', progress: `${index}/${Math.min(limit, bySite.size)}`, ...result }));
+    }
+    // A truncated pass cannot tell an unvisited site from a retired one.
+    if (bySite.size <= limit) {
+        const retired = await db.query(`DELETE FROM floor_plan.site_model WHERE NOT (site_key = ANY($1::text[]))`, [[...bySite.keys()]]);
+        result.retired = retired.rowCount || 0;
     }
     return result;
 }
