@@ -171,7 +171,8 @@ describe('POST /proposals — thumbnail off the request path', () => {
         log.mockRestore();
 
         const update = pool.getCalls().find(call => call.sql.includes('SET screenshot_url'));
-        expect(update.params).toEqual(['/uploads/images/proposal-thumb-1.png', 1]);
+        // The thumbnail, then its before/pair pictures (null when the render has none), then the id.
+        expect(update.params).toEqual(['/uploads/images/proposal-thumb-1.png', null, null, 1]);
     });
 });
 

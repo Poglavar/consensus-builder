@@ -370,11 +370,11 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
 
     // The review isolates this owner's old parcels on one side and fractional outputs on the other.
     await modal.locator('[data-reparcel-compare]').click();
-    await expect(modal.locator('.reparcel-before-map path.reparcel-owner-input')).toHaveCount(1);
+    await expect(modal.locator('.map-compare__before path.reparcel-owner-input')).toHaveCount(1);
     await expect(modal.locator('#reparcel-map > .leaflet-pane path.reparcel-owner-output')).toHaveCount(2);
     await modal.locator('#reparcel-map').scrollIntoViewIfNeeded();
     await expect.poll(() => modal.locator('#reparcel-map').evaluate(map => {
-      const before = map.querySelector('.reparcel-before-map path[stroke="#111"]')?.getBoundingClientRect();
+      const before = map.querySelector('.map-compare__before path[stroke="#111"]')?.getBoundingClientRect();
       const after = map.querySelector(':scope > .leaflet-pane path[stroke="#dc2626"]')?.getBoundingClientRect();
       return before && after ? Math.max(...['x', 'y', 'width', 'height'].map(key =>
         Math.abs((before as any)[key] - (after as any)[key]))) : Infinity;

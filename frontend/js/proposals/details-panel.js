@@ -54,6 +54,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         try { hideProposalDetailsPanel(true); } catch (_) { }
         return;
     }
+    // A running before/after belongs to the proposal it was opened for, for as long as it stays
+    // applied; any other render of the panel ends it (js/proposals/before-after.js).
+    try { window.ProposalBeforeAfter?.reconcile(proposal, getProposalKey(proposal)); } catch (_) { /* no map yet */ }
 
     const i18nProposal = (typeof window !== 'undefined') ? window.i18n : null;
     const formatProposalString = (template, params = {}) => {
@@ -191,6 +194,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
         const parcelNumberDisplay = window.ProposalDisplayText.parcelLabel(getParcelDisplayNumberFromProperties(feature?.properties, parcelId));
         const parcelLabelText = tProposal('panel.proposal.parcels.label', 'Parcel {{id}}', { id: parcelNumberDisplay || parcelId });
+        // An owner's review of an applied readjustment (dividers.md, M6): this parcel before, the
+        // plots that came out of it after. Same session as the panel's own "Before / after".
+        const parcelCompare = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
+        const proposalKeyForCompare = (typeof getProposalKey === 'function' ? getProposalKey(fullProposal || proposal) : null) || (fullProposal || proposal).proposalId;
+        // (An applied readjustment lists its input parcels as "Removed": that is the case to compare.)
+        const parcelCompareHtml = ((fullProposal || proposal).reparcellization && parcelCompare && proposalKeyForCompare
+            && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
+            ? `<button type="button" class="btn btn-quiet btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
+                    title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
+                    onclick="event.stopPropagation(); event.preventDefault(); toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} });">↔ ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
+            : '';
         const parcelTooltip = isRemoved
             ? tProposal('panel.proposal.parcels.tooltipRemoved', 'Click to focus on where this parcel was')
             : tProposal('panel.proposal.parcels.tooltip', 'Click to view parcel details');
@@ -214,6 +228,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         ${ownerAvatarHtml}
                         <div style="min-width:0; flex:1;">
                             <span class="parcel-number parcel-id-text" title="${safeAgentText(parcelId)}" style="font-weight: 500;">${safeAgentText(parcelLabelText)}</span>
+                            ${parcelCompareHtml}
                             ${isRemoved
                 ? `<span class="parcel-status parcel-status-removed" style="color: #999; font-size: 12px; font-style: italic;">${removedLabel}</span>`
                 : (hasAccepted ?
@@ -448,6 +463,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // Before / after (dividers.md, M2): the ground without this proposal beside the map with it.
+    // Only an applied record with a footprint has an "after" to show.
+    const beforeAfter = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
+    const compareButtonHtml = (appliedState && proposalKey && beforeAfter && beforeAfter.canCompare(fullProposal || proposal))
+        ? `
+        <button type="button" class="btn btn-outline-secondary btn-compare-proposal"
+            aria-pressed="${beforeAfter.isActive(proposalKey) ? 'true' : 'false'}"
+            onclick="toggleProposalBeforeAfter(${inlineJsArg(proposalKey)})">
+            <i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}
+        </button>
+    `
+        : '';
+
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
         ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
@@ -513,7 +541,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </button>
         </div>
     `;
-    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + buyButtonHtml + driveButtonHtml;
+    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + compareButtonHtml + buyButtonHtml + driveButtonHtml;
 
     const escapedProposalDescription = proposalDisplayDescription && typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayDescription)
@@ -2383,6 +2411,8 @@ function hideProposalDetailsPanel(clearHighlights = false) {
 
     // Clear cached proposal context when panel closes
     currentProposalDetailsContext = null;
+    // The before/after divider lives and dies with the panel.
+    try { window.ProposalBeforeAfter?.dispose(); } catch (_) { /* no map */ }
 
     // The proposal's own parcel (opened collapsed beside this card by showOwnParcelInfoForProposal)
     // belongs to the card: close it with the card. Left open, it turned the next parcel click into

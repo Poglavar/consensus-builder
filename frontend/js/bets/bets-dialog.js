@@ -12,7 +12,7 @@
     const doc = root.document;
     const OVERLAY_ID = 'proposalMarketOverlay';
     const EXPLORER = 'https://explorer.solana.com';
-    const state = { overlay: null, proposalAccount: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null };
+    const state = { overlay: null, proposalAccount: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null, compare: null };
     const inFlight = new Set();
 
     function interpolate(text, params) {
@@ -209,7 +209,15 @@
         } catch (_) { /* as above */ }
     }
 
+    // The thumbnail divider (dividers.md, M3) lives in the overview body only.
+    function disposeCompare() {
+        if (!state.compare) return;
+        try { state.compare.dispose(); } catch (_) { /* already detached with the body */ }
+        state.compare = null;
+    }
+
     function close() {
+        disposeCompare();
         const overlay = state.overlay;
         if (!overlay) return;
         if (typeof state.unregisterEscape === 'function') state.unregisterEscape();
@@ -319,6 +327,7 @@
         const { row, contest, positions } = state;
         if (!p || !row) return;
         p.title.textContent = row.title || t('bets.row.untitled', 'Untitled proposal');
+        disposeCompare();
         p.body.replaceChildren();
         p.footer.replaceChildren();
         p.dialog.dataset.state = 'overview';
@@ -342,10 +351,24 @@
         }
 
         const image = absoluteImage(row.screenshotUrl);
+        const beforeImage = absoluteImage(row.screenshotBeforeUrl);
         if (image) {
             const img = el('img', 'bets-dialog__thumb');
             img.src = image; img.alt = ''; img.loading = 'lazy';
-            p.body.append(img);
+            // The same ground without the proposal under a divider (dividers.md, M3), once rendered.
+            if (beforeImage && root.__MapBeforeAfter && typeof root.__MapBeforeAfter.attachDivider === 'function') {
+                const compare = el('div', 'bets-dialog__compare');
+                const before = el('img', 'bets-dialog__thumb map-compare__before');
+                before.src = beforeImage; before.alt = ''; before.loading = 'lazy';
+                compare.append(img, before);
+                p.body.append(compare);
+                state.compare = root.__MapBeforeAfter.attachDivider(compare, before, {
+                    labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
+                    sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison')
+                });
+            } else {
+                p.body.append(img);
+            }
         }
 
         const chance = el('div', `bets-dialog__chance is-${row.state}`);
@@ -515,6 +538,7 @@
         const m = model();
         p.dialog.dataset.state = 'stake';
         p.title.textContent = t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) });
+        disposeCompare();
         p.body.replaceChildren();
         p.footer.replaceChildren();
 
@@ -629,6 +653,7 @@
         if (!p || !row || !v) return;
         p.dialog.dataset.state = 'placed';
         p.title.textContent = t('panel.proposal.market.placedTitle', 'Bet placed');
+        disposeCompare();
         p.body.replaceChildren();
         p.footer.replaceChildren();
         p.body.append(el('p', 'proposal-boost-copy', t('panel.proposal.market.placedLine', '{{amount}} on {{side}} is in the pool.', { amount: moneyAtomic(amount), side: sideWord(side) })));

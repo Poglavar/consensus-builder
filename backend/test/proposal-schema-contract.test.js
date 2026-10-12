@@ -45,6 +45,18 @@ describe('proposal schema contract', () => {
         expect(tableDefinition).toMatch(/proposal_data->'cadastreParcelIds'\s*=\s*cadastre_parcel_ids/i);
     });
 
+    it('ships the before/pair thumbnail columns as a re-runnable ALTER-only DDL in the deploy list', () => {
+        expect(tableDefinition).toMatch(/^\s*screenshot_before_url\s+VARCHAR\(2000\)/im);
+        expect(tableDefinition).toMatch(/^\s*screenshot_pair_url\s+VARCHAR\(2000\)/im);
+        const thumbDdl = readFileSync(fileURLToPath(new URL('../routes/proposal-thumbnail-ddl.sql', import.meta.url)), 'utf8');
+        const statements = thumbDdl.replace(/--.*$/gm, '');
+        expect(statements).not.toMatch(/CREATE\s+TABLE/i);
+        expect(statements).toMatch(/ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_before_url VARCHAR\(2000\)/);
+        expect(statements).toMatch(/ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_pair_url VARCHAR\(2000\)/);
+        const deploy = readFileSync(fileURLToPath(new URL('../deploy-backend.sh', import.meta.url)), 'utf8');
+        expect(deploy).toMatch(/^\s*routes\/proposal-thumbnail-ddl\.sql\s*$/m);
+    });
+
     // The deployable migration for existing tables: only ALTERs (an unqualified CREATE TABLE would
     // shadow the live consensus.proposal), re-runnable, the same CHECK as the table definition, and
     // listed in deploy-backend.sh so it reaches the server before the code that writes site/binding.

@@ -7,8 +7,13 @@ import {
     computeBestZoomForBbox,
     normalizeToGeoJSON,
     lngToTileX,
-    latToTileY
+    latToTileY,
+    renderProposalThumbnailSet,
+    renderProposalThumbnail,
+    PAIR_GAP,
+    TILE_SIZE
 } from '../thumbnails/tile-stitch.js';
+import { createCanvas, loadImage } from 'canvas';
 import {
     resolveProposalPolygon,
     shouldSkipProposalThumbnail,
@@ -273,5 +278,68 @@ describe('resolveProposalPolygon on a plan of buildings', () => {
     it('still frames the site when the plan holds no drawable building', () => {
         const resolved = resolveProposalPolygon({ goal: 'buildings', site, geometry: { buildings: [{ type: 'Feature', geometry: null }] } });
         expect(resolved.polygon).toEqual(site.coordinates[0]);
+    });
+});
+
+// One solid-colour tile for every request: the pictures are then deterministic and offline.
+function solidTileSource(hex = '#336699') {
+    const canvas = createCanvas(TILE_SIZE, TILE_SIZE);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = hex;
+    ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+    const bytes = canvas.toBuffer('image/png');
+    const requests = [];
+    return { requests, getTileBytes: async (tile) => { requests.push(tile); return bytes; } };
+}
+
+async function pixelAt(buffer, x, y) {
+    const image = await loadImage(buffer);
+    const canvas = createCanvas(image.width, image.height);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0);
+    return { width: image.width, height: image.height, rgba: Array.from(ctx.getImageData(x, y, 1, 1).data) };
+}
+
+describe('renderProposalThumbnailSet (dividers.md M3)', () => {
+    const PARCEL = [[[15.9768, 45.8098], [15.9777, 45.8098], [15.9777, 45.8106], [15.9768, 45.8106], [15.9768, 45.8098]]];
+
+    it('tags the frame polygons by role so the before picture can leave the proposal out', () => {
+        const frame = computeStitchFrame({ polygon: ZAGREB_SQUARE, polygonOrder: 'lnglat', parcelPolygons: [PARCEL], parcelPolygonOrder: 'lnglat' });
+        expect(frame.polygons.map(poly => poly.role)).toEqual(['proposal', 'parcel']);
+    });
+
+    it('draws the thumbnail, the same ground without the proposal, and the pair from one tile fetch', async () => {
+        const tileSource = solidTileSource();
+        const options = { polygon: ZAGREB_SQUARE, polygonOrder: 'lnglat', parcelPolygons: [PARCEL], parcelPolygonOrder: 'lnglat',
+            badge: { text: '🏠' }, tileUrl: 'https://tiles.example/{z}/{x}/{y}.png', tileSource };
+        const set = await renderProposalThumbnailSet(options);
+        const frame = set.frame;
+        expect(set.tiles).toEqual({ loaded: frame.tilesX * frame.tilesY, failed: 0, total: frame.tilesX * frame.tilesY });
+        expect(tileSource.requests).toHaveLength(frame.tilesX * frame.tilesY);
+
+        // The proposal's centre: orange fill over the tile in "after", the bare tile in "before".
+        const centre = ZAGREB_SQUARE[0].slice(0, 4).reduce((acc, c) => [acc[0] + c[0] / 4, acc[1] + c[1] / 4], [0, 0]);
+        const { px, py } = (await import('../thumbnails/tile-stitch.js')).lngLatToPixel(centre[0], centre[1], frame.xMin, frame.yMin, frame.zoom);
+        const after = await pixelAt(set.after.buffer, Math.round(px), Math.round(py));
+        const before = await pixelAt(set.before.buffer, Math.round(px), Math.round(py));
+        expect(before.rgba).toEqual([0x33, 0x66, 0x99, 255]);
+        expect(after.rgba).not.toEqual(before.rgba);
+        expect(after.rgba[0]).toBeGreaterThan(before.rgba[0]);
+        expect([after.width, after.height]).toEqual([frame.canvasWidth, frame.canvasHeight]);
+        expect([before.width, before.height]).toEqual([frame.canvasWidth, frame.canvasHeight]);
+
+        // The pair: before on the left, a white gap, after on the right.
+        const pair = await pixelAt(set.pair.buffer, Math.round(px), Math.round(py));
+        expect([pair.width, pair.height]).toEqual([frame.canvasWidth * 2 + PAIR_GAP, frame.canvasHeight]);
+        expect(pair.rgba).toEqual(before.rgba);
+        const gap = await pixelAt(set.pair.buffer, frame.canvasWidth + Math.floor(PAIR_GAP / 2), Math.round(py));
+        expect(gap.rgba).toEqual([255, 255, 255, 255]);
+        const right = await pixelAt(set.pair.buffer, frame.canvasWidth + PAIR_GAP + Math.round(px), Math.round(py));
+        expect(right.rgba).toEqual(after.rgba);
+
+        // The single-picture renderer is the "after" of the set.
+        const single = await renderProposalThumbnail(options);
+        expect(single.buffer.equals(set.after.buffer)).toBe(true);
+        expect(single.frame.zoom).toBe(frame.zoom);
     });
 });

@@ -366,6 +366,24 @@
     border: 1px solid var(--cb-line);
 }
 
+/* The thumbnail and the same ground without the proposal under one divider
+   (js/ui/map-before-after.js attachDivider; dividers.md M3). The frame carries the border. */
+.bets-dialog__compare {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--cb-radius-md);
+    border: 1px solid var(--cb-line);
+}
+
+.bets-dialog__compare .bets-dialog__thumb {
+    border: 0;
+    border-radius: 0;
+}
+
+.bets-dialog__compare .map-compare__before {
+    height: 100%;
+}
+
 .bets-dialog__chance-word {
     display: block;
     font-size: var(--cb-text-2xl);

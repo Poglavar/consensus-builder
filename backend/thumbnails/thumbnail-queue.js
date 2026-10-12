@@ -57,8 +57,9 @@ export function createThumbnailQueue(options = {}) {
                 return null;
             }
             const update = await pool.query(
-                `UPDATE proposal SET screenshot_url = $1 WHERE id = $2 AND screenshot_url IS NULL`,
-                [result.url, proposalId]
+                `UPDATE proposal SET screenshot_url = $1, screenshot_before_url = $2, screenshot_pair_url = $3
+                  WHERE id = $4 AND screenshot_url IS NULL`,
+                [result.url, result.beforeUrl || null, result.pairUrl || null, proposalId]
             );
             console.log(`[${ts()}] [thumbnail] proposal ${proposalId}: ${result.url} ` +
                 `(zoom ${result.frame?.zoom}, ${result.tiles?.loaded}/${result.tiles?.total} tiles, ` +

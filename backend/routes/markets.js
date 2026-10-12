@@ -32,6 +32,7 @@ export const PROPOSAL_COLUMNS_SQL = `
         (agent_payment_id IS NOT NULL) AS agent,
         proposal_data->>'proposalRole' AS proposal_role,
         COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
+        screenshot_before_url, screenshot_pair_url,
         COALESCE(building_proposal->>'blockName', structure_proposal->>'blockName', proposal_data->'buildingProposal'->>'blockName') AS site_name`;
 
 const PROPOSALS_SQL = `
@@ -75,6 +76,8 @@ export function rowToProposal(row) {
         agent: Boolean(row.agent),
         proposalRole: row.proposal_role,
         screenshotUrl: row.screenshot_url,
+        screenshotBeforeUrl: row.screenshot_before_url || null,
+        screenshotPairUrl: row.screenshot_pair_url || null,
         parcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : [],
         siteName: typeof row.site_name === 'string' && row.site_name.trim() ? row.site_name.trim() : null,
         proposalAccount: proposalAccountOf(row.onchain_data)

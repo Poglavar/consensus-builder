@@ -144,7 +144,7 @@
         cashOfferOverrides: {},
         // Before/after swipe comparison (a second "before" map clipped by a slider).
         compareBtn: null,
-        compare: { active: false, map2: null, beforeEl: null, handleEl: null, labels: null, percent: 50, control: null },
+        compare: { active: false, session: null, map2: null },
         // Footprints of applied building proposals overlapping the pool, shown as a
         // guide layer so the readjustment can be aligned to planned buildings.
         buildingFootprintLayer: null,
@@ -572,7 +572,7 @@
                     ${algorithmControls}
                     <div class="reparcel-layout">
                         <section class="reparcel-map-panel">
-                            <button type="button" class="reparcel-compare-btn" data-reparcel-compare hidden>${t('reparcellization.modal.beforeAfter', 'Before / After')}</button>
+                            <button type="button" class="reparcel-compare-btn" data-reparcel-compare hidden>${t('mapCompare.toggle', 'Before / After')}</button>
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
                         </section>
                         ${sidePanel}
@@ -653,13 +653,7 @@
             if (state.map) {
                 state.map.invalidateSize();
             }
-            if (state.compare.active && state.compare.map2) {
-                try {
-                    state.compare.map2.invalidateSize();
-                    state.compare.map2.setView(state.map.getCenter(), state.map.getZoom(), { animate: false });
-                } catch (_) { }
-                updateCompareClip();
-            }
+            if (state.compare.active && state.compare.session) state.compare.session.sync();
         };
         window.addEventListener('resize', state.resizeHandler);
 
@@ -3545,83 +3539,37 @@
         return { type: 'FeatureCollection', features };
     }
 
-    const COMPARE_FREEZE = ['dragging', 'scrollWheelZoom', 'doubleClickZoom', 'touchZoom', 'boxZoom', 'keyboard'];
-
-    function updateCompareClip() {
-        if (!state.compare.active || !state.map) return;
-        const W = state.map.getContainer().clientWidth;
-        const x = W * state.compare.percent / 100;
-        if (state.compare.beforeEl) state.compare.beforeEl.style.clipPath = `inset(0 ${Math.max(0, W - x)}px 0 0)`;
-        if (state.compare.handleEl) state.compare.handleEl.style.left = x + 'px';
-    }
-
+    // The before map (ui/map-before-after.js) shows the input parcels coloured by owner inside the
+    // super-parcel outline; the live modal map, with its plots, is "after".
     function enterCompare() {
         if (!state.map || state.compare.active || !state.slices.length) return;
         cancelDraw();
         dismissOwnerPopup();
-        const container = state.map.getContainer();
-        COMPARE_FREEZE.forEach(h => { try { state.map[h] && state.map[h].disable(); } catch (_) { } });
-
-        const beforeEl = document.createElement('div');
-        beforeEl.className = 'reparcel-before-map';
-        container.appendChild(beforeEl);
-
-        const handleEl = document.createElement('div');
-        handleEl.className = 'reparcel-compare-handle';
-        handleEl.innerHTML = '<span class="reparcel-compare-grip">↔</span>';
-        container.appendChild(handleEl);
-
-        const beforeLabel = document.createElement('div');
-        beforeLabel.className = 'reparcel-compare-label reparcel-compare-label--before';
-        beforeLabel.textContent = t('reparcellization.modal.labelBefore', 'Before');
-        const afterLabel = document.createElement('div');
-        afterLabel.className = 'reparcel-compare-label reparcel-compare-label--after';
-        afterLabel.textContent = t('reparcellization.modal.labelAfter', 'After');
-        container.appendChild(beforeLabel);
-        container.appendChild(afterLabel);
-
-        state.compare.active = true;
-        state.compare.beforeEl = beforeEl;
-        state.compare.handleEl = handleEl;
-        state.compare.labels = [beforeLabel, afterLabel];
-        state.compare.percent = 50;
-
-        const map2 = L.map(beforeEl, { zoomControl: false, attributionControl: false, fadeAnimation: false,
-            maxZoom: state.map.getMaxZoom(), zoomSnap: state.map.options.zoomSnap });
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: state.map.getMaxZoom(), maxNativeZoom: 19, minZoom: 3
-        }).addTo(map2);
-        map2.setView(state.map.getCenter(), state.map.getZoom(), { animate: false });
-        L.geoJSON(buildBeforeFeatureCollection(), {
-            style: f => ({ color: '#333', weight: 1, fillOpacity: 0.55, fillColor: (f.properties && f.properties.color) || '#888' })
-        }).addTo(map2);
-        L.geoJSON(state.superParcel, { style: { color: '#111', weight: 2, fillOpacity: 0 }, interactive: false }).addTo(map2);
-        state.compare.map2 = map2;
-        drawOwnerReviewHighlights();
-        setTimeout(() => {
-            try { map2.invalidateSize(); map2.setView(state.map.getCenter(), state.map.getZoom(), { animate: false }); updateCompareClip(); } catch (_) { }
-        }, 60);
-
-        state.compare.control = window.__MapCompareControl.create({
-            container, handle: handleEl, value: 50,
-            label: t('reparcellization.modal.compareSliderLabel', 'Before and after comparison'),
-            onChange: percent => { state.compare.percent = percent; updateCompareClip(); }
+        const session = window.__MapBeforeAfter.attach(state.map, {
+            percent: 50,
+            labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
+            sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison'),
+            drawBefore(beforeMap) {
+                L.geoJSON(buildBeforeFeatureCollection(), {
+                    style: f => ({ color: '#333', weight: 1, fillOpacity: 0.55, fillColor: (f.properties && f.properties.color) || '#888' })
+                }).addTo(beforeMap);
+                L.geoJSON(state.superParcel, { style: { color: '#111', weight: 2, fillOpacity: 0 }, interactive: false }).addTo(beforeMap);
+            }
         });
-
-        updateCompareClip();
+        state.compare.active = true;
+        state.compare.session = session;
+        state.compare.map2 = session.beforeMap;
+        drawOwnerReviewHighlights();
         if (state.compareBtn) state.compareBtn.classList.add('active');
     }
 
     function exitCompare() {
         if (!state.compare.active) return;
-        state.compare.control?.dispose();
-        state.compare.control = null;
-        if (state.compare.map2) { try { state.compare.map2.remove(); } catch (_) { } state.compare.map2 = null; }
-        ['beforeEl', 'handleEl'].forEach(k => { if (state.compare[k]) { try { state.compare[k].remove(); } catch (_) { } state.compare[k] = null; } });
-        if (state.compare.labels) { state.compare.labels.forEach(l => { try { l.remove(); } catch (_) { } }); state.compare.labels = null; }
+        state.compare.session?.dispose();
+        state.compare.session = null;
+        state.compare.map2 = null;
         state.compare.active = false;
         drawOwnerReviewHighlights();
-        if (state.map) COMPARE_FREEZE.forEach(h => { try { state.map[h] && state.map[h].enable(); } catch (_) { } });
         if (state.compareBtn) state.compareBtn.classList.remove('active');
     }
 

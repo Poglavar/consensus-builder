@@ -93,6 +93,7 @@ DDL_FILES=(
     routes/parcels-ddl.sql
     routes/transactions-ddl.sql
     routes/proposal-site-ddl.sql
+    routes/proposal-thumbnail-ddl.sql
     db/agents-ddl.sql
     db/proposal-prepared-ddl.sql
     db/building-floor-model.sql

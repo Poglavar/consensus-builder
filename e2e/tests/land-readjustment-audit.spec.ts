@@ -54,8 +54,8 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
     await expect(modal.locator('[data-reparcel-compare]')).toBeVisible();
     await modal.locator('[data-reparcel-compare]').click();
     const map = modal.locator('#reparcel-map');
-    const handle = map.locator('.reparcel-compare-handle');
-    await expect(map.locator('.reparcel-before-map')).toBeVisible();
+    const handle = map.locator('.map-compare__handle');
+    await expect(map.locator('.map-compare__before')).toBeVisible();
     const initial = await handle.evaluate(node => Number.parseFloat((node as HTMLElement).style.left));
     const handleBox = await handle.boundingBox();
     const mapBox = await map.boundingBox();
@@ -68,23 +68,23 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
     await attachScreenshot(page, testInfo, `${size.name}-comparison-drag.png`);
 
     await modal.locator('[data-reparcel-compare]').click();
-    await expect(map.locator('.reparcel-before-map')).toHaveCount(0);
-    await expect(map.locator('.reparcel-compare-handle')).toHaveCount(0);
+    await expect(map.locator('.map-compare__before')).toHaveCount(0);
+    await expect(map.locator('.map-compare__handle')).toHaveCount(0);
     await modal.locator('[data-reparcel-compare]').click();
-    await expect(map.locator('.reparcel-before-map')).toBeVisible();
-    const reopenedPosition = Number.parseFloat(await map.locator('.reparcel-compare-handle').evaluate(node => (node as HTMLElement).style.left));
+    await expect(map.locator('.map-compare__before')).toBeVisible();
+    const reopenedPosition = Number.parseFloat(await map.locator('.map-compare__handle').evaluate(node => (node as HTMLElement).style.left));
     expect(reopenedPosition).toBeCloseTo(mapBox.width / 2, 0);
 
     await modal.locator('[data-reparcel-cancel]').click();
     await page.getByRole('button', { name: 'Discard changes', exact: true }).click();
     await expect(modal).toBeHidden();
-    await expect(page.locator('.reparcel-before-map, .reparcel-compare-handle, .reparcel-compare-label')).toHaveCount(0);
+    await expect(page.locator('.map-compare__before, .map-compare__handle, .map-compare__label')).toHaveCount(0);
     // Re-open through the parcel action so the cleanup assertion covers the editor lifecycle too.
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
     const reopened = page.locator('.reparcel-modal-overlay');
     await expect(reopened).toBeVisible();
-    await expect(reopened.locator('.reparcel-before-map, .reparcel-compare-handle, .reparcel-compare-label')).toHaveCount(0);
+    await expect(reopened.locator('.map-compare__before, .map-compare__handle, .map-compare__label')).toHaveCount(0);
     await attachScreenshot(page, testInfo, `${size.name}-reopened-clean.png`);
   });
 }
@@ -217,7 +217,7 @@ test.describe('touch before/after comparison', () => {
     const slider = modal.getByRole('slider', { name: 'Before and after comparison' });
     const map = modal.locator('#reparcel-map');
     const box = await map.boundingBox();
-    const grip = await slider.locator('.reparcel-compare-grip').boundingBox();
+    const grip = await slider.locator('.map-compare__grip').boundingBox();
     if (!box || !grip) throw new Error('Touch comparison has no visible bounds');
     const cdp = await page.context().newCDPSession(page);
     const start = { x: grip.x + grip.width / 2, y: grip.y + grip.height / 2, id: 1 };

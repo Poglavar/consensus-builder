@@ -3319,9 +3319,6 @@
             "totalCashOffer": "Ukupne ponude gotovine: {{amount}}",
             "owners": "Vlasnici",
             "publicLand": "Javno zemljište",
-            "beforeAfter": "Prije / Poslije",
-            "labelBefore": "Prije",
-            "labelAfter": "Poslije",
             "sweepHandleHint": "Povuci za rotaciju linija parcelacije",
             "drawPlot": "Nacrtaj česticu",
             "drawLine": "Povuci liniju",
@@ -3448,7 +3445,6 @@
             "agreementCreated": "Izrađeno je {{count}} sporazuma za čestice.",
             "agreementFailed": "Izrađeno je {{created}} sporazuma za čestice; {{failed}} zahtijeva pažnju. Skica je sačuvana za ponovni pokušaj.",
             "perParcelProposalName": "{{name}} — čestica {{parcel}}",
-            "compareSliderLabel": "Usporedba prije i poslije",
             "cashTermsHint": "Ukupna naknada iz obračuna vlasnika. Pojedinačne novčane ponude uredite u uređivaču preparcelacije.",
             "jointShareHint": "Udjeli za dvorište polaze od preostalog privatnog zemljišta svakog vlasnika. Odaberite Uredi udjele za fiksne postotke."
         },
@@ -3466,6 +3462,12 @@
             "invalid-readjustment-deal": "Provjerite novčane ponude i raspodjelu zemljišta.",
             "invalid-proposal-approval": "Provjerite pravila odobravanja i vlasnička prava."
         }
+    },
+    "mapCompare": {
+        "toggle": "Prije / Poslije",
+        "before": "Prije",
+        "after": "Poslije",
+        "sliderLabel": "Usporedba prije i poslije"
     },
     "status": {
         "messages": {

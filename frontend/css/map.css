@@ -1481,3 +1481,75 @@ body.three-mode-active #agent-bubbles-container {
     color: var(--cb-text);
     border-color: var(--suggested-layout-flagged);
 }
+
+/* ---- Before/after divider (js/ui/map-before-after.js) ----
+   A second map clipped by a draggable divider inside a Leaflet container, above the host's panes.
+   Hosts: the land readjustment modal, the proposal details panel. Tracked in dividers.md. */
+.map-compare__before {
+    position: absolute;
+    inset: 0;
+    z-index: var(--cb-z-map-compare);
+    pointer-events: none;
+}
+
+.map-compare__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px solid var(--cb-inverse-ink);
+    box-shadow: 0 0 0 1px var(--cb-backdrop);
+    z-index: calc(var(--cb-z-map-compare) + 1);
+    cursor: ew-resize;
+    transform: translateX(-1px);
+    touch-action: none;
+}
+
+.map-compare__handle:focus-visible .map-compare__grip {
+    outline: 3px solid var(--cb-primary);
+    outline-offset: 3px;
+}
+
+.map-compare__grip {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text);
+    cursor: ew-resize;
+}
+
+.map-compare__label {
+    position: absolute;
+    bottom: 10px;
+    z-index: calc(var(--cb-z-map-compare) + 2);
+    padding: 2px 7px;
+    border-radius: var(--cb-radius-sm);
+    background: color-mix(in srgb, var(--cb-inverse) 75%, transparent);
+    color: var(--cb-inverse-ink);
+    font-size: var(--cb-text-xs);
+    pointer-events: none;
+}
+
+.map-compare__label--before { left: 10px; }
+.map-compare__label--after { right: 10px; }
+
+/* Labels beside the grip, for a map whose bottom corners sit under other chrome (the main map). */
+.map-compare__label--divider {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    white-space: nowrap;
+}
+
+.map-compare__label--divider.map-compare__label--before { left: auto; right: 24px; }
+.map-compare__label--divider.map-compare__label--after { left: 24px; right: auto; }

@@ -3328,9 +3328,6 @@
             "totalCashOffer": "Total de ofertas en efectivo: {{amount}}",
             "owners": "Propietarios",
             "publicLand": "Suelo público",
-            "beforeAfter": "Antes / Después",
-            "labelBefore": "Antes",
-            "labelAfter": "Después",
             "sweepHandleHint": "Arrastra para rotar las líneas de parcelación",
             "drawPlot": "Dibujar parcela",
             "drawLine": "Trazar una línea",
@@ -3460,7 +3457,6 @@
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
             "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta.",
-            "compareSliderLabel": "Comparación antes y después",
             "cashTermsHint": "Compensación total del balance de propietarios. Edite las ofertas individuales en el editor de reajuste de tierras.",
             "jointShareHint": "Las participaciones del patio parten del terreno privado restante de cada propietario. Usa Editar participaciones para fijar porcentajes."
         },
@@ -3478,6 +3474,12 @@
             "invalid-readjustment-deal": "Revisa las ofertas en efectivo y la distribución del terreno.",
             "invalid-proposal-approval": "Revisa la política de aprobación y los derechos de propiedad."
         }
+    },
+    "mapCompare": {
+        "toggle": "Antes / Después",
+        "before": "Antes",
+        "after": "Después",
+        "sliderLabel": "Comparación antes y después"
     },
     "status": {
         "messages": {

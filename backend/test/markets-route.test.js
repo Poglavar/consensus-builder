@@ -12,7 +12,7 @@ function rows() {
         id: 789, proposal_id: 'agent-densifier-01-2026-10-01-1', city: 'zagreb', title: 'Plan-led infill',
         goal: 'single', lifecycle_status: 'Active', created_at: new Date('2026-10-01T10:00:00Z'), expires_at: null,
         cadastre_parcel_ids: ['HR-335614-2311'], onchain_data: { chainId: 'solana-devnet', proposalId: ACCOUNT },
-        author: 'densifier-01', agent: true, proposal_role: null, screenshot_url: null, site_name: 'Rudeš'
+        author: 'densifier-01', agent: true, proposal_role: null, screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null, site_name: 'Rudeš'
     }, {
         id: 790, proposal_id: 'local-rival', city: 'zagreb', title: 'Rival', goal: 'park', lifecycle_status: 'Active',
         created_at: new Date('2026-10-02T10:00:00Z'), expires_at: new Date('2026-12-31T00:00:00Z'),
@@ -121,5 +121,14 @@ describe('GET /markets', () => {
             id: 789, proposalId: 'agent-densifier-01-2026-10-01-1', createdAt: '2026-10-01T10:00:00.000Z',
             parcelIds: ['HR-335614-2311'], proposalAccount: ACCOUNT, agent: true
         });
+    });
+});
+
+describe('rowToProposal pictures (dividers.md M3)', () => {
+    it('carries the before and pair pictures beside the thumbnail, null when not rendered', () => {
+        const [row] = rows();
+        expect(rowToProposal(row)).toMatchObject({ screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null });
+        expect(rowToProposal({ ...row, screenshot_url: '/uploads/images/t.png', screenshot_before_url: '/uploads/images/b.png', screenshot_pair_url: '/uploads/images/p.png' }))
+            .toMatchObject({ screenshotUrl: '/uploads/images/t.png', screenshotBeforeUrl: '/uploads/images/b.png', screenshotPairUrl: '/uploads/images/p.png' });
     });
 });

@@ -46,13 +46,17 @@ Options:
   --strip-data-urls       SEPARATE PASS: remove the redundant base64 screenshotDataUrl from
                           proposal_data for rows that already have a working hosted file.
                           Still honours --apply / dry run.
+  --before                SEPARATE PASS (dividers.md, M3): rows that have a thumbnail but no
+                          before/pair images. Re-renders the three pictures from one tile fetch
+                          so they agree, and writes all three URLs (the thumbnail included).
+                          Only touches rows where screenshot_before_url IS NULL; honours --apply.
   --help                  Print this help and exit without doing anything.
 
 Environment: PGHOST PGPORT PGUSER PGPASSWORD PGDATABASE (read from backend/.env unless already set).
 `;
 
 function parseArgs(argv) {
-    const args = { apply: false, help: false, stripDataUrls: false, limit: null, city: null, ids: null, outDir: null, baseUrl: null };
+    const args = { apply: false, help: false, stripDataUrls: false, before: false, limit: null, city: null, ids: null, outDir: null, baseUrl: null };
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
         const next = () => argv[++i];
@@ -61,6 +65,7 @@ function parseArgs(argv) {
             case '--apply': args.apply = true; break;
             case '--dry-run': args.apply = false; break;
             case '--strip-data-urls': args.stripDataUrls = true; break;
+            case '--before': args.before = true; break;
             case '--limit': args.limit = Number(next()); break;
             case '--city': args.city = next(); break;
             case '--id': args.ids = String(next()).split(',').map(v => Number(v.trim())).filter(Number.isFinite); break;
@@ -92,7 +97,11 @@ function buildWhere(args, extraClauses = []) {
 }
 
 async function runBackfill(pool, args) {
-    const { where, params } = buildWhere(args, ['screenshot_url IS NULL']);
+    // The before pass takes rows that already have a thumbnail and lack the before/pair pictures;
+    // the ordinary pass takes rows with no thumbnail at all.
+    const { where, params } = buildWhere(args, args.before
+        ? ['screenshot_url IS NOT NULL', 'screenshot_before_url IS NULL']
+        : ['screenshot_url IS NULL']);
     const limitSql = Number.isFinite(args.limit) && args.limit > 0 ? `LIMIT ${args.limit}` : '';
     const { rows } = await pool.query(
         `SELECT id, proposal_id, city, type, proposal_data
@@ -103,7 +112,15 @@ async function runBackfill(pool, args) {
         params
     );
 
-    log(`Found ${rows.length} proposal(s) without screenshot_url.`);
+    log(args.before
+        ? `Found ${rows.length} proposal(s) with a thumbnail but no before/pair images.`
+        : `Found ${rows.length} proposal(s) without screenshot_url.`);
+    // Each pass writes only what the other left NULL, so a rerun never overwrites a newer picture.
+    const updateSql = args.before
+        ? `UPDATE proposal SET screenshot_url = $1, screenshot_before_url = $2, screenshot_pair_url = $3, updated_at = NOW()
+            WHERE id = $4 AND screenshot_before_url IS NULL`
+        : `UPDATE proposal SET screenshot_url = $1, screenshot_before_url = $2, screenshot_pair_url = $3, updated_at = NOW()
+            WHERE id = $4 AND screenshot_url IS NULL`;
 
     const stats = { total: rows.length, migrated: 0, rendered: 0, skipped: 0, failed: 0 };
     const failures = [];
@@ -125,7 +142,8 @@ async function runBackfill(pool, args) {
             const existingDataUrl = typeof proposal.screenshotDataUrl === 'string' ? proposal.screenshotDataUrl : null;
 
             // MIGRATE: the image already exists as base64; move it to a file, never re-render it.
-            if (existingDataUrl) {
+            // (Not in the before pass: a base64 thumbnail has no before picture to move.)
+            if (existingDataUrl && !args.before) {
                 const decoded = decodeImageDataUrl(existingDataUrl);
                 if (!decoded || !decoded.buffer.length) {
                     throw new Error('screenshotDataUrl is not a decodable, non-empty base64 data URL');
@@ -166,6 +184,8 @@ async function runBackfill(pool, args) {
 
             if (args.outDir) {
                 fs.writeFileSync(path.join(args.outDir, `proposal-${row.id}-${row.type || 'x'}.png`), result.buffer);
+                fs.writeFileSync(path.join(args.outDir, `proposal-${row.id}-${row.type || 'x'}-before.png`), result.beforeBuffer);
+                fs.writeFileSync(path.join(args.outDir, `proposal-${row.id}-${row.type || 'x'}-pair.png`), result.pairBuffer);
             }
 
             if (!args.apply) {
@@ -174,11 +194,8 @@ async function runBackfill(pool, args) {
                 continue;
             }
 
-            await pool.query(
-                `UPDATE proposal SET screenshot_url = $1, updated_at = NOW() WHERE id = $2 AND screenshot_url IS NULL`,
-                [result.url, row.id]
-            );
-            log(`${progress} ${label} RENDERED — ${result.url} (zoom ${result.frame.zoom}, ${result.tiles.loaded}/${result.tiles.total} tiles, ${result.bytes} bytes, ${Date.now() - startedAt}ms)`);
+            await pool.query(updateSql, [result.url, result.beforeUrl, result.pairUrl, row.id]);
+            log(`${progress} ${label} RENDERED — ${result.url} + before ${result.beforeUrl} + pair ${result.pairUrl} (zoom ${result.frame.zoom}, ${result.tiles.loaded}/${result.tiles.total} tiles, ${result.bytes} bytes, ${Date.now() - startedAt}ms)`);
             stats.rendered++;
         } catch (err) {
             stats.failed++;

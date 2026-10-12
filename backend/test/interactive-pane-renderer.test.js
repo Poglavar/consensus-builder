@@ -184,6 +184,9 @@ describe('every decorative main-map canvas names a click-through pane', () => {
             'corridor-render.js:pane',
             'government-roads.js:GOVERNMENT_PLAN_PANE',
             'parcels/ingest.js:default',
+            // The before map of a before/after comparison (its own Leaflet map): parcels and
+            // buildings on one canvas in that map's standard overlay pane.
+            'proposals/before-after.js:overlayPane',
             'structures.js:SQUARES_PANE'
         ]);
     });

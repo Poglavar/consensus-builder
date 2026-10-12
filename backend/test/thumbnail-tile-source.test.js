@@ -167,7 +167,7 @@ describe('thumbnail queue', () => {
 
         expect(peak).toBe(2);
         expect(pool.query).toHaveBeenCalledTimes(5);
-        expect(pool.query.mock.calls[0][0]).toMatch(/SET screenshot_url = \$1 WHERE id = \$2 AND screenshot_url IS NULL/);
+        expect(pool.query.mock.calls[0][0]).toMatch(/SET screenshot_url = \$1, screenshot_before_url = \$2, screenshot_pair_url = \$3\s+WHERE id = \$4 AND screenshot_url IS NULL/);
     });
 
     it('sheds jobs beyond maxQueued (the backfill picks them up) and never throws a render failure', async () => {

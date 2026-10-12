@@ -108,6 +108,8 @@
             agent: Boolean(entry.agent),
             createdAt: entry.createdAt || null,
             screenshotUrl: entry.screenshotUrl || null,
+            // The same ground without the proposal, when rendered (dividers.md, M3).
+            screenshotBeforeUrl: entry.screenshotBeforeUrl || null,
             parcelIds: Array.isArray(entry.parcelIds) ? entry.parcelIds : [],
             lifecycleStatus: entry.lifecycleStatus || 'Active',
             state: rowState(entry),

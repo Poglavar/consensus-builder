@@ -109,8 +109,11 @@ describe('POST /proposals', () => {
 
         const screenshotUpdate = pool.getCalls().find(call => call.sql.includes('SET screenshot_url'));
         expect(screenshotUpdate).toBeTruthy();
+        // The queue writes the thumbnail and its before/pair pictures (null when the render has none).
         expect(screenshotUpdate.params).toEqual([
             'http://api.test/uploads/images/proposal-thumb-1-123.png',
+            null,
+            null,
             1
         ]);
     });

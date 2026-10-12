@@ -199,3 +199,20 @@
     #proposal-details-panel .panel-body { padding: 16px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); }
     #proposal-details-panel .panel-footer { padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border-radius: 0; }
 }
+
+/* Before / after on an applied proposal (js/proposals/before-after.js): pressed while comparing,
+   like the readjustment modal's own toggle. */
+.btn-compare-proposal[aria-pressed="true"],
+.btn-compare-parcel[aria-pressed="true"] {
+    background: var(--cb-success-soft);
+    border-color: var(--cb-success);
+    color: var(--cb-success-soft-ink);
+}
+
+/* One parcel's own before/after (M6), a small chip beside the parcel number. */
+.btn-compare-parcel {
+    margin-left: var(--cb-space-2);
+    padding: 0 var(--cb-space-2);
+    font-size: var(--cb-text-xs);
+    line-height: 1.6;
+}

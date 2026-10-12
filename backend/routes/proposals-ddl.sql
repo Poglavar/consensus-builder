@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS proposal (
     bounds JSONB, -- Bounds for reliable positioning [minX, minY, maxX, maxY]
     onchain_data JSONB, -- Blockchain-related data (NFT info, contract addresses, etc.)
     screenshot_url VARCHAR(2000), -- Static map screenshot URL used as the proposal thumbnail
+    screenshot_before_url VARCHAR(2000), -- The same ground without the proposal (dividers.md)
+    screenshot_pair_url VARCHAR(2000), -- before | after side by side, for link previews
     
     -- Epoch bucket: which year of the plan's timeline this proposal belongs to
     -- (e.g. 2035/2045/2055). Presentation metadata for the "Kumulativno do
@@ -99,6 +101,7 @@ CREATE TABLE IF NOT EXISTS proposal (
 -- Idempotent column additions for installs created from an older version of this file.
 ALTER TABLE proposal ADD COLUMN IF NOT EXISTS edit_token_hash VARCHAR(64);
 -- site / binding and the relaxed declaration CHECK: see proposal-site-ddl.sql (applied on deploy).
+-- screenshot_before_url / screenshot_pair_url: see proposal-thumbnail-ddl.sql (applied on deploy).
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_proposal_city ON proposal(city);
@@ -122,6 +125,8 @@ COMMENT ON COLUMN proposal.binding IS 'Server binding of the site at publish tim
 COMMENT ON COLUMN proposal.cadastre_frame IS 'Which cadastre frame the publish-time stamps were computed against ({ capturedAt }). See rethink-proposals.md D5/§11.';
 COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used for reconstruction';
 COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
+COMMENT ON COLUMN proposal.screenshot_before_url IS 'Thumbnail of the same ground without the proposal: the before half of a before/after view (dividers.md)';
+COMMENT ON COLUMN proposal.screenshot_pair_url IS 'Before and after thumbnails side by side, the bet link preview image';
 COMMENT ON COLUMN proposal.agent_payment_id IS 'Stable x402 payment-identifier used to replay a completed agent submission without settling again';
 COMMENT ON COLUMN proposal.agent_request_hash IS 'SHA-256 of the accepted request JSON bound to agent_payment_id';
 COMMENT ON COLUMN proposal.edit_token_hash IS 'SHA-256 (hex) of the one-time edit token returned by POST /proposals; required by the PATCH routes. NULL = legacy row, not editable via the API';

@@ -6,7 +6,7 @@
 // this replaces (deleted from frontend/js/proposals/dialog-upload.js in the same change), so a
 // server-rendered thumbnail frames a proposal the way the client-side one did.
 import * as turf from '@turf/turf';
-import { renderProposalThumbnail } from './tile-stitch.js';
+import { renderProposalThumbnailSet } from './tile-stitch.js';
 import { fetchParcelPolygonsByIds } from './parcel-geometry.js';
 import { saveImageBuffer } from '../utils/image-store.js';
 
@@ -246,14 +246,21 @@ export async function buildThumbnailRenderOptions(pool, proposal, city) {
  * @param {string|number} options.proposalId - used for the file name
  * @param {string} options.baseUrl - absolute origin the stored file will be served from
  * @param {boolean} [options.dryRun=false] - render but store nothing; `url` comes back null
- * @returns {Promise<{ url: string|null, buffer: Buffer, frame: Object, tiles: Object }|null>}
+ * @returns {Promise<{ url: string|null, beforeUrl: string|null, pairUrl: string|null, buffer: Buffer,
+ *                     beforeBuffer: Buffer, pairBuffer: Buffer, frame: Object, tiles: Object }|null>}
  *          null when the proposal has no geometry worth rendering; throws when rendering fails
  */
 export async function generateAndStoreProposalThumbnail(pool, proposal, { city, proposalId, baseUrl, dryRun = false }) {
     const renderOptions = await buildThumbnailRenderOptions(pool, proposal, city);
     if (!renderOptions) return null;
 
-    const { buffer, frame, tiles } = await renderProposalThumbnail(renderOptions);
+    // One tile fetch, three pictures: the thumbnail, the same ground without the proposal, and the
+    // two side by side (dividers.md, M3).
+    const set = await renderProposalThumbnailSet(renderOptions);
+    const { frame, tiles } = set;
+    const buffer = set.after.buffer;
+    const beforeBuffer = set.before.buffer;
+    const pairBuffer = set.pair.buffer;
 
     // A thumbnail whose tiles all failed is a grey rectangle — worse than no thumbnail, because it
     // would be indistinguishable from a real one and never regenerated.
@@ -262,12 +269,18 @@ export async function generateAndStoreProposalThumbnail(pool, proposal, { city, 
     }
 
     if (dryRun) {
-        return { url: null, fileName: null, buffer, frame, tiles, bytes: buffer.length };
+        return { url: null, beforeUrl: null, pairUrl: null, fileName: null, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length };
     }
 
-    const { fileName, imagePath } = saveImageBuffer(buffer, `proposal-thumb-${proposalId}-${Date.now()}`);
-    const url = `${String(baseUrl).replace(/\/$/, '')}${imagePath}`;
-    return { url, fileName, imagePath, buffer, frame, tiles, bytes: buffer.length };
+    const stamp = Date.now();
+    const origin = String(baseUrl).replace(/\/$/, '');
+    const { fileName, imagePath } = saveImageBuffer(buffer, `proposal-thumb-${proposalId}-${stamp}`);
+    const before = saveImageBuffer(beforeBuffer, `proposal-before-${proposalId}-${stamp}`);
+    const pair = saveImageBuffer(pairBuffer, `proposal-pair-${proposalId}-${stamp}`);
+    return {
+        url: `${origin}${imagePath}`, beforeUrl: `${origin}${before.imagePath}`, pairUrl: `${origin}${pair.imagePath}`,
+        fileName, imagePath, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length
+    };
 }
 
 export { PROPOSAL_SCREENSHOT_SKIP_GOALS, PROPOSAL_GOAL_ICON_MAP };

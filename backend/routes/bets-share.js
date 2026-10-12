@@ -44,7 +44,8 @@ async function betSubject(pool, proposalAccount) {
     const { rows } = await pool.query(PROPOSAL_BY_ACCOUNT_SQL, [proposalAccount]);
     if (rows.length) {
         const proposal = rowToProposal(rows[0]);
-        return { city: proposal.city, title: proposal.title, screenshotUrl: proposal.screenshotUrl, proposals: [proposal], plans: [] };
+        // The preview shows before and after side by side when the pair has been rendered.
+        return { city: proposal.city, title: proposal.title, screenshotUrl: proposal.screenshotPairUrl || proposal.screenshotUrl, proposals: [proposal], plans: [] };
     }
     const { rows: planRows } = await pool.query(PLAN_BY_ACCOUNT_SQL, [proposalAccount]);
     if (!planRows.length) return null;
@@ -52,7 +53,7 @@ async function betSubject(pool, proposalAccount) {
     const { rows: memberRows } = await pool.query(PLAN_MEMBERS_SQL, [plan.memberIds.map(Number)]);
     const members = memberRows.map(rowToProposal);
     const byId = new Map(members.map(member => [String(member.id), member]));
-    const image = plan.memberIds.map(id => byId.get(String(id))?.screenshotUrl).find(Boolean) || null;
+    const image = plan.memberIds.map(id => byId.get(String(id))).map(member => member && (member.screenshotPairUrl || member.screenshotUrl)).find(Boolean) || null;
     return { city: planRows[0].city || null, title: plan.title || plan.slug, screenshotUrl: image, proposals: members, plans: [plan] };
 }
 

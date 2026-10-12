@@ -1052,59 +1052,6 @@ body.site-intro-open { overflow: hidden; }
     border-color: var(--cb-success);
     color: var(--cb-success-soft-ink);
 }
-.reparcel-before-map {
-    position: absolute;
-    inset: 0;
-    z-index: 800;
-    pointer-events: none;
-}
-.reparcel-compare-handle {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 0;
-    border-left: 2px solid #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
-    z-index: 801;
-    cursor: ew-resize;
-    transform: translateX(-1px);
-    touch-action: none;
-}
-.reparcel-compare-handle:focus-visible .reparcel-compare-grip {
-    outline: 3px solid var(--cb-primary);
-    outline-offset: 3px;
-}
-.reparcel-compare-grip {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translate(-50%, -50%);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--cb-surface);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: var(--cb-text);
-    cursor: ew-resize;
-}
-.reparcel-compare-label {
-    position: absolute;
-    bottom: 10px;
-    z-index: 802;
-    background: rgba(17, 24, 39, 0.7);
-    color: #fff;
-    font-size: 11px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    pointer-events: none;
-}
-.reparcel-compare-label--before { left: 10px; }
-.reparcel-compare-label--after { right: 10px; }
-
 .reparcel-map {
     width: 100%;
     height: 460px;

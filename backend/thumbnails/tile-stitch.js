@@ -194,7 +194,7 @@ export function computeStitchFrame(options = {}) {
     // zero neighbour outlines. Re-creating it from the parcel table drowns the subject of the picture
     // in 200 black dashed polygons, which is the opposite of what the layer was for.
     const polygons = [
-        { coords: geoCoords, style: { color: '#ff6600', weight: 3, opacity: 0.9, fillColor: '#ff6600', fillOpacity: 0.18, lineJoin: 'round', lineCap: 'round' } }
+        { coords: geoCoords, role: 'proposal', style: { color: '#ff6600', weight: 3, opacity: 0.9, fillColor: '#ff6600', fillOpacity: 0.18, lineJoin: 'round', lineCap: 'round' } }
     ];
 
     if (Array.isArray(parcelPolygons)) {
@@ -205,7 +205,7 @@ export function computeStitchFrame(options = {}) {
                 // Parent parcels expand the frame (so the parcel stays in view) unless the caller
                 // pinned the frame to the proposal polygon — e.g. road corridors.
                 if (!fitToPolygonOnly) expandBbox(norm);
-                polygons.push({ coords: norm, style: { color: '#000', weight: 2.5, opacity: 1, dashArray: '3 2' } });
+                polygons.push({ coords: norm, role: 'parcel', style: { color: '#000', weight: 2.5, opacity: 1, dashArray: '3 2' } });
             }
         }
     }
@@ -304,35 +304,15 @@ async function fetchTileImage(tileSource, { template, z, x, y, timeoutMs = DEFAU
     return loadImage(bytes);
 }
 
-/**
- * Stitch tiles covering the frame and draw the polygon overlays. Returns PNG bytes.
- *
- * @param {Object} options - same shape as the browser's captureViaTileStitch
- * @param {Array|Object} options.polygon - proposal geometry (rings or GeoJSON geometry)
- * @param {Array} [options.parcelPolygons] - parent parcel outlines (expand the frame)
- * @param {number} [options.padding=0.05]
- * @param {number} [options.zoom=19] - maximum zoom; lowered automatically to cap the tile count
- * @param {Object} [options.badge] - { text } goal badge drawn top-left
- * @param {string} [options.parcelLabel] - label drawn at the polygon's centre
- * @param {Object} [options.tileSource] - cache + fetch cap (thumbnails/tile-source.js); defaults to the shared one
- * @returns {Promise<{ buffer: Buffer, frame: Object, tiles: { loaded: number, failed: number } }>}
- */
-export async function renderProposalThumbnail(options = {}) {
-    const {
-        tileUrl = defaultTileUrl(),
-        parcelLabel = null,
-        badge = null,
-        tileTimeoutMs = DEFAULT_TILE_TIMEOUT_MS,
-        tileSource = defaultTileSource()
-    } = options;
+// Width of the white gap between the two panels of a pair image.
+const PAIR_GAP = 8;
 
-    const frame = computeStitchFrame(options);
-    const { xMin, xMax, yMin, yMax, zoom, canvasWidth, canvasHeight, polygons } = frame;
-
+// Tiles covering the frame on one canvas. Missing tiles leave the grey background; the counts let
+// the caller refuse a wholly grey picture.
+async function stitchBase(frame, { tileUrl, tileTimeoutMs, tileSource }) {
+    const { xMin, xMax, yMin, yMax, zoom, canvasWidth, canvasHeight } = frame;
     const canvas = createCanvas(canvasWidth, canvasHeight);
     const ctx = canvas.getContext('2d');
-
-    // Fill with light gray in case tiles fail
     ctx.fillStyle = '#f0f0f0';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
@@ -350,8 +330,6 @@ export async function renderProposalThumbnail(options = {}) {
                         loaded++;
                     })
                     .catch(err => {
-                        // A missing tile leaves grey background; a wholly grey thumbnail is caught
-                        // by the caller via the returned tile counts.
                         console.warn(`[thumbnail] tile ${zoom}/${tx}/${ty} failed: ${err.message}`);
                         failed++;
                     })
@@ -359,7 +337,17 @@ export async function renderProposalThumbnail(options = {}) {
         }
     }
     await Promise.all(tilePromises);
+    return { canvas, loaded, failed };
+}
 
+function cloneCanvas(source) {
+    const canvas = createCanvas(source.width, source.height);
+    canvas.getContext('2d').drawImage(source, 0, 0);
+    return canvas;
+}
+
+function drawPolygons(ctx, frame, polygons) {
+    const { xMin, yMin, zoom } = frame;
     const traceRing = (ring) => {
         let first = true;
         for (const coord of ring) {
@@ -406,48 +394,99 @@ export async function renderProposalThumbnail(options = {}) {
             ctx.setLineDash([]);
         }
     }
+}
 
-    if (parcelLabel && polygons.length > 0) {
-        const ring = outerRingOf(polygons[0].coords);
-        if (ring && ring.length) {
-            let sumLng = 0, sumLat = 0;
-            for (const c of ring) {
-                sumLng += c[0];
-                sumLat += c[1];
-            }
-            const { px, py } = lngLatToPixel(sumLng / ring.length, sumLat / ring.length, xMin, yMin, zoom);
-
-            ctx.font = 'bold 14px "Helvetica Neue", Arial, sans-serif';
-            const textWidth = ctx.measureText(parcelLabel).width;
-            const textHeight = 14;
-            const padX = 8, padY = 4;
-            const boxX = px - textWidth / 2 - padX;
-            const boxY = py - textHeight / 2 - padY;
-
-            ctx.fillStyle = 'rgba(255,255,255,0.86)';
-            ctx.strokeStyle = '#0f172a';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            roundRect(ctx, boxX, boxY, textWidth + padX * 2, textHeight + padY * 2, 6);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = '#0f172a';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(parcelLabel, px, py);
-        }
+function drawParcelLabel(ctx, frame, parcelLabel, polygons) {
+    if (!parcelLabel || !polygons.length) return;
+    const { xMin, yMin, zoom } = frame;
+    const ring = outerRingOf(polygons[0].coords);
+    if (!ring || !ring.length) return;
+    let sumLng = 0, sumLat = 0;
+    for (const c of ring) {
+        sumLng += c[0];
+        sumLat += c[1];
     }
+    const { px, py } = lngLatToPixel(sumLng / ring.length, sumLat / ring.length, xMin, yMin, zoom);
 
-    if (badge && badge.text) {
-        drawBadge(ctx, badge);
-    }
+    ctx.font = 'bold 14px "Helvetica Neue", Arial, sans-serif';
+    const textWidth = ctx.measureText(parcelLabel).width;
+    const textHeight = 14;
+    const padX = 8, padY = 4;
+    const boxX = px - textWidth / 2 - padX;
+    const boxY = py - textHeight / 2 - padY;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.86)';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    roundRect(ctx, boxX, boxY, textWidth + padX * 2, textHeight + padY * 2, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(parcelLabel, px, py);
+}
+
+/**
+ * Stitch tiles covering the frame once and draw three pictures on them: the thumbnail as it
+ * always was ("after": proposal, parcel outlines, label, badge), the same ground with only the
+ * parcel outlines ("before": nothing of the proposal), and the two side by side ("pair", for link
+ * previews). dividers.md, M3.
+ *
+ * @param {Object} options - same shape as the browser's captureViaTileStitch
+ * @param {Array|Object} options.polygon - proposal geometry (rings or GeoJSON geometry)
+ * @param {Array} [options.parcelPolygons] - parent parcel outlines (expand the frame)
+ * @param {number} [options.padding=0.05]
+ * @param {number} [options.zoom=19] - maximum zoom; lowered automatically to cap the tile count
+ * @param {Object} [options.badge] - { text } goal badge drawn top-left
+ * @param {string} [options.parcelLabel] - label drawn at the polygon's centre
+ * @param {Object} [options.tileSource] - cache + fetch cap (thumbnails/tile-source.js); defaults to the shared one
+ * @returns {Promise<{ after: { buffer: Buffer }, before: { buffer: Buffer }, pair: { buffer: Buffer },
+ *                     frame: Object, tiles: { loaded: number, failed: number, total: number } }>}
+ */
+export async function renderProposalThumbnailSet(options = {}) {
+    const {
+        tileUrl = defaultTileUrl(),
+        parcelLabel = null,
+        badge = null,
+        tileTimeoutMs = DEFAULT_TILE_TIMEOUT_MS,
+        tileSource = defaultTileSource()
+    } = options;
+
+    const frame = computeStitchFrame(options);
+    const { canvas: base, loaded, failed } = await stitchBase(frame, { tileUrl, tileTimeoutMs, tileSource });
+
+    const after = cloneCanvas(base);
+    const afterCtx = after.getContext('2d');
+    drawPolygons(afterCtx, frame, frame.polygons);
+    drawParcelLabel(afterCtx, frame, parcelLabel, frame.polygons);
+    if (badge && badge.text) drawBadge(afterCtx, badge);
+
+    const before = cloneCanvas(base);
+    drawPolygons(before.getContext('2d'), frame, frame.polygons.filter(poly => poly.role === 'parcel'));
+
+    const pair = createCanvas(after.width * 2 + PAIR_GAP, after.height);
+    const pairCtx = pair.getContext('2d');
+    pairCtx.fillStyle = '#ffffff';
+    pairCtx.fillRect(0, 0, pair.width, pair.height);
+    pairCtx.drawImage(before, 0, 0);
+    pairCtx.drawImage(after, after.width + PAIR_GAP, 0);
 
     return {
-        buffer: canvas.toBuffer('image/png'),
+        after: { buffer: after.toBuffer('image/png') },
+        before: { buffer: before.toBuffer('image/png') },
+        pair: { buffer: pair.toBuffer('image/png') },
         frame,
         tiles: { loaded, failed, total: loaded + failed }
     };
 }
 
-export { defaultTileUrl, TILE_SIZE, MAX_STITCH_TILES_PER_AXIS, MAX_TILES };
+/** The thumbnail alone ("after"), as PNG bytes: the shape the renderer always had. */
+export async function renderProposalThumbnail(options = {}) {
+    const set = await renderProposalThumbnailSet(options);
+    return { buffer: set.after.buffer, frame: set.frame, tiles: set.tiles };
+}
+
+export { defaultTileUrl, TILE_SIZE, MAX_STITCH_TILES_PER_AXIS, MAX_TILES, PAIR_GAP };

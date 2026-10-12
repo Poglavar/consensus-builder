@@ -429,11 +429,11 @@ test.describe('Designer controls persist their edits @features', () => {
 
     const beforeAfter = modal.locator('[data-reparcel-compare]');
     await beforeAfter.click();
-    await expect(map.locator('.reparcel-before-map')).toBeVisible();
-    await expect(map.locator('.reparcel-compare-label--before')).toContainText('Before');
-    await expect(map.locator('.reparcel-compare-label--after')).toContainText('After');
+    await expect(map.locator('.map-compare__before')).toBeVisible();
+    await expect(map.locator('.map-compare__label--before')).toContainText('Before');
+    await expect(map.locator('.map-compare__label--after')).toContainText('After');
     await beforeAfter.click();
-    await expect(map.locator('.reparcel-before-map')).toHaveCount(0);
+    await expect(map.locator('.map-compare__before')).toHaveCount(0);
 
     const uploaded = {
       type: 'FeatureCollection', features: [

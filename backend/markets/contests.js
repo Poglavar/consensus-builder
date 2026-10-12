@@ -99,6 +99,7 @@ function proposalEntry(proposal, markets, statuses) {
         agent: Boolean(proposal.agent),
         proposalRole: proposal.proposalRole || null,
         screenshotUrl: proposal.screenshotUrl || null,
+        screenshotBeforeUrl: proposal.screenshotBeforeUrl || null,
         parcelIds: normalizeParcelIds(proposal.parcelIds),
         siteName: proposal.siteName || null,
         proposalAccount,

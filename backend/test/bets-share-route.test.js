@@ -64,6 +64,14 @@ describe('GET /bets/:proposalAccount', () => {
         expect(res.text).toContain(`content="0; url=/?city=zagreb&amp;bets=${ACCOUNT}"`);
     });
 
+    it('previews the before/after pair when it has been rendered, else the thumbnail', async () => {
+        const env = { PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz' };
+        const paired = await request(appFor({ rows: [row({ screenshot_url: '/uploads/images/t.png', screenshot_pair_url: '/uploads/images/p.png' })], env }).app).get(`/bets/${ACCOUNT}`);
+        expect(meta(paired.text, 'og:image')).toBe('https://api.urbangametheory.xyz/uploads/images/p.png');
+        const single = await request(appFor({ rows: [row({ screenshot_url: '/uploads/images/t.png', screenshot_pair_url: null })], env }).app).get(`/bets/${ACCOUNT}`);
+        expect(meta(single.text, 'og:image')).toBe('https://api.urbangametheory.xyz/uploads/images/t.png');
+    });
+
     it('words a settled pool and a pool nobody has bet on', async () => {
         const settled = await request(appFor({ market: { yesPool: 250000n, noPool: 50000n, resolved: true, outcome: 0 }, status: 'Expired' }).app).get(`/bets/${ACCOUNT}`);
         expect(meta(settled.text, 'og:description')).toBe('Settled no: it was dropped · Pool 0.3 USDC.');

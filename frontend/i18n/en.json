@@ -3300,9 +3300,6 @@
             "publicLand": "Public land",
             "originalOwners": "Original owners",
             "owners": "Owners",
-            "beforeAfter": "Before / after",
-            "labelBefore": "Before",
-            "labelAfter": "After",
             "newPlots": "New plots",
             "colOwner": "Owner",
             "colOrigArea": "Original",
@@ -3409,7 +3406,6 @@
             "siteParcelsMissing": "The parcels under this site could not be loaded: {{ids}}.",
             "siteUnavailable": "This site cannot be subdivided here.",
             "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.",
-            "compareSliderLabel": "Before and after comparison",
             "cashTermsHint": "Total compensation from the owner ledger. Edit individual cash offers in the land readjustment editor.",
             "jointShareHint": "Courtyard shares start from each owner’s remaining private land. Use Edit shares to set fixed percentages."
         },
@@ -3427,6 +3423,12 @@
             "invalid-readjustment-deal": "Review the cash offers and land allocation details.",
             "invalid-proposal-approval": "Review the approval policy and owner rights."
         }
+    },
+    "mapCompare": {
+        "toggle": "Before / after",
+        "before": "Before",
+        "after": "After",
+        "sliderLabel": "Before and after comparison"
     },
     "status": {
         "messages": {

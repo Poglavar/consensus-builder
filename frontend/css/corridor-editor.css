@@ -111,6 +111,17 @@ body.corridor-editor-open .leaflet-interactive {
     border-radius: 10px;
 }
 
+/* Before / after (js/proposals/before-after.js, dividers.md M4): a chip that stays, pressed while comparing. */
+.corridor-editor-compare {
+    cursor: pointer;
+}
+
+.corridor-editor-compare[aria-pressed="true"] {
+    background: var(--cb-success-soft);
+    border-color: var(--cb-success);
+    color: var(--cb-success-soft-ink);
+}
+
 .corridor-editor-indicator--buildings {
     background: #fdecea;
     color: #b3261e;

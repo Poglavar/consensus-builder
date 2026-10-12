@@ -80,6 +80,9 @@ function corridorEditorClose() {
     try { window.__mapEditLock?.release('corridor-editor'); } catch (_) { }
     const overlay = document.getElementById('corridor-editor-overlay');
     if (overlay) overlay.remove();
+    if (corridorEditorState && corridorEditorState.startedCompare) {
+        try { window.ProposalBeforeAfter?.dispose(); } catch (_) { /* the map is already gone */ }
+    }
     document.removeEventListener('keydown', corridorEditorKeydown);
     document.removeEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged);
     if (corridorEditorObstacleTimer) {
@@ -2089,6 +2092,16 @@ function corridorEditorOpenOverlay() {
     }
 }
 
+// The "Before / after" toggle of a placed road (dividers.md, M4): the ground as it stands against
+// the map with the road, its cut pieces and its demolitions — the same session the details panel
+// runs (js/proposals/before-after.js), opened from here. Nothing while drawing: there is no road
+// on the map yet. Pure, so the shell can be asserted headlessly.
+function corridorEditorCompareHtml({ mode, canCompare, active, label } = {}) {
+    if (mode !== 'proposal' || canCompare !== true) return '';
+    return `<button type="button" class="corridor-editor-indicator corridor-editor-compare btn-compare-proposal"`
+        + ` aria-pressed="${active ? 'true' : 'false'}">↔ ${label || 'Before / after'}</button>`;
+}
+
 function corridorEditorOpenOverlayBody() {
     const profile = corridorEditorState.profile;
     const drawing = corridorEditorState.mode === 'drawing';
@@ -2111,6 +2124,12 @@ function corridorEditorOpenOverlayBody() {
                 <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'This footprint intersects buildings; replay derives the resulting impact')}</span>
                 <span class="corridor-editor-indicator corridor-editor-indicator--structures" hidden>${corridorEditorI18n('modal.corridor.cutsStructures', 'Cuts applied parks/squares/lakes')}</span>
                 <button type="button" class="corridor-editor-indicator corridor-editor-indicator--fit" hidden>${corridorEditorI18n('modal.corridor.fitHint', 'Can it fit if moved? Open the Corridor tab')}</button>
+                ${corridorEditorCompareHtml({
+                    mode: corridorEditorState.mode,
+                    canCompare: !!(window.ProposalBeforeAfter && window.ProposalBeforeAfter.canCompare(corridorEditorState.source)),
+                    active: !!(window.ProposalBeforeAfter && window.ProposalBeforeAfter.isActive(corridorEditorState.proposalKey)),
+                    label: corridorEditorI18n('mapCompare.toggle', 'Before / after')
+                })}
             </div>`;
     // Two tabs for a placed road: the cross-section (what the road is) and the corridor (what the
     // room around it allows). Drawing mode keeps the single cross-section view.
@@ -2196,6 +2215,19 @@ function corridorEditorOpenOverlayBody() {
     }
 
     overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
+    const compareToggle = overlay.querySelector('.corridor-editor-compare');
+    if (compareToggle) {
+        compareToggle.addEventListener('click', () => {
+            const api = window.ProposalBeforeAfter;
+            const state = corridorEditorState;
+            if (!api || !state) return;
+            const wasActive = api.isActive(state.proposalKey);
+            Promise.resolve(api.toggle(state.proposalKey)).then(started => {
+                // Only a comparison this editor opened closes with it.
+                if (corridorEditorState === state) state.startedCompare = !wasActive && started === true;
+            }).catch(error => console.warn('[corridorEditor] before/after failed', error));
+        });
+    }
     overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
     // No backdrop and no click-outside-to-cancel: the overlay is click-transparent, so a click
@@ -2495,6 +2527,7 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         corridorEditorFitPadding,
-        corridorEditorWriteScopedSegmentPoints
+        corridorEditorWriteScopedSegmentPoints,
+        corridorEditorCompareHtml
     };
 }

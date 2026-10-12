@@ -122,6 +122,7 @@
     --cb-z-world-overview: 3;      /* legend and activity inside the globe stacking context */
     --cb-z-world-top: 4;           /* the globe's top bar and popups, over the overview panels */
     --cb-z-world-scrim: -1;        /* a panel's own backdrop, behind its content */
+    --cb-z-map-compare: 800;        /* before/after overlay inside a Leaflet container: above its panes (<= 700) */
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */
     --cb-z-popover: 1050;           /* parcel menu, dropdowns over the map */
     --cb-z-panel: 1500;             /* right-dock panels (parcel, proposal, road) */
