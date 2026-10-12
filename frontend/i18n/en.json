@@ -4756,7 +4756,8 @@
         },
         "overlay": {
             "rendering": "Rendering…",
-            "loadingBuildings": "Loading buildings…"
+            "loadingBuildings": "Loading buildings…",
+            "buildingsLoaded": "Buildings loaded"
         },
         "toggle": {
             "switchTo2d": "2D map",

@@ -4807,7 +4807,8 @@
         },
         "overlay": {
             "rendering": "Renderizando…",
-            "loadingBuildings": "Cargando edificios…"
+            "loadingBuildings": "Cargando edificios…",
+            "buildingsLoaded": "Edificios cargados"
         },
         "toggle": {
             "switchTo2d": "Mapa 2D",

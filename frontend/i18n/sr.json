@@ -4796,7 +4796,8 @@
         },
         "overlay": {
             "rendering": "Iscrtavanje…",
-            "loadingBuildings": "Učitavanje zgrada…"
+            "loadingBuildings": "Učitavanje zgrada…",
+            "buildingsLoaded": "Zgrade učitane"
         },
         "toggle": {
             "switchTo2d": "2D mapa",

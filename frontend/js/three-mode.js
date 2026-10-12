@@ -6846,7 +6846,13 @@
         try {
             const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
             if (!loading) {
-                if (buildingsLoaderRelease) { buildingsLoaderRelease(); buildingsLoaderRelease = null; }
+                if (buildingsLoaderRelease) {
+                    // The hold ends with a word of its own: otherwise "Loading buildings…" would sit
+                    // on the status line, spinner gone, until the idle fade or the next message.
+                    buildingsLoaderRelease();
+                    buildingsLoaderRelease = null;
+                    if (typeof updateStatus === 'function') updateStatus(threeI18n('threeMode.overlay.buildingsLoaded', 'Buildings loaded'));
+                }
                 buildingsLoaderText = '';
                 return;
             }
