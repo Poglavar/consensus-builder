@@ -1,5 +1,7 @@
 // Route only getProgramAccounts to a method-capable Solana RPC. Browser runtime configuration is
 // supplied by the generated rpc-config.js; ordinary reads and writes stay on the primary endpoint.
+// Confirmations listen on a separate websocket endpoint: the configured primary (Alchemy devnet) has
+// no signatureSubscribe, which web3.js confirmTransaction relies on.
 (function attachSolanaRpcRouting(root) {
     if (!root) return;
 
@@ -7,6 +9,12 @@
         'mainnet-beta': 'https://api.mainnet-beta.solana.com',
         devnet: 'https://api.devnet.solana.com',
         testnet: 'https://api.testnet.solana.com'
+    });
+    // Public cluster websockets carry signature subscriptions; SOLANA_WS_URLS may name another.
+    const DEFAULT_WS_URLS = Object.freeze({
+        'mainnet-beta': 'wss://api.mainnet-beta.solana.com',
+        devnet: 'wss://api.devnet.solana.com',
+        testnet: 'wss://api.testnet.solana.com'
     });
     const verifiedNetworks = new Map();
 
@@ -25,7 +33,8 @@
         const key = normalizeCluster(cluster);
         const primary = configuredUrl(root.SOLANA_RPC_URLS, key) || DEFAULT_RPC_URLS[key] || DEFAULT_RPC_URLS.devnet;
         const programAccounts = configuredUrl(root.SOLANA_PROGRAM_ACCOUNTS_RPC_URLS, key);
-        return { cluster: key, primary, programAccounts };
+        const ws = configuredUrl(root.SOLANA_WS_URLS, key) || DEFAULT_WS_URLS[key] || DEFAULT_WS_URLS.devnet;
+        return { cluster: key, primary, programAccounts, ws };
     }
 
     async function fetchGenesisHash(endpoint, fetchImpl) {

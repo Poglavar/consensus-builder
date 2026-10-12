@@ -82,6 +82,7 @@
         if (!globalScope.solanaWeb3) throw new Error('Solana web3.js not loaded');
         const options = { commitment: 'confirmed' };
         if (routing) options.fetch = routing.createFetch(endpoints.primary, endpoints.programAccounts);
+        if (endpoints.ws) options.wsEndpoint = endpoints.ws;
         const connection = new globalScope.solanaWeb3.Connection(endpoints.primary, options);
         connectionCache.set(clusterKey, connection);
         return connection;

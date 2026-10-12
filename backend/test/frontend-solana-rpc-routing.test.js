@@ -21,7 +21,8 @@ describe('browser Solana RPC routing', () => {
             expect(routing().resolveEndpoints('devnet')).toEqual({
                 cluster: 'devnet',
                 primary: 'https://devnet-primary.example.test/rpc',
-                programAccounts: 'https://devnet-list.example.test/rpc'
+                programAccounts: 'https://devnet-list.example.test/rpc',
+                ws: 'wss://api.devnet.solana.com'
             });
         } finally {
             if (oldRpc === undefined) delete globalThis.SOLANA_RPC_URLS;
@@ -57,6 +58,8 @@ describe('browser Solana RPC routing', () => {
 
             expect(connection.endpoint).toBe(primary);
             expect(connection.options.commitment).toBe('confirmed');
+            // The configured primary may lack signatureSubscribe; confirmations listen on the public socket.
+            expect(connection.options.wsEndpoint).toBe('wss://api.devnet.solana.com');
             expect(connection.options.fetch).toBeTypeOf('function');
             await expect(connection.options.fetch(primary, {
                 method: 'POST', body: JSON.stringify(request(30, 'getProgramAccounts'))
@@ -66,6 +69,20 @@ describe('browser Solana RPC routing', () => {
             else globalThis.window = oldWindow;
         }
         expect(created).toHaveLength(1);
+    });
+
+    it('confirms over the public cluster websocket unless SOLANA_WS_URLS names another', () => {
+        const oldWs = globalThis.SOLANA_WS_URLS;
+        try {
+            delete globalThis.SOLANA_WS_URLS;
+            expect(routing().resolveEndpoints('mainnet').ws).toBe('wss://api.mainnet-beta.solana.com');
+            expect(routing().resolveEndpoints('devnet').ws).toBe('wss://api.devnet.solana.com');
+            globalThis.SOLANA_WS_URLS = { devnet: 'wss://devnet-socket.example.test' };
+            expect(routing().resolveEndpoints('devnet').ws).toBe('wss://devnet-socket.example.test');
+        } finally {
+            if (oldWs === undefined) delete globalThis.SOLANA_WS_URLS;
+            else globalThis.SOLANA_WS_URLS = oldWs;
+        }
     });
 
     it('sends ordinary methods only to primary and routes list methods to the verified secondary', async () => {
