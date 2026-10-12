@@ -36,7 +36,8 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
         expect((await client.query('SELECT current_database() AS name')).rows[0].name).toBe('geodata');
         await client.query('BEGIN');
         await client.query(`CREATE TEMP TABLE listing (url text PRIMARY KEY,facts jsonb,asset_urls jsonb,
-            match_status text,building_city text,building_source text,building_id text,building_evidence jsonb) ON COMMIT DROP;
+            match_status text,building_city text,building_source text,building_id text,building_evidence jsonb,
+            location_status text) ON COMMIT DROP;
             CREATE TEMP TABLE target (url text PRIMARY KEY,kind text,current_sha256 text,source_identity text,exclusion_reason text,
                 image_classified_sha256 text,image_kind text) ON COMMIT DROP;
             CREATE TEMP TABLE exclusion (identity text,url text) ON COMMIT DROP;
@@ -49,10 +50,11 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
             CREATE TEMP TABLE plan_task (id text PRIMARY KEY,source_sha256 text,source_url text,page int,
                 listing_url text,context jsonb,processor text,status text DEFAULT 'queued',created_at timestamptz DEFAULT now()) ON COMMIT DROP;
             CREATE TEMP TABLE model_revision (source_sha256 text,model_sha256 text,model jsonb) ON COMMIT DROP;`);
-        // Only the schema qualifier changes. All joins, JSON comparisons and domain SQL run unchanged.
+        // Domain SQL uses only temporary tables and per-process test locks; live workers are unaffected.
         db={query:(sql,args)=>{
             const transaction={BEGIN:'SAVEPOINT domain_operation',COMMIT:'RELEASE SAVEPOINT domain_operation',ROLLBACK:'ROLLBACK TO SAVEPOINT domain_operation'};
-            return client.query(transaction[sql]||sql.replaceAll('floor_plan.','pg_temp.'),args);
+            return client.query(transaction[sql]||sql.replaceAll('floor_plan.','pg_temp.')
+                .replaceAll("hashtext('floor-plan-extraction')",`hashtext('floor-plan-extraction-location-test-${process.pid}')`),args);
         }};
     });
     afterAll(async()=>{
@@ -62,7 +64,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
         fixtureBlobBytes.clear();
         fixtureBlobBytes.set(assetHash,Buffer.from('test document'));
         await client.query('TRUNCATE pg_temp.listing,pg_temp.target,pg_temp.exclusion,pg_temp.building_task,pg_temp.extraction,pg_temp.blob,pg_temp.plan_task,pg_temp.model_revision');
-        await db.query(`INSERT INTO floor_plan.listing VALUES($1,$2,$3,'unresolved',NULL,NULL,NULL,NULL)`,
+        await db.query(`INSERT INTO floor_plan.listing VALUES($1,$2,$3,'unresolved',NULL,NULL,NULL,NULL,NULL)`,
             [listingUrl,JSON.stringify(eligibleFacts),JSON.stringify([{url:assetUrl,listingOwned:true}])]);
         await db.query(`INSERT INTO floor_plan.target(url,kind,current_sha256,source_identity) VALUES($1,'page',$2,'listing:42'),($3,'asset',$4,NULL)`,
             [listingUrl,listingHash,assetUrl,assetHash]);
@@ -90,6 +92,17 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
         await db.query(`UPDATE floor_plan.listing SET match_status='verified',building_city='test-city',
             building_source='survey',building_id='42',building_evidence='{"locationPolicy":"explicit-address-v1"}'`);
         await db.query(`INSERT INTO floor_plan.exclusion(identity,url) VALUES('listing:42','https://agency.test/other-locale')`);
+        expect(await eligible()).toBe(false);
+    });
+    it.each([['located',true],['probable',true],['ambiguous',false],['unresolved',false]])
+    ('a street-only new build located heuristically as %s is located: %s',async(status,expected)=>{
+        await db.query('DELETE FROM floor_plan.building_task');
+        await db.query(`UPDATE floor_plan.listing SET facts='{"hasLocationSignal":true}',location_status=$1`,[status]);
+        expect(await eligible()).toBe(expected);
+    });
+    it('a heuristic site location without any listing signal is not eligible',async()=>{
+        await db.query('DELETE FROM floor_plan.building_task');
+        await db.query(`UPDATE floor_plan.listing SET facts='{}',location_status='located'`);
         expect(await eligible()).toBe(false);
     });
     it.each(['medium','high'])('accepts %s-confidence location evidence',async confidence=>{

@@ -177,6 +177,42 @@ export function chooseAddressedBuilding(listing, rows) {
             address:row.address,addressRecordId:row.id,sourceUrl:listing.url}};
 }
 
+// Official house-number points live in cadastre-data's public.overture_address (DGU's
+// register for Croatia). Settlement names are matched through cityKey, like listing localities.
+export function chooseAddressPoint(listing, points=[]) {
+    const key=explicitAddress(listing.facts),locality=sourceLocality(listing.facts);
+    if(!key||!locality) return null;
+    const matches=points.filter(point=>cityKey(point.settlement)===locality
+        &&addressKey(`${point.street||''} ${point.number||''}`)===key);
+    return new Set(matches.map(point=>point.id)).size===1 ? matches[0] : null;
+}
+
+// The explicit street and number must name exactly one official point in the source's own
+// settlement, and that point must lie inside exactly one surveyed 3D footprint. Containment
+// is required; a nearby building never substitutes for it.
+export async function addressPointBuilding(db, listing) {
+    const key=explicitAddress(listing.facts);
+    if(!key||sourceLocality(listing.facts)!=='zagreb') return null;
+    const relations=(await db.query(`SELECT to_regclass('public.overture_address') AS points,
+        to_regclass('public.gdi_building_3d') AS survey`)).rows[0];
+    if(!relations?.points||!relations?.survey) return null;
+    const number=key.slice(key.lastIndexOf(' ')+1);
+    const points=(await db.query(`SELECT id,street,number,settlement,release FROM public.overture_address
+        WHERE current AND country='HR' AND settlement=$1 AND lower(regexp_replace(number,'\\s','','g'))=$2`,
+    ['Zagreb',number])).rows;
+    const point=chooseAddressPoint(listing,points);
+    if(!point) return null;
+    const buildings=(await db.query(`SELECT b.object_id::text AS building_id,
+        ST_AsGeoJSON(ST_Transform(b.geom2d_3765,4326))::jsonb AS footprint
+        FROM public.overture_address a JOIN public.gdi_building_3d b ON ST_Contains(b.geom2d_3765,a.geom_3765)
+        WHERE a.id=$1 AND a.current`,[point.id])).rows;
+    if(new Set(buildings.map(row=>row.building_id)).size!==1) return null;
+    const address=`${point.street} ${point.number}`;
+    return {city:'zagreb',source:'zagreb-3d',owner_id:'',building_id:buildings[0].building_id,name:address,footprint:buildings[0].footprint,
+        evidence:{basis:'Explicit listing street and house number match exactly one official house-number point in the source settlement; the point lies inside exactly one surveyed 3D building footprint',
+            address,addressPointId:point.id,addressRelease:point.release,sourceUrl:listing.url}};
+}
+
 export async function resolveBuildingLinks(db,{limit=10000,deadline=Infinity,log=console.log}={}) {
     const bindings=(await db.query('SELECT * FROM floor_plan.building_binding')).rows;
     const rows=(await db.query(`SELECT url,facts,match_status,building_id,building_source,building_evidence FROM floor_plan.listing l
@@ -190,7 +226,8 @@ export async function resolveBuildingLinks(db,{limit=10000,deadline=Infinity,log
     for(const listing of rows) {
         if(Date.now()>=deadline) { result.deferred=rows.length-result.processed; break; }
         const binding=chooseBinding(listing,bindings)
-            || chooseAddressedBuilding(listing,addresses);
+            || chooseAddressedBuilding(listing,addresses)
+            || await addressPointBuilding(db,listing);
         if(binding && (listing.match_status!=='verified' || listing.building_evidence?.locationPolicy!==LOCATION_POLICY
             || (binding.building_id===listing.building_id && binding.source===listing.building_source))) {
             await db.query(`UPDATE floor_plan.listing SET match_status='verified',building_city=$2,building_source=$3,

@@ -1,11 +1,13 @@
-// Require a located building before interpreting its plans; proximity alone is not identity.
+// Require a located site before interpreting its plans: heuristic site location (located/probable),
+// a verified binding, or a cited recognition candidate. Proximity alone is not identity.
 import { BUILDING_PROCESSOR } from './building-reading.js';
 import { eligibleListingSql,LOCATION_POLICY } from './source-policy.js';
 
 // Internal SQL aliases only. A cited candidate permits source-plan work, never publication.
 export function locatedListingSql(alias='l') {
     return `(${eligibleListingSql(alias)} AND (
-        (${alias}.match_status='verified'
+        ${alias}.location_status IN ('located','probable')
+        OR (${alias}.match_status='verified'
             AND ${alias}.building_evidence->>'locationPolicy'='${LOCATION_POLICY}'
             AND COALESCE(btrim(${alias}.building_city),'')<>''
             AND COALESCE(btrim(${alias}.building_source),'')<>''

@@ -136,7 +136,8 @@ export async function runBatchStage(db,adapter,{dailyBudgetUsd=0,chunkSize=1,sub
                 await db.query('BEGIN');
                 try {
                     await db.query(`INSERT INTO floor_plan.ai_batch(id,model,status,reserved_usd,stage) VALUES($1,$2,'submitting',$3,$4)`,[id,requests[0].params.model,reserve,adapter.stage]);
-                    await db.query(`UPDATE ${table} SET batch_id=$1,status='submitted',updated_at=now() WHERE id=ANY($2::text[])`,[id,accepted.map(task=>task.id)]);
+                    // A resubmitted task has no paid answer yet; a stale one would be replayed as this batch's result.
+                    await db.query(`UPDATE ${table} SET batch_id=$1,status='submitted',result=result-'paidResponse'-'response',updated_at=now() WHERE id=ANY($2::text[])`,[id,accepted.map(task=>task.id)]);
                     await db.query('COMMIT');
                 } catch(error) {await db.query('ROLLBACK');throw error;}
                 try {

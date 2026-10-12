@@ -64,6 +64,15 @@ describe('confirmed image retention',()=>{
   expect(unconfirmed.queries.some(([sql])=>sql.includes('UPDATE floor_plan.target SET image_kind'))).toBe(false);
  });
 
+ it('retains envelope evidence (exterior views, sections, site plans) with its own kind, even when confirmed',async()=>{
+  const {db,queries}=fakeDb();
+  expect(await recordImageDisposition(db,{sourceUrl,sha256,kind:'envelope',classificationId:'screen-env',confirmed:true,confidence:'high'}))
+   .toMatchObject({status:'retained'});
+  expect(queries.find(([sql])=>sql.includes('UPDATE floor_plan.target SET image_kind'))[1]).toEqual([sha256,'envelope']);
+  expect(queries.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
+  expect(NEGATIVE_IMAGE_CACHE_SQL).not.toContain('envelope');
+ });
+
  it('does not apply a classification after the source URL moves to another hash',async()=>{
   const {db,queries}=fakeDb({urls:['https://other.example/same.jpg']});
   expect(await recordImageDisposition(db,{sourceUrl,sha256,kind:'photo',classificationId:'screen-5',confirmed:true}))

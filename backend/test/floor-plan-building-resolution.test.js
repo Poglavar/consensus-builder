@@ -1,7 +1,7 @@
 // Purpose: exercise address gates, binding validation, fair resolution checkpoints, and stale identity reset.
 import { describe, expect, it, vi } from 'vitest';
 import { saveObservation } from '../floor-plans/archive.js';
-import { addressKey, augmentReviewedUnitAssets, chooseAddressedBuilding, chooseBinding, importBuildingBindings, prepareBinding, resolveBuildingLinks, seedReviewedBindings, sourceLocality } from '../floor-plans/building-resolution.js';
+import { addressKey, addressPointBuilding, augmentReviewedUnitAssets, chooseAddressPoint, chooseAddressedBuilding, chooseBinding, importBuildingBindings, prepareBinding, resolveBuildingLinks, seedReviewedBindings, sourceLocality } from '../floor-plans/building-resolution.js';
 import { matchBuildingCandidates } from '../floor-plans/building-links.js';
 import { extractExplicitLocation } from '../floor-plans/explicit-location.js';
 
@@ -65,6 +65,42 @@ describe('building binding validation', () => {
         const db = { query: vi.fn(async () => ({ rowCount: 1, rows: [] })) };
         await expect(importBuildingBindings(db, { schema: 'consensus-builder.building-bindings.v1', bindings: [binding(), binding({ source: 'bad source' })] })).rejects.toThrow(/canonical identifiers/);
         expect(db.query).not.toHaveBeenCalled();
+    });
+});
+
+describe('official house-number point resolution', () => {
+    const facts = { explicitLocation: { schema: 'explicit-listing-location.v1', street: 'Ilica', houseNumber: '10/1', address: 'Ilica 10/1' }, locality: 'Zagreb' };
+    const point = { id: 'hr/countrywide:KB.1', street: 'Ilica', number: '10/1', settlement: 'Zagreb', release: '2026-09-23.1' };
+    const pointDb = ({ points = [point], buildings = [{ building_id: '111867', footprint: { type: 'Polygon', coordinates: [] } }], tables = true } = {}) => ({
+        query: vi.fn(async sql => {
+            if (sql.includes("to_regclass('public.overture_address')")) return { rows: [{ points: tables ? 'public.overture_address' : null, survey: 'public.gdi_building_3d' }] };
+            if (sql.includes('FROM public.overture_address\n') || sql.startsWith('SELECT id,street,number,settlement,release')) return { rows: points };
+            if (sql.includes('ST_Contains')) return { rows: buildings };
+            throw new Error(`unexpected query: ${sql}`);
+        }),
+    });
+
+    it('matches the courtyard number exactly and only in the source settlement', () => {
+        expect(chooseAddressPoint({ facts }, [point])?.id).toBe(point.id);
+        expect(chooseAddressPoint({ facts }, [{ ...point, number: '10' }])).toBeNull();
+        expect(chooseAddressPoint({ facts }, [{ ...point, settlement: 'Sesvete' }])).toBeNull();
+        expect(chooseAddressPoint({ facts }, [point, { ...point, id: 'hr/countrywide:KB.2' }])).toBeNull();
+        expect(chooseAddressPoint({ facts: { ...facts, locality: undefined } }, [point])).toBeNull();
+    });
+
+    it('verifies the one surveyed footprint containing the point, with the point recorded as evidence', async () => {
+        const found = await addressPointBuilding(pointDb(), { url: ownListingUrl, facts });
+        expect(found).toMatchObject({ city: 'zagreb', source: 'zagreb-3d', building_id: '111867',
+            evidence: { address: 'Ilica 10/1', addressPointId: point.id, addressRelease: '2026-09-23.1', sourceUrl: ownListingUrl } });
+    });
+
+    it('rejects a point inside no footprint or two, a point outside Zagreb, and a missing register', async () => {
+        expect(await addressPointBuilding(pointDb({ buildings: [] }), { url: ownListingUrl, facts })).toBeNull();
+        expect(await addressPointBuilding(pointDb({ buildings: [{ building_id: '1' }, { building_id: '2' }] }), { url: ownListingUrl, facts })).toBeNull();
+        expect(await addressPointBuilding(pointDb({ tables: false }), { url: ownListingUrl, facts })).toBeNull();
+        const split = pointDb();
+        expect(await addressPointBuilding(split, { url: ownListingUrl, facts: { ...facts, locality: 'Split' } })).toBeNull();
+        expect(split.query).not.toHaveBeenCalled();
     });
 });
 

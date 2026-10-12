@@ -20,9 +20,12 @@ export function taskContext(row) {
     const facts=row.facts||{};
     return {listingUrl:row.listing_url||row.url,facts:{floor:facts.floor??null,unitId:facts.unitId??null,areaM2:facts.areaM2??null}};
 }
+// A drawing is read once per page and per stated facts. The same project published under several
+// URLs (hosts, languages) states the same facts and shares one reading; units that reuse one sheet
+// with different floors or areas still get their own.
 function contextIdentity(context) {
     const f=context.facts||{};
-    return [context.listingUrl,f.floor??null,f.unitId??null,f.areaM2??null];
+    return [f.floor??null,f.unitId??null,f.areaM2??null];
 }
 export function taskId(hash,page,context) { return fingerprint([PROCESSOR,hash,page,contextIdentity(context)]); }
 
@@ -152,9 +155,9 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
             const image=await render(db,task,{deadline});
             // A model cannot select geometry or a scale reference that the detector did not supply.
             // Keep the source for review without paying for a request forced to return no model.
+            // A missing scale bar is no longer a stop: dimensions, doors or listing area can estimate scale.
             const missing=[];
             if(!image.evidence.wallCandidates?.length)missing.push('No supported wall candidates were detected.');
-            if(!image.evidence.scaleCandidates?.length)missing.push('No measurable metric-scale candidate was detected; dimensions need further source review.');
             if(missing.length) {
                 const saved=await storeReading(db,task,{method:'local-evidence-check',notPlan:false,plans:[],issues:missing});
                 return {localResult:{...saved,preflightNeedsReview:1}};

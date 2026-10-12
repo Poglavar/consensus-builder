@@ -116,7 +116,11 @@ function renderAgencies(){
  const query=el('agency-search').value.toLocaleLowerCase(),matches=agencies.filter(a=>`${a.legal_name} ${a.registered_address} ${a.website||''}`.toLocaleLowerCase().includes(query));el('agencies').replaceChildren();el('agency-count').textContent=`${matches.length} / ${agencies.length}`;
  for(const agency of matches){const row=document.createElement('tr'),website=document.createElement('td');if(safeURL(agency.website))website.append(sourceLink(agency.website,new URL(agency.website).hostname));else if(agency.candidate_websites?.length){for(const candidate of agency.candidate_websites){if(!safeURL(candidate.url))continue;const lead=document.createElement('p');lead.append(sourceLink(candidate.url,new URL(candidate.url).hostname),textNode('small',` · ${tr('candidate')}`));website.append(lead);}}else website.append(textNode('span',tr('unknown')));row.append(textNode('td',agency.legal_name),textNode('td',agency.registered_address),website);el('agencies').append(row);}
 }
-function setTab(tab){activeTab=tab;el('status').hidden=tab==='agencies';for(const name of ['buildings','agencies']){const active=name===tab;el(`tab-${name}`).setAttribute('aria-selected',String(active));el(`tab-${name}`).tabIndex=active?0:-1;el(`panel-${name}`).hidden=!active;}if(tab==='buildings'){map?.invalidateSize();if(building&&!disposeBuilding)drawBuilding();}else stopBuilding();updateURL();}
+const TABS=['buildings','sites','agencies'];
+// The Sites tab owns its own module; it receives the page's helpers instead of reaching for globals.
+const sitesContext={tr,get,fail,setStatus:status,sourceLink,renderer,
+ setURL:values=>{const next=new URL(location.href);for(const [key,value]of Object.entries(values))next.searchParams.set(key,value);history.replaceState(null,'',next);}};
+function setTab(tab){activeTab=tab;el('status').hidden=tab==='agencies';for(const name of TABS){const active=name===tab;el(`tab-${name}`).setAttribute('aria-selected',String(active));el(`tab-${name}`).tabIndex=active?0:-1;el(`panel-${name}`).hidden=!active;}if(tab==='buildings'){map?.invalidateSize();if(building&&!disposeBuilding)drawBuilding();}else stopBuilding();if(tab==='sites')window.__floorPlanSites.show(sitesContext,params.get('site'));else window.__floorPlanSites.hide();updateURL();}
 async function init(){
  status('loading');
  try{
@@ -125,12 +129,12 @@ async function init(){
  cards('coverage',[['buildings',catalogue.buildings.length],['floors',catalogue.buildings.filter(b=>b.kind==='registered').reduce((s,b)=>s+b.planCount,0)],['units',catalogue.buildings.filter(b=>b.kind==='units').reduce((s,b)=>s+b.planCount,0)],['sources',catalogue.sources.length]]);
  cards('agency-coverage',[['agencies',summary.coverage.agencies.total],['websites',summary.coverage.agencies.websites]]);renderAgencies();
  const preferred=params.get('building');el('building').value=[...el('building').options].some(o=>o.value===preferred)?preferred:catalogue.buildings.find(b=>b.id==='avenue-v')?.id||catalogue.buildings[0]?.id||'archive';
- activeTab=params.get('tab')==='agencies'?'agencies':'buildings';await chooseBuilding(params.get('plan'));setTab(activeTab);
+ activeTab=TABS.includes(params.get('tab'))?params.get('tab'):'buildings';await chooseBuilding(params.get('plan'));setTab(activeTab);
  }catch(error){fail(error);}
 }
 el('building').addEventListener('change',()=>chooseBuilding());el('unit').addEventListener('change',choosePlan);el('source-filter').addEventListener('input',()=>sourcePlans());el('agency-search').addEventListener('input',renderAgencies);
 for(const [id,offset]of [['previous',-1],['next',1]])el(id).addEventListener('click',()=>{el('unit').value=String(Number(el('unit').value)+offset);choosePlan();});
 el('view3d').addEventListener('click',()=>{mode=mode==='2d'?'3d':'2d';const plan=selected();if(building)drawPlan(plan);else choosePlan();});el('show-building').addEventListener('click',drawBuilding);
-for(const tab of ['buildings','agencies']){el(`tab-${tab}`).addEventListener('click',()=>setTab(tab));el(`tab-${tab}`).addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'buildings':event.key==='End'?'agencies':tab==='buildings'?'agencies':'buildings';setTab(next);el(`tab-${next}`).focus();}});}
-window.addEventListener('pagehide',()=>{selectionGeneration++;stopPlan();stopBuilding();map?.remove();});init();
+for(const tab of TABS){el(`tab-${tab}`).addEventListener('click',()=>setTab(tab));el(`tab-${tab}`).addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const index=TABS.indexOf(tab),next=event.key==='Home'?TABS[0]:event.key==='End'?TABS[TABS.length-1]:TABS[(index+(event.key==='ArrowRight'?1:TABS.length-1))%TABS.length];setTab(next);el(`tab-${next}`).focus();}});}
+window.addEventListener('pagehide',()=>{selectionGeneration++;stopPlan();stopBuilding();window.__floorPlanSites.hide();map?.remove();});init();
 })();

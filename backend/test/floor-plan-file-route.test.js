@@ -1,3 +1,4 @@
+// Verify source serving from metadata and the file store, including discarded and missing evidence.
 import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
 import { mkdtemp,rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';

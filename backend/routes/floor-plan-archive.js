@@ -98,6 +98,23 @@ export function setupFloorPlanArchiveRoute(app,pool) {
   if(!rows.length) return res.status(404).json({error:'Building mesh not found.'});
   res.json({groundZ:rows[0]?.ground_z_m ?? null,parts:rows.map(row=>({geometry:row.geometry ? JSON.parse(row.geometry) : null,color:row.color_hex,materialKind:row.material_kind}))});
  });
+ // Site models (located site, storey envelope, plan fits) built by `floor-plan-archive.mjs site-models`.
+ route('/sites',async(_req,res)=>{
+  const rows=(await pool.query(`SELECT site_key AS "siteKey",model->>'label' AS label,jsonb_array_length(listing_urls) AS postings,
+   model->'location'->>'status' AS "locationStatus",model->'footprint'->>'source' AS "footprintSource",
+   jsonb_array_length(model->'envelope'->'storeys') AS storeys,(model->'envelope'->>'heightM')::float AS "heightM",
+   jsonb_array_length(model->'placements') AS plans,
+   (SELECT count(*)::int FROM jsonb_array_elements(model->'placements') p WHERE p->>'status'='placed') AS placed,built_at AS "builtAt"
+   FROM floor_plan.site_model ORDER BY jsonb_array_length(model->'placements') DESC,jsonb_array_length(listing_urls) DESC,site_key LIMIT 500`)).rows;
+  res.json({sites:rows});
+ });
+ route('/site',async(req,res)=>{
+  const key=String(req.query.key||'').slice(0,300);
+  if(!key) return res.status(400).json({error:'A site key is required.'});
+  const row=(await pool.query('SELECT model,built_at FROM floor_plan.site_model WHERE site_key=$1',[key])).rows[0];
+  if(!row) return res.status(404).json({error:'Site model not found.'});
+  res.json({...row.model,builtAt:row.built_at});
+ });
  route('/source/:sha256',async(req,res)=>{
   if(!/^[a-f0-9]{64}$/.test(req.params.sha256)) return res.status(400).json({error:'Invalid source hash.'});
   const row=(await pool.query(`SELECT e.sha256,e.status,e.model,b.media_type,b.bytes_available,t.url AS source_url FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256) LEFT JOIN floor_plan.target t ON t.current_sha256=e.sha256 AND t.kind='asset' WHERE e.sha256=$1 LIMIT 1`,[req.params.sha256])).rows[0];

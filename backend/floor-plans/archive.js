@@ -3,7 +3,7 @@ import { contentHash,writeBlob } from './blob-store.js';
 import { normalizeUrl,extractPageEvidence } from './page-evidence.js';
 import { isHtmlPageResponse } from './html-response.js';
 import { listingIdentity } from './explicit-location.js';
-import { eligibleListingSql,isExcluded,excludeSource,qualifyPageEvidence,canFetchTarget } from './source-policy.js';
+import { eligibleListingSql,isExcluded,excludeSource,qualifyPageEvidence,canFetchTarget,listingQualifies } from './source-policy.js';
 export const sha256 = contentHash;
 export const putBlob = writeBlob;
 export async function enqueue(db,rawUrl,{agencyId=null,kind='page',priority=0,from=null,sourceKind='agency'}={}) {
@@ -53,7 +53,7 @@ export async function saveObservation(db,target,response,evidence,runId) {
   evidence=qualifyPageEvidence(response.body.toString(),response.finalUrl||target.url,evidence);
   if(await isExcluded(db,target.url,evidence.listing?.sourceId)
    || (response.finalUrl && await isExcluded(db,response.finalUrl,evidence.listing?.sourceId))
-   || (evidence.listing && !evidence.listing.explicitLocation)) {
+   || (evidence.listing && !listingQualifies(evidence.listing))) {
    const hash=sha256(response.body);
    const aliases=response.finalUrl&&new URL(response.finalUrl).hostname.replace(/^www\./,'')===new URL(target.url).hostname.replace(/^www\./,'')?[response.finalUrl]:[];
    await excludeSource(db,{url:target.url,sourceId:evidence.listing?.sourceId,sha256:hash,aliases});

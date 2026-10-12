@@ -624,3 +624,16 @@ it('requeues a newly explicit floor-plan label despite an old negative image cac
     expect(requeue[0]).toContain('image_classified_sha256=CASE WHEN $3 THEN NULL');
     expect(requeue[0]).toContain('OR NOT COALESCE((t.kind=\'asset\'');
 });
+
+it('queues image classification for exactly the repeated --listing-url listings', async () => {
+    const calls = [];
+    const client = { connect: vi.fn(), end: vi.fn(), query: vi.fn(async (sql, params = []) => { calls.push(params); return { rows: [], rowCount: 0 }; }) };
+    const listings = ['https://studio.test/hr/projekt/a/', 'https://studio.test/hr/projekt/b/'];
+    await runCli(['enqueue-images', '--listing-url', listings[0], '--listing-url', listings[1]], { clientFactory: () => client, output: vi.fn() });
+    const filters = calls.flat().filter(Array.isArray);
+    expect(filters.length).toBeGreaterThan(0);
+    for (const filter of filters) expect(filter).toEqual(listings);
+    calls.length = 0;
+    await runCli(['enqueue-images'], { clientFactory: () => client, output: vi.fn() });
+    expect(calls.flat().filter(Array.isArray)).toEqual([]);
+});

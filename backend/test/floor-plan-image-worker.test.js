@@ -62,7 +62,7 @@ describe('durable image classification stage',()=>{
    if(sql.includes("FROM floor_plan.target WHERE current_sha256=$1 AND kind='asset'")) return {rows:[{url:sourceUrl}]};
    return {rows:[],rowCount:1};
   })};
-  const reading={kind:'photo',containsPlan:false,confidence:'low',reason:'Ambiguous image.',discardConfirmed:false};
+  const reading={kind:'photo',containsPlan:false,envelopeEvidence:false,confidence:'low',reason:'Ambiguous image.',discardConfirmed:false};
   const saved=await storeImageReading(db,task,reading,{sourceUrl,model:'cheap-model'});
   expect(saved).toMatchObject({needsReview:1,discarded:0});
   expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
@@ -75,14 +75,14 @@ describe('durable image classification stage',()=>{
   const image={width:100,height:80,data:Buffer.from('fixture-png')};
   const render=vi.fn(async()=>image),llm={batchRequest:vi.fn((_id,request)=>request)};
   const prepared=await imageStageAdapter({render,verifyLabelled:true}).prepare(db,task,llm,{deadline:Infinity});
-  expect(prepared.request).toMatchObject({tier:'cheap',maxTokens:512});
+  expect(prepared.request).toMatchObject({tier:'cheap',maxTokens:1024});
   expect(render).toHaveBeenCalledOnce();
   expect(db.query.mock.calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob'))).toBe(false);
  });
 
  it('reapplies a completed hash reading to a newly current URL without queueing another task',async()=>{
   const newUrl='https://cdn.example/new.jpg',calls=[];
-  const completed={...task,status:'complete',result:{reading:{kind:'render',containsPlan:false,confidence:'high',reason:'Room render.',discardConfirmed:true}}};
+  const completed={...task,status:'complete',result:{reading:{kind:'render',containsPlan:false,envelopeEvidence:false,confidence:'high',reason:'Room render.',discardConfirmed:true}}};
   const db={query:vi.fn(async(sql,params)=>{
    calls.push([sql,params]);
    if(sql.includes('FROM floor_plan.image_task it JOIN')) return {rows:[completed]};
@@ -108,7 +108,7 @@ describe('durable image classification stage',()=>{
    if(sql.includes("FROM floor_plan.target WHERE current_sha256=$1 AND kind='asset'")) return {rows:[{url:sourceUrl}]};
    return {rows:[],rowCount:1};
   })};
-  const reading={kind:'photo',containsPlan:false,confidence:'high',reason:'Clear interior photograph.'};
+  const reading={kind:'photo',containsPlan:false,envelopeEvidence:false,confidence:'high',reason:'Clear interior photograph.'};
   expect(await imageStageAdapter().apply(db,task,{data:reading,model:'cheap-model'}))
    .toMatchObject({classified:1,discarded:0});
   const sourceQuery=calls.find(([sql])=>sql.includes('SELECT t.url AS source_url'));

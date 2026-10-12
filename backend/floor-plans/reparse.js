@@ -3,7 +3,7 @@ import { extractPageEvidence } from './page-evidence.js';
 import { discoverTargets } from './crawler.js';
 import { enqueue } from './archive.js';
 import { addressKey,sourceLocality } from './building-resolution.js';
-import { eligibleListingSql,qualifyPageEvidence,excludeSource,LOCATION_POLICY } from './source-policy.js';
+import { eligibleListingSql,qualifyPageEvidence,excludeSource,listingQualifies,LOCATION_POLICY } from './source-policy.js';
 import { purgeExcludedContent } from './source-retention.js';
 import { readBlobRow,pruneDiscardedFiles } from './blob-store.js';
 
@@ -23,12 +23,7 @@ export async function reparseListings(db,{log=console.log}={}) {
     if(!bytes) throw new Error(`Archived listing source bytes are missing: ${row.current_sha256}`);
     const html=bytes.toString();
     const evidence=qualifyPageEvidence(html,row.url,extractPageEvidence(html,row.url,{sourceKind:row.source_kind}));
-    const location=evidence.listing?.explicitLocation;
-    const eligible=location?.schema==='explicit-listing-location.v1'
-     &&typeof location.street==='string'&&location.street.trim()
-     &&typeof location.houseNumber==='string'&&location.houseNumber.trim()
-     &&evidence.listing?.sourceEvidenceStatus!=='not-a-listing'
-     &&evidence.listing?.sourceEvidenceStatus!=='excluded';
+    const eligible=listingQualifies(evidence.listing);
     if(!eligible) {
      await db.query('BEGIN');
      try {

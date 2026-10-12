@@ -67,8 +67,11 @@ ALTER TABLE floor_plan.blob ADD COLUMN IF NOT EXISTS bytes_available boolean NOT
 ALTER TABLE floor_plan.blob ADD COLUMN IF NOT EXISTS stored_at timestamptz;
 ALTER TABLE floor_plan.blob ADD COLUMN IF NOT EXISTS discarded_at timestamptz;
 ALTER TABLE floor_plan.blob ADD COLUMN IF NOT EXISTS discard_reason text;
-ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS image_kind text
- CHECK(image_kind IN ('floor_plan','photo','render','uncertain'));
+ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS image_kind text;
+-- envelope: exterior views and non-plan drawings retained as evidence of the building's outer form.
+ALTER TABLE floor_plan.target DROP CONSTRAINT IF EXISTS target_image_kind_check;
+ALTER TABLE floor_plan.target ADD CONSTRAINT target_image_kind_check
+ CHECK(image_kind IN ('floor_plan','photo','render','uncertain','envelope'));
 ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS image_classified_sha256 text;
 CREATE INDEX IF NOT EXISTS floor_plan_target_image_classification
  ON floor_plan.target(image_kind,image_classified_sha256) WHERE kind='asset';
@@ -190,4 +193,23 @@ ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS exclusion_reason text;
 ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS source_kind text NOT NULL DEFAULT 'agency'
  CHECK(source_kind IN ('agency','architecture'));
 CREATE INDEX IF NOT EXISTS floor_plan_target_source_identity ON floor_plan.target(source_identity);
+RESET ROLE;
+
+-- Heuristic site location: weighted evidence (address points, permits, pin, parcels, text) ranks
+-- candidate sites; `location` keeps the ranked candidates and reasons, never a bare verdict.
+SET ROLE geo_user;
+ALTER TABLE floor_plan.listing ADD COLUMN IF NOT EXISTS location jsonb;
+ALTER TABLE floor_plan.listing ADD COLUMN IF NOT EXISTS location_status text
+ CHECK(location_status IN ('located','probable','ambiguous','unresolved'));
+ALTER TABLE floor_plan.listing ADD COLUMN IF NOT EXISTS location_checked_at timestamptz;
+CREATE INDEX IF NOT EXISTS floor_plan_listing_location_status ON floor_plan.listing(location_status);
+RESET ROLE;
+
+-- One reviewable model per located site: footprint, storey envelope and plan fits with their
+-- evidence (site-model.v1). Derived and rebuildable; nothing here is published to the map registry.
+SET ROLE geo_user;
+CREATE TABLE IF NOT EXISTS floor_plan.site_model (
+ site_key text PRIMARY KEY, listing_urls jsonb NOT NULL, model jsonb NOT NULL, model_hash text NOT NULL CHECK(length(model_hash)=64),
+ built_at timestamptz NOT NULL DEFAULT now(), created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
 RESET ROLE;

@@ -117,7 +117,8 @@ export async function migrateArchiveStorage(db,{apply=false,root=archiveRoot(),r
   if(result.after.blobs!==result.verifiedBlobs || Number(result.after.bytes)!==result.verifiedBytes)
    throw new Error('Filesystem metadata readback changed after migration.');
   const finalColumns=await columns(db);
-  if(dropDatabaseBytes&&finalColumns.has('data')) throw new Error('The raw source column still exists.');
+  result.legacyColumnPresentAfter=finalColumns.has('data');
+  if(dropDatabaseBytes&&result.legacyColumnPresentAfter) throw new Error('The raw source column still exists.');
   if(!dropDatabaseBytes&&result.legacyColumnPresent&&!finalColumns.has('data'))
    throw new Error('The raw source column was unexpectedly removed.');
   result.status='complete';result.finishedAt=new Date().toISOString();

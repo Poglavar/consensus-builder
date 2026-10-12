@@ -85,6 +85,8 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - public.gdi_building_footprint
 - stats.numbeo_city
 - public.osm_decor
+- public.edozvola_feature (local-only — not on prod yet; mirror with cadastre-data permits/fetch-edozvola.js)
+- public.overture_address (local-only — not on prod yet; ingest with cadastre-data addresses/fetch-overture-addresses.js)
 - public.overture_building_footprint
 - public.parcel
 - public.parcel_ba

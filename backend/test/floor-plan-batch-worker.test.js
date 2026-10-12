@@ -25,7 +25,7 @@ const context={listingUrl:'https://agency.test/listing/1',facts:{floor:'1',unitI
 const baseTask=()=>({id:'a'.repeat(64),source_sha256:'b'.repeat(64),source_url:'https://agency.test/plan.pdf',
  page:1,listing_url:'https://agency.test/listing/1',context,processor:PROCESSOR,status:'queued',batch_id:null,
  result:{},cost_usd:null,created_at:new Date().toISOString()});
-const notPlan={schema:'floor-plan-reading.v3',notPlan:true,issues:[],plans:[]};
+const notPlan={schema:'floor-plan-reading.v4',notPlan:true,issues:[],plans:[]};
 
 function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
  const state={batches:structuredClone(batches).map(row=>({stage:'plans',...row})),tasks:structuredClone(tasks.length?tasks:queued),calls:[]};
@@ -62,7 +62,10 @@ function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
    return {rows:[],rowCount:1};
   }
   if(sql.startsWith('UPDATE floor_plan.plan_task SET batch_id=$1,status=\'submitted\'')) {
-   for(const task of state.tasks) if(args[1].includes(task.id)) {task.batch_id=args[0];task.status='submitted';}
+   for(const task of state.tasks) if(args[1].includes(task.id)) {
+    task.batch_id=args[0];task.status='submitted';
+    if(sql.includes("result=result-'paidResponse'-'response'")) {const {paidResponse,response,...rest}=task.result;task.result=rest;}
+   }
    return {rows:[],rowCount:args[1].length};
   }
   if(sql.startsWith("UPDATE floor_plan.ai_batch SET provider_id=$2,status='submitted'")) {
@@ -177,7 +180,7 @@ describe('floor-plan paid batch worker',()=>{
   expect(remote.create).not.toHaveBeenCalled();
  });
 
- it.each(['wallCandidates','scaleCandidates'])('keeps missing %s for local review without a provider call or ledger entry',async field=>{
+ it.each(['wallCandidates'])('keeps missing %s for local review without a provider call or ledger entry',async field=>{
   const task=baseTask(),db=makeDb({queued:[task]}),remote=fakeClient(),before=ledgerRows().length;
   const incompleteRender=async()=>({data:Buffer.from('png'),width:100,height:100,evidence:{...evidence,[field]:[]}});
   const result=await interpretPlans(db,{dailyBudgetUsd:1,client:remote.client,render:incompleteRender,price,log:()=>{}});
@@ -197,6 +200,14 @@ describe('floor-plan paid batch worker',()=>{
   expect(remote.create).not.toHaveBeenCalled();
   expect(db.state.tasks[0].status).toBe('queued');
   expect(db.state.batches).toHaveLength(1);
+ });
+
+ it('submits a drawing without a scale bar: scale is estimated from other evidence after reading',async()=>{
+  const task=baseTask(),db=makeDb({queued:[task]}),remote=fakeClient();
+  const noScale=vi.fn(async()=>({data:Buffer.from('png'),annotation:Buffer.from('marks'),width:100,height:100,evidence:{...evidence,scaleCandidates:[]}}));
+  const result=await interpretPlans(db,{dailyBudgetUsd:1,client:remote.client,render:noScale,price,log:()=>{}});
+  expect(result).toMatchObject({submitted:1,preflightNeedsReview:0});
+  expect(remote.create).toHaveBeenCalledOnce();
  });
 
  it('collects one structured tool result, records cost once, and resumes idempotently',async()=>{
@@ -223,6 +234,19 @@ describe('floor-plan paid batch worker',()=>{
   expect(remote.results).toHaveBeenCalledOnce();
   expect(ledgerRows().slice(before)).toHaveLength(1);
   expect(db.state.tasks[0].cost_usd).toBe(cost);
+ });
+
+ it('collects the new answer, not a stale cached one, after a failed task is requeued and resubmitted',async()=>{
+  const stale={model:LAYER_MODEL,stopReason:'max_tokens',error:'answer truncated at max_tokens',text:null,data:null,
+   usage:{input_tokens:100,output_tokens:512},costUsd:0.01};
+  const task={...baseTask(),result:{response:stale,paidResponse:stale}};
+  const db=makeDb({queued:[task]}),remote=fakeClient();
+  const options={dailyBudgetUsd:1,client:remote.client,render,price,log:()=>{}};
+  expect(await interpretPlans(db,options)).toMatchObject({submitted:1});
+  expect(db.state.tasks[0].result).not.toHaveProperty('paidResponse');
+  expect(await interpretPlans(db,options)).toMatchObject({collected:1,notPlan:1});
+  expect(db.state.tasks[0]).toMatchObject({status:'not_plan',result:{response:{stopReason:'end_turn',error:null}}});
+  expect(remote.results).toHaveBeenCalledOnce();
  });
 
  it('accounts for a paid response once but makes no geometry after location is lost',async()=>{

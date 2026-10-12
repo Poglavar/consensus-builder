@@ -27,9 +27,9 @@ const evidence={version:'source-geometry-v1',widthPx:200,heightPx:200,issues:[],
     scaleCandidates:[{id:'S1',a:[20,190],b:[180,190],widthPx:2}],
     outlineCorners:[[19,19],[181,19],[181,181],[19,181]]
 };
-function drawing() {return {schema:'floor-plan-reading.v3',notPlan:false,issues:[],plans:[{
+function drawing() {return {schema:'floor-plan-reading.v4',notPlan:false,issues:[],plans:[{
     id:'A1',label:'A1',scope:'unit',floor:1,floorEvidence:'First floor',
-    scale:{candidateId:'S1',lengthM:8,quote:'8 m'},slabs:[{outer:['F0','F1','F2','F3'],holes:[]}],
+    scale:{candidateId:'S1',lengthM:8,quote:'8 m'},dimensionHints:[],slabs:[{outer:['F0','F1','F2','F3'],holes:[]}],
     wallIds:['W1','W2','W3','W4','W5','W6'],railingIds:[],
     openings:[{candidateId:'G1',kind:'window',hinge:null,swing:null},{candidateId:'G2',kind:'door',hinge:'a',swing:'counterclockwise'}],
     rooms:[{name:'Living room',areaM2:null}],wallHeightM:null,heightEvidence:'',elevationM:null,elevationEvidence:'',northPx:null,northEvidence:'',issues:[]
@@ -61,6 +61,34 @@ describe('source reading to vector architecture',()=>{
         if(kind==='duplicate-opening')p.openings.push({...p.openings[0]});
         expect(()=>parse(raw)).toThrow();
     });
+    it('records a printed scale bar as a measurement',()=>{
+        expect(parse(drawing()).plans[0].source).toMatchObject({scaleBasis:'printed-scale-bar',scaleEstimated:false,metersPerPixel:0.05});
+    });
+    it('reads a drawing without a scale bar from printed dimensions on measured strokes',()=>{
+        const raw=drawing();raw.plans[0].scale=null;
+        raw.plans[0].dimensionHints=[{candidateId:'W1',lengthM:8,quote:'8.00'},{candidateId:'W4',lengthM:5,quote:'500'}];
+        const plan=parse(raw).plans[0];
+        expect(plan.source).toMatchObject({scale:null,scaleBasis:'printed-dimensions',scaleEstimated:false,metersPerPixel:0.05});
+        expect(plan.architecture.dimensionsM).toEqual([8.1,8.1]);
+    });
+    it('falls back to door widths, then to the listing area, labelled as estimates',()=>{
+        const raw=drawing();raw.plans[0].scale=null;
+        raw.plans[0].openings=[{candidateId:'G1',kind:'door',hinge:'a',swing:'clockwise'},{candidateId:'G2',kind:'door',hinge:'a',swing:'counterclockwise'}];
+        const doors=parse(raw).plans[0].source;
+        expect(doors).toMatchObject({scaleBasis:'door-width',scaleEstimated:true});
+        expect(doors.metersPerPixel).toBeCloseTo(0.9/25,6);
+        const area=drawing();area.plans[0].scale=null;area.plans[0].openings=[];
+        const plan=parseReading(JSON.stringify(area),{...task,context:{...task.context,facts:{...task.context.facts,areaM2:59.6}}},
+            {width:200,height:200,evidence,model:'answering-model'}).plans[0];
+        expect(plan.source).toMatchObject({scaleBasis:'listing-area',scaleEstimated:true});
+        expect(plan.architecture.dimensionsM[0]).toBeCloseTo(162*Math.sqrt(59.6*1.1/(162*162)),3);
+    });
+    it('keeps a drawing with no metric evidence at a provisional scale, marked unknown',()=>{
+        const raw=drawing();raw.plans[0].scale=null;raw.plans[0].openings=[];
+        const plan=parse(raw).plans[0];
+        expect(plan.source).toMatchObject({scaleBasis:'unknown',scaleEstimated:true,metersPerPixel:0.02});
+        expect(plan.quality.issues.join(' ')).toMatch(/provisional/);
+    });
     it.each(['outside-frame','missing-hinge'])('retains only valid geometry with a mandatory review issue for an %s opening',kind=>{
         const raw=drawing(),opening=raw.plans[0].openings[0];
         Object.assign(opening,{kind:'door',hinge:kind==='missing-hinge'?null:'a',swing:'counterclockwise'});
@@ -81,7 +109,7 @@ describe('source reading to vector architecture',()=>{
         expect(()=>parseReading(JSON.stringify(drawing()),task,{width:200,height:200,evidence})).toThrow(/answering model/);
     });
     it('never accepts an empty successful response or non-plan with geometry',()=>{
-        expect(()=>parse({schema:'floor-plan-reading.v3',notPlan:false,issues:[],plans:[]})).toThrow();
+        expect(()=>parse({schema:'floor-plan-reading.v4',notPlan:false,issues:[],plans:[]})).toThrow();
         const raw=drawing();raw.notPlan=true;expect(()=>parse(raw)).toThrow();
     });
     it('passes measured evidence and image dimensions without requesting building IDs',()=>{
@@ -168,13 +196,14 @@ it('tombstones and purges a formerly eligible listing when fresh archived HTML l
 });
 
 describe('durable tasks and spend accounting',()=>{
-    it('changes task identity for source content, page, listing and consumed facts, independent of building identity',()=>{
+    it('changes task identity for source content, page and consumed facts, not for the URL variant or building',()=>{
         const id=taskId(task.source_sha256,1,context);
         expect(taskId(task.source_sha256,1,structuredClone(context))).toBe(id);
         expect(taskId('c'.repeat(64),1,context)).not.toBe(id);
         expect(taskId(task.source_sha256,2,context)).not.toBe(id);
         expect(taskId(task.source_sha256,1,{...context,facts:{...context.facts,floor:'2'}})).not.toBe(id);
-        expect(taskId(task.source_sha256,1,{...context,listingUrl:'https://agency.test/listing/2'})).not.toBe(id);
+        // The same project under another host or language states the same facts: one reading.
+        expect(taskId(task.source_sha256,1,{...context,listingUrl:'https://www.agency.test/en/listing/1'})).toBe(id);
         expect(taskId(task.source_sha256,1,{...context,building:{buildingId:'43'}})).toBe(id);
     });
     it('reserves maximum output and input headroom, using batch pricing',()=>{

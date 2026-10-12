@@ -21,6 +21,11 @@ import { enqueueImageTasks,classifyImages,imageClassificationStatus } from '../f
 import { enforceSourcePolicy } from '../floor-plans/source-retention.js';
 import { importArchitectureSites } from '../floor-plans/architecture-sites.js';
 import { migrateArchiveStorage } from '../floor-plans/storage-migration.js';
+import { locateSites } from '../floor-plans/locate-sites.js';
+import { adjudicateSites,enqueueSiteTasks } from '../floor-plans/adjudicate-sites.js';
+import { buildSiteModels,siteModel } from '../floor-plans/site-model.js';
+import { enqueueSheetTasks,readSheets } from '../floor-plans/sheet-context.js';
+import { zagrebStreetIndex } from '../floor-plans/site-candidates.js';
 import { pruneDiscardedFiles } from '../floor-plans/blob-store.js';
 
 dotenv.config({path:fileURLToPath(new URL('../.env',import.meta.url)),quiet:true});
@@ -36,10 +41,17 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
  websites --file FILE         Import registry-mapped website search candidates
  verify-sites                 Recheck legal identity on archived home/contact pages
  resolve-bindings             Seed reviewed bindings, resolve exact matches, suggest spatial candidates
+ locate-sites [--limit 100] [--listing-url URL ...] [--recheck]  Rank candidate sites (address points, permits, pin, parcels)
+ enqueue-sites [--limit 20] [--listing-url URL ...]  Queue ambiguous/probable site locations for LLM adjudication
+ adjudicate-sites [--budget-usd 5|none] [--chunk-size 1] [--collect-only]  Submit/collect one adjudication chunk
+ site-model --listing-url URL  Footprint, storey envelope and plan fits for a located listing's site (read-only)
+ site-models [--limit 500]     Build and store one site model per located site for review
+ enqueue-sheets --listing-url URL ...  Queue sheet-context readings (orientation, key plan, storeys) for those listings' drawings
+ read-sheets [--budget-usd 5|none] [--chunk-size 1] [--collect-only]  Submit/collect one sheet-context chunk
  bindings --file FILE         Import independently verified listing/project/address bindings
  models --file FILE           Import reviewed unit geometry against archived source hashes
  extract [--max-assets 100] [--max-minutes 45]  Requires a located building
- enqueue-images [--limit 1000] [--site HOST]
+ enqueue-images [--limit 1000] [--site HOST] [--listing-url URL ...]  Repeat --listing-url to queue only those listings' images
  classify-images [--budget-usd 5|none] [--chunk-size 1] [--collect-only]
  image-status [--limit 20]
  enqueue-plans [--limit 1000] [--source-hash SHA256]
@@ -65,6 +77,7 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
 
 export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>new pg.Client(options),output=value=>console.log(JSON.stringify(value,null,2))}={}) {
  const args=argv,action=args[0],has=name=>args.includes(name),option=name=>args[args.indexOf(name)+1];
+ const all=name=>args.flatMap((arg,i)=>arg===name?[args[i+1]]:[]);
  if(!action||has('--help')) {console.log(HELP);return 0;}
  if(has('--model')) throw new Error('--model was removed: the model is the shared default in agents/lib/llm-cost/defaults.json.');
  if(action==='migrate-storage'&&has('--drop-database-bytes')&&!has('--apply'))
@@ -86,6 +99,8 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
  const client=clientFactory(connectionString?{connectionString,...(process.env.PGHOST?{host:process.env.PGHOST}:{})}:undefined);
  await client.connect();
  try {
+  // Page qualification reads street-name mentions from this index; load it once per run.
+  if(action!=='init') await zagrebStreetIndex(client);
   let result;
   const number=(name,fallback)=>has(name)?Number(option(name)):fallback;
   const budget=()=>{
@@ -111,8 +126,17 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
   else if(action==='bindings') result=await importBuildingBindings(client,await readJson(option('--file')));
   else if(action==='enqueue') result={enqueued:await enqueue(client,option('--url'),{agencyId:has('--agency')?Number(option('--agency')):null,kind:has('--kind')?option('--kind'):'page',priority:100})};
   else if(action==='resolve-bindings') result={reviewed:await seedReviewedBindings(client),resolved:await resolveBuildingLinks(client),spatialCandidates:await matchBuildingCandidates(client)};
+  else if(action==='locate-sites') result=await locateSites(client,{limit:number('--limit',100),urls:has('--listing-url')?all('--listing-url'):null,
+   recheck:has('--recheck'),deadline:Date.now()+number('--max-minutes',45)*60000});
+  else if(action==='enqueue-sites') result=await enqueueSiteTasks(client,{limit:number('--limit',20),urls:has('--listing-url')?all('--listing-url'):null});
+  else if(action==='adjudicate-sites') result=await adjudicateSites(client,recognitionOptions());
+  else if(action==='enqueue-sheets') result=await enqueueSheetTasks(client,{listingUrls:all('--listing-url')});
+  else if(action==='read-sheets') result=await readSheets(client,recognitionOptions());
+  else if(action==='site-models') result=await buildSiteModels(client,{limit:number('--limit',500)});
+  else if(action==='site-model') result=await siteModel(client,option('--listing-url'));
   else if(action==='enqueue-plans') result=await enqueuePlanTasks(client,{limit:number('--limit',1000),sourceHash:has('--source-hash')?option('--source-hash'):null});
-  else if(action==='enqueue-images') result=await enqueueImageTasks(client,{limit:number('--limit',1000),site:crawlSite});
+  else if(action==='enqueue-images') result=await enqueueImageTasks(client,{limit:number('--limit',1000),site:crawlSite,
+   urls:has('--listing-url')?all('--listing-url'):null});
   else if(action==='classify-images') result=await classifyImages(client,recognitionOptions());
   else if(action==='image-status') result=await imageClassificationStatus(client,{limit:number('--limit',20)});
   else if(action==='interpret') result=await interpretPlans(client,recognitionOptions());

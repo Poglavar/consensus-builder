@@ -52,7 +52,7 @@ describe('source storage migration',()=>{
   const db=database(),original=Buffer.from(db.rows[0].data),reportFile=join(root,'migration-result.json');
   const result=await migrateArchiveStorage(db,{apply:true,root,reportFile,log:()=>{}});
   expect(result).toMatchObject({status:'complete',exportedBlobs:1,verifiedBlobs:1,legacyColumnPresent:true,
-   legacyColumnRemoved:false,legacyColumnStatus:'preserved',after:{blobs:1,bytes:String(original.length)}});
+   legacyColumnRemoved:false,legacyColumnStatus:'preserved',legacyColumnPresentAfter:true,after:{blobs:1,bytes:String(original.length)}});
   expect(await readBlobRow(db.rows[0],{root})).toEqual(original);
   expect(db.rows[1]).toMatchObject({bytes_available:false,storage_path:null});
   expect(db.rows[0].data).toEqual(original);
@@ -96,10 +96,10 @@ describe('source storage migration',()=>{
  it('drops database bytes only after explicit opt-in and permits an idempotent rerun',async()=>{
   const db=database(),original=Buffer.from(db.rows[0].data);
   await expect(migrateArchiveStorage(db,{apply:true,dropDatabaseBytes:true,root,log:()=>{}}))
-   .resolves.toMatchObject({status:'complete',legacyColumnRemoved:true,legacyColumnStatus:'removed'});
+   .resolves.toMatchObject({status:'complete',legacyColumnRemoved:true,legacyColumnStatus:'removed',legacyColumnPresentAfter:false});
   expect(db.rows.every(row=>!('data' in row))).toBe(true);
   const repeat=await migrateArchiveStorage(db,{apply:true,dropDatabaseBytes:true,root,log:()=>{}});
-  expect(repeat).toMatchObject({status:'complete',legacyColumnPresent:false,legacyColumnRemoved:false,verifiedBlobs:1});
+  expect(repeat).toMatchObject({status:'complete',legacyColumnPresent:false,legacyColumnRemoved:false,legacyColumnPresentAfter:false,verifiedBlobs:1});
   expect(await readBlobRow({sha256:db.rows[0].sha256,media_type:'text/html',byte_count:original.length,
    storage_path:db.rows[0].storage_path,bytes_available:true},{root})).toEqual(original);
  });

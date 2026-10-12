@@ -3,7 +3,7 @@ import { extractPageEvidence } from './page-evidence.js';
 import * as cheerio from 'cheerio';
 import { listingIdentity } from './explicit-location.js';
 import { readBlobRow,pruneDiscardedFiles } from './blob-store.js';
-import { EXCLUSION_REASON,ORPHAN_ASSET_REASON,LOCATION_POLICY,ELIGIBLE_ASSET_SQL,excludeSource,qualifyPageEvidence } from './source-policy.js';
+import { EXCLUSION_REASON,ORPHAN_ASSET_REASON,LOCATION_POLICY,ELIGIBLE_ASSET_SQL,excludeSource,qualifyPageEvidence,listingQualifies } from './source-policy.js';
 
 const hashStrings=value=>JSON.stringify(value).match(/\b[a-f0-9]{64}\b/g)||[];
 
@@ -102,9 +102,9 @@ export async function enforceSourcePolicy(db,{apply=false,log=console.log}={}) {
      // Legacy parsers could archive an object page without ever creating a listing row.
      // Genuine directory/home pages still supply discovery and remain outside object retention.
      if(!row.has_listing&&!evidence?.listing) {result.nonObjects++;continue;}
-     if(evidence?.listing?.explicitLocation) {
+     if(listingQualifies(evidence?.listing)) {
       result.eligible++;
-      result.accepted.push({url:row.url,location:evidence.listing.explicitLocation});
+      result.accepted.push({url:row.url,location:evidence.listing.explicitLocation||evidence.listing.locationSignals});
       if(apply) {
        if(!row.source_observed_at) throw new Error(`Archived object has no source observation time: ${row.url}`);
        await db.query(`INSERT INTO floor_plan.listing(url,agency_id,source_id,facts,asset_urls,last_observed_at)

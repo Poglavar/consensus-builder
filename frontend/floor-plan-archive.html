@@ -1,13 +1,13 @@
 <!doctype html>
 <!-- Read-only review of processed buildings, floor plans and archived agency evidence. -->
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Buildings & floor plans · Consensus Builder</title><link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/floor-plan-archive.css?v=4">
+<title>Buildings & floor plans · Consensus Builder</title><link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/floor-plan-archive.css?v=5">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"}}</script>
 </head><body><main class="archive">
 <a class="brand" href="/">Consensus Builder ↗</a>
 <header><p class="eyebrow" data-i18n="eyebrow"></p><h1 data-i18n="title"></h1><p class="lede" data-i18n="lede"></p></header>
-<nav class="tabs" role="tablist" aria-label="Review"><button id="tab-buildings" role="tab" aria-controls="panel-buildings" aria-selected="true" data-i18n="buildingTab"></button><button id="tab-agencies" role="tab" aria-controls="panel-agencies" aria-selected="false" tabindex="-1" data-i18n="agencyTab"></button></nav>
+<nav class="tabs" role="tablist" aria-label="Review"><button id="tab-buildings" role="tab" aria-controls="panel-buildings" aria-selected="true" data-i18n="buildingTab"></button><button id="tab-sites" role="tab" aria-controls="panel-sites" aria-selected="false" tabindex="-1" data-i18n="sitesTab"></button><button id="tab-agencies" role="tab" aria-controls="panel-agencies" aria-selected="false" tabindex="-1" data-i18n="agencyTab"></button></nav>
 <p id="status" class="status" role="status"></p>
 <section id="panel-buildings" role="tabpanel" aria-labelledby="tab-buildings">
 <section id="coverage" class="coverage"></section>
@@ -25,7 +25,17 @@
 <section id="conflict" class="conflict" hidden></section>
 <div id="processing-note" class="note"></div>
 </section>
+<section id="panel-sites" role="tabpanel" aria-labelledby="tab-sites" hidden>
+<div class="toolbar card"><label><span data-i18n="site"></span><select id="site"></select></label></div>
+<div class="selection-heading"><h2 id="site-name"></h2><p id="site-listing" class="note"></p></div>
+<section class="context-grid">
+<article class="card"><h2 data-i18n="siteEnvelope"></h2><div id="site-3d" class="scene"></div><p class="note" data-i18n="site3dNote"></p></article>
+<article class="card"><h2 data-i18n="location"></h2><div id="site-map" class="map"></div><p class="note" data-i18n="siteMapNote"></p></article>
+</section>
+<section class="details card"><div><h2 data-i18n="siteEvidence"></h2><dl id="site-summary"></dl><p id="site-conflicts" class="conflict" hidden></p></div></section>
+<article class="card"><h2 data-i18n="sitePlacements"></h2><div class="table-scroll"><table><thead><tr><th data-i18n="unitCol"></th><th data-i18n="floorCol"></th><th data-i18n="statusCol"></th><th data-i18n="scaleRotationCol"></th><th data-i18n="fitCol"></th><th data-i18n="alternativesCol"></th><th data-i18n="cluesCol"></th></tr></thead><tbody id="site-placements"></tbody></table></div></article>
+</section>
 <section id="panel-agencies" role="tabpanel" aria-labelledby="tab-agencies" hidden>
 <section id="agency-coverage" class="coverage"></section><article class="card registry"><h2 data-i18n="registry"></h2><p class="note" data-i18n="registryNote"></p><input id="agency-search" type="search"><p id="agency-count" class="note"></p><div class="table-scroll"><table><thead><tr><th data-i18n="agency"></th><th data-i18n="address"></th><th data-i18n="website"></th></tr></thead><tbody id="agencies"></tbody></table></div></article>
 </section>
-</main><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/building-floor-plans.js?v=2"></script><script src="js/three-floor-plans.js?v=2"></script><script src="js/floor-plan-review-geometry.js?v=3"></script><script src="js/floor-plan-review-renderer.js?v=3"></script><script src="js/floor-plan-archive-i18n.js?v=4"></script><script src="js/floor-plan-archive.js?v=4"></script></body></html>
+</main><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/building-floor-plans.js?v=2"></script><script src="js/three-floor-plans.js?v=2"></script><script src="js/floor-plan-review-geometry.js?v=3"></script><script src="js/floor-plan-review-renderer.js?v=3"></script><script src="js/floor-plan-archive-i18n.js?v=6"></script><script src="js/site-model-geometry.js?v=1"></script><script src="js/floor-plan-sites.js?v=2"></script><script src="js/floor-plan-archive.js?v=5"></script></body></html>

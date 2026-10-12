@@ -11,6 +11,7 @@ import pg from 'pg';
 import { crawl } from '../floor-plans/crawler.js';
 import { countPendingTargets, createTargetSelector, normalizeSiteHost } from '../floor-plans/crawl-queue.js';
 import { fetchPublic } from '../floor-plans/fetch-public.js';
+import { zagrebStreetIndex } from '../floor-plans/site-candidates.js';
 
 const CHUNK_REQUESTS = 500;
 const HELP = [
@@ -220,6 +221,8 @@ export async function runSiteCrawl(options, dependencies = {}) {
   try {
     locked = Boolean((await db.query("SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked")).rows[0]?.locked);
     if (!locked) throw new Error('Another floor-plan crawl is already running.');
+    // Page qualification reads street-name mentions from this index; load it once per run.
+    await zagrebStreetIndex(db);
 
     if (progress.inFlight?.runId && !progress.foldedRunIds.includes(progress.inFlight.runId)) {
       const saved = await db.query('SELECT counters FROM floor_plan.run WHERE id=$1', [progress.inFlight.runId]);

@@ -1,7 +1,7 @@
 // Durable, source-hash-deduplicated listing-image triage before plan extraction.
 import { fingerprint } from '../buildings/floor-models.js';
 import { normalizeSiteHost } from './crawl-queue.js';
-import { IMAGE_PROCESSOR,IMAGE_SCHEMA,buildImageRequest,parseImageReading,renderImageForClassification } from './image-reading.js';
+import { IMAGE_MAX_OUTPUT_TOKENS,IMAGE_PROCESSOR,IMAGE_SCHEMA,buildImageRequest,dispositionKind,parseImageReading,renderImageForClassification } from './image-reading.js';
 import { recordImageDisposition } from './image-retention.js';
 import { runBatchStage } from './batch-worker.js';
 import { eligibleListingSql } from './source-policy.js';
@@ -34,7 +34,7 @@ async function explicitlyLabelledPlan(db,sha) {
 }
 
 export async function storeImageReading(db,task,reading,{sourceUrl,model=null}={}) {
- const kind=reading.containsPlan?'floor_plan':reading.confidence==='low'?'uncertain':reading.kind;
+ const kind=dispositionKind(reading);
  const disposition=await recordImageDisposition(db,{sourceUrl,sha256:task.source_sha256,kind,
   classificationId:task.id,confirmed:reading.discardConfirmed,confidence:reading.confidence});
  const status=kind==='uncertain'||['stale','protected','needs_review'].includes(disposition.status)?'needs_review':'complete';
@@ -71,7 +71,7 @@ export async function enqueueImageTasks(db,{limit=1000,site=null,urls=null,deadl
    continue;
   }
   const reading=task.result.reading;
-  const kind=reading.containsPlan?'floor_plan':reading.confidence==='low'?'uncertain':reading.kind;
+  const kind=dispositionKind(reading);
   const disposition=await recordImageDisposition(db,{sourceUrl:source.source_url,sha256:task.source_sha256,kind,
    classificationId:task.id,confirmed:reading.discardConfirmed,confidence:reading.confidence});
   if(['discarded','retained','already_discarded'].includes(disposition.status)) reused++;
@@ -95,7 +95,7 @@ export async function enqueueImageTasks(db,{limit=1000,site=null,urls=null,deadl
  return {selected:rows.length,enqueued,reused,deferred,reuseDeferred};
 }
 
-export function imageStageAdapter({render=renderImageForClassification,maxOutputTokens=512,verifyLabelled=false}={}) {
+export function imageStageAdapter({render=renderImageForClassification,maxOutputTokens=IMAGE_MAX_OUTPUT_TOKENS,verifyLabelled=false}={}) {
  return {stage:'images',processor:IMAGE_PROCESSOR,schema:IMAGE_SCHEMA,
   counters:{classified:0,needsReview:0,discarded:0,protected:0},
   async prepare(db,task,llm,{deadline}) {
@@ -103,7 +103,7 @@ export function imageStageAdapter({render=renderImageForClassification,maxOutput
    const source=await currentImageSource(db,task);
    if(!source) throw new Error('Image source or listing ownership changed before classification.');
    if(!verifyLabelled&&await explicitlyLabelledPlan(db,task.source_sha256)) {
-    const reading={kind:'floor_plan',containsPlan:true,confidence:'high',
+    const reading={kind:'floor_plan',containsPlan:true,envelopeEvidence:false,confidence:'high',
      reason:'Current listing explicitly labels this source as a floor plan.',discardConfirmed:false};
     return {localResult:await storeImageReading(db,task,reading,{sourceUrl:source.source_url,model:'local-explicit-label'})};
    }
@@ -125,7 +125,7 @@ export function imageStageAdapter({render=renderImageForClassification,maxOutput
  };
 }
 
-export async function classifyImages(db,{render=renderImageForClassification,maxOutputTokens=512,verifyLabelled=false,...options}={}) {
+export async function classifyImages(db,{render=renderImageForClassification,maxOutputTokens=IMAGE_MAX_OUTPUT_TOKENS,verifyLabelled=false,...options}={}) {
  return runBatchStage(db,imageStageAdapter({render,maxOutputTokens,verifyLabelled}),{...options,maxOutputTokens});
 }
 

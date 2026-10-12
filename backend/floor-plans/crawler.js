@@ -9,7 +9,7 @@ import { verifySiteFromPage } from './agency-sites.js';
 import { countPendingTargets, createTargetSelector, normalizeSiteHost } from './crawl-queue.js';
 import { isGeneratedSearchTarget } from './discovery-policy.js';
 import { NEGATIVE_IMAGE_CACHE_SQL } from './image-retention.js';
-import { ALLOWED_TARGET_SQL,canFetchTarget,qualifyPageEvidence } from './source-policy.js';
+import { ALLOWED_TARGET_SQL,canFetchTarget,qualifyPageEvidence,listingQualifies } from './source-policy.js';
 import { purgeExcludedContent } from './source-retention.js';
 import { pruneDiscardedFiles } from './blob-store.js';
 import { crawlMetricCounters, crawlMetricTelemetry, emptyCrawlMetrics, recordCrawlAttempt, recordCrawlResponse, recordCrawlSuccess } from './crawl-metrics.js';
@@ -27,7 +27,7 @@ export function discoverTargetsWithStats(target,response,evidence) {
    && !/\.(?:css|js|woff2?|zip|mp4|svg|png|jpe?g|webp|pdf|avif)(?:$|\?)/i.test(link.url)
    && !/logout|login|prijava|register|registracija|cart|wp-admin|\?s=|[?&](?:sort|order|share)=/i.test(link.url));
   candidates=[...links.map(link=>({url:link.url,kind:'page',priority:{project:30,listing:20,pagination:25,contact:55,other:0}[link.kind] || 0})),
-   ...(evidence.listing?.explicitLocation?(evidence.assets || []):[]).filter(asset=>asset.listingOwned===true && ['floor-plan','document','image'].includes(asset.kind)).map(asset=>({url:asset.url,kind:'asset',priority:asset.kind==='image'?15:100}))];
+   ...(listingQualifies(evidence.listing)?(evidence.assets || []):[]).filter(asset=>asset.listingOwned===true && ['floor-plan','document','image'].includes(asset.kind)).map(asset=>({url:asset.url,kind:'asset',priority:asset.kind==='image'?15:100}))];
  }
  const sameSiteCandidates=sitemapResponse?candidates.filter(item=>{try{return sameSite(item.url,target.url);}catch{return false;}}):candidates;
  const deferred=sameSiteCandidates.filter(item=>isGeneratedSearchTarget({...item,discovered_from:target.url}));

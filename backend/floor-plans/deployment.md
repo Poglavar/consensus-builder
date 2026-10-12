@@ -23,6 +23,38 @@ cleanup with zero changes. Application code was not deployed, no new paid calls
 were made, and the recurring job remains disabled. The 500-photo experiment
 predates this policy and remains historical evidence.
 
+## Migrate raw sources to ignored files
+
+The schema change is deliberately staged so application code can be deployed
+before PostgreSQL source bytes are removed. Keep the archive workers stopped
+through both migration phases.
+
+1. Stage the additive migration CLI/schema without reloading the API. Run
+   `node backend/scripts/floor-plan-archive.mjs init`. Keep the file-backed API
+   and workers stopped until export completes.
+2. Run `node backend/scripts/floor-plan-archive.mjs migrate-storage --apply`.
+   Ensure enough free disk for the source copy and back up both PostgreSQL and the ignored source directory.
+   This exports each retained source to the ignored archive directory, verifies
+   its size and SHA-256, records storage metadata, then verifies all retained
+   files again. It preserves every existing `data` bytea value. On an older
+   `NOT NULL` schema it relaxes nullability only after successful verification,
+   so metadata-only inserts from the deployed code can work. A failure leaves
+   the database byte column untouched; the operation can be rerun.
+3. Deploy/reload and verify the file-backed readers and metadata-only writers
+   before considering database-byte deletion. Confirm retained files and application
+   readback using the production smoke procedure below.
+4. Only after that release is verified, a separately approved maintenance run
+   may use `migrate-storage --apply --drop-database-bytes`. This verifies files
+   again before dropping the legacy column. Add `--reclaim-space` only when
+   reclaiming PostgreSQL disk space is explicitly intended; `VACUUM FULL` locks
+   the table while it runs. The drop phase and vacuum are idempotent on rerun.
+
+`--drop-database-bytes` requires `--apply`; `--reclaim-space` also requires the
+explicit drop flag. `migrate-storage --apply` alone never drops source bytes.
+Audit mode without `--apply` is read-only. Reports contain migration metadata,
+not source content. The user authorized production migration on October 12. Verification covered all 2,932 retained files (1,524,350,976 bytes), followed by API reload and public-source readback, a private schema-scoped recovery backup, explicit byte-column removal and blob compaction. Protected metadata/processing-table fingerprints and costs were unchanged. The blob relation is approximately 3.34 MB afterward. Production collection and scheduling remain disabled. Reports and the recovery dump are in the ignored production `backend/logs/floor-plan-production-storage-20261012/` directory; source files remain in `data/floor-plan-downloads/`. The earlier production source-policy cleanup alone had not moved its bytes to files.
+
+
 ## Prepare the deployed checkout
 
 From `~/code/consensus-builder`, after the floor-plan change is committed,
@@ -117,36 +149,6 @@ registry is a separate small fetch; it cannot update the registry from a partial
 snapshot. A running HTTP operation and final database checkpoints may extend a
 phase by its bounded timeout. Large backfills remain queued. Increase the chunk
 only after inspecting sample geometry and actual costs.
-
-## Move archive source bytes to files
-
-The schema change is deliberately staged so application code can be deployed
-before PostgreSQL source bytes are removed. Keep the archive workers stopped
-through both migration phases.
-
-1. Stage the additive migration CLI/schema without reloading the API. Run
-   `node backend/scripts/floor-plan-archive.mjs init`. Keep the file-backed API
-   and workers stopped until export completes.
-2. Run `node backend/scripts/floor-plan-archive.mjs migrate-storage --apply`.
-   This exports each retained source to the ignored archive directory, verifies
-   its size and SHA-256, records storage metadata, then verifies all retained
-   files again. It preserves every existing `data` bytea value. On an older
-   `NOT NULL` schema it relaxes nullability only after successful verification,
-   so metadata-only inserts from the deployed code can work. A failure leaves
-   the database byte column untouched; the operation can be rerun.
-3. Deploy/reload and verify the file-backed readers and metadata-only writers
-   before considering database-byte deletion. Confirm retained files and application
-   readback using the production smoke procedure below.
-4. Only after that release is verified, a separately approved maintenance run
-   may use `migrate-storage --apply --drop-database-bytes`. This verifies files
-   again before dropping the legacy column. Add `--reclaim-space` only when
-   reclaiming PostgreSQL disk space is explicitly intended; `VACUUM FULL` locks
-   the table while it runs. The drop phase and vacuum are idempotent on rerun.
-
-`--drop-database-bytes` requires `--apply`; `--reclaim-space` also requires the
-explicit drop flag. `migrate-storage --apply` alone never drops source bytes.
-Audit mode without `--apply` is read-only. Reports contain migration metadata,
-not source content.
 
 ## Outcome monitoring
 

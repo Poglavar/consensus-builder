@@ -22,7 +22,8 @@ const PROTECTION_SQL = `SELECT
 export async function recordImageDisposition(db,{sourceUrl,sha256,kind,classificationId,confirmed=false,confidence=null}={}) {
  if(typeof sourceUrl!=='string'||!/^https?:\/\//i.test(sourceUrl)) throw new Error('A source URL is required.');
  if(typeof sha256!=='string'||!/^[a-f0-9]{64}$/i.test(sha256)) throw new Error('A source SHA-256 is required.');
- if(!['floor_plan','photo','render','uncertain'].includes(kind)) throw new Error('Invalid image kind.');
+ // envelope = exterior views and non-plan drawings kept as evidence of the building's outer form.
+ if(!['floor_plan','photo','render','uncertain','envelope'].includes(kind)) throw new Error('Invalid image kind.');
  if(typeof classificationId!=='string'||!classificationId.trim()||classificationId.length>256) throw new Error('A classification ID is required.');
  const negative=kind==='photo'||kind==='render';
  await db.query('BEGIN');
