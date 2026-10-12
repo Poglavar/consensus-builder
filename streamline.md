@@ -315,6 +315,8 @@ description, GTM and demand text, team bios, a logo and the repo. None of the vi
 - **J3. Videos.** Presentation: the restated thesis with the ladder and one real market. Demo: one
   bet on a phone from question to receipt, then one settlement with its evidence, nothing else.
   Done when: both files exist and run under the limits.
+  Demo recorded 2026-10-12 on prod at phone size with a real devnet bet (2:08, silent, captioned;
+  local file, not uploaded yet). The presentation video does not exist yet.
 - **J4. Submission text.** Name, description, GTM and demand paragraph naming the first customer
   and the recurring decision, team bios, logo. Done when: pasted into the form.
 - **J5. HACKATHON.md.** Top: the story and six features. The 35-item ledger becomes the appendix
