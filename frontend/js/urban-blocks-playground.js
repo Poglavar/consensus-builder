@@ -641,7 +641,7 @@
         metrics.replaceChildren(...metricRows);
         dialog.querySelector('[data-slot="pieces"]').replaceChildren(...pieces.map((feature, index) => {
             const id = String(feature.id ?? feature.properties?.id ?? index);
-            const row = el('button', 'urban-block-playground__piece-row');
+            const row = el('button', 'cb-option urban-block-playground__piece-row');
             row.type = 'button'; row.dataset.pieceId = id; row.setAttribute('aria-pressed', 'false');
             const palette = index % PIECE_PALETTE_SIZE;
             const chip = el('span', `urban-block-playground__piece-chip palette-${palette}`, '');

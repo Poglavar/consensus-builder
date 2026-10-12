@@ -180,6 +180,12 @@
         return parcels;
     }
 
+    // The Tools tab has one primary: Mint when the parcel can be minted, else Claim.
+    function setPrimaryClaimAction(mintAndClaimButton, claimButton, mintAvailable) {
+        if (mintAndClaimButton) mintAndClaimButton.classList.toggle('btn-primary', mintAvailable);
+        if (claimButton) claimButton.classList.toggle('btn-primary', !mintAvailable);
+    }
+
     function setParcelClaimButtonsState(state = 'neutral') {
         const normalized = normalizeMintStatusState(state);
         const mintAndClaimButton = global.document ? global.document.getElementById('mintAndClaimButton') : null;
@@ -195,6 +201,7 @@
             const enableMintMulti = walletConnected && multiCount > 0;
             setButtonEnabledState(mintAndClaimButton, enableMintMulti);
             setButtonEnabledState(claimButton, false);
+            setPrimaryClaimAction(mintAndClaimButton, claimButton, enableMintMulti);
             return;
         }
 
@@ -206,11 +213,13 @@
         if (!['not-minted', 'minted'].includes(normalized)) {
             setButtonEnabledState(mintAndClaimButton, false);
             setButtonEnabledState(claimButton, false);
+            setPrimaryClaimAction(mintAndClaimButton, claimButton, false);
             return;
         }
 
         setButtonEnabledState(mintAndClaimButton, enableMintAndClaim);
         setButtonEnabledState(claimButton, enableClaim);
+        setPrimaryClaimAction(mintAndClaimButton, claimButton, enableMintAndClaim);
     }
 
     function computeFeatureCenter(feature) {
@@ -1362,140 +1371,86 @@
         }
     }
 
-    /* Parcel mint modal */
+    /* Parcel mint modal: the shared dialog (js/ui/dialogs.js). Its overlay keeps the
+       parcel-mint-modal-overlay id and the parcel-mint-overlay class (is-busy) as hooks. */
     const PARCEL_MINT_MODAL_ID = 'parcel-mint-modal-overlay';
     let parcelMintModalOnExit = null;
+    let parcelMintDialog = null;
+    let parcelMintSuccessDialog = null;
 
+    // The receipt after a mint: the shared dialog, closed by OK (or Escape / the close button),
+    // which runs onClose either way.
     function showParcelMintSuccessPopup({ parcelCount, transactions, chainId, onClose }) {
         try {
-            const existingPopup = global.document ? global.document.getElementById('parcel-mint-success-modal') : null;
-            if (existingPopup && existingPopup.parentNode) {
-                existingPopup.parentNode.removeChild(existingPopup);
-            }
+            if (parcelMintSuccessDialog) parcelMintSuccessDialog.close();
+            const doc = global.document;
 
-            const overlay = global.document.createElement('div');
-            overlay.id = 'parcel-mint-success-modal';
-            overlay.style.position = 'fixed';
-            overlay.style.inset = '0';
-            overlay.style.background = 'rgba(0,0,0,0.45)';
-            overlay.style.display = 'flex';
-            overlay.style.alignItems = 'center';
-            overlay.style.justifyContent = 'center';
-            overlay.style.zIndex = '12000';
-
-            const card = global.document.createElement('div');
-            card.style.background = '#fff';
-            card.style.borderRadius = '12px';
-            card.style.padding = '20px 24px';
-            card.style.maxWidth = '340px';
-            card.style.width = '90%';
-            card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
-            card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-
-            const title = global.document.createElement('h3');
-            title.textContent = 'Success!';
-            title.style.margin = '0 0 8px 0';
-            title.style.fontSize = '20px';
-            title.style.fontWeight = '700';
-            card.appendChild(title);
-
-            const body = global.document.createElement('p');
+            const body = doc.createElement('p');
             body.textContent = parcelCount === 1
                 ? 'Parcel has been minted!'
                 : `${parcelCount} parcels have been minted!`;
-            body.style.margin = '0 0 12px 0';
-            body.style.fontSize = '14px';
-            card.appendChild(body);
+            const content = [body];
 
             const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
             const txList = Array.isArray(transactions) ? transactions.filter(t => t && t.txHash) : [];
+            const explorerTitle = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
+            const explorerLink = (url, text) => {
+                const link = doc.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = 'cb-link cb-link--external';
+                link.textContent = text;
+                return link;
+            };
 
-            // Build explorer links section
-            if (txList.length > 0) {
-                const linksContainer = global.document.createElement('div');
-                linksContainer.style.margin = '0 0 12px 0';
-
-                if (txList.length === 1) {
-                    // Single transaction — show as a single link
-                    const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: txList[0].txHash });
-                    if (url) {
-                        const link = global.document.createElement('a');
-                        link.href = url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        link.textContent = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
-                        link.style.color = '#0d3b66';
-                        link.style.fontWeight = '600';
-                        link.style.fontSize = '14px';
-                        linksContainer.appendChild(link);
-                    }
-                } else {
-                    // Multiple transactions — show as a numbered list
-                    const list = global.document.createElement('div');
-                    list.style.display = 'flex';
-                    list.style.flexDirection = 'column';
-                    list.style.gap = '6px';
-
-                    txList.forEach((tx, idx) => {
-                        const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: tx.txHash });
-                        if (!url) return;
-                        const row = global.document.createElement('div');
-                        row.style.fontSize = '13px';
-                        const label = tx.parcelId ? tx.parcelId : `Transaction ${idx + 1}`;
-                        const link = global.document.createElement('a');
-                        link.href = url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        link.textContent = label;
-                        link.style.color = '#0d3b66';
-                        link.style.fontWeight = '600';
-                        link.title = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
-
-                        const icon = global.document.createElement('span');
-                        icon.textContent = ' \u2197';
-                        icon.style.fontSize = '11px';
-                        link.appendChild(icon);
-                        row.appendChild(link);
-                        list.appendChild(row);
-                    });
-
-                    linksContainer.appendChild(list);
+            // Explorer links: one link for one transaction, a list for several.
+            if (txList.length === 1) {
+                const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: txList[0].txHash });
+                if (url) {
+                    const row = doc.createElement('p');
+                    row.appendChild(explorerLink(url, explorerTitle));
+                    content.push(row);
                 }
-                card.appendChild(linksContainer);
+            } else if (txList.length > 1) {
+                const list = doc.createElement('div');
+                list.className = 'parcel-mint-success__links';
+                txList.forEach((tx, idx) => {
+                    const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: tx.txHash });
+                    if (!url) return;
+                    const link = explorerLink(url, tx.parcelId ? tx.parcelId : `Transaction ${idx + 1}`);
+                    link.title = explorerTitle;
+                    list.appendChild(link);
+                });
+                content.push(list);
             }
 
-            const okBtn = global.document.createElement('button');
-            okBtn.textContent = 'OK';
-            okBtn.style.padding = '10px 12px';
-            okBtn.style.border = 'none';
-            okBtn.style.borderRadius = '8px';
-            okBtn.style.background = '#0d3b66';
-            okBtn.style.color = '#fff';
-            okBtn.style.cursor = 'pointer';
-            okBtn.style.width = '100%';
-            okBtn.style.marginTop = '4px';
-            okBtn.addEventListener('click', () => {
-                if (overlay.parentNode) {
-                    overlay.parentNode.removeChild(overlay);
-                }
-                if (typeof onClose === 'function') {
-                    try { onClose(); } catch (_) { }
+            const dialogApi = global.CbDialog.open({
+                title: 'Success!',
+                size: 'sm',
+                top: true,
+                className: 'parcel-mint-success',
+                body: content,
+                actions: [{ id: 'ok', label: 'OK', role: 'primary' }],
+                onClose: () => {
+                    if (parcelMintSuccessDialog === dialogApi) parcelMintSuccessDialog = null;
+                    if (typeof onClose === 'function') {
+                        try { onClose(); } catch (_) { }
+                    }
                 }
             });
-
-            card.appendChild(okBtn);
-            overlay.appendChild(card);
-            global.document.body.appendChild(overlay);
+            if (!dialogApi) return;
+            dialogApi.overlay.id = 'parcel-mint-success-modal';
+            parcelMintSuccessDialog = dialogApi;
         } catch (err) {
             console.warn('Failed to show parcel mint success popup:', err);
         }
     }
 
     function removeParcelMintModal(reason = 'dismiss') {
-        const existing = global.document ? global.document.getElementById(PARCEL_MINT_MODAL_ID) : null;
-        if (existing && existing.parentNode) {
-            existing.parentNode.removeChild(existing);
-        }
+        const dialog = parcelMintDialog;
+        parcelMintDialog = null;
+        if (dialog) dialog.close(reason);
         const onExit = parcelMintModalOnExit;
         parcelMintModalOnExit = null;
         if (typeof onExit === 'function') {
@@ -1635,39 +1590,11 @@
 
     async function buildParcelMintModal({ parcels, chainSlug, chainId, contractAddress, ownerAddress, onConfirm, onExit }) {
         removeParcelMintModal('replace');
-        const overlay = global.document.createElement('div');
-        overlay.id = PARCEL_MINT_MODAL_ID;
-        overlay.className = 'parcel-mint-overlay';
         parcelMintModalOnExit = typeof onExit === 'function' ? onExit : null;
 
-        const modal = global.document.createElement('div');
-        modal.className = 'parcel-mint-modal';
-
-        const header = global.document.createElement('div');
-        header.className = 'parcel-mint-header';
-        const titleWrap = global.document.createElement('div');
-        titleWrap.className = 'parcel-mint-header__text';
-        const title = global.document.createElement('h2');
-        title.textContent = 'Mint parcel representations as NFTs';
         const subtitle = global.document.createElement('p');
         subtitle.className = 'parcel-mint-subtitle';
         subtitle.textContent = 'Choose which parcels to mint on the ParcelNFT contract. If feasible (not too many), the parcels will all be minted in one transaction.';
-        titleWrap.appendChild(title);
-        titleWrap.appendChild(subtitle);
-        const closeBtn = global.document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn close-circle-btn--lg parcel-mint-close';
-        closeBtn.textContent = '×';
-        // Don't allow dismissing the modal while a mint transaction is in flight (is-busy).
-        closeBtn.onclick = () => {
-            if (overlay.classList.contains('is-busy')) return;
-            removeParcelMintModal('close');
-        };
-        header.appendChild(titleWrap);
-        header.appendChild(closeBtn);
-
-        const body = global.document.createElement('div');
-        body.className = 'parcel-mint-body';
 
         const meta = global.document.createElement('div');
         meta.className = 'parcel-mint-meta';
@@ -1690,6 +1617,7 @@
                 link.href = item.url;
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
+                link.className = 'cb-link cb-link--external';
                 link.textContent = item.value;
                 value.appendChild(link);
             } else {
@@ -1757,16 +1685,47 @@
             buildParcelThumbnailLoader(parcel, thumb, neighbours);
         });
 
-        const footer = global.document.createElement('div');
-        footer.className = 'parcel-mint-footer';
         const status = global.document.createElement('div');
         status.className = 'parcel-mint-status';
-        const actions = global.document.createElement('div');
-        actions.className = 'parcel-mint-actions';
-        const mintBtn = global.document.createElement('button');
-        mintBtn.type = 'button';
-        mintBtn.className = 'btn btn-primary';
-        mintBtn.textContent = 'Mint';
+        status.setAttribute('role', 'status');
+
+        // The dialog has no automatic dismissals: while a mint transaction is in flight (is-busy)
+        // neither the close button, the backdrop nor Escape may close it, so it owns all three.
+        const dialogApi = global.CbDialog.open({
+            title: 'Mint parcel representations as NFTs',
+            size: 'md',
+            top: true,
+            className: 'parcel-mint-modal',
+            overlayClassName: 'parcel-mint-overlay',
+            bodyClassName: 'parcel-mint-body',
+            showClose: false,
+            closeOnBackdrop: false,
+            closeOnEscape: false,
+            body: [subtitle, meta, list, status],
+            actions: [{ id: 'mint', label: 'Mint', role: 'primary', keepOpen: true, onClick: () => mint() }]
+        });
+        if (!dialogApi) return;
+        parcelMintDialog = dialogApi;
+        const overlay = dialogApi.overlay;
+        overlay.id = PARCEL_MINT_MODAL_ID;
+        const isBusy = () => overlay.classList.contains('is-busy');
+        const closeBtn = global.document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'close-circle-btn parcel-mint-close';
+        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.textContent = '×';
+        closeBtn.addEventListener('click', () => {
+            if (!isBusy()) removeParcelMintModal('close');
+        });
+        dialogApi.header.appendChild(closeBtn);
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay && !isBusy()) removeParcelMintModal('overlay');
+        });
+        const unregisterEscape = global.ModalEscape && typeof global.ModalEscape.register === 'function'
+            ? global.ModalEscape.register(overlay, () => { if (!isBusy()) removeParcelMintModal('escape'); })
+            : null;
+        dialogApi.closed.then(() => { if (unregisterEscape) unregisterEscape(); });
+        const mintBtn = dialogApi.getActionButton('mint');
 
         const setBusy = (busy, message) => {
             mintBtn.disabled = busy;
@@ -1774,7 +1733,7 @@
             status.textContent = message || '';
         };
 
-        mintBtn.onclick = async () => {
+        const mint = async () => {
             const selected = parcelCheckboxes
                 .filter(entry => entry.checkbox.checked)
                 .map(entry => entry.parcel);
@@ -1813,25 +1772,6 @@
                 setBusy(false, error?.message || 'Mint failed. Please try again.');
             }
         };
-
-        actions.appendChild(mintBtn);
-        footer.appendChild(status);
-        footer.appendChild(actions);
-
-        body.appendChild(meta);
-        body.appendChild(list);
-        body.appendChild(footer);
-
-        modal.appendChild(header);
-        modal.appendChild(body);
-        overlay.appendChild(modal);
-        overlay.onclick = (event) => {
-            // Clicking the backdrop closes the modal, but not while a mint is in flight (is-busy).
-            if (event.target === overlay && !overlay.classList.contains('is-busy')) {
-                removeParcelMintModal('overlay');
-            }
-        };
-        global.document.body.appendChild(overlay);
     }
 
     function collectCurrentParcelForMint() {
@@ -2308,7 +2248,7 @@
     function handleToolsTabLanguageChange() {
         localizeToolsTab();
         const toolsTab = global.document ? global.document.getElementById('tools-tab') : null;
-        if (toolsTab && toolsTab.classList.contains('active')) {
+        if (toolsTab && !toolsTab.hidden) {
             triggerParcelToolsTabActivated(false);
         } else if (!currentParcelMintStatusCache && !currentParcelMintStatusPromise) {
             resetParcelMintStatusState();

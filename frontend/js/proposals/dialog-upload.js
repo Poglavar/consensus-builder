@@ -249,137 +249,84 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
 
 // options.anchors: Solana v2, where a missing parcel means a missing ownerless parcel anchor, not
 // a certificate someone owns; the wording and the action button say so.
+// The shared dialog (js/ui/dialogs.js) on the confirm rung, over the create dialog it is asked
+// from. Resolves 'memory', 'mint' or 'cancel' (the close button, Escape, the backdrop).
 async function showMissingParcelsModal(missingParcels, chainName, options = {}) {
-    return new Promise((resolve) => {
-        const t = getProposalI18nHelper();
-        setProposalModalDimmed(true);
+    const t = getProposalI18nHelper();
+    setProposalModalDimmed(true);
 
-        const overlay = document.createElement('div');
-        overlay.className = 'cb-confirm-overlay';
-        // Must sit above create-proposal-modal (z-index 11000)
-        overlay.style.position = 'fixed';
-        overlay.style.inset = '0';
-        overlay.style.zIndex = '50000';
-        overlay.style.background = 'rgba(15, 23, 42, 0.45)';
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
+    const message = document.createElement('div');
+    message.className = 'missing-parcels-message';
 
-        const dialog = document.createElement('div');
-        dialog.className = 'cb-confirm-dialog';
-        dialog.style.maxWidth = '600px';
-        dialog.style.position = 'relative';
-        dialog.style.zIndex = '50001';
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn close-circle-btn--lg';
-        closeBtn.setAttribute('aria-label', t('modal.createProposal.walletNotConnected.cancel', 'Cancel'));
-        closeBtn.innerHTML = '&times;';
-        closeBtn.style.position = 'absolute';
-        closeBtn.style.top = '8px';
-        closeBtn.style.right = '8px';
-
-        const message = document.createElement('div');
-        message.className = 'cb-confirm-message';
-        message.style.marginBottom = '20px';
-
-        const chainDisplay = chainName || t('modal.createProposal.missingParcels.defaultChain', 'the blockchain');
-        const overflowLabel = missingParcels.length > 10
-            ? t('modal.createProposal.missingParcels.more', ', and {{count}} more...', {
-                count: missingParcels.length - 10
-            })
-            : '';
-        const parcelList = missingParcels.length > 10
-            ? `${missingParcels.slice(0, 10).join(', ')}${overflowLabel}`
-            : missingParcels.join(', ');
-        const anchors = options && options.anchors === true;
-        const single = missingParcels.length === 1;
-        const introMessage = anchors
-            ? t(
-                `modal.createProposal.missingParcels.${single ? 'anchorMessageSingle' : 'anchorMessagePlural'}`,
-                single
-                    ? 'The following parcel has no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for it cannot be minted on-chain:'
-                    : 'The following parcels have no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for them cannot be minted on-chain:',
-                { chain: chainDisplay }
-            )
-            : t(
-                `modal.createProposal.missingParcels.${single ? 'messageSingle' : 'messagePlural'}`,
-                single
-                    ? 'The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:'
-                    : 'The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:',
-                { chain: chainDisplay }
-            );
-        const proceedPrompt = t(
-            'modal.createProposal.missingParcels.proceedQuestion',
-            'Proceed to create an in-memory proposal?'
+    const chainDisplay = chainName || t('modal.createProposal.missingParcels.defaultChain', 'the blockchain');
+    const overflowLabel = missingParcels.length > 10
+        ? t('modal.createProposal.missingParcels.more', ', and {{count}} more...', {
+            count: missingParcels.length - 10
+        })
+        : '';
+    const parcelList = missingParcels.length > 10
+        ? `${missingParcels.slice(0, 10).join(', ')}${overflowLabel}`
+        : missingParcels.join(', ');
+    const anchors = options && options.anchors === true;
+    const single = missingParcels.length === 1;
+    const introMessage = anchors
+        ? t(
+            `modal.createProposal.missingParcels.${single ? 'anchorMessageSingle' : 'anchorMessagePlural'}`,
+            single
+                ? 'The following parcel has no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for it cannot be minted on-chain:'
+                : 'The following parcels have no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for them cannot be minted on-chain:',
+            { chain: chainDisplay }
+        )
+        : t(
+            `modal.createProposal.missingParcels.${single ? 'messageSingle' : 'messagePlural'}`,
+            single
+                ? 'The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:'
+                : 'The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:',
+            { chain: chainDisplay }
         );
-        const explainerText = anchors
-            ? t(
-                'modal.createProposal.missingParcels.anchorExplainer',
-                "A parcel anchor is the parcel's on-chain identity. Nobody owns it and creating it confers no ownership; you only pay its rent. Ownership reaches the chain separately, as a lens member's attestation. You can also create anchors from the Parcel Info panel's Tools tab."
-            )
-            : t(
-                'modal.createProposal.missingParcels.explainer',
-                "You can create an in-memory proposal or proceed to mint the prerequisite parcels. Minting does not confer ownership, it only creates an on-chain representation. Anyone can mint any parcel to onboard it onto the platform. You can also mint them from the Parcel Info panel's Tools tab."
-            );
+    const proceedPrompt = t(
+        'modal.createProposal.missingParcels.proceedQuestion',
+        'Proceed to create an in-memory proposal?'
+    );
+    const explainerText = anchors
+        ? t(
+            'modal.createProposal.missingParcels.anchorExplainer',
+            "A parcel anchor is the parcel's on-chain identity. Nobody owns it and creating it confers no ownership; you only pay its rent. Ownership reaches the chain separately, as a lens member's attestation. You can also create anchors from the Parcel Info panel's Tools tab."
+        )
+        : t(
+            'modal.createProposal.missingParcels.explainer',
+            "You can create an in-memory proposal or proceed to mint the prerequisite parcels. Minting does not confer ownership, it only creates an on-chain representation. Anyone can mint any parcel to onboard it onto the platform. You can also mint them from the Parcel Info panel's Tools tab."
+        );
 
-        message.innerHTML = `
-            <p style="margin-bottom: 12px;">${introMessage}</p>
-            <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin: 12px 0; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
-                ${parcelList}
-            </div>
-            <p style="margin-top: 12px; margin-bottom: 12px; padding: 12px; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px; color: #1565c0;">
-                ${explainerText}
-            </p>
-            <p style="margin-top: 12px;">${proceedPrompt}</p>
-        `;
+    message.innerHTML = `
+        <p>${introMessage}</p>
+        <div class="missing-parcels-list">${parcelList}</div>
+        <p class="missing-parcels-explainer">${explainerText}</p>
+        <p>${proceedPrompt}</p>
+    `;
 
-        const buttons = document.createElement('div');
-        buttons.className = 'cb-confirm-buttons';
-        buttons.style.display = 'flex';
-        buttons.style.gap = '10px';
-        buttons.style.justifyContent = 'flex-end';
-
-        const createInMemoryBtn = document.createElement('button');
-        createInMemoryBtn.type = 'button';
-        createInMemoryBtn.className = 'btn btn-secondary';
-        createInMemoryBtn.textContent = t('modal.createProposal.missingParcels.createInMemory', 'Create in memory');
-
-        const mintPrereqBtn = document.createElement('button');
-        mintPrereqBtn.type = 'button';
-        mintPrereqBtn.className = 'btn btn-action';
-        mintPrereqBtn.textContent = anchors
-            ? (single
-                ? t('modal.createProposal.missingParcels.createAnchor', 'Create the parcel anchor')
-                : t('modal.createProposal.missingParcels.createAnchors', 'Create the parcel anchors'))
-            : t('modal.createProposal.missingParcels.mintPrerequisites', 'Mint the prerequisites');
-
-        function cleanup(result) {
-            if (overlay && overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
-            }
-            setProposalModalDimmed(false);
-            resolve(result);
-        }
-
-        createInMemoryBtn.addEventListener('click', () => cleanup('memory'));
-        mintPrereqBtn.addEventListener('click', () => cleanup('mint'));
-        closeBtn.addEventListener('click', () => cleanup('cancel'));
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                cleanup('cancel');
-            }
-        });
-
-        buttons.appendChild(createInMemoryBtn);
-        buttons.appendChild(mintPrereqBtn);
-        dialog.appendChild(closeBtn);
-        dialog.appendChild(message);
-        dialog.appendChild(buttons);
-        overlay.appendChild(dialog);
-        document.body.appendChild(overlay);
+    const mintLabel = anchors
+        ? (single
+            ? t('modal.createProposal.missingParcels.createAnchor', 'Create the parcel anchor')
+            : t('modal.createProposal.missingParcels.createAnchors', 'Create the parcel anchors'))
+        : t('modal.createProposal.missingParcels.mintPrerequisites', 'Mint the prerequisites');
+    const dialogApi = window.CbDialog.open({
+        title: anchors
+            ? t('modal.createProposal.missingParcels.anchorTitle', 'Parcel anchors missing')
+            : t('modal.createProposal.missingParcels.title', 'Parcels not on the chain yet'),
+        size: 'md',
+        confirm: true,
+        className: 'missing-parcels-dialog',
+        closeLabel: t('modal.createProposal.walletNotConnected.cancel', 'Cancel'),
+        body: message,
+        actions: [
+            { id: 'memory', label: t('modal.createProposal.missingParcels.createInMemory', 'Create in memory'), role: 'secondary' },
+            { id: 'mint', label: mintLabel, role: 'primary' }
+        ]
     });
+    const result = dialogApi ? await dialogApi.closed : null;
+    setProposalModalDimmed(false);
+    return result === 'memory' || result === 'mint' ? result : 'cancel';
 }
 
 function showUploadProposalModal(proposal) {
@@ -397,68 +344,34 @@ function showUploadProposalModal(proposal) {
     const mintActionLabel = tShare('mintButton', 'Mint');
     const downloadButtonLabel = tShare('downloadButton', 'Download');
 
-    // Rows container for stable layout
+    // Rows container for stable layout. Looks and layout live in css/modals.css (.share-proposal-*);
+    // the rows' parts are shown and hidden by the state code below (style.display).
     const rowsContainer = document.createElement('div');
-    rowsContainer.style.display = 'flex';
-    rowsContainer.style.flexDirection = 'column';
-    rowsContainer.style.gap = '0.75rem';
-    rowsContainer.style.marginBottom = '1.25rem';
+    rowsContainer.className = 'share-proposal-rows';
 
     // Upload row
     const uploadRow = document.createElement('div');
-    uploadRow.style.display = 'flex';
-    uploadRow.style.gap = '0.5rem';
-    uploadRow.style.alignItems = 'center';
-    uploadRow.style.width = '100%';
+    uploadRow.className = 'share-proposal-row';
 
     const uploadButton = document.createElement('button');
     uploadButton.type = 'button';
-    uploadButton.className = 'btn share-modal-primary';
+    uploadButton.className = 'btn btn-primary share-proposal-row__main';
     uploadButton.textContent = uploadButtonLabel;
-    uploadButton.style.flex = '1';
-    uploadButton.style.display = 'flex';
-    uploadButton.style.justifyContent = 'center';
-    uploadButton.style.alignItems = 'center';
-    uploadButton.style.textAlign = 'center';
     uploadRow.appendChild(uploadButton);
 
     const uploadLinkGroup = document.createElement('div');
+    uploadLinkGroup.className = 'share-proposal-link-group';
     uploadLinkGroup.style.display = 'none';
-    uploadLinkGroup.style.flex = '1';
-    uploadLinkGroup.style.gap = '0.5rem';
-    uploadLinkGroup.style.alignItems = 'center';
-    uploadLinkGroup.style.minWidth = '0';
-    uploadLinkGroup.style.width = '100%';
 
     const urlInput = document.createElement('input');
     urlInput.type = 'text';
     urlInput.readOnly = true;
-    urlInput.className = 'share-modal-link';
-    urlInput.style.flex = '1';
-    urlInput.style.padding = '0.5rem 0.75rem';
-    urlInput.style.border = '1px solid #d8ddf0';
-    urlInput.style.borderRadius = '8px';
-    urlInput.style.height = 'auto';
-    urlInput.style.lineHeight = '1.5';
-    urlInput.style.minHeight = '38px';
-    urlInput.style.maxHeight = '38px';
-    urlInput.style.fontSize = '13px';
-    urlInput.style.fontFamily = 'inherit';
-    urlInput.style.background = '#f7f8fb';
-    urlInput.style.color = '#212744';
-    urlInput.style.boxSizing = 'border-box';
+    urlInput.className = 'share-modal-link share-proposal-link';
 
     const copyButton = document.createElement('button');
     copyButton.type = 'button';
-    copyButton.className = 'btn share-modal-secondary';
+    copyButton.className = 'btn share-proposal-copy';
     copyButton.textContent = tShare('copyUrlButton', 'Copy URL');
-    copyButton.style.height = '38px';
-    copyButton.style.minHeight = '38px';
-    copyButton.style.maxHeight = '38px';
-    copyButton.style.padding = '0.5rem 1rem';
-    copyButton.style.lineHeight = '1.5';
-    copyButton.style.whiteSpace = 'nowrap';
-    copyButton.style.textAlign = 'center';
     copyButton.addEventListener('click', () => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(urlInput.value).then(() => {
@@ -482,58 +395,26 @@ function showUploadProposalModal(proposal) {
 
     // Mint row
     const mintRow = document.createElement('div');
-    mintRow.style.display = 'flex';
-    mintRow.style.gap = '0.5rem';
-    mintRow.style.alignItems = 'center';
-    mintRow.style.width = '100%';
+    mintRow.className = 'share-proposal-row';
 
     const mintButton = document.createElement('button');
     mintButton.type = 'button';
-    mintButton.className = 'btn share-modal-primary';
-    mintButton.style.flex = '1';
-    mintButton.style.display = 'flex';
-    mintButton.style.justifyContent = 'center';
-    mintButton.style.alignItems = 'center';
-    mintButton.style.textAlign = 'center';
+    mintButton.className = 'btn btn-primary share-proposal-row__main';
     mintRow.appendChild(mintButton);
 
     const mintedLinkGroup = document.createElement('div');
+    mintedLinkGroup.className = 'share-proposal-link-group';
     mintedLinkGroup.style.display = 'none';
-    mintedLinkGroup.style.flex = '1';
-    mintedLinkGroup.style.gap = '0.5rem';
-    mintedLinkGroup.style.alignItems = 'center';
-    mintedLinkGroup.style.minWidth = '0';
-    mintedLinkGroup.style.width = '100%';
 
     const mintedLinkInput = document.createElement('input');
     mintedLinkInput.type = 'text';
     mintedLinkInput.readOnly = true;
-    mintedLinkInput.className = 'share-modal-link';
-    mintedLinkInput.style.flex = '1';
-    mintedLinkInput.style.padding = '0.5rem 0.75rem';
-    mintedLinkInput.style.border = '1px solid #d8ddf0';
-    mintedLinkInput.style.borderRadius = '8px';
-    mintedLinkInput.style.height = 'auto';
-    mintedLinkInput.style.lineHeight = '1.5';
-    mintedLinkInput.style.minHeight = '38px';
-    mintedLinkInput.style.maxHeight = '38px';
-    mintedLinkInput.style.fontSize = '13px';
-    mintedLinkInput.style.fontFamily = 'inherit';
-    mintedLinkInput.style.background = '#f7f8fb';
-    mintedLinkInput.style.color = '#212744';
-    mintedLinkInput.style.boxSizing = 'border-box';
+    mintedLinkInput.className = 'share-modal-link share-proposal-link';
 
     const mintedCopyButton = document.createElement('button');
     mintedCopyButton.type = 'button';
-    mintedCopyButton.className = 'btn share-modal-secondary';
+    mintedCopyButton.className = 'btn share-proposal-copy';
     mintedCopyButton.textContent = tShare('copyUrlButton', 'Copy URL');
-    mintedCopyButton.style.height = '38px';
-    mintedCopyButton.style.minHeight = '38px';
-    mintedCopyButton.style.maxHeight = '38px';
-    mintedCopyButton.style.padding = '0.5rem 1rem';
-    mintedCopyButton.style.lineHeight = '1.5';
-    mintedCopyButton.style.whiteSpace = 'nowrap';
-    mintedCopyButton.style.textAlign = 'center';
     mintedCopyButton.addEventListener('click', () => {
         if (!mintedLinkInput.value) return;
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -558,16 +439,12 @@ function showUploadProposalModal(proposal) {
 
     // Download row
     const downloadRow = document.createElement('div');
-    downloadRow.style.display = 'flex';
-    downloadRow.style.alignItems = 'center';
-    downloadRow.style.width = '100%';
+    downloadRow.className = 'share-proposal-row';
 
     const downloadButton = document.createElement('button');
     downloadButton.type = 'button';
-    downloadButton.className = 'btn share-modal-secondary';
+    downloadButton.className = 'btn share-proposal-row__main';
     downloadButton.textContent = downloadButtonLabel;
-    downloadButton.style.flex = '1';
-    downloadButton.style.textAlign = 'center';
     downloadRow.appendChild(downloadButton);
 
     rowsContainer.appendChild(downloadRow);
@@ -595,9 +472,7 @@ function showUploadProposalModal(proposal) {
     // Escape hatch to the multi-proposal flow: share EVERYTHING currently applied as one plan.
     const sharePlanButton = document.createElement('button');
     sharePlanButton.type = 'button';
-    sharePlanButton.className = 'btn share-modal-secondary share-modal-plan-btn';
-    sharePlanButton.style.width = '100%';
-    sharePlanButton.style.marginBottom = '0.75rem';
+    sharePlanButton.className = 'btn btn-block share-modal-plan-btn';
     sharePlanButton.textContent = tShare('sharePlanButton', 'Share the whole plan instead (all applied proposals)…');
     sharePlanButton.addEventListener('click', () => {
         // The dialog STAYS UP until the plan panel behind it is built and the map framed. Closing
@@ -608,7 +483,7 @@ function showUploadProposalModal(proposal) {
         sharePlanButton.textContent = '';
         const spinner = document.createElement('i');
         spinner.className = 'fas fa-spinner fa-spin';
-        spinner.style.marginRight = '6px';
+        spinner.setAttribute('aria-hidden', 'true');
         const label = document.createElement('span');
         label.textContent = tShare('preparingPlan', 'Preparing plan...');
         sharePlanButton.appendChild(spinner);
@@ -626,7 +501,8 @@ function showUploadProposalModal(proposal) {
             try {
                 // Already gone (Escape, ×, overlay click) — nothing to close, and nothing to steal.
                 if (!ownOverlay || !ownOverlay.isConnected) return;
-                const closeButton = ownOverlay.querySelector('.share-modal-close');
+                // The share dialog's own close button (the shared dialog's header).
+                const closeButton = ownOverlay.querySelector('.cb-dialog__header .close-circle-btn');
                 if (closeButton) closeButton.click();
             } catch (_) { }
         };
@@ -652,39 +528,28 @@ function showUploadProposalModal(proposal) {
     });
     fragment.appendChild(sharePlanButton);
 
-    // Status message container
+    // Status message container: the error tone until a message says otherwise (setStatusTone).
     const uploadStatus = document.createElement('div');
-    uploadStatus.style.marginBottom = '0.75rem';
-    uploadStatus.style.fontSize = '12px';
-    uploadStatus.style.color = '#b3261e';
-    uploadStatus.style.lineHeight = '1.4';
+    uploadStatus.className = 'share-proposal-status is-error';
     fragment.appendChild(uploadStatus);
+    const setStatusTone = isError => uploadStatus.classList.toggle('is-error', Boolean(isError));
 
     const shareActionsContainer = document.createElement('div');
     shareActionsContainer.className = 'share-modal-share-actions';
     shareActionsContainer.style.display = 'none';
-    shareActionsContainer.style.marginTop = '1rem';
-    shareActionsContainer.style.width = '100%';
 
     const shareLabel = document.createElement('div');
+    shareLabel.className = 'share-proposal-label';
     shareLabel.textContent = tShare('shareViaLabel', 'Share via');
-    shareLabel.style.fontWeight = '600';
-    shareLabel.style.marginBottom = '0.5rem';
     shareActionsContainer.appendChild(shareLabel);
 
     const shareButtonsRow = document.createElement('div');
-    shareButtonsRow.style.display = 'flex';
-    shareButtonsRow.style.gap = '0.5rem';
-    shareButtonsRow.style.flexWrap = 'wrap';
-    shareButtonsRow.style.width = '100%';
+    shareButtonsRow.className = 'share-proposal-row';
 
     const tweetButton = document.createElement('button');
     tweetButton.type = 'button';
-    tweetButton.className = 'btn share-modal-secondary';
+    tweetButton.className = 'btn share-proposal-row__main';
     tweetButton.textContent = tShare('tweetButton', 'Tweet this proposal');
-    tweetButton.style.flex = '1 1 0';
-    tweetButton.style.minWidth = '0';
-    tweetButton.style.textAlign = 'center';
     tweetButton.addEventListener('click', () => {
         const urlToShare = urlInput.value || '';
         if (!urlToShare) return;
@@ -696,11 +561,8 @@ function showUploadProposalModal(proposal) {
 
     const nativeShareButton = document.createElement('button');
     nativeShareButton.type = 'button';
-    nativeShareButton.className = 'btn share-modal-secondary';
+    nativeShareButton.className = 'btn share-proposal-row__main';
     nativeShareButton.textContent = tShare('nativeShareButton', 'Share...');
-    nativeShareButton.style.flex = '1 1 0';
-    nativeShareButton.style.minWidth = '0';
-    nativeShareButton.style.textAlign = 'center';
     nativeShareButton.addEventListener('click', async () => {
         const urlToShare = urlInput.value || '';
         const shareText = tShare('tweetText', 'I have created a new urban proposal!');
@@ -828,7 +690,7 @@ function showUploadProposalModal(proposal) {
         lastWalletConnected = connected;
         refreshMintRowUi();
         if (justConnected && uploadStatus) {
-            uploadStatus.style.color = '#2b3954';
+            setStatusTone(false);
             uploadStatus.textContent = tShare('walletConnectedStatus', 'Wallet connected. You can proceed to mint the proposal');
         }
     };
@@ -843,8 +705,6 @@ function showUploadProposalModal(proposal) {
 
         uploadButton.disabled = true;
         uploadButton.textContent = tShare('uploading', 'Uploading...');
-        uploadButton.style.opacity = '0.7';
-        uploadButton.style.cursor = 'not-allowed';
 
         try {
             const uploadProposal = window.ChainProposalRef?.chainRefFromProposal(proposal)
@@ -868,7 +728,7 @@ function showUploadProposalModal(proposal) {
                 throw new Error(tShare('uploadError', 'Server did not return a valid serial ID. Please try again.'));
             }
             uploadStatus.textContent = uploadSuccessText;
-            uploadStatus.style.color = '#2b3954'; // Success: dark text instead of red
+            setStatusTone(false); // Success: dark text instead of red
             const shareUrlJoiner = cityQueryParam ? '&' : '?';
             shareUrl = `${resolveFrontendBaseUrl()}/proposals/${uploadedId}${cityQueryParam}${shareUrlJoiner}3d${shareLangParam()}`;
             proposal.serverProposalId = uploadedId;
@@ -907,8 +767,6 @@ function showUploadProposalModal(proposal) {
             console.error('Upload failed:', error);
             uploadButton.disabled = false;
             uploadButton.textContent = uploadButtonLabel;
-            uploadButton.style.opacity = '1';
-            uploadButton.style.cursor = 'pointer';
 
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(error.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'), 5000, 'error');
@@ -963,9 +821,9 @@ function showUploadProposalModal(proposal) {
                 mintButton.textContent = tShare('alreadyMinted', 'Already minted');
                 const explorerUrl = typeof buildProposalNftExplorerUrl === 'function' ? buildProposalNftExplorerUrl(proposal) : null;
                 if (uploadStatus) {
-                    uploadStatus.style.color = '#2b3954';
+                    setStatusTone(false);
                     uploadStatus.innerHTML = explorerUrl
-                        ? `${tShare('alreadyMinted', 'Already minted')}. <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewOnExplorer', 'View on explorer')}</a>`
+                        ? `${tShare('alreadyMinted', 'Already minted')}. <a class="cb-link cb-link--external" href="${explorerUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewOnExplorer', 'View on explorer')}</a>`
                         : tShare('alreadyMinted', 'Already minted');
                 }
                 return;
@@ -974,7 +832,7 @@ function showUploadProposalModal(proposal) {
             const setMintStatus = (message, opts = {}) => {
                 if (!uploadStatus) return;
                 const { isError = false, html = false } = opts;
-                uploadStatus.style.color = isError ? '#b3261e' : '#2b3954';
+                setStatusTone(isError);
                 if (html) {
                     uploadStatus.innerHTML = message;
                 } else {
@@ -1011,7 +869,7 @@ function showUploadProposalModal(proposal) {
                     ? translate('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.')
                     : 'This approval setup is not supported by the current chain adapter.';
                 if (uploadStatus) {
-                    uploadStatus.style.color = '#2b3954';
+                    setStatusTone(false);
                     uploadStatus.textContent = message;
                 }
                 return;
@@ -1278,7 +1136,7 @@ function showUploadProposalModal(proposal) {
                                 const baseUrl = typeof getExplorerBaseUrlForChain === 'function' ? getExplorerBaseUrlForChain(tx?.chainId) : null;
                                 const txUrl = baseUrl && tx?.hash ? `${baseUrl}/tx/${tx.hash}` : null;
                                 setMintStatus(txUrl
-                                    ? `${tShare('mintingOnChain', 'Minting on chain...')} <a href="${txUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewTransaction', 'Transaction')}</a>`
+                                    ? `${tShare('mintingOnChain', 'Minting on chain...')} <a class="cb-link cb-link--external" href="${txUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewTransaction', 'Transaction')}</a>`
                                     : tShare('mintingOnChain', 'Minting on chain...'), { html: true });
                             }
                         });
@@ -1353,12 +1211,12 @@ function showUploadProposalModal(proposal) {
                             const baseUrl = typeof getExplorerBaseUrlForChain === 'function' ? getExplorerBaseUrlForChain(chainId) : null;
                             const txUrl = baseUrl && txHash ? `${baseUrl}/tx/${txHash}` : null;
                             setMintStatus(txUrl
-                                ? `${tShare('minting', 'Minting...')} <a href="${txUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewTransaction', 'Transaction')}</a>`
+                                ? `${tShare('minting', 'Minting...')} <a class="cb-link cb-link--external" href="${txUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewTransaction', 'Transaction')}</a>`
                                 : tShare('minting', 'Minting...'), { html: true });
                         }
 
                         setMintStatus(explorerUrl
-                            ? `${tShare('mintSuccess', 'Success! You can see the proposal minted')} <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer">${tShare('here', 'here')}</a>`
+                            ? `${tShare('mintSuccess', 'Success! You can see the proposal minted')} <a class="cb-link cb-link--external" href="${explorerUrl}" target="_blank" rel="noopener noreferrer">${tShare('here', 'here')}</a>`
                             : tShare('mintSuccess', 'Success! Proposal minted.'), { html: true });
 
                         mintedExplorerUrl = explorerUrl || mintedExplorerUrl;
@@ -1389,7 +1247,7 @@ function showUploadProposalModal(proposal) {
             console.error('Mint action failed:', error);
             if (uploadStatus) {
                 uploadStatus.textContent = error.message || tShare('mintError', 'Failed to mint proposal');
-                uploadStatus.style.color = '#b3261e';
+                setStatusTone(true);
             }
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(error.message || tShare('mintError', 'Failed to mint proposal'), 5000, 'error');
@@ -1419,19 +1277,21 @@ function promptMissingParentParcelsModal(missing, author, problem) {
             actions: [
                 {
                     label: 'Cancel load',
-                    onClick: () => resolve('cancel')
+                    keepOpen: true,
+                    onClick: dialog => { resolve('cancel'); dialog.close(); }
                 },
                 {
                     label: 'Lose local work, refresh & apply',
                     primary: true,
-                    onClick: () => resolve('refresh')
+                    keepOpen: true,
+                    onClick: dialog => { resolve('refresh'); dialog.close(); }
                 }
-            ]
+            ],
+            // The close button, Escape and the backdrop cancel too; an action has answered first,
+            // and a promise keeps its first answer.
+            onClose: () => resolve('cancel')
         });
 
-        if (!modal) {
-            const confirmRefresh = confirm('Missing parent parcels are required to load shared proposals. Refresh parcel data (clears local work)?');
-            resolve(confirmRefresh ? 'refresh' : 'cancel');
-        }
+        if (!modal) resolve('cancel');
     });
 }

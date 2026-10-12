@@ -34,6 +34,7 @@ function boot() {
             ]); },
             querySelector(selector) { return node.querySelectorAll(selector)[0] || null; },
             addEventListener(type, callback) { listeners[type] = callback; },
+            removeEventListener(type, callback) { if (listeners[type] === callback) delete listeners[type]; },
             remove() { node.parentNode?.removeChild(node); if (node.id) byId.delete(node.id); },
             focus() { document.activeElement = node; },
             getClientRects: () => [{}]
@@ -61,11 +62,13 @@ function boot() {
             getAvailableCities: () => [{ id: 'sample', parcels: { source: 'parcel-source' } }]
         },
         addEventListener: events.addEventListener.bind(events),
-        dispatchEvent: events.dispatchEvent.bind(events)
+        dispatchEvent: events.dispatchEvent.bind(events),
+        requestAnimationFrame: callback => callback()
     };
     const context = vm.createContext({ window, document, CustomEvent, URLSearchParams,
         requestAnimationFrame: callback => callback() });
-    for (const path of ['site-intro.js', 'parcels/ground-fallback.js']) {
+    // The recovery dialog is the shared one (js/ui/dialogs.js), which the app loads first.
+    for (const path of ['ui/dialogs.js', 'site-intro.js', 'parcels/ground-fallback.js']) {
         vm.runInContext(readFileSync(new URL(`../../frontend/js/${path}`, import.meta.url), 'utf8'), context);
     }
     window.SiteIntro.initSiteIntro();

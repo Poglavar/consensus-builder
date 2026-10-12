@@ -9,34 +9,39 @@
     <title>Lens member console · Consensus Builder</title>
     <meta name="description" content="Console for Urban Game Theory lens members: status, issued ownership attestations and operator verdicts." />
     <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="css/tokens.css?v=1" />
-    <link rel="stylesheet" href="css/lens-console.css?v=1" />
+    <link rel="stylesheet" href="css/tokens.css?v=2" />
+    <link rel="stylesheet" href="css/primitives.css?v=2" />
+    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
+    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/lens-console.css?v=2" />
 </head>
-<body class="lc-body">
+<body class="cb-page lc-body">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1 data-i18n-key="lensConsole.title">Lens member console</h1></div>
+        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span data-i18n-key="lensConsole.backToMap">Back to the map</span></a>
+        <select id="lc-language" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">
+            <option value="en">EN</option>
+            <option value="hr">HR</option>
+            <option value="es">ES</option>
+            <option value="sr">SR</option>
+        </select>
+    </header>
     <main class="lc-wrap">
-        <header class="lc-header">
-            <div class="lc-header-row">
-                <h1 data-i18n-key="lensConsole.title">Lens member console</h1>
-                <select id="lc-language" class="lc-input lc-language" aria-label="Language" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">
-                    <option value="en">EN</option>
-                    <option value="hr">HR</option>
-                    <option value="es">ES</option>
-                    <option value="sr">SR</option>
-                </select>
-            </div>
+        <div class="lc-intro">
             <p data-i18n-key="lensConsole.intro">A lens member states facts about parcels as attestations. Point this console at your member service to see what it has issued and to record verdicts.</p>
             <p data-i18n-key="lensConsole.runOwn">Anyone can run a lens member: register a credential, start the reference service and it lists itself in the directory.</p>
-            <p><a id="lc-run-own" href="#" target="_blank" rel="noopener" data-i18n-key="lensConsole.runOwnLink">How to run your own member</a> · <a href="/" data-i18n-key="lensConsole.backToMap">Back to the map</a></p>
-        </header>
+            <p><a id="lc-run-own" class="cb-link cb-link--external" target="_blank" rel="noopener noreferrer" data-i18n-key="lensConsole.runOwnLink">How to run your own member</a></p>
+        </div>
 
         <section class="lc-card" aria-labelledby="lc-service-title">
             <h2 id="lc-service-title" data-i18n-key="lensConsole.service.title">Member service</h2>
             <label class="lc-label" for="lc-directory" data-i18n-key="lensConsole.service.directoryLabel">Known members with a service URL</label>
-            <select id="lc-directory" class="lc-input"></select>
+            <select id="lc-directory" class="lc-field"></select>
             <label class="lc-label" for="lc-service-url" data-i18n-key="lensConsole.service.urlLabel">Service URL</label>
             <div class="lc-row">
-                <input id="lc-service-url" class="lc-input" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://localhost:3095" />
-                <button id="lc-service-load" class="lc-button" type="button" data-i18n-key="lensConsole.service.load">Load</button>
+                <input id="lc-service-url" class="lc-field" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://localhost:3095" />
+                <button id="lc-service-load" class="btn" type="button" data-i18n-key="lensConsole.service.load">Load</button>
             </div>
             <div id="lc-status" class="lc-output" aria-live="polite"></div>
         </section>
@@ -44,7 +49,7 @@
         <section class="lc-card" aria-labelledby="lc-wallet-title">
             <h2 id="lc-wallet-title" data-i18n-key="lensConsole.wallet.title">Member wallet</h2>
             <div class="lc-row">
-                <button id="lc-wallet-connect" class="lc-button" type="button" data-i18n-key="lensConsole.wallet.connect">Connect wallet</button>
+                <button id="lc-wallet-connect" class="btn" type="button" data-i18n-key="lensConsole.wallet.connect">Connect wallet</button>
             </div>
             <div id="lc-wallet" class="lc-output" aria-live="polite"></div>
         </section>
@@ -53,16 +58,16 @@
             <h2 id="lc-attestations-title" data-i18n-key="lensConsole.attestations.title">Issued attestations</h2>
             <div class="lc-grid">
                 <label class="lc-label" for="lc-filter-kind" data-i18n-key="lensConsole.attestations.kind">Kind</label>
-                <select id="lc-filter-kind" class="lc-input">
+                <select id="lc-filter-kind" class="lc-field">
                     <option value="" data-i18n-key="lensConsole.attestations.kindAll">All</option>
                     <option value="ownership" data-i18n-key="lensConsole.attestations.kindOwnership">Ownership</option>
                     <option value="verdict" data-i18n-key="lensConsole.attestations.kindVerdict">Verdict</option>
                 </select>
                 <label class="lc-label" for="lc-filter-parcel" data-i18n-key="lensConsole.attestations.parcel">Parcel</label>
-                <input id="lc-filter-parcel" class="lc-input" type="text" autocomplete="off" spellcheck="false" />
+                <input id="lc-filter-parcel" class="lc-field" type="text" autocomplete="off" spellcheck="false" />
             </div>
             <div class="lc-row">
-                <button id="lc-attestations-load" class="lc-button" type="button" data-i18n-key="lensConsole.attestations.load">Refresh</button>
+                <button id="lc-attestations-load" class="btn" type="button" data-i18n-key="lensConsole.attestations.load">Refresh</button>
             </div>
             <div id="lc-attestations" class="lc-output" aria-live="polite"></div>
         </section>
@@ -72,19 +77,19 @@
             <p class="lc-muted" data-i18n-key="lensConsole.verdict.hint">A verdict states that a proposal executed (for evidence kinds without per-parcel consent, such as a permit register) or expired. Only the member operator can post one.</p>
             <form id="lc-verdict-form" class="lc-grid" autocomplete="off">
                 <label class="lc-label" for="lc-verdict-proposal" data-i18n-key="lensConsole.verdict.proposal">Proposal account</label>
-                <input id="lc-verdict-proposal" class="lc-input" type="text" spellcheck="false" required />
+                <input id="lc-verdict-proposal" class="lc-field" type="text" spellcheck="false" required />
                 <label class="lc-label" for="lc-verdict-kind" data-i18n-key="lensConsole.verdict.verdict">Verdict</label>
-                <select id="lc-verdict-kind" class="lc-input">
+                <select id="lc-verdict-kind" class="lc-field">
                     <option value="executed" data-i18n-key="lensConsole.verdict.executed">executed</option>
                     <option value="expired" data-i18n-key="lensConsole.verdict.expired">expired</option>
                 </select>
                 <label class="lc-label" for="lc-verdict-evidence" data-i18n-key="lensConsole.verdict.evidence">Evidence reference (optional)</label>
-                <input id="lc-verdict-evidence" class="lc-input" type="text" spellcheck="false" />
+                <input id="lc-verdict-evidence" class="lc-field" type="text" spellcheck="false" />
                 <label class="lc-label" for="lc-verdict-observed" data-i18n-key="lensConsole.verdict.observed">When the source recorded it</label>
-                <input id="lc-verdict-observed" class="lc-input" type="datetime-local" step="1" required />
+                <input id="lc-verdict-observed" class="lc-field" type="datetime-local" step="1" required />
                 <label class="lc-label" for="lc-verdict-token" data-i18n-key="lensConsole.verdict.token">Operator token (not stored)</label>
-                <input id="lc-verdict-token" class="lc-input" type="password" autocomplete="off" required />
-                <button id="lc-verdict-submit" class="lc-button lc-button-primary" type="submit" data-i18n-key="lensConsole.verdict.submit">Post verdict</button>
+                <input id="lc-verdict-token" class="lc-field" type="password" autocomplete="off" required />
+                <button id="lc-verdict-submit" class="btn btn-primary lc-submit" type="submit" data-i18n-key="lensConsole.verdict.submit">Post verdict</button>
             </form>
             <div id="lc-verdict-result" class="lc-output" aria-live="polite"></div>
         </section>
@@ -98,6 +103,6 @@
     <script src="js/solana/wallet-adapter.js?v=1"></script>
     <script src="js/lens-core.js?v=1"></script>
     <script src="js/lens-service-client.js?v=1"></script>
-    <script src="js/lens-console.js?v=1"></script>
+    <script src="js/lens-console.js?v=2"></script>
 </body>
 </html>

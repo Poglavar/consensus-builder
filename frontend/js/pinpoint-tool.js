@@ -75,7 +75,8 @@
         const container = global.map.getContainer();
 
         if (active) {
-            if (button) button.classList.add('active-black-border');
+            // The tool that is on is aria-pressed (css/primitives.css).
+            if (button) button.setAttribute('aria-pressed', 'true');
             container.classList.add('crosshairs-cursor');
             container.style.cursor = 'crosshair';
             global.map.on('mousemove', onMove);
@@ -87,7 +88,7 @@
                 global.updateStatus(t('sidebar.measurement.pinpointHint', 'Move over the map to read coordinates'));
             }
         } else {
-            if (button) button.classList.remove('active-black-border');
+            if (button) button.setAttribute('aria-pressed', 'false');
             container.classList.remove('crosshairs-cursor');
             container.style.cursor = '';
             global.map.off('mousemove', onMove);

@@ -1688,7 +1688,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         if (!skipWelcomeGate) {
             const welcomeModal = document.getElementById('welcome-modal');
-            const isWelcomeModalVisible = welcomeModal && welcomeModal.style.display !== 'none';
+            const isWelcomeModalVisible = welcomeModal && !welcomeModal.hidden;
             const hasUserAgent = typeof currentUserAgent !== 'undefined' && currentUserAgent !== null;
 
             console.log('[handleSharedPlanRoute] Welcome gate check:', {

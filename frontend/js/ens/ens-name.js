@@ -99,16 +99,17 @@
         }
     }
 
-    // The ENS chip links to the manager; the accessible value button copies the full name.
+    // The ENS badge links out to the manager (cb-link--external adds the one ↗); the value is a
+    // quiet script link that copies the full name.
     function ensNameLineHtml(name) {
         if (!name) return '';
         const fullName = escapeHtml(name);
         const viewLabel = escapeHtml(t('ens.viewName', 'View ENS name'));
         const copyLabel = escapeHtml(t('ens.copyName', 'Copy ENS name'));
         return '<div class="ens-name-line">'
-            + `<a class="ens-name-chip" href="${escapeHtml(ensAppUrl(name))}" target="_blank"`
-            + ` rel="noopener noreferrer" title="${viewLabel}: ${fullName}">ENS ↗</a>`
-            + `<button type="button" class="ens-name-value" title="${copyLabel}: ${fullName}"`
+            + `<a class="cb-badge cb-link--external ens-name-chip" href="${escapeHtml(ensAppUrl(name))}" target="_blank"`
+            + ` rel="noopener noreferrer" title="${viewLabel}: ${fullName}">ENS</a>`
+            + `<button type="button" class="cb-link cb-link--quiet ens-name-value" title="${copyLabel}: ${fullName}"`
             + ` aria-label="${copyLabel}: ${fullName}"`
             + ` onclick="copyEnsName(${inlineJsArg(name)}, this)">${escapeHtml(compactEnsName(name))}</button></div>`;
     }

@@ -218,7 +218,7 @@
                     <h2 id="grain-score-title" data-grain-role="title"></h2>
                     <p class="grain-score-plan-name" data-grain-role="planName"></p>
                 </div>
-                <button type="button" class="grain-score-close" data-grain-action="close" aria-label="Close">×</button>
+                <button type="button" class="close-circle-btn grain-score-close" data-grain-action="close" aria-label="Close">×</button>
             </header>
             <div class="grain-score-route" data-grain-role="route"></div>
             <div class="grain-score-loading" data-grain-role="loading" hidden>
@@ -227,8 +227,8 @@
             </div>
             <div class="grain-score-ready" data-grain-role="ready" hidden>
                 <p data-grain-role="readyText"></p>
-                <button type="button" class="grain-score-start" data-grain-action="start">
-                    <span aria-hidden="true">🐓</span><span data-grain-role="startLabel"></span>
+                <button type="button" class="btn btn-primary btn-block grain-score-start" data-grain-action="start">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span data-grain-role="startLabel"></span>
                 </button>
             </div>
             <div class="grain-score-error" data-grain-role="error" hidden></div>
@@ -255,8 +255,8 @@
                     <p data-grain-role="methodologyBody"></p>
                 </details>
                 <div class="grain-score-actions">
-                    <button type="button" class="btn btn-outline-primary" data-grain-action="repeat"><i class="fas fa-rotate-right" aria-hidden="true"></i> <span data-grain-role="repeatLabel"></span></button>
-                    <button type="button" class="btn btn-outline-secondary grain-score-sound" data-grain-action="sound"><i class="fas fa-volume-high" aria-hidden="true"></i> <span data-grain-role="soundLabel"></span></button>
+                    <button type="button" class="btn" data-grain-action="repeat"><i class="fas fa-rotate-right" aria-hidden="true"></i> <span data-grain-role="repeatLabel"></span></button>
+                    <button type="button" class="btn grain-score-sound" data-grain-action="sound"><i class="fas fa-volume-high" aria-hidden="true"></i> <span data-grain-role="soundLabel"></span></button>
                 </div>
             </div>`;
 

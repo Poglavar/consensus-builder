@@ -92,7 +92,7 @@ test.describe('proposal button controls follow-up @features', () => {
     const parcelRows = stack.locator('.drill-stack-parcel-btn');
     await expect(parcelRows).toHaveCount(2);
     await parcelRows.nth(1).click();
-    await expect(parcelRows.nth(1)).toHaveClass(/selected/);
+    await expect(parcelRows.nth(1)).toHaveAttribute('aria-pressed', 'true');
 
     // Opening the chosen base parcel dismisses the current stack. Click that parcel's authored
     // footprint to open its own stack before choosing the proposal level.
@@ -101,7 +101,7 @@ test.describe('proposal button controls follow-up @features', () => {
     const proposalRow = stack.locator('.drill-stack-row[data-ref^="p:"]').first();
     await expect(proposalRow).toBeVisible();
     await proposalRow.click();
-    await expect(proposalRow).toHaveClass(/selected/);
+    await expect(proposalRow).toHaveAttribute('aria-pressed', 'true');
     await stack.getByRole('button', { name: 'Close', exact: true }).click();
     await expect(stack).toBeHidden();
   });

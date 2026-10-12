@@ -175,9 +175,10 @@ function statusLogDialogElements() {
     };
 }
 
+// #status-log-modal is the shared dialog's overlay (index.html); it is shown through [hidden].
 function statusLogDialogIsOpen() {
     const parts = statusLogDialogElements();
-    return !!(parts && parts.overlay.style.display !== 'none');
+    return !!(parts && !parts.overlay.hidden);
 }
 
 function updateStatusLogDialogCount(parts) {
@@ -221,7 +222,7 @@ function renderStatusLogDialog() {
 function openStatusLogDialog() {
     const parts = statusLogDialogElements();
     if (!parts) return;
-    parts.overlay.style.display = 'flex';
+    parts.overlay.hidden = false;
     parts.overlay.__unregisterEscape?.();
     parts.overlay.__unregisterEscape = window.ModalEscape?.register(parts.overlay, closeStatusLogDialog);
     renderStatusLogDialog();
@@ -230,7 +231,7 @@ function openStatusLogDialog() {
 function closeStatusLogDialog() {
     const parts = statusLogDialogElements();
     if (!parts) return;
-    parts.overlay.style.display = 'none';
+    parts.overlay.hidden = true;
     parts.overlay.__unregisterEscape?.();
     parts.overlay.__unregisterEscape = null;
     statusLogDialogRendered = 0;
@@ -239,9 +240,10 @@ function closeStatusLogDialog() {
 function initStatusLogDialog() {
     const parts = statusLogDialogElements();
     if (!parts) return;
-    const closeButton = parts.overlay.querySelector('#status-log-modal-close');
+    // Close twice over: the header's close circle and the footer's Close button.
+    parts.overlay.querySelectorAll('#status-log-modal-close, [data-status-log-close]')
+        .forEach(button => button.addEventListener('click', closeStatusLogDialog));
     const copyButton = parts.overlay.querySelector('#status-log-modal-copy');
-    if (closeButton) closeButton.addEventListener('click', closeStatusLogDialog);
     if (copyButton) copyButton.addEventListener('click', copyStatusLog);
     parts.overlay.addEventListener('click', event => {
         if (event.target === parts.overlay) closeStatusLogDialog();
@@ -362,7 +364,8 @@ function ensureStatusBarButton(statusBar, marker, key, fallback, onClick) {
     if (!statusBar || statusBar.querySelector(`[${marker}]`)) return;
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'status-log-copy-all';
+    // The shared small button (css/primitives.css); status-log-copy-all stays as the hook.
+    button.className = 'btn btn-sm status-log-copy-all';
     button.setAttribute(marker, '');
     const label = window.i18n?.t ? window.i18n.t(key) : '';
     button.textContent = (label && label !== key) ? label : fallback;

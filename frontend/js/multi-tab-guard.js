@@ -37,10 +37,13 @@
             message.setAttribute('data-i18n-attr', 'text');
             message.textContent = FALLBACK_TEXT;
 
+            // The one close control (css/primitives.css); the class beside it only places it.
             const dismiss = document.createElement('button');
             dismiss.type = 'button';
-            dismiss.className = 'cb-multitab-banner__close';
-            dismiss.setAttribute('aria-label', 'Dismiss');
+            dismiss.className = 'close-circle-btn cb-multitab-banner__close';
+            dismiss.setAttribute('aria-label', 'Close');
+            dismiss.setAttribute('data-i18n-key', 'common.close');
+            dismiss.setAttribute('data-i18n-attr', 'aria-label');
             dismiss.textContent = '×';
             // Dismissing hides the notice, not the read-only state — and the flag stays set, so the
             // banner used to be a one-time warning after which work silently stopped being saved.

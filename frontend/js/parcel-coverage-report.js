@@ -45,21 +45,24 @@ function applyLanguage() {
     document.querySelectorAll('[data-table-region]').forEach(element => element.setAttribute('aria-label', tr(element.dataset.tableRegion === 'breakdown' ? 'breakdownCaption' : element.dataset.tableRegion === 'cities' ? 'cityTitle' : 'countryTitle')));
     byId('report-language').value = language;
     byId('report-language').setAttribute('aria-label', tr('language'));
+    window.CbPageHeader.apply(language);
 }
 
 function safeLink(url, label, title) {
     try {
         const parsed = new URL(url);
         if (!['http:', 'https:'].includes(parsed.protocol)) return node('span', '—', 'muted');
-        const anchor = node('a', label, 'cell-link');
+        const anchor = node('a', label, 'cb-link cb-link--external cell-link');
         anchor.href = parsed.href; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
         if (title) anchor.title = title;
         return anchor;
     } catch { return node('span', '—', 'muted'); }
 }
 
+// A yes / no / unknown finding as a badge in the lifecycle colours: yes reads as executed (green),
+// no as draft (neutral), unknown as minted (amber).
 function status(value, unknownKey = 'unknown') {
-    return node('span', tr(value === true ? 'yes' : value === false ? 'no' : unknownKey), `status status-${value === true ? 'yes' : value === false ? 'no' : 'unknown'}`);
+    return node('span', tr(value === true ? 'yes' : value === false ? 'no' : unknownKey), `cb-badge cb-badge--${value === true ? 'executed' : value === false ? 'draft' : 'minted'}`);
 }
 
 function renderHeader(kind) {
@@ -113,7 +116,7 @@ function countryStatusNote(country) {
 function countryCell(country, key, className) {
     const td = node('td', undefined, className);
     if (key === 'name') {
-        const button = node('button', country.name, 'country-name'); button.type = 'button';
+        const button = node('button', country.name, 'cb-link'); button.type = 'button';
         button.title = tr('showCountryCities', { country: country.name });
         button.addEventListener('click', () => {
             byId('city-country').value = country.code; byId('city-search').value = ''; byId('city-checked').value = 'all'; byId('city-registry').value = 'all'; byId('city-cohort').value = 'all';

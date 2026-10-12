@@ -169,9 +169,17 @@
     }
 
     /** Zajednička obrada "Druga godina…": vrati godinu, null (obriši) ili
-        undefined kad je korisnik odustao (pozivatelj tada vraća staru vrijednost). */
-    function askCustomYear() {
-        const unos = prompt(t('modal.roadWidth.proposalList.epoch.customPrompt', 'Timeline year (2026–2966):'), '2077');
+        undefined kad je korisnik odustao (pozivatelj tada vraća staru vrijednost).
+        Pita aplikacijin dijalog (js/ui/dialogs.js): brojčano polje koje ne pušta
+        godinu izvan raspona MIN_YEAR–MAX_YEAR. */
+    async function askCustomYear() {
+        const unos = await global.CbDialog.prompt(t('modal.roadWidth.proposalList.epoch.customPrompt', 'Timeline year (2026–2966):'), {
+            defaultValue: '2077',
+            inputType: 'number',
+            min: MIN_YEAR,
+            max: MAX_YEAR,
+            validate: value => parseEpochYear(value) !== null
+        });
         if (unos === null) return undefined;
         const g = parseEpochYear(unos);
         return g === null ? undefined : g;
@@ -182,9 +190,9 @@
     function initCreateDialogSelect(select) {
         if (!select) return;
         fillYearOptions(select, lastUsedEpoch());
-        select.addEventListener('change', () => {
+        select.addEventListener('change', async () => {
             if (select.value === 'custom') {
-                const g = askCustomYear();
+                const g = await askCustomYear();
                 if (g === undefined) { fillYearOptions(select, lastUsedEpoch()); return; }
                 fillYearOptions(select, g);
             }
@@ -413,7 +421,7 @@
         }
         let cilj;
         if (select.value === 'custom') {
-            cilj = askCustomYear();
+            cilj = await askCustomYear();
             if (cilj === undefined) { renderList(); return; }   // odustao — vrati stari prikaz
         } else {
             cilj = select.value === '' ? null : parseEpochYear(select.value);
@@ -424,7 +432,7 @@
         } catch (err) {
             console.error('[epoch] spremanje s kartice nije uspjelo:', err);
             const failed = t('modal.roadWidth.proposalList.epoch.saveError', 'Failed to save the epoch.');
-            if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') window.showStyledAlert(failed); else alert(failed);
+            CbDialog.alert(failed);           // aplikacijin dijalog (js/ui/dialogs.js), nikad preglednikov
             renderList();                     // vrati izbornik na stvarno spremljenu godinu
         }
     }
@@ -471,16 +479,23 @@
         naslov.textContent = t('modal.roadWidth.proposalList.epoch.timelineLabel', 'Timeline');
         traka.appendChild(naslov);
 
+        // Godine su segmentirani izbor (cb-segmented): odabrana nosi aria-pressed.
+        const izbor = document.createElement('div');
+        izbor.className = 'cb-segmented proposal-epoch-years';
+        izbor.setAttribute('role', 'group');
+        izbor.setAttribute('aria-label', naslov.textContent);
         const gumbi = [{ v: null, txt: t('modal.roadWidth.proposalList.epoch.all', 'All') },
                        ...epohe.map(g => ({ v: g, txt: `${g}.` }))];
         for (const g of gumbi) {
             const b = document.createElement('button');
             b.type = 'button';
-            b.className = 'proposal-epoch-year' + (g.v === selectedYear ? ' is-active' : '');
+            b.className = 'cb-segmented__option';
+            b.setAttribute('aria-pressed', String(g.v === selectedYear));
             b.textContent = g.txt;
             b.addEventListener('click', () => setSelectedYear(g.v));
-            traka.appendChild(b);
+            izbor.appendChild(b);
         }
+        traka.appendChild(izbor);
 
         if (selectedYear !== null) {
             const isAppliedFn = (typeof isProposalApplied === 'function') ? isProposalApplied

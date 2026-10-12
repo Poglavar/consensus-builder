@@ -1,48 +1,17 @@
-/* The "no parcel register could be loaded" screen (js/parcels/ground-fallback.js).
-   Built on the cb-confirm overlay/dialog so it stacks and dims like every other prompt. */
+/* The "no parcel register could be loaded" screen (js/parcels/ground-fallback.js): the shared
+   dialog (css/primitives.css) with `ground-fallback-dialog` as its identity class, on the
+   ordinary dialog rung. The rules here lay out its inside. */
 
-/* Recovery follows the introduction and uses the ordinary dialog plane, rather than the
-   confirmation plane. Reopening the intro also hides recovery without trapping its keys. */
-.ground-fallback-overlay {
-    z-index: var(--cb-z-dialog);
-}
-
+/* Recovery follows the introduction (which sits on the rung above). Reopening the intro also
+   hides recovery without trapping its keys. */
 body.site-intro-open .ground-fallback-overlay {
     visibility: hidden;
     pointer-events: none;
 }
 
-.ground-fallback-dialog {
-    width: min(640px, calc(100% - 40px));
-    max-height: calc(100vh - 48px);
-    overflow-y: auto;
-    padding: 22px 26px 20px;
-}
-
-.ground-fallback-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.ground-fallback-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--cb-text-strong);
-    line-height: 1.3;
-}
-
-.ground-fallback-close {
-    flex: 0 0 auto;
-    font-size: 20px;
-    line-height: 1;
-}
-
 /* The one sentence that says what actually happened. Its colour says whether retrying is sane. */
 .ground-fallback-status {
-    margin: 10px 0 16px;
+    margin: 0 0 16px;
     padding: 10px 12px;
     border-radius: 8px;
     font-size: 14px;
@@ -57,51 +26,15 @@ body.site-intro-open .ground-fallback-overlay {
 .ground-fallback-status--refused,
 .ground-fallback-status--broken { background: var(--cb-danger-soft); border-left-color: var(--cb-danger); }
 
+/* The choices are cb-option rows (css/primitives.css); the list only spaces them. */
 .ground-fallback-options {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
 }
 
-.ground-fallback-option {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 10px;
-    background: var(--cb-surface);
-    color: var(--cb-text-strong);
-    text-align: left;
-    cursor: pointer;
-    font: inherit;
-    transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
-}
-
-.ground-fallback-option:hover,
-.ground-fallback-option:focus-visible {
-    border-color: var(--cb-primary);
-    box-shadow: 0 0 0 3px var(--cb-focus-ring);
-    outline: none;
-    background: var(--cb-surface-2);
-}
-
-.ground-fallback-option.is-disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-.ground-fallback-option-title {
-    font-weight: 600;
-    font-size: 15px;
-}
-
-.ground-fallback-option-desc {
-    font-size: 13px;
-    color: var(--cb-text-muted);
-    line-height: 1.4;
+.ground-fallback-options .cb-option {
+    margin: 0;
 }
 
 .ground-fallback-foot,
@@ -130,20 +63,10 @@ body.site-intro-open .ground-fallback-overlay {
     color: var(--cb-text);
 }
 
+/* A base form control (css/primitives.css); only its width is set here. */
 .ground-fallback-input {
     width: 100%;
     box-sizing: border-box;
-    padding: 10px 12px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 8px;
-    font: inherit;
-    font-size: 14px;
-}
-
-.ground-fallback-input:focus {
-    outline: none;
-    border-color: var(--cb-primary);
-    box-shadow: 0 0 0 3px var(--cb-focus-ring);
 }
 
 .ground-fallback-result {
@@ -180,8 +103,9 @@ body.site-intro-open .ground-fallback-overlay {
 .ground-fallback-algorithm input { margin-top: 3px; }
 .ground-fallback-algorithm strong { display: block; font-size: 14px; color: var(--cb-text-strong); }
 .ground-fallback-algorithm small { display: block; color: var(--cb-text-muted); margin-top: 2px; }
-.ground-fallback-algorithm.is-selected { border-color: var(--cb-primary); background: var(--cb-primary-soft); }
-.ground-fallback-algorithm.is-disabled { opacity: 0.6; cursor: not-allowed; }
+/* The chosen algorithm and the one not available yet read from their radios. */
+.ground-fallback-algorithm:has(input:checked) { border-color: var(--cb-primary); background: var(--cb-primary-soft); }
+.ground-fallback-algorithm:has(input:disabled) { opacity: 0.6; cursor: not-allowed; }
 
 .ground-fallback-schelling-grid {
     display: grid;
@@ -246,10 +170,6 @@ body.site-intro-open .ground-fallback-overlay {
 
 .ground-fallback-param input {
     width: 96px;
-    padding: 6px 8px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 6px;
-    font: inherit;
 }
 
 .ground-fallback-caveat {
@@ -262,8 +182,7 @@ body.site-intro-open .ground-fallback-overlay {
     line-height: 1.45;
 }
 
-@media (max-width: 640px) {
-    .ground-fallback-dialog { padding: 18px 16px; }
+@media (max-width: 767.98px) {
     .ground-fallback-algorithms,
     .ground-fallback-schelling-grid { grid-template-columns: 1fr; }
     .ground-fallback-preview { max-width: 100%; }

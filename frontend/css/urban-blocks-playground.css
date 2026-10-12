@@ -165,13 +165,13 @@
 .urban-block-playground__controls > .btn { width: 100%; min-height: var(--cb-control-height-lg); }
 .urban-block-playground__alternatives { display: grid; gap: var(--cb-space-2); }
 .urban-block-playground__alternatives label { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
-.urban-block-playground__piece-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "chip title area" ". sides status"; align-items: center; gap: var(--cb-space-1) var(--cb-space-2); width: 100%; padding: var(--cb-space-2); border: 1px solid transparent; border-radius: var(--cb-radius-md); color: var(--cb-text); background: transparent; text-align: left; cursor: pointer; }
-.urban-block-playground__piece-row:hover,
-.urban-block-playground__piece-row[aria-pressed="true"] { border-color: var(--cb-line-strong); background: var(--cb-surface-2); }
-.urban-block-playground__piece-row strong { grid-area: title; min-width: 0; font-weight: var(--cb-weight-semibold); }
-.urban-block-playground__piece-row span { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+/* Each block is a cb-option row (css/primitives.css: its look and the pressed state); this lays its
+   parts out on a grid. */
+.urban-block-playground__piece-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "chip title area" ". sides status"; align-items: center; gap: var(--cb-space-1) var(--cb-space-2); padding: var(--cb-space-2); }
+.urban-block-playground__pieces strong { grid-area: title; min-width: 0; font-weight: var(--cb-weight-semibold); }
+.urban-block-playground__pieces span { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
 .urban-block-playground__piece-chip { grid-area: chip; width: var(--cb-space-4); height: var(--cb-space-4); border: 1px solid var(--cb-line-strong); border-radius: var(--cb-radius-sm); background: var(--piece-fill, var(--cb-primary-soft)); background: color-mix(in srgb, var(--piece-fill, var(--cb-primary-soft)) var(--piece-tint, 25%), var(--cb-surface)); }
-.urban-block-playground__piece-row .urban-block-playground__piece-area-value { grid-area: area; color: var(--cb-text-strong); font-weight: var(--cb-weight-semibold); white-space: nowrap; }
+.urban-block-playground__pieces .urban-block-playground__piece-area-value { grid-area: area; color: var(--cb-text-strong); font-weight: var(--cb-weight-semibold); white-space: nowrap; }
 .urban-block-playground__piece-sides { grid-area: sides; }
 .urban-block-playground__piece-status { grid-area: status; text-align: right; }
 .urban-block-playground__piece-status.is-acceptable { color: var(--cb-success-soft-ink); }

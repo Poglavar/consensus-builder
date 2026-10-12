@@ -537,6 +537,7 @@
         "userFallback": "Usuario",
         "close": "Cerrar",
         "cancel": "Cancelar",
+        "seeTransaction": "Ver la transacción",
         "ok": "Aceptar",
         "download": "Descargar",
         "busy": {
@@ -627,12 +628,12 @@
         "explainerIntroPrefix": "La ciudad tiene",
         "explainerIntroToken": "su propio token",
         "explainerIntroSuffix": "por supuesto.",
-        "explainerBody": "Cada dirección ciudadana registrada tiene derecho a 1 token por hora ⌛️, para siempre. Puedes usar estos tokens para impulsar propuestas. Piénsalo como una forma de votar por las que te gustan.",
+        "explainerBody": "Cada dirección ciudadana registrada tiene derecho a 1 token por hora, para siempre. Puedes comprometer estos tokens con propuestas. Piénsalo como una forma de votar por las que te gustan.",
         "currentBalance": "Saldo actual",
         "currentAllotment": "Asignación actual",
         "register": "Registrar",
         "claim": "Reclamar",
-        "registeredLabel": "🏅 Registrado",
+        "registeredLabel": "Registrado",
         "statusRegistered": "¡Éxito! Ya eres un ciudadano registrado.",
         "statusClaimed": "Reclamaste {{amount}} tokens.",
         "statusClaiming": "Reclamando tokens del contrato…",
@@ -1027,9 +1028,9 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "Acerca de",
-            "aboutParagraph": "<strong>Consensus Builder</strong> es una herramienta gratuita de planificación urbana en el mapa, creada por Urban Game Theory. Hyperstition: Markets for Possible Cities es su proyecto de hackathon. Explora parcelas reales, compara propuestas comunitarias de zonificación y desarrollo, y suma apoyo de las personas afectadas. Descubre el <a href=\"/urban-planning.html\">proceso de planificación urbana abierta</a>, abre la <a href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a href=\"/deck.html\">presentación</a> o consulta <a href=\"roadmap.html\" target=\"_blank\">la hoja de ruta</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> es una herramienta gratuita de planificación urbana en el mapa, creada por Urban Game Theory. Hyperstition: Markets for Possible Cities es su proyecto de hackathon. Explora parcelas reales, compara propuestas comunitarias de zonificación y desarrollo, y suma apoyo de las personas afectadas. Descubre el <a class=\"cb-link\" href=\"/urban-planning.html\">proceso de planificación urbana abierta</a>, abre la <a class=\"cb-link\" href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a class=\"cb-link\" href=\"/deck.html\">presentación</a> o consulta <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">la hoja de ruta</a>.",
             "instructionsTitle": "Empieza aquí",
-            "instructionsParagraph": "<strong>Dibuja el cambio y después construye consenso.</strong> Al terminar un diseño se crea una propuesta local ya aplicada. Examínala, retírala del mapa, compártela o crea una variante editable cuando deban cambiar el diseño o las condiciones. Lee la <a href=\"how-to-use.html\" target=\"_blank\">guía paso a paso</a> o consulta qué funciona hoy y qué viene después en la <a href=\"roadmap.html\" target=\"_blank\">hoja de ruta</a>.",
+            "instructionsParagraph": "<strong>Dibuja el cambio y después construye consenso.</strong> Al terminar un diseño se crea una propuesta local ya aplicada. Examínala, retírala del mapa, compártela o crea una variante editable cuando deban cambiar el diseño o las condiciones. Lee la <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">guía paso a paso</a> o consulta qué funciona hoy y qué viene después en la <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">hoja de ruta</a>.",
             "advancedTitle": "Opciones avanzadas",
             "debugToggle": "Habilitar modo depuración",
             "wipeDataButton": "Restablecer todo (este navegador)",
@@ -1260,7 +1261,7 @@
             "actions": {
                 "measureAsRoad": "Medir como carretera",
                 "measurementsAdded": "Mediciones añadidas",
-                "measureLoading": "⏳ Calculando…",
+                "measureLoading": "Calculando…",
                 "measureLengthLabel": "Longitud como carretera:",
                 "measureWidthLabel": "Ancho como carretera:",
                 "measureWidthAverage": "Promedio:",
@@ -1451,10 +1452,10 @@
             "market": {
                 "oracleTitle": "Receta del oráculo",
                 "oracleLoading": "Cargando proposal-lifecycle-v1…",
-                "recipeLink": "Declaración de la receta ↗",
+                "recipeLink": "Declaración de la receta",
                 "copyHash": "Copiar hash",
                 "hashCopied": "Copiado",
-                "eventLink": "Evento fuente ↗",
+                "eventLink": "Evento fuente",
                 "finalVerifier": "El programa de Solana sigue siendo el verificador final.",
                 "yesSide": "Sí · se construye",
                 "noSide": "No · descartada",
@@ -1821,8 +1822,8 @@
             "segmentCancelledStatus": "Segmento cancelado — los segmentos colocados se mantienen. Esc de nuevo construye el camino.",
             "builtStatusTrack": "Vía construida — haz clic para editarla o proponerla.",
             "nodeHint": "Arrastra para mover · ⌥-clic elimina este nodo",
-            "edgeActionsHint": "＋ Añadir un nodo · 🚜 Demoler este tramo",
-            "edgeActionsProtectedHint": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel · 🚜 Demoler este tramo",
+            "edgeActionsHint": "＋ Añadir un nodo · × Demoler este tramo",
+            "edgeActionsProtectedHint": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel · × Demoler este tramo",
             "addNodeProtectedStatus": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
             "splitIntoStretches": "La edición desconectó la vía — se dividió en {{count}} propuestas de vía separadas.",
@@ -1910,6 +1911,7 @@
             "speedPickerTitle": "Elegir velocidad de vía",
             "speedPickerDescription": "Selecciona la velocidad máxima para esta vía. Esto determina el radio mínimo de curvatura. Presiona Enter para comenzar con la selección predeterminada.",
             "startDrawing": "Comenzar a dibujar",
+            "minRadius": "Radio mínimo de curvatura {{radius}} m",
             "cancel": "Cancelar",
             "widthLabel": "Ancho de vía:"
         },
@@ -1975,13 +1977,13 @@
             "deckLink": "Leer la presentación",
             "subtitle": "Elige tu avatar e introduce un nombre de usuario:",
             "closeLabel": "Cerrar ventana de bienvenida",
-            "avatarLabel": "Elige tu avatar:",
+            "avatarLabel": "Elige tu avatar",
             "avatarAlt": "Avatar",
             "avatarAltIndexed": "Avatar {{index}}",
             "avatarHint": "Haz clic para elegir",
             "avatarUsed": "Avatar ya en uso",
             "avatarSelected": "Avatar {{index}} seleccionado",
-            "languageLabel": "Idioma:",
+            "languageLabel": "Idioma",
             "usernamePlaceholder": "Tu nombre de usuario",
             "takeoverYes": "Sí",
             "takeoverNo": "No",
@@ -1999,11 +2001,6 @@
             "subtitle": "¿Qué debería pasar con tu agente?",
             "aiOption": "Dejar que la IA maneje al agente",
             "inactiveOption": "El agente debe quedar inactivo",
-            "cancel": "Cancelar"
-        },
-        "locate": {
-            "title": "Confirmación de ubicación de parcela",
-            "confirm": "Aceptar",
             "cancel": "Cancelar"
         },
         "singleBuilding": {
@@ -2057,8 +2054,11 @@
             "cancel": "Cancelar",
             "confirm": "Usar este edificio"
         },
+        "centerlineAnimation": {
+            "title": "Visualización del algoritmo del eje"
+        },
         "lens": {
-            "title": "La lente con la que veo el mundo 👓🏖️",
+            "title": "La lente con la que veo el mundo",
             "subtitle": "Estas son las direcciones de confianza, cuyas atestaciones se considerarán confiables para determinar a los propietarios de las parcelas.",
             "closeLabel": "Cerrar modal de lente",
             "patternCaption": "El patrón se actualiza automáticamente cuando editas la lista.",
@@ -2071,8 +2071,8 @@
             },
             "removeAddress": "Eliminar dirección",
             "links": {
-                "etherscan": "Etherscan ↗",
-                "attestify": "Attestify ↗"
+                "etherscan": "Etherscan",
+                "attestify": "Attestify"
             },
             "patternAria": "Vista previa del patrón de la lente",
             "patternTitle": "Patrón de la lente",
@@ -2854,11 +2854,11 @@
             "titlePark": "Crear propuesta de parque",
             "titleSquare": "Crear propuesta de plaza",
             "closeAria": "Cerrar diálogo de propuesta",
-            "authorLabel": "Autor:",
+            "authorLabel": "Autor",
             "authorPlaceholder": "Tu nombre",
             "authorAvatarAlt": "Avatar del autor",
-            "proposalTypeLabel": "Tipo de propuesta:",
-            "proposalGoalLabel": "Objetivo de la propuesta:",
+            "proposalTypeLabel": "Tipo de propuesta",
+            "proposalGoalLabel": "Objetivo de la propuesta",
             "typologyLabel": "Tipología",
             "acquisitionLabel": "Estrategia de adquisición",
             "ownershipLabel": "Propiedad",
@@ -2904,7 +2904,7 @@
                 "any": "Cualquiera"
             },
             "ownershipTransfer": {
-                "label": "Dirección de transferencia:",
+                "label": "Dirección de transferencia",
                 "toMe": "A mí",
                 "fromMe": "De mí",
                 "nameToMe": "Transferencia de propiedad a mí",
@@ -2936,7 +2936,7 @@
                 },
                 "status": {
                     "noGeometry": "Sin geometría: por favor define una geometría",
-                    "submitted": "✔️ geometría enviada",
+                    "submitted": "Geometría enviada",
                     "auto": "La geometría se generará algorítmicamente",
                     "copied": "Geometría copiada de \"{name}\"",
                     "copiedEditable": "Geometría copiada de \"{name}\": pulsa Editar para ajustarla",
@@ -2944,7 +2944,7 @@
                 }
             },
             "reparcellization": {
-                "label": "Algoritmo:",
+                "label": "Algoritmo",
                 "options": {
                     "sweepLine": "Barrido",
                     "centroidalVoronoi": "Voronoi centroidal",
@@ -2953,12 +2953,12 @@
                 },
                 "hint": "Se muestran algoritmos adicionales con fines de planificación; actualmente solo está disponible Barrido."
             },
-            "descriptionLabel": "Descripción:",
+            "descriptionLabel": "Descripción",
             "descriptionPlaceholder": "Describe tu propuesta…",
             "descriptionPlaceholderStructure": "Describe tu {{kind}}…",
-            "offerLabel": "Oferta:",
+            "offerLabel": "Oferta",
             "offerPlaceholder": "0",
-            "optionsLabel": "Opciones:",
+            "optionsLabel": "Opciones",
             "options": {
                 "conditional": "Condicional",
                 "conditionalHelperOn": "Pagar la recompensa solo si/cuando todos los propietarios aceptan",
@@ -3004,11 +3004,11 @@
             "creating": "Creando…",
             "waiting": "Esperando la transacción…",
             "rejected": "Transacción rechazada",
-            "nameLabel": "Nombre:",
+            "nameLabel": "Nombre",
             "namePlaceholderProposal": "Nombre de la propuesta",
             "defaultDescription": "{{type}} — nueva propuesta de {{author}}",
             "namePlaceholder": "Ponle nombre a tu {{kind}}",
-            "typeLabel": "Tipo:",
+            "typeLabel": "Tipo",
             "typePark": "Parque",
             "typeSquare": "Plaza",
             "errors": {
@@ -3049,7 +3049,9 @@
                 "anchorExplainer": "Un ancla de parcela es la identidad de la parcela en la cadena. Nadie la posee y crearla no otorga propiedad; solo pagas su renta. La propiedad llega a la cadena por separado, como la atestación de un miembro de la lente. También puedes crear anclas desde la pestaña Herramientas del panel Información de la parcela.",
                 "createAnchor": "Crear el ancla de la parcela",
                 "createAnchors": "Crear las anclas de las parcelas",
-                "anchorThenCreate": "Crea las anclas de las parcelas y luego vuelve a pulsar Crear."
+                "anchorThenCreate": "Crea las anclas de las parcelas y luego vuelve a pulsar Crear.",
+                "title": "Parcelas que aún no están en la cadena",
+                "anchorTitle": "Faltan anclas de parcela"
             },
             "onchainMintFailed": {
                 "message": "La acuñación en cadena falló por la siguiente razón:",
@@ -3073,11 +3075,11 @@
                 "proof": {
                     "intro": "Ofrecer tu terreno requiere prueba de que es tuyo:",
                     "wallet": "conecta tu billetera Solana",
-                    "attestation": "pide a un miembro de tu lente (👓) que certifique tu billetera como propietaria de estas parcelas",
+                    "attestation": "pide a un miembro de tu lente que certifique tu billetera como propietaria de estas parcelas",
                     "name": "elige un nombre de perfil (burbuja arriba a la derecha)"
                 },
                 "checking": "Comprobando tus atestaciones de propiedad…",
-                "needLens": "Elige primero tu lente (👓): la oferta necesita un miembro de la lente que haya atestado tu propiedad.",
+                "needLens": "Elige primero tu lente: la oferta necesita un miembro de la lente que haya atestado tu propiedad.",
                 "needParcels": "Selecciona las parcelas que posees.",
                 "noService": "Ningún miembro de tu lente publica una URL de servicio, así que no se puede comprobar tu propiedad.",
                 "unavailable": "Ahora mismo no se pueden comprobar las atestaciones de propiedad.",
@@ -3214,14 +3216,22 @@
                 "multiParcelLabel": "{{count}} parcelas",
                 "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
                 "excludedSliver": "Solo cae una astilla de la manzana en esta parcela — demasiado pequeña para ser un edificio.",
-                "rangeExact": "{{buildings}} edificios · aporta {{permitted}} m² de superficie construida",
-                "rangeBetween": "{{buildings}} edificios · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida",
-                "rangeMax": "{{buildings}} edificios · permite 0 – {{permitted}} m² de superficie construida",
-                "rangeExactExcluded": "{{buildings}} edificios · aporta {{permitted}} m² de superficie construida · {{excluded}} parcela(s) excluida(s)",
-                "rangeBetweenExcluded": "{{buildings}} edificios · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida · {{excluded}} parcela(s) excluida(s)",
-                "rangeMaxExcluded": "{{buildings}} edificios · permite 0 – {{permitted}} m² de superficie construida · {{excluded}} parcela(s) excluida(s)",
+                "rangeExact": "{{buildings}} · aporta {{permitted}} m² de superficie construida",
+                "rangeBetween": "{{buildings}} · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida",
+                "rangeMax": "{{buildings}} · permite 0 – {{permitted}} m² de superficie construida",
+                "rangeExactExcluded": "{{buildings}} · aporta {{permitted}} m² de superficie construida · {{excluded}}",
+                "rangeBetweenExcluded": "{{buildings}} · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida · {{excluded}}",
+                "rangeMaxExcluded": "{{buildings}} · permite 0 – {{permitted}} m² de superficie construida · {{excluded}}",
                 "excludedNoMassing": "El edificio no llega a esta parcela — el retranqueo, o la forma de la manzana, la deja fuera. Aquí no se construye nada.",
-                "rangeNoneExcluded": "Sin edificios — {{excluded}} parcela(s) excluida(s)"
+                "rangeNoneExcluded": "Sin edificios · {{excluded}}",
+                "buildingCount": {
+                    "one": "{{count}} edificio",
+                    "other": "{{count}} edificios"
+                },
+                "parcelsLeftOut": {
+                    "one": "{{count}} parcela excluida",
+                    "other": "{{count}} parcelas excluidas"
+                }
             },
             "handles": {
                 "gap": "Arrastra para mover el hueco",
@@ -3325,7 +3335,7 @@
             "title": "Viviendas aisladas",
             "closeAria": "Cerrar modal de reglas por parcela",
             "generating": "Generando edificios…",
-            "generatedSummary": "Se generaron {{count}} edificio(s)",
+            "generatedSummary": "Generado: {{buildings}}",
             "done": "Listo",
             "regenerate": "Regenerar",
             "parametersTitle": "Parámetros",
@@ -3365,7 +3375,7 @@
                 "excludedNoRoom": "Tras el retiro no queda espacio para construir en esta parcela.",
                 "excludedCannotMeet": "Demasiado pequeña para cumplir el mínimo que obliga esta norma — la norma se contradice aquí."
             },
-            "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluida(s) por la regla"
+            "generatedSummaryExcluded": "Generado: {{buildings}} · {{excluded}}"
         }
     },
     "reparcellization": {
@@ -4530,7 +4540,7 @@
             "unable_to_show_parcel": "No se pudo mostrar la parcela {{id}}. La funcionalidad de selección no está disponible.",
             "please_enter_a_valid_boost_amount": "Ingresa un monto válido para impulsar.",
             "please_enter_a_valid_boost_expiry": "Ingresa un timestamp de caducidad válido para el impulso.",
-            "proposal_boost_success": "¡Éxito! Gracias por impulsar esta propuesta con {{amount}} de {{currency}}. Esto podría ayudarla a ocurrir 🤞 Ver transacción {{txLink}}",
+            "proposal_boost_success": "¡Éxito! Gracias por apoyar esta propuesta con {{amount}} {{currency}}. Ver transacción {{txLink}}",
             "proposal_boost_not_minted": "Esta propuesta aún no está en cadena. Acuñala antes de impulsarla.",
             "proposal_boost_wallet_required": "Conecta una billetera para impulsar esta propuesta.",
             "proposal_boost_missing_token": "La dirección del City Meme Token no está configurada para la red conectada.",
@@ -4561,7 +4571,7 @@
             "activity_no_parcel_set": "Esta propuesta no tiene cargado un conjunto canónico de parcelas.",
             "blockchain_mint_wallet_prompt": "La acuñación en blockchain está disponible, pero no hay ninguna billetera conectada. ¿Quieres conectar una billetera para acuñar esta propuesta en la cadena?",
             "failed_to_create_proposal": "No se pudo crear la propuesta.",
-            "solana_lens_required": "Elige al menos un miembro de la lente (el botón 👓) antes de acuñar en Solana.",
+            "solana_lens_required": "Elige al menos un miembro de la lente (el botón de la lente) antes de acuñar en Solana.",
             "solana_accept_in_lens_card": "En Solana, los propietarios dicen sí en la tarjeta Lente de la propuesta: un miembro de la lente atestigua tu propiedad y luego tu billetera firma.",
             "solana_acceptance_final": "Las aceptaciones en Solana son definitivas: un sí firmado no se puede retirar.",
             "owner_offer_not_attested": "Una oferta del propietario solo puede incluir parcelas que un miembro de tu lente haya atestado como propiedad de tu cartera. {{detail}}"
@@ -4591,12 +4601,15 @@
             "scopeParcelSet": "Terreno: {{id}}",
             "scopeRun": "Ejecución: {{id}}",
             "sourceFailed": "No se pudo cargar: {{sources}}",
-            "count": "{{count}} eventos",
+            "count": {
+                "one": "{{count}} evento",
+                "other": "{{count}} eventos"
+            },
             "noMatch": "Aún no hay actividad que coincida.",
             "row": {
                 "turn": "Turno {{turn}}",
                 "openProposal": "Abrir propuesta",
-                "transaction": "Transacción ↗",
+                "transaction": "Transacción",
                 "source": "Fuente: {{value}}",
                 "controller": "Controlador: {{value}}",
                 "action": "Acción: {{value}}",
@@ -5140,7 +5153,7 @@
             "chip": "Explorar · {{place}}",
             "banner": "Aquí no hay parcelas: puedes dibujar un sitio y proponer, pero una propuesta solo puede ejecutarse con el veredicto de una autoridad.",
             "worldView": "Vista del mundo",
-            "dismiss": "Descartar",
+            "dismiss": "Cerrar",
             "status": "Aquí no hay datos de parcelas: haz clic en el mapa para dibujar un sitio y proponer."
         },
         "activity": {
@@ -5216,6 +5229,15 @@
         },
         "bets": "Apuestas",
         "betsNew": "Nuevo",
+        "appearance": {
+            "label": "Apariencia",
+            "system": "Según el dispositivo",
+            "light": "Claro",
+            "dark": "Oscuro",
+            "commandSystem": "Tema según el dispositivo",
+            "commandLight": "Tema claro",
+            "commandDark": "Tema oscuro"
+        },
         "reorg": {
             "blockData": "Datos y análisis de manzanas",
             "roadData": "Datos y análisis de vías",
@@ -5379,8 +5401,8 @@
         "binding": {
             "previewPrefix": "Vista previa",
             "serverPrefix": "Catastro",
-            "bound": "Parcelas vinculadas ({{count}}):",
-            "more": "+{{count}} más",
+            "bound": "Parcelas vinculadas ({{count}})",
+            "drawingEmpty": "Cierra el contorno para ver las parcelas que vincula.",
             "noParcels": "No vincula ninguna parcela: solo puede ejecutarse con el veredicto de una autoridad.",
             "openGround": "Rayado: terreno abierto por el que nadie puede consentir; ejecutarlo requiere el veredicto de una autoridad.",
             "touched": "Entra {{width}} en {{parcel}}: por debajo de la tolerancia, no queda vinculada.",

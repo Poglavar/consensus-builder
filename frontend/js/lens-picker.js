@@ -152,7 +152,7 @@
                         <input type="checkbox" data-lens-member="${escapeText(member.key)}" ${chosen.has(member.key) ? 'checked' : ''} />
                         <span class="lens-picker-member-text">
                             <span class="lens-picker-member-name">${escapeText(member.name || core.shortKey(member.key))}</span>
-                            ${member.kind ? `<span class="lens-picker-kind">${escapeText(member.kind)}</span>` : ''}
+                            ${member.kind ? `<span class="cb-badge lens-picker-kind">${escapeText(member.kind)}</span>` : ''}
                             ${member.description ? `<span class="lens-picker-desc">${escapeText(member.description)}</span>` : ''}
                             <span class="lens-picker-key">${escapeText(member.key)}</span>
                             <span class="lens-picker-coverage">${escapeText(memberCoverageLine(member, coverage, parcelIds.length))}</span>
@@ -161,9 +161,10 @@
                 </li>`).join('')}</ul>`;
         }
 
+        const removeLabel = escapeText(t('modal.lens.removeAddress', 'Remove address'));
         const pastedHtml = pasted.length ? `<ul class="lens-picker-pasted">${pasted.map(entry => `
             <li><span class="lens-picker-key">${escapeText(entry.address)}</span>
-                <button type="button" class="lens-remove-btn" data-lens-remove="${escapeText(entry.address)}" title="${escapeText(t('modal.lens.removeAddress', 'Remove address'))}">×</button></li>`).join('')}</ul>` : '';
+                <button type="button" class="btn btn-quiet btn-sm btn-icon lens-remove-btn" data-lens-remove="${escapeText(entry.address)}" title="${removeLabel}" aria-label="${removeLabel}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></li>`).join('')}</ul>` : '';
 
         let parcelsHtml = '';
         if (parcelIds.length) {
@@ -195,7 +196,7 @@
                 <label for="lens-picker-paste-input">${escapeText(t('modal.lens.picker.pasteLabel', 'Paste a key'))}</label>
                 <div class="lens-picker-paste-row">
                     <input id="lens-picker-paste-input" class="lens-input" type="text" autocomplete="off" spellcheck="false" placeholder="${escapeText(t('modal.lens.picker.pastePlaceholder', 'Base58 public key'))}" />
-                    <button type="button" class="lens-add-btn" data-lens-paste-add>${escapeText(t('modal.lens.picker.pasteAdd', 'Add'))}</button>
+                    <button type="button" class="btn lens-add-btn" data-lens-paste-add>${escapeText(t('modal.lens.picker.pasteAdd', 'Add'))}</button>
                 </div>
                 <p class="lens-picker-error" data-lens-paste-error hidden></p>
                 ${pastedHtml}
@@ -245,33 +246,44 @@
         input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); add(); } });
     }
 
+    // The picker is the shared dialog (js/ui/dialogs.js) on the dialog-over-dialog rung: it opens
+    // from the create dialog. `lens-modal-overlay`, `lens-close-btn` and `data-lens-picker-done`
+    // stay as hooks for scripts and tests.
+    let pickerDialog = null;
+
     function show() {
         if (typeof root.closeLensModal === 'function') root.closeLensModal();
-        const overlay = document.createElement('div');
-        overlay.className = 'lens-modal-overlay';
-        overlay.innerHTML = `
-            <div class="lens-modal lens-picker" role="dialog" aria-modal="true" aria-labelledby="lens-picker-title">
-                <div class="lens-modal-header">
-                    <div class="lens-modal-title-group">
-                        <h2 class="lens-modal-title" id="lens-picker-title">${escapeText(t('modal.lens.picker.title', 'Lens for this proposal'))}</h2>
-                        <p class="lens-modal-subtitle">${escapeText(t('modal.lens.picker.subtitle', 'Pick the lens members whose ownership attestations this proposal will accept. The lens is fixed at mint.'))}</p>
-                    </div>
-                    <button type="button" class="lens-close-btn close-circle-btn close-circle-btn--lg" aria-label="${escapeText(t('modal.lens.closeLabel', 'Close lens modal'))}">&times;</button>
-                </div>
-                <div class="lens-modal-body" data-lens-picker-body></div>
-                <div class="lens-modal-footer">
-                    <button type="button" class="btn btn-proposal lens-close-footer-btn" data-lens-picker-done>${escapeText(t('modal.lens.picker.done', 'Done'))}</button>
-                </div>
-            </div>`;
-        document.body.appendChild(overlay);
-        const body = overlay.querySelector('[data-lens-picker-body]');
-        const close = () => { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); };
-        overlay.querySelector('.lens-close-btn').addEventListener('click', close);
-        overlay.querySelector('[data-lens-picker-done]').addEventListener('click', close);
-        overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
+        if (pickerDialog) pickerDialog.close();
+        const subtitle = document.createElement('p');
+        subtitle.className = 'lens-modal-subtitle';
+        subtitle.textContent = t('modal.lens.picker.subtitle', 'Pick the lens members whose ownership attestations this proposal will accept. The lens is fixed at mint.');
+        const body = document.createElement('div');
+        body.className = 'lens-picker-body';
+        body.setAttribute('data-lens-picker-body', '');
+        const dialogApi = root.CbDialog.open({
+            title: t('modal.lens.picker.title', 'Lens for this proposal'),
+            size: 'lg',
+            top: true,
+            className: 'lens-modal lens-picker',
+            // The directory loads after the box opens: it keeps its size, the list scrolls.
+            fixedHeight: true,
+            overlayClassName: 'lens-modal-overlay',
+            bodyClassName: 'lens-modal-body',
+            closeLabel: t('modal.lens.closeLabel', 'Close lens modal'),
+            body: [subtitle, body],
+            actions: [{ id: 'done', label: t('modal.lens.picker.done', 'Done'), role: 'primary' }],
+            onClose: () => { if (pickerDialog === dialogApi) pickerDialog = null; }
+        });
+        if (!dialogApi) return;
+        pickerDialog = dialogApi;
+        const overlay = dialogApi.overlay;
+        const closeButton = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+        if (closeButton) closeButton.classList.add('lens-close-btn');
+        const done = dialogApi.getActionButton('done');
+        if (done) done.setAttribute('data-lens-picker-done', '');
 
         const rerender = () => {
-            if (!overlay.parentNode) return;
+            if (!overlay.isConnected) return;
             renderBody(body);
             wire(body, rerender);
         };

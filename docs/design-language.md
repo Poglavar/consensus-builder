@@ -57,12 +57,41 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - **Tokens only.** New CSS takes every colour, font size, radius, shadow, spacing and z-index from
   `tokens.css` (`--cb-*`). A literal in new CSS fails `design-tokens.test.js`. The per-file literal
   counts in that test may only go down.
-- **Buttons** have four roles, and a surface has one primary: `btn` (secondary, outlined) ·
-  `btn-primary` (filled) · `btn-quiet` (text only) · `btn-danger` (outlined red). `btn-success` is
-  the filled affirmative for Accept / Apply to map. No gold, teal or gradient buttons.
-- **Dialogs** use `cb-dialog-overlay > cb-dialog > cb-dialog__header / __body / __footer` with one
-  `close-circle-btn` in the header. Sheets use `map-sheet`; right-dock panels use
-  `right-dock-panel`. No new overlay families.
+- **Buttons** are one family, `.btn`, with five roles and a surface has one primary: `btn`
+  (secondary, outlined) · `btn btn-primary` (filled) · `btn btn-success` (the filled affirmative:
+  Accept, Apply to map) · `btn btn-quiet` (text only) · `btn btn-danger` (outlined red). Modifiers,
+  orthogonal to the role: `btn-sm` (small), `btn-block` (full-width row), `btn-icon` (square,
+  icon only, with an `aria-label`). The selected state of any toggle is `aria-pressed="true"`,
+  never a class, and has one look (primary-soft fill, primary border). The close control is
+  `close-circle-btn`. Map chrome keeps `map-shell-button` and the view strip's `map-mode-tile`;
+  the parcel and ground menus keep `parcel-menu__action`. Nothing else may paint a button
+  (`backend/test/button-vocabulary.test.js`): a component class beside `btn` may position
+  (width, grid, order), never colour. No gold, teal or gradient buttons; the only highlight is
+  `cb-shimmer`, on at most one control per surface.
+- **Links** are `cb-link`: primary colour, underlined, on an `<a>` or on a `<button class="cb-link">`
+  when the click runs script (never `href="#"`). `cb-link--external` adds the one ↗ mark and goes
+  with `target="_blank" rel="noopener"`; the mark is never typed into a string. `cb-link--quiet`
+  takes the surrounding colour inside muted meta lines. A link that looks like a button is
+  `<a class="btn …">`. Rows of record links use `cb-link-row`. Every satellite page carries the same
+  "Back to the map" link in its header.
+- **Dialogs** are built by `js/ui/dialogs.js` (`CbDialog.open`, `.confirm`, `.alert`, `.choice`,
+  `.prompt`) on `cb-dialog-overlay > cb-dialog > cb-dialog__header / __body / __footer` with one
+  `close-circle-btn` in the header; a message dialog has no header. Sizes `--sm / --md / --lg /
+  --xl`; on a phone every dialog is a bottom sheet. Nothing calls the browser's `confirm`, `alert`
+  or `prompt`. Sheets use `map-sheet`; right-dock panels use `right-dock-panel`; anchored menus
+  use the parcel menu's chrome. No other overlay families; z-index only from the `--cb-z-*`
+  ladder; the backdrop is `--cb-backdrop`.
+- **Tabs** are `cb-tabs > cb-tab` with `role="tab"` and `aria-selected`; **segmented controls**
+  (filters, modes, choices in a row) are `cb-segmented > cb-segmented__option` with `aria-pressed`
+  (or a native radio inside the option); **switches** are `cb-switch`; **choice tiles** (an icon
+  and a short label in a grid) are `cb-tiles > cb-tile`; **selectable rows** (a source, a wallet,
+  a watched area) are `cb-option`; every status, count, environment and tag pill is `cb-badge`.
+  "Selected" is always an attribute (`aria-pressed`, `aria-selected`, `aria-current`, `:checked`),
+  never `.active`, `.selected` or `.is-active`.
+- **Themes.** Every component reads `tokens.css`; `data-theme="dark"` on `<html>` switches the
+  whole app (Settings → Appearance, `js/ui/theme.js`). A literal colour in a component is a theme
+  bug. Inline `style=` on a control is never a look: data-driven values only (a lane colour, a
+  measured width).
 - **Form controls** inherit the base rules in `primitives.css`; no per-component input styling.
 - **Breakpoint:** phones are `max-width: 767.98px`, desktop `min-width: 768px`. No other edge.
 - **Stacking:** `--cb-z-*` ladder only. No 13001, no 100001, no `!important` z-index.
@@ -130,16 +159,35 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   duplicate finish/cancel commands. A 3D preview keeps the current draft so returning to 2D resumes
   the same edit.
 
+## Status (2026-10-13, branch `ui-vocabulary`)
+
+The vocabulary above is what the code uses, not only what it should use. `backend/test/ui-vocabulary.test.js`
+(with `backend/test/helpers/ui-vocabulary.mjs`) ratchets ten lists that may only shrink: classes that paint a
+button, full-screen layers, z-index literals, bare `a` colours, `href="#"`, `target="_blank"` without
+`noopener`, typed ↗ marks, class-keyed selected looks, native confirm / alert / prompt calls, inline styles on
+controls. After lowering one, rerun `node backend/test/helpers/ui-vocabulary.mjs --write`; after lowering
+colour, z-index or `!important` literals, `node backend/test/helpers/design-audit.mjs --write`. The e2e
+control contract follows a markup change through `node e2e/scripts/migrate-control-contract.mjs --write`.
+
+What the lists still allow, on purpose: the globe's city labels and its own backdrop, the phone's expanded
+search bar, Leaflet's zoom buttons (themed through Leaflet's selector), and the lane swatch's data-driven
+inline colours.
+
 ## Deferred (known, not yet done)
 
 - An editable proposal title on the card (the auto-name is "Type · parcel N" for now).
-- The lifecycle badge names inside the older panels (parcel panel, block panel, road panel).
 - The remaining untranslated status strings in road-detection.js (needs a file-level helper).
-- Trailing colons on labels (layout-dependent; remove per surface as each is migrated).
-- A shared header component on the static pages (they share tokens, titles and a back link today).
+- Trailing colons on the road and track proposal dialog labels; "Say yes" in the lens flow (the vocabulary
+  says Accept); the emoji goal icons in data.js and the emoji map decorations.
+- Fixed-height boxes (`CbDialog.open({ fixedHeight: true })`) for the dialogs whose content loads or grows
+  while open: done for the lens dialogs and the welcome dialog; still to do for the minted list, share,
+  create proposal, bets, wallet, parcel compare, status log and the five editors.
+- The campaign pages (deck, deck2, deck3, hackathon demo, pitch variants) keep their own dialect by decision.
+- The remaining 504 colour literals outside the vocabulary (legacy inner content), ratcheted downwards.
 
-## Migration order
+## Migration order (done)
 
 1. Names and this page. 2. Tokens, primitives, the three verified bugs, lints. 3. The spine flow:
 parcel menu → parcel panel → editors → proposal card → proposals list; one formatter. 4. Sheet
-contents. 5. Satellite pages under one header. 6. Mobile.
+contents. 5. Satellite pages under one header. 6. Mobile. 7. The control vocabulary everywhere
+(buttons, links, dialogs, tabs, segments, switches, badges, selected state) with the ratchets that keep it.

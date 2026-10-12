@@ -2179,11 +2179,9 @@ function toggleRoadDrawTool() {
         // Show what the corridor will actually collide with (see autoShowBuildingsForRoadDrawing).
         try { autoShowBuildingsForRoadDrawing(); } catch (_) { }
 
-        // Activate corridor drawing mode — the button the user pressed is the one that lights up.
-        if (roadDrawButton) {
-            roadDrawButton.classList.add('active');
-            roadDrawButton.classList.add('active-black-border');
-        }
+        // Activate corridor drawing mode — the button the user pressed is the one that lights up
+        // (aria-pressed: the one selected look, css/primitives.css).
+        if (roadDrawButton) roadDrawButton.setAttribute('aria-pressed', 'true');
 
         const roadDrawingControls = document.getElementById('road-drawing-controls');
         if (roadDrawingControls) roadDrawingControls.hidden = false;
@@ -2280,10 +2278,7 @@ function toggleRoadDrawTool() {
         // Deactivate corridor drawing mode
         setRoadPanelLabelsForMode('road');
         console.log("Deactivating corridor drawing mode");
-        if (roadDrawButton) {
-            roadDrawButton.classList.remove('active');
-            roadDrawButton.classList.remove('active-black-border');
-        }
+        if (roadDrawButton) roadDrawButton.setAttribute('aria-pressed', 'false');
         const roadDrawingControls = document.getElementById('road-drawing-controls');
         if (roadDrawingControls) roadDrawingControls.hidden = true;
         map.getContainer().style.cursor = '';
@@ -3221,9 +3216,7 @@ function exitRoadDrawingMode() {
     // Whichever button opened the session is the one that goes dark.
     const roadDrawButton = corridorDrawButton();
     if (roadDrawButton) {
-        roadDrawButton.classList.remove('active');
-        roadDrawButton.classList.remove('active-black-border');
-        roadDrawButton.removeAttribute('aria-pressed');
+        roadDrawButton.setAttribute('aria-pressed', 'false');
         roadDrawButton.blur();
     }
     setRoadPanelLabelsForMode('road');
@@ -4026,166 +4019,6 @@ function updatePreviewRoadInfo(previewSegmentPoints, previewSegmentPolygon) {
     }
 }
 
-// Function to show polygon error details in a modal
-function showPolygonErrorModal(error, polygon) {
-    // Create modal if it doesn't exist
-    let modal = document.getElementById('polygon-error-modal');
-
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'polygon-error-modal';
-        modal.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-color: rgba(0,0,0,0.7);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 10000;
-                `;
-
-        document.body.appendChild(modal);
-    }
-
-    // Format polygon points for display
-    const pointsTable = polygon.map((p, i) =>
-        `<tr>
-                    <td>${i}</td>
-                    <td>${p.lat.toFixed(6)}</td>
-                    <td>${p.lng.toFixed(6)}</td>
-                </tr>`
-    ).join('');
-
-    // Diagnose common polygon issues
-    let diagnosticMessages = [];
-
-    // Check if polygon is closed
-    if (polygon.length > 1) {
-        const firstPoint = polygon[0];
-        const lastPoint = polygon[polygon.length - 1];
-
-        if (firstPoint.lat !== lastPoint.lat || firstPoint.lng !== lastPoint.lng) {
-            diagnosticMessages.push(`Polygon is not closed: first point [${firstPoint.lat.toFixed(6)}, ${firstPoint.lng.toFixed(6)}] 
-                        is different from last point [${lastPoint.lat.toFixed(6)}, ${lastPoint.lng.toFixed(6)}]`);
-        }
-    }
-
-    // Check for minimum points
-    if (polygon.length < 4) {
-        diagnosticMessages.push(`Polygon has only ${polygon.length} points, minimum 4 required.`);
-    }
-
-    // Look for duplicate consecutive points
-    for (let i = 0; i < polygon.length - 1; i++) {
-        const p1 = polygon[i];
-        const p2 = polygon[i + 1];
-
-        if (p1.lat === p2.lat && p1.lng === p2.lng) {
-            diagnosticMessages.push(`Duplicate consecutive points found at index ${i} and ${i + 1}`);
-        }
-    }
-
-    // Create content
-    modal.innerHTML = `
-                <div style="
-                    background-color: white;
-                    padding: 20px;
-                    border-radius: 5px;
-                    max-width: 80%;
-                    max-height: 80%;
-                    overflow: auto;
-                ">
-                    <h2 style="color: #d9534f;">Polygon Error</h2>
-                    <p><strong>Error:</strong> ${error.message}</p>
-                    <p><strong>Polygon Information:</strong></p>
-                    <p>Number of points: ${polygon.length}</p>
-                    
-                    ${diagnosticMessages.length > 0 ? `
-                        <div style="margin: 15px 0; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-                            <h4 style="margin-top: 0; color: #856404;">Diagnostic Information</h4>
-                            <ul style="margin-bottom: 0;">
-                                ${diagnosticMessages.map(msg => `<li>${msg}</li>`).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
-                    
-                    <div style="max-height: 300px; overflow-y: auto; margin-top: 15px;">
-                        <table style="border-collapse: collapse; width: 100%;">
-                            <thead>
-                                <tr style="background-color: #f8f9fa;">
-                                    <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left;">Point #</th>
-                                    <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left;">Latitude</th>
-                                    <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left;">Longitude</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${pointsTable}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-                        <button onclick="showPolygonOnMap(${JSON.stringify(polygon).replace(/"/g, '&quot;')});"
-                                style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            Show on Map
-                        </button>
-                        <button onclick="document.getElementById('polygon-error-modal').remove();"
-                                style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            `;
-}
-
-// Function to visualize the problematic polygon on the map
-function showPolygonOnMap(points) {
-    // Clear any existing highlighted polygon
-    if (window.errorPolygonLayer) {
-        map.removeLayer(window.errorPolygonLayer);
-    }
-
-    if (window.errorPointsLayer) {
-        map.removeLayer(window.errorPointsLayer);
-    }
-
-    // Create a polygon from the points
-    window.errorPolygonLayer = L.polygon(points, {
-        color: 'red',
-        weight: 2,
-        fillColor: 'red',
-        fillOpacity: 0.2
-    }).addTo(map);
-
-    // Add markers for each point
-    window.errorPointsLayer = L.featureGroup();
-
-    points.forEach((point, index) => {
-        const marker = L.circleMarker([point.lat, point.lng], {
-            radius: 5,
-            color: 'black',
-            fillColor: index === 0 ? 'green' : (index === points.length - 1 ? 'red' : 'blue'),
-            fillOpacity: 1,
-            weight: 2
-        }).bindTooltip(`Point ${index}: [${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}]`);
-
-        window.errorPointsLayer.addLayer(marker);
-    });
-
-    window.errorPointsLayer.addTo(map);
-
-    // Fit bounds to the polygon
-    map.fitBounds(window.errorPolygonLayer.getBounds(), {
-        padding: [50, 50]
-    });
-
-    // Close the modal
-    document.getElementById('polygon-error-modal').remove();
-}
-
 // Update the road preview
 function updateRoadPreview() {
     // Remove any existing preview
@@ -4756,17 +4589,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             }
         } catch (_) { }
 
-        const existingModal = document.querySelector('.create-proposal-modal');
-        if (existingModal) {
-            try { existingModal.remove(); } catch (_) { }
-        }
-
         const totalArea = affectedParcels.reduce((sum, parcel) => sum + (parcel?.area || 0), 0);
-
-        const modal = document.createElement('div');
-        modal.className = 'create-proposal-modal road-proposal-modal';
-        modal.setAttribute('role', 'dialog');
-        modal.setAttribute('aria-modal', 'true');
 
         const parcelItems = affectedParcels.map(parcel => {
             const parcelNumber = parcel?.number || parcel?.id || 'Unknown';
@@ -4836,9 +4659,8 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
 
             if (statsItems.length > 0) {
                 statsHtml = `
-                    <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
                     <div class="proposal-stats-section">
-                        <h4 style="margin-bottom: 10px;">Ownership & Acquisition Stats</h4>
+                        <h4 class="cb-kicker">Ownership & Acquisition Stats</h4>
                         <div class="summary-stats">
                             ${statsItems.join('')}
                         </div>
@@ -4847,14 +4669,10 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             }
         }
 
-        modal.innerHTML = `
-            <div class="proposal-modal-content">
-                <div class="proposal-modal-header">
-                    <h2 data-i18n-key="modal.roadWidth.roadProposal.title">Create Road Proposal</h2>
-                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close" data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
-                </div>
-                <div class="proposal-modal-body">
-                    ${(isValidPolygonLatLngPairs(screenshotPolygon)) ? '<div class="form-group" id="roadProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
+        // The app's dialog (js/ui/dialogs.js): its header, close, Escape, backdrop and phone sheet;
+        // the form below is this surface's own body.
+        const bodyHtml = `
+                    ${(isValidPolygonLatLngPairs(screenshotPolygon)) ? '<div class="form-group" id="roadProposalScreenshotContainer"></div>' : ''}
                     <div class="form-group">
                         <label for="roadProposalAuthor" data-i18n-key="modal.roadWidth.roadProposal.authorLabel">Author:</label>
                         <input type="text" id="roadProposalAuthor" placeholder="" data-i18n-key="modal.roadWidth.roadProposal.authorPlaceholder" data-i18n-attr="placeholder">
@@ -4882,15 +4700,39 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                         </div>
                     </div>
                     ${statsHtml}
-                </div>
-                <div class="proposal-modal-footer">
-                    <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}" aria-label="${lensTooltip}">👓</button>
-                    <button type="button" class="btn btn-proposal" id="roadProposalConfirmBtn" data-i18n-key="modal.roadWidth.roadProposal.submit">Create Proposal</button>
-                </div>
-            </div>
         `;
 
-        document.body.appendChild(modal);
+        // Closing any other way than a created proposal (×, Escape, the backdrop) is a cancel.
+        let settled = false;
+        const api = window.CbDialog.open({
+            title: translateRoadText('modal.roadWidth.roadProposal.title', 'Create road proposal'),
+            size: 'md',
+            className: 'road-proposal-modal',
+            body: bodyHtml,
+            autoCloseActions: false,
+            actions: [
+                { id: 'lens', label: lensTooltip, role: 'secondary', className: 'btn-icon btn-sm lens-pattern-button', onClick: () => { if (typeof showLensModal === 'function') showLensModal(); } },
+                { id: 'create', label: translateRoadText('modal.roadWidth.roadProposal.submit', 'Create proposal'), role: 'primary', onClick: () => handleSubmit() }
+            ],
+            onClose: () => {
+                if (settled) return;
+                settled = true;
+                reject(new Error('cancelled'));
+            }
+        });
+        if (!api) {
+            reject(new Error('cancelled'));
+            return;
+        }
+        const modal = api.dialog;
+        // The lens button shows the lens pattern (lens.js refreshLensPatternPreviews paints it).
+        const lensButton = api.getActionButton('lens');
+        if (lensButton) {
+            lensButton.setAttribute('data-lens-pattern', '');
+            lensButton.title = lensTooltip;
+            lensButton.setAttribute('aria-label', lensTooltip);
+            lensButton.innerHTML = '<i class="fa-solid fa-glasses" aria-hidden="true"></i>';
+        }
         // Apply translations to the modal
         if (typeof window.i18n !== 'undefined' && typeof window.i18n.applyTranslations === 'function') {
             window.i18n.applyTranslations(modal);
@@ -4905,26 +4747,18 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         const nameInput = modal.querySelector('#roadProposalName');
         const offerInput = modal.querySelector('#roadProposalOffer');
         const descriptionInput = modal.querySelector('#roadProposalDescription');
-        const confirmButton = modal.querySelector('#roadProposalConfirmBtn');
-        const closeButton = modal.querySelector('.proposal-modal-close');
+        const confirmButton = api.getActionButton('create');
+        if (confirmButton) confirmButton.id = 'roadProposalConfirmBtn';
 
         if (authorInput) authorInput.value = defaultAuthor || '';
         if (nameInput) nameInput.value = defaultName;
         if (offerInput) offerInput.value = Number.isFinite(defaultOffer) ? defaultOffer : '';
 
+        // A created proposal: settle first, so closing the dialog is not read as a cancel.
         const cleanup = () => {
+            settled = true;
             modal.removeEventListener('keydown', handleKeyDown, true);
-            if (confirmButton) confirmButton.removeEventListener('click', handleSubmit);
-            if (closeButton) closeButton.removeEventListener('click', handleCancel);
-            modal.removeEventListener('click', handleOverlayClick);
-            if (modal.parentNode) {
-                modal.parentNode.removeChild(modal);
-            }
-        };
-
-        const handleCancel = () => {
-            cleanup();
-            reject(new Error('cancelled'));
+            api.close(true);
         };
 
         const handleSubmit = async () => {
@@ -4963,8 +4797,6 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                     : 'Creating...';
                 confirmButton.disabled = true;
                 confirmButton.innerHTML = `<span class="metric-spinner" aria-hidden="true"></span> ${creatingText}`;
-                confirmButton.style.opacity = '0.7';
-                confirmButton.style.cursor = 'wait';
             }
 
             // Allow UI to update
@@ -5040,8 +4872,6 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                         if (confirmButton && originalButtonContent) {
                             confirmButton.innerHTML = originalButtonContent;
                             confirmButton.disabled = false;
-                            confirmButton.style.opacity = '';
-                            confirmButton.style.cursor = '';
                         }
                         if (typeof showEphemeralMessage === 'function') {
                             const message = translateRoadText(
@@ -5090,8 +4920,6 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                 if (confirmButton && originalButtonContent) {
                     confirmButton.innerHTML = originalButtonContent;
                     confirmButton.disabled = false;
-                    confirmButton.style.opacity = '';
-                    confirmButton.style.cursor = '';
                 }
                 if (typeof showEphemeralMessage === 'function') {
                     showEphemeralMessage('Failed to create road proposal. Please try again.', 5000, 'error');
@@ -5099,27 +4927,15 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             }
         };
 
-        const handleOverlayClick = (event) => {
-            if (event.target === modal) {
-                handleCancel();
-            }
-        };
-
+        // Enter submits (Escape, the × and the backdrop are the dialog's own cancel).
         const handleKeyDown = (event) => {
             if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
                 event.preventDefault();
                 handleSubmit();
-            } else if (event.key === 'Escape') {
-                event.preventDefault();
-                handleCancel();
             }
         };
 
         modal.addEventListener('keydown', handleKeyDown, true);
-        modal.addEventListener('click', handleOverlayClick);
-
-        if (confirmButton) confirmButton.addEventListener('click', handleSubmit);
-        if (closeButton) closeButton.addEventListener('click', handleCancel);
 
         // Capture and display screenshot if bounds are available
         if (isValidPolygonLatLngPairs(screenshotPolygon) && window.MapScreenshot) {
@@ -5129,7 +4945,6 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                     try {
                         const previewWrapper = document.createElement('div');
                         previewWrapper.className = 'map-screenshot-container';
-                        previewWrapper.style.margin = '0 auto';
                         screenshotContainer.appendChild(previewWrapper);
 
                         window.MapScreenshot.renderPolygonPreview(previewWrapper, {
@@ -5142,8 +4957,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                         console.warn('Failed to capture map screenshot:', error);
                         screenshotContainer.innerHTML = '';
                         const fallbackDiv = document.createElement('div');
-                        fallbackDiv.className = 'map-screenshot-container';
-                        fallbackDiv.style.color = '#999';
+                        fallbackDiv.className = 'map-screenshot-container parameter-info-text';
                         fallbackDiv.textContent = 'Preview unavailable';
                         screenshotContainer.appendChild(fallbackDiv);
                     }
@@ -5376,6 +5190,11 @@ function playTrackSegmentSound() {
 // Speed only: the track's WIDTH is no longer picked here. A track's width is the sum of its lanes, and a
 // new track starts as one standard-gauge track (3.5 m) that the cross-section editor then shapes — the
 // same move the road tool made when its width picker became a cross-section.
+//
+// #track-speed-modal is the shared dialog's overlay (index.html), shown through [hidden]. The speeds
+// are cb-option rows (the last one used is aria-pressed and focused); picking one starts drawing at
+// once, Start drawing (or Enter) takes the pressed one, Cancel / × / Escape reject. Every handler is
+// let go of when the promise settles, so a second open does not answer for the first.
 function showTrackSpeedPicker() {
     return new Promise((resolve, reject) => {
         const modal = document.getElementById('track-speed-modal');
@@ -5387,6 +5206,7 @@ function showTrackSpeedPicker() {
             resolve({ speed: 50, minRadius: 300 }); // fallback to default values
             return;
         }
+        const btnClose = modal.querySelector('[data-track-speed-close]');
 
         // Options: speed (km/h) -> min radius (m)
         const options = [
@@ -5398,75 +5218,79 @@ function showTrackSpeedPicker() {
             { id: 'trackspeed6', speed: 250, label: '250 km/h', minRadius: 5000 },
         ];
 
-        // Prefill grid
+        // Prefill the list; a stored id that is no longer an option falls back to the first speed.
         grid.innerHTML = '';
-        let selectedId = (PersistentStorage.getItem('lastTrackSpeedId')) || 'trackspeed1';
+        const storedId = PersistentStorage.getItem('lastTrackSpeedId');
+        const selectedId = options.some(opt => opt.id === storedId) ? storedId : options[0].id;
 
+        let settled = false;
+        const handleKeydown = (ev) => {
+            // Enter on a focused button is that button's own click (a speed picks itself, Cancel
+            // cancels); anywhere else in the dialog it takes the pressed speed.
+            if (ev.key !== 'Enter' || ev.target.matches('input, textarea, select, button')) return;
+            ev.preventDefault();
+            confirmSelection();
+        };
+        const finish = () => {
+            settled = true;
+            modal.hidden = true;
+            modal.__unregisterEscape?.();
+            modal.__unregisterEscape = null;
+            modal.removeEventListener('keydown', handleKeydown);
+            btnConfirm.onclick = null;
+            btnCancel.onclick = null;
+            if (btnClose) btnClose.onclick = null;
+        };
         const confirmSelection = () => {
-            const selected = grid.querySelector('.roadwidth-card.selected');
-            if (!selected) {
-                reject(new Error('No selection'));
-                return;
-            }
+            if (settled) return;
+            const selected = grid.querySelector('.track-speed-option[aria-pressed="true"]');
             const speed = parseFloat(selected.dataset.speed);
             const minRadius = parseFloat(selected.dataset.minRadius);
             PersistentStorage.setItem('lastTrackSpeedId', selected.dataset.id);
-            modal.style.display = 'none';
+            finish();
             // Fold away an open sheet so the map has room
             if (window.MapShell) window.MapShell.closeSheets();
             resolve({ speed, minRadius });
         };
+        const cancel = () => {
+            if (settled) return;
+            finish();
+            reject(new Error('Cancelled'));
+        };
 
         options.forEach(opt => {
-            const card = document.createElement('div');
-            card.className = 'roadwidth-card' + (opt.id === selectedId ? ' selected' : '');
-            card.setAttribute('role', 'button');
-            card.setAttribute('tabindex', '0');
-            card.dataset.id = opt.id;
-            card.dataset.speed = String(opt.speed);
-            card.dataset.minRadius = String(opt.minRadius);
-
-            const lbl = document.createElement('div');
-            lbl.className = 'roadwidth-label';
-            lbl.textContent = `${opt.label} (min radius: ${opt.minRadius}m)`;
-            card.appendChild(lbl);
-
-            card.addEventListener('click', () => {
-                selectedId = opt.id;
-                grid.querySelectorAll('.roadwidth-card').forEach(el => el.classList.remove('selected'));
-                card.classList.add('selected');
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'cb-option track-speed-option';
+            option.setAttribute('aria-pressed', opt.id === selectedId ? 'true' : 'false');
+            option.dataset.id = opt.id;
+            option.dataset.speed = String(opt.speed);
+            option.dataset.minRadius = String(opt.minRadius);
+            option.innerHTML = '<i class="cb-option__icon fa-solid fa-gauge-high" aria-hidden="true"></i>'
+                + '<span class="cb-option__text"><span class="cb-option__title"></span><span class="cb-option__desc"></span></span>';
+            option.querySelector('.cb-option__title').textContent = opt.label;
+            option.querySelector('.cb-option__desc').textContent = translateRoadText(
+                'modal.track.minRadius',
+                'Minimum curvature radius {{radius}} m',
+                { radius: CbFormat.formatNumber(opt.minRadius) }
+            );
+            option.addEventListener('click', () => {
+                grid.querySelectorAll('.track-speed-option').forEach(el => el.setAttribute('aria-pressed', el === option ? 'true' : 'false'));
                 // Confirm immediately on click
                 confirmSelection();
             });
-            card.addEventListener('keydown', (ev) => {
-                if (ev.key === 'Enter' || ev.key === ' ') {
-                    ev.preventDefault();
-                    card.click();
-                }
-            });
-            grid.appendChild(card);
+            grid.appendChild(option);
         });
 
-        btnConfirm.addEventListener('click', confirmSelection);
-        btnCancel.addEventListener('click', () => {
-            modal.style.display = 'none';
-            reject(new Error('Cancelled'));
-        });
-
-        // Handle Enter key on modal
-        const handleKeydown = (ev) => {
-            if (ev.key === 'Enter' && !ev.target.matches('input, textarea, select')) {
-                ev.preventDefault();
-                confirmSelection();
-            } else if (ev.key === 'Escape') {
-                ev.preventDefault();
-                btnCancel.click();
-            }
-        };
+        btnConfirm.onclick = confirmSelection;
+        btnCancel.onclick = cancel;
+        if (btnClose) btnClose.onclick = cancel;
         modal.addEventListener('keydown', handleKeydown);
 
-        modal.style.display = 'flex';
-        grid.querySelector('.roadwidth-card.selected')?.focus();
+        modal.hidden = false;
+        modal.__unregisterEscape?.();
+        modal.__unregisterEscape = window.ModalEscape?.register(modal, cancel);
+        grid.querySelector('.track-speed-option[aria-pressed="true"]')?.focus();
     });
 }
 
@@ -5494,71 +5318,15 @@ function showAcquiringDifficultyDialog() {
         formattedExplanation += '</ul>';
     }
 
-    const overlay = document.createElement('div');
-    overlay.className = 'share-modal-overlay';
-
-    const modal = document.createElement('div');
-    modal.className = 'share-modal';
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-
-    const header = document.createElement('div');
-    header.className = 'share-modal-header';
-
-    const titleEl = document.createElement('h2');
-    titleEl.className = 'share-modal-title';
-    titleEl.textContent = title;
-    header.appendChild(titleEl);
-
-    const closeBtn = document.createElement('button');
-    closeBtn.type = 'button';
-    closeBtn.className = 'share-modal-close close-circle-btn close-circle-btn--lg';
-    closeBtn.setAttribute('aria-label', closeLabel);
-    closeBtn.innerHTML = '&times;';
-    header.appendChild(closeBtn);
-
-    modal.appendChild(header);
-
-    const bodyContainer = document.createElement('div');
-    bodyContainer.className = 'share-modal-body';
-    bodyContainer.innerHTML = formattedExplanation;
-    modal.appendChild(bodyContainer);
-
-    const actionsContainer = document.createElement('div');
-    actionsContainer.className = 'share-modal-actions';
-
-    const okButton = document.createElement('button');
-    okButton.type = 'button';
-    okButton.className = 'btn share-modal-primary';
-    okButton.textContent = okLabel;
-    okButton.addEventListener('click', closeModal);
-    actionsContainer.appendChild(okButton);
-
-    modal.appendChild(actionsContainer);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    function onOverlayClick(event) {
-        if (event.target === overlay) {
-            closeModal();
-        }
-    }
-
-    function onKeyDown(event) {
-        if (event.key === 'Escape') {
-            closeModal();
-        }
-    }
-
-    function closeModal() {
-        try { overlay.removeEventListener('click', onOverlayClick); } catch (_) { }
-        try { document.removeEventListener('keydown', onKeyDown); } catch (_) { }
-        try { overlay.remove(); } catch (_) { }
-    }
-
-    closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', onOverlayClick);
-    document.addEventListener('keydown', onKeyDown);
+    // The app's dialog (js/ui/dialogs.js): its header and close, Escape and the backdrop close it.
+    window.CbDialog.open({
+        title,
+        size: 'sm',
+        className: 'road-acquiring-difficulty-dialog',
+        body: formattedExplanation,
+        closeLabel,
+        actions: [{ id: 'ok', label: okLabel, role: 'primary' }]
+    });
 }
 
 // Expose function globally

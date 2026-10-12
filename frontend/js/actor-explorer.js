@@ -158,11 +158,13 @@
         const when = isoTime(event.occurredAt);
         const turn = event.source === 'simulation' && event.turn !== null && event.turn !== undefined ? `${escapeHtml(tr('turn', 'Turn {{turn}}', { turn: event.turn }))} · ` : '';
         const timestamp = when ? `<time datetime="${when}">${turn}${escapeHtml(formatWhen(when))}</time>` : '';
+        // Opening a proposal runs script (the host binds .proposal-link-clickable), so it is a button
+        // that looks like a link; the transaction leaves the app and carries the external mark.
         const proposalLink = event.entity?.type === 'proposal' && event.entity.id
-            ? `<a href="#" data-proposal-id="${escapeHtml(event.entity.id)}" class="proposal-link proposal-link-clickable">${escapeHtml(tr('openProposal', 'Open proposal'))}</a>`
+            ? `<button type="button" data-proposal-id="${escapeHtml(event.entity.id)}" class="cb-link proposal-link-clickable">${escapeHtml(tr('openProposal', 'Open proposal'))}</button>`
             : '';
         const transactionLink = event.transaction
-            ? `<a href="https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet" target="_blank" rel="noopener">${escapeHtml(tr('transaction', 'Transaction ↗'))}</a>`
+            ? `<a class="cb-link cb-link--external" href="https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet" target="_blank" rel="noopener noreferrer">${escapeHtml(tr('transaction', 'Transaction'))}</a>`
             : '';
         const details = [
             tr('source', 'Source: {{value}}', { value: event.source || 'unknown' }),
@@ -172,7 +174,7 @@
         ].map(escapeHtml).join(' · ');
         // Scope buttons drill into actor → proposal → parcel set → run; the host explorer handles them.
         const scope = (field, value, label) => value
-            ? `<button type="button" class="activity-scope-link" data-activity-scope="${field}" data-activity-value="${escapeHtml(value)}">${escapeHtml(label)}</button>`
+            ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="${field}" data-activity-value="${escapeHtml(value)}">${escapeHtml(label)}</button>`
             : '';
         const proposalId = event.entity?.type === 'proposal' && event.entity.id ? event.entity.id : event.action?.proposalId;
         const actorDetails = [event.actor?.wallet, event.actor?.id].filter(Boolean).map(escapeHtml).join(' · ');
@@ -261,7 +263,7 @@
         [['all', 'All actors'], ['human', 'Humans'], ['algorithm', 'Algorithms'], ['llm', 'LLM agents']].forEach(([value, label]) => {
             const option = text(doc, 'option', label); option.value = value; controller.append(option);
         });
-        const clear = text(doc, 'button', 'Clear selection', 'ae-button ae-button-quiet'); clear.type = 'button';
+        const clear = text(doc, 'button', 'Clear selection', 'btn'); clear.type = 'button';
         filters.append(search, controller, clear);
         const profiles = doc.createElement('section'); profiles.className = 'ae-profiles'; profiles.setAttribute('aria-label', 'Actor profiles');
         const activity = doc.createElement('section'); activity.className = 'ae-activity'; activity.setAttribute('aria-label', 'Activity');
@@ -299,13 +301,16 @@
             const visible = filterEvents(allEvents, state);
             profiles.replaceChildren(text(doc, 'h2', 'Actors', 'ae-section-title'));
             const cards = doc.createElement('div'); cards.className = 'ae-profile-grid';
+            // Each profile is a selectable row (cb-option); the chosen actor is the pressed one.
             buildActorProfiles(visible).forEach(profile => {
-                const card = doc.createElement('button'); card.type = 'button'; card.className = 'ae-profile-card';
-                card.classList.toggle('is-selected', state.actorKey === profile.key);
-                card.append(text(doc, 'strong', profile.actor.name), text(doc, 'span', `${profile.actor.kind} · ${profile.actor.controller}`, 'ae-tag'));
-                card.append(text(doc, 'span', `${countText(profile.activityCount, 'activity', 'activities')} · ${countText(profile.proposalIds.length, 'proposal', 'proposals')} · ${countText(profile.transactionCount, 'transaction', 'transactions')}`, 'ae-muted'));
-                if (profile.actor.wallet) card.append(text(doc, 'code', short(profile.actor.wallet), 'ae-wallet'));
-                if (profile.modelCostUsd) card.append(text(doc, 'span', `${formatUsd(profile.modelCostUsd)} model cost`, 'ae-muted'));
+                const card = doc.createElement('button'); card.type = 'button'; card.className = 'cb-option';
+                card.setAttribute('aria-pressed', state.actorKey === profile.key ? 'true' : 'false');
+                const body = doc.createElement('span'); body.className = 'cb-option__text';
+                body.append(text(doc, 'span', profile.actor.name, 'cb-option__title'), text(doc, 'span', `${profile.actor.kind} · ${profile.actor.controller}`, 'cb-badge'));
+                body.append(text(doc, 'span', `${countText(profile.activityCount, 'activity', 'activities')} · ${countText(profile.proposalIds.length, 'proposal', 'proposals')} · ${countText(profile.transactionCount, 'transaction', 'transactions')}`, 'cb-option__desc'));
+                if (profile.actor.wallet) body.append(text(doc, 'code', short(profile.actor.wallet), 'ae-wallet'));
+                if (profile.modelCostUsd) body.append(text(doc, 'span', `${formatUsd(profile.modelCostUsd)} model cost`, 'cb-option__desc'));
+                card.append(body);
                 card.addEventListener('click', () => { state.actorKey = state.actorKey === profile.key ? null : profile.key; render(); });
                 cards.append(card);
             });
@@ -322,7 +327,7 @@
                 item.append(text(doc, 'time', formatWhen(event.recordedAt), 'ae-muted'));
                 const meta = doc.createElement('div'); meta.className = 'ae-meta';
                 if (event.entity?.id) {
-                    const proposal = text(doc, 'a', `Proposal ${event.entity.id}`, 'ae-link');
+                    const proposal = text(doc, 'a', `Proposal ${event.entity.id}`, 'cb-link');
                     proposal.href = `/proposals/${encodeURIComponent(event.entity.id)}`;
                     if (typeof openProposal === 'function') {
                         proposal.addEventListener('click', clickEvent => { clickEvent.preventDefault(); openProposal(String(event.entity.id)); });
@@ -330,15 +335,15 @@
                     meta.append(proposal);
                 }
                 if (event.transaction) {
-                    const transaction = text(doc, 'a', `tx ${short(event.transaction)}`, 'ae-link ae-wallet');
+                    const transaction = text(doc, 'a', `tx ${short(event.transaction)}`, 'cb-link cb-link--external ae-wallet');
                     transaction.href = `https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet`;
-                    transaction.target = '_blank'; transaction.rel = 'noopener';
+                    transaction.target = '_blank'; transaction.rel = 'noopener noreferrer';
                     meta.append(transaction);
                 }
                 if (event.runId) {
-                    const run = text(doc, 'button', `run ${short(event.runId)}`, 'ae-link'); run.type = 'button'; run.addEventListener('click', () => openRun(event.runId)); meta.append(run);
+                    const run = text(doc, 'button', `run ${short(event.runId)}`, 'cb-link'); run.type = 'button'; run.addEventListener('click', () => openRun(event.runId)); meta.append(run);
                 }
-                if (event.model) meta.append(text(doc, 'span', `${event.model}${event.modelCostUsd !== null ? ` · ${formatUsd(event.modelCostUsd)}` : ''}`, 'ae-tag'));
+                if (event.model) meta.append(text(doc, 'span', `${event.model}${event.modelCostUsd !== null ? ` · ${formatUsd(event.modelCostUsd)}` : ''}`, 'cb-badge'));
                 item.append(meta);
                 const evidence = eventDetail(event);
                 if (evidence.rationale || evidence.transaction || evidence.provenance) {

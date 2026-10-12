@@ -169,10 +169,11 @@ describe('promjena epohe s kartice', () => {
             alert: vi.fn(),
             console: { error: vi.fn() }
         };
+        // The failure is said through the app's dialog (js/ui/dialogs.js), never the browser's.
         const run = new Function('findProposal', 'askCustomYear', 'parseEpochYear', 'setEpoch',
-            'renderList', 't', 'alert', 'console', `${body} return handleCardEpochChange;`)(
+            'renderList', 't', 'CbDialog', 'console', `${body} return handleCardEpochChange;`)(
             () => proposal, spies.askCustomYear, epoch.parseEpochYear, spies.setEpoch,
-            spies.renderList, (key, fallback) => fallback, spies.alert, spies.console);
+            spies.renderList, (key, fallback) => fallback, { alert: spies.alert }, spies.console);
         return { run, spies, proposal };
     }
     const select = value => ({ value, dataset: { proposalId: 'c-1' }, disabled: false });

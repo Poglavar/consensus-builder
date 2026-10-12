@@ -1,15 +1,24 @@
 <!doctype html>
+<!-- The formats a custom parcel source may use, linked from the parcel source chooser in the map's
+     Information panel. Static page under the shared header (css/page-chrome.css). -->
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Supported parcel source formats · Consensus Builder</title>
-    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/tokens.css?v=2">
+    <link rel="stylesheet" href="css/primitives.css?v=2">
+    <link rel="stylesheet" href="css/page-chrome.css?v=1">
+    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/parcel-sources.css">
 </head>
-<body class="parcel-source-formats">
+<body class="cb-page parcel-source-formats">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1>Supported parcel source formats</h1></div>
+        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+    </header>
     <main>
-        <h1>Supported parcel source formats</h1>
         <p>In the map’s Information panel, choose “Choose a parcel source” and paste a public HTTPS URL. We check the formats below in order, then verify viewport loading and exact parcel lookup before offering the source. Access failures are reported separately from an unsupported format.</p>
         <table>
             <thead><tr><th>Adapter</th><th>URL to provide</th><th>Requirements</th></tr></thead>
@@ -30,9 +39,8 @@
         <h2>No available adapter?</h2>
         <ol>
             <li>Conform your source to one of the formats above.</li>
-            <li><a href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">Ask us to add another adapter in the Telegram group</a>, which we sometimes do.</li>
+            <li><a class="cb-link cb-link--external" href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">Ask us to add another adapter in the Telegram group</a>, which we sometimes do.</li>
         </ol>
-        <p><a href="index.html">Return to the map</a></p>
     </main>
 </body>
 </html>

@@ -537,6 +537,7 @@
         "userFallback": "User",
         "close": "Close",
         "cancel": "Cancel",
+        "seeTransaction": "See the transaction",
         "ok": "OK",
         "download": "Download",
         "busy": {
@@ -627,12 +628,12 @@
         "explainerIntroPrefix": "The city has",
         "explainerIntroToken": "its own token",
         "explainerIntroSuffix": "of course.",
-        "explainerBody": "Every registered citizen address has a right to 1 token per hour ⌛️, forever. You can use these tokens to Boost proposals. Think of it as a form of voting for those you like.",
+        "explainerBody": "Every registered citizen address has a right to 1 token per hour, forever. You can pledge these tokens to proposals. Think of it as a form of voting for those you like.",
         "currentBalance": "Current balance",
         "currentAllotment": "Current allotment",
         "register": "Register",
         "claim": "Claim",
-        "registeredLabel": "🏅 Registered",
+        "registeredLabel": "Registered",
         "statusRegistered": "Success! You are now a registered citizen.",
         "statusClaimed": "Claimed {{amount}} tokens.",
         "statusClaiming": "Claiming tokens from the contract…",
@@ -1005,9 +1006,9 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "About",
-            "aboutParagraph": "<strong>Consensus Builder</strong> is Urban Game Theory's free, map-based urban planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a href=\"/urban-planning.html\">open city planning workflow</a>, open the <a href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a href=\"/deck.html\">pitch deck</a>, or see <a href=\"roadmap.html\" target=\"_blank\">the roadmap</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> is Urban Game Theory's free, map-based urban planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a class=\"cb-link\" href=\"/urban-planning.html\">open city planning workflow</a>, open the <a class=\"cb-link\" href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a class=\"cb-link\" href=\"/deck.html\">pitch deck</a>, or see <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">the roadmap</a>.",
             "instructionsTitle": "Start here",
-            "instructionsParagraph": "<strong>Draw the change, then build consent.</strong> Finishing a design creates an applied local proposal. Inspect it, unapply it, share it, or fork it into an editable replacement when the design or terms need to change. Read the <a href=\"how-to-use.html\" target=\"_blank\">step-by-step guide</a>, or see what works today and what comes next on the <a href=\"roadmap.html\" target=\"_blank\">roadmap</a>.",
+            "instructionsParagraph": "<strong>Draw the change, then build consent.</strong> Finishing a design creates an applied local proposal. Inspect it, unapply it, share it, or fork it into an editable replacement when the design or terms need to change. Read the <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">step-by-step guide</a>, or see what works today and what comes next on the <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">roadmap</a>.",
             "advancedTitle": "Advanced options",
             "debugToggle": "Enable debug mode",
             "wipeDataButton": "Reset everything (this browser)",
@@ -1132,7 +1133,7 @@
             "claimTooltip": "Go to claim portal",
             "claimExistingTooltip": "Claim existing parcel NFT",
             "visualizeButton": "Visualize",
-            "neighborsButton": "Neighbours",
+            "neighborsButton": "Neighbors",
             "verticesButton": "Vertices",
             "analyzeRoadButton": "Analyze as road",
             "measureRoadButton": "Measure as road",
@@ -1213,7 +1214,7 @@
             "actions": {
                 "measureAsRoad": "Measure as road",
                 "measurementsAdded": "Measurements added",
-                "measureLoading": "⏳ Calculating…",
+                "measureLoading": "Calculating…",
                 "measureLengthLabel": "As road length:",
                 "measureWidthLabel": "As road width:",
                 "measureWidthAverage": "Average:",
@@ -1413,10 +1414,10 @@
             "market": {
                 "oracleTitle": "Oracle recipe",
                 "oracleLoading": "Loading proposal-lifecycle-v1…",
-                "recipeLink": "Recipe declaration ↗",
+                "recipeLink": "Recipe declaration",
                 "copyHash": "Copy hash",
                 "hashCopied": "Copied",
-                "eventLink": "Source event ↗",
+                "eventLink": "Source event",
                 "finalVerifier": "The Solana program remains the final verifier.",
                 "yesSide": "Yes · gets built",
                 "noSide": "No · dropped",
@@ -1774,8 +1775,8 @@
             "segmentCancelledStatus": "Segment cancelled — placed segments stay. Esc again builds the road.",
             "builtStatusTrack": "Track built — click it to edit or propose.",
             "nodeHint": "Drag to move · ⌥-click to remove this node",
-            "edgeActionsHint": "＋ Add a node · 🚜 Bulldoze this stretch",
-            "edgeActionsProtectedHint": "A node cannot be added on a ramp, tunnel, or grade-separated stretch · 🚜 Bulldoze this stretch",
+            "edgeActionsHint": "＋ Add a node · × Bulldoze this stretch",
+            "edgeActionsProtectedHint": "A node cannot be added on a ramp, tunnel, or grade-separated stretch · × Bulldoze this stretch",
             "addNodeProtectedStatus": "A node cannot be added on a ramp, tunnel, or grade-separated stretch.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
             "splitIntoStretches": "The edit disconnected the road — it was split into {{count}} separate road proposals.",
@@ -1861,6 +1862,7 @@
             "speedPickerTitle": "Choose track speed",
             "speedPickerDescription": "Select the maximum speed for this track. This determines the minimum curvature radius. Press Enter to start with the default selection.",
             "startDrawing": "Start drawing",
+            "minRadius": "Minimum curvature radius {{radius}} m",
             "cancel": "Cancel",
             "widthLabel": "Track width:"
         },
@@ -1928,13 +1930,13 @@
             "deckLink": "Read the pitch deck",
             "subtitle": "Choose your avatar and enter a username:",
             "closeLabel": "Close welcome dialog",
-            "avatarLabel": "Choose your avatar:",
+            "avatarLabel": "Choose your avatar",
             "avatarAlt": "Avatar",
             "avatarAltIndexed": "Avatar {{index}}",
             "avatarHint": "Click to choose",
             "avatarUsed": "Avatar already in use",
             "avatarSelected": "Avatar {{index}} selected",
-            "languageLabel": "Language:",
+            "languageLabel": "Language",
             "usernamePlaceholder": "Your username",
             "takeoverYes": "Yes",
             "takeoverNo": "No",
@@ -1948,11 +1950,6 @@
             "subtitle": "What should happen to your agent?",
             "aiOption": "Let AI run the agent",
             "inactiveOption": "Agent should be inactive",
-            "cancel": "Cancel"
-        },
-        "locate": {
-            "title": "Locate parcel confirmation",
-            "confirm": "OK",
             "cancel": "Cancel"
         },
         "singleBuilding": {
@@ -2006,8 +2003,11 @@
             "cancel": "Cancel",
             "confirm": "Use this building"
         },
+        "centerlineAnimation": {
+            "title": "Centerline algorithm visualization"
+        },
         "lens": {
-            "title": "The lens through which I see the world 👓🏖️",
+            "title": "The lens through which I see the world",
             "subtitle": "These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.",
             "closeLabel": "Close lens modal",
             "patternCaption": "Pattern updates automatically when you edit the list.",
@@ -2020,8 +2020,8 @@
             },
             "removeAddress": "Remove address",
             "links": {
-                "etherscan": "Etherscan ↗",
-                "attestify": "Attestify ↗"
+                "etherscan": "Etherscan",
+                "attestify": "Attestify"
             },
             "patternAria": "Lens pattern preview",
             "patternTitle": "Lens pattern",
@@ -2803,11 +2803,11 @@
             "titlePark": "Create park proposal",
             "titleSquare": "Create square proposal",
             "closeAria": "Close proposal dialog",
-            "authorLabel": "Author:",
+            "authorLabel": "Author",
             "authorPlaceholder": "Your name",
             "authorAvatarAlt": "Author avatar",
-            "proposalTypeLabel": "Proposal type:",
-            "proposalGoalLabel": "Proposal goal:",
+            "proposalTypeLabel": "Proposal type",
+            "proposalGoalLabel": "Proposal goal",
             "typologyLabel": "Typology",
             "acquisitionLabel": "Acquisition strategy",
             "ownershipLabel": "Ownership",
@@ -2853,7 +2853,7 @@
                 "any": "Anyone"
             },
             "ownershipTransfer": {
-                "label": "Transfer direction:",
+                "label": "Transfer direction",
                 "toMe": "To me",
                 "fromMe": "From me",
                 "nameToMe": "Ownership transfer to me",
@@ -2885,7 +2885,7 @@
                 },
                 "status": {
                     "noGeometry": "No geometry: please define a geometry",
-                    "submitted": "✔️ geometry submitted",
+                    "submitted": "Geometry submitted",
                     "auto": "Algorithmic geometry will be generated",
                     "copied": "Geometry copied from \"{name}\"",
                     "copiedEditable": "Geometry copied from \"{name}\" — press Edit to adjust it",
@@ -2893,7 +2893,7 @@
                 }
             },
             "reparcellization": {
-                "label": "Algorithm:",
+                "label": "Algorithm",
                 "options": {
                     "sweepLine": "Sweep line",
                     "centroidalVoronoi": "Centroidal Voronoi",
@@ -2902,12 +2902,12 @@
                 },
                 "hint": "Additional algorithms are visible for planning purposes; Sweep line is currently available."
             },
-            "descriptionLabel": "Description:",
+            "descriptionLabel": "Description",
             "descriptionPlaceholder": "Describe your proposal…",
             "descriptionPlaceholderStructure": "Describe your {{kind}}…",
-            "offerLabel": "Offer:",
+            "offerLabel": "Offer",
             "offerPlaceholder": "0",
-            "optionsLabel": "Options:",
+            "optionsLabel": "Options",
             "options": {
                 "conditional": "Conditional",
                 "conditionalHelperOn": "Pay reward only if/when all owners accept",
@@ -2953,11 +2953,11 @@
             "creating": "Creating…",
             "waiting": "Waiting for transaction…",
             "rejected": "Transaction rejected",
-            "nameLabel": "Name:",
+            "nameLabel": "Name",
             "namePlaceholderProposal": "Proposal name",
             "defaultDescription": "A new {{type}} proposal by {{author}}",
             "namePlaceholder": "Name your {{kind}}",
-            "typeLabel": "Type:",
+            "typeLabel": "Type",
             "typePark": "Park",
             "typeSquare": "Square",
             "errors": {
@@ -2998,7 +2998,9 @@
                 "anchorExplainer": "A parcel anchor is the parcel's on-chain identity. Nobody owns it and creating it confers no ownership; you only pay its rent. Ownership reaches the chain separately, as a lens member's attestation. You can also create anchors from the Parcel Info panel's Tools tab.",
                 "createAnchor": "Create the parcel anchor",
                 "createAnchors": "Create the parcel anchors",
-                "anchorThenCreate": "Create the parcel anchors, then click Create again."
+                "anchorThenCreate": "Create the parcel anchors, then click Create again.",
+                "title": "Parcels not on the chain yet",
+                "anchorTitle": "Parcel anchors missing"
             },
             "onchainMintFailed": {
                 "message": "On-chain mint failed for reason:",
@@ -3022,11 +3024,11 @@
                 "proof": {
                     "intro": "Offering your land needs proof that it is yours:",
                     "wallet": "connect your Solana wallet",
-                    "attestation": "ask a member of your lens (👓) to attest your wallet as the owner of these parcels",
+                    "attestation": "ask a member of your lens to attest your wallet as the owner of these parcels",
                     "name": "choose a profile name (top-right bubble)"
                 },
                 "checking": "Checking your ownership attestations…",
-                "needLens": "Choose your lens (👓) first: the offer needs a lens member that attested your ownership.",
+                "needLens": "Choose your lens first: the offer needs a lens member that attested your ownership.",
                 "needParcels": "Select the parcels you own.",
                 "noService": "None of your lens members publishes a service URL, so your ownership cannot be checked.",
                 "unavailable": "Ownership attestations cannot be checked right now.",
@@ -3163,14 +3165,22 @@
                 "multiParcelLabel": "{{count}} parcels",
                 "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
                 "excludedSliver": "Only a splinter of the block falls on this plot — too small to be a building.",
-                "rangeExact": "{{buildings}} buildings · delivers {{permitted}} m² of floor area",
-                "rangeBetween": "{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area",
-                "rangeMax": "{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area",
-                "rangeExactExcluded": "{{buildings}} buildings · delivers {{permitted}} m² of floor area · {{excluded}} parcel(s) left out",
-                "rangeBetweenExcluded": "{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out",
-                "rangeMaxExcluded": "{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out",
+                "rangeExact": "{{buildings}} · delivers {{permitted}} m² of floor area",
+                "rangeBetween": "{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area",
+                "rangeMax": "{{buildings}} · permits 0 – {{permitted}} m² of floor area",
+                "rangeExactExcluded": "{{buildings}} · delivers {{permitted}} m² of floor area · {{excluded}}",
+                "rangeBetweenExcluded": "{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}}",
+                "rangeMaxExcluded": "{{buildings}} · permits 0 – {{permitted}} m² of floor area · {{excluded}}",
                 "excludedNoMassing": "The building does not reach this plot — the setback, or the shape of the block, leaves it outside. Nothing is built here.",
-                "rangeNoneExcluded": "No buildings — {{excluded}} parcel(s) left out"
+                "rangeNoneExcluded": "No buildings · {{excluded}}",
+                "buildingCount": {
+                    "one": "{{count}} building",
+                    "other": "{{count}} buildings"
+                },
+                "parcelsLeftOut": {
+                    "one": "{{count}} parcel left out",
+                    "other": "{{count}} parcels left out"
+                }
             },
             "handles": {
                 "gap": "Drag to move gap",
@@ -3274,7 +3284,7 @@
             "title": "Detached houses",
             "closeAria": "Close parcel-based modal",
             "generating": "Generating buildings…",
-            "generatedSummary": "Generated {{count}} building(s)",
+            "generatedSummary": "Generated {{buildings}}",
             "done": "Done",
             "regenerate": "Regenerate",
             "parametersTitle": "Parameters",
@@ -3314,7 +3324,7 @@
                 "excludedNoRoom": "The setback leaves no room to build on this plot.",
                 "excludedCannotMeet": "Too small to meet the minimum this rule compels — the rule contradicts itself here."
             },
-            "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule"
+            "generatedSummaryExcluded": "Generated {{buildings}} · {{excluded}}"
         }
     },
     "reparcellization": {
@@ -4479,7 +4489,7 @@
             "unable_to_show_parcel": "Unable to show parcel {{id}}. Parcel selection functionality not available.",
             "please_enter_a_valid_boost_amount": "Please enter a valid boost amount.",
             "please_enter_a_valid_boost_expiry": "Please enter a valid boost expiry timestamp.",
-            "proposal_boost_success": "Success! Thank you for boosting this proposal with {{amount}} of {{currency}}. This could help it happen 🤞 See transaction {{txLink}}",
+            "proposal_boost_success": "Success! Thank you for supporting this proposal with {{amount}} {{currency}}. See transaction {{txLink}}",
             "proposal_boost_not_minted": "This proposal is not on-chain yet. Mint it before boosting.",
             "proposal_boost_wallet_required": "Connect a wallet to boost this proposal.",
             "proposal_boost_missing_token": "City Meme Token address is not configured for the connected network.",
@@ -4510,7 +4520,7 @@
             "activity_no_parcel_set": "This proposal has no canonical parcel set loaded.",
             "blockchain_mint_wallet_prompt": "Blockchain minting is available but no wallet is connected. Would you like to connect a wallet to mint this proposal on-chain?",
             "failed_to_create_proposal": "Failed to create proposal.",
-            "solana_lens_required": "Choose at least one lens member (the 👓 button) before minting on Solana.",
+            "solana_lens_required": "Choose at least one lens member (the lens button) before minting on Solana.",
             "solana_accept_in_lens_card": "On Solana, owners say yes in the proposal's Lens card: a lens member attests your ownership, then your wallet signs.",
             "solana_acceptance_final": "Acceptances on Solana are final: a signed yes cannot be withdrawn.",
             "owner_offer_not_attested": "An owner offer can only name parcels your wallet is attested to own by a member of your lens. {{detail}}"
@@ -4540,12 +4550,15 @@
             "scopeParcelSet": "Land: {{id}}",
             "scopeRun": "Run: {{id}}",
             "sourceFailed": "Could not load: {{sources}}",
-            "count": "{{count}} events",
+            "count": {
+                "one": "{{count}} event",
+                "other": "{{count}} events"
+            },
             "noMatch": "No matching activity yet.",
             "row": {
                 "turn": "Turn {{turn}}",
                 "openProposal": "Open proposal",
-                "transaction": "Transaction ↗",
+                "transaction": "Transaction",
                 "source": "Source: {{value}}",
                 "controller": "Controller: {{value}}",
                 "action": "Action: {{value}}",
@@ -5089,7 +5102,7 @@
             "chip": "Explore · {{place}}",
             "banner": "No parcels here: you can draw a site and propose, but a proposal can only execute through an authority's verdict.",
             "worldView": "World view",
-            "dismiss": "Dismiss",
+            "dismiss": "Close",
             "status": "No parcel data here: click the map to draw a site and propose."
         },
         "activity": {
@@ -5165,6 +5178,15 @@
         },
         "bets": "Bets",
         "betsNew": "New",
+        "appearance": {
+            "label": "Appearance",
+            "system": "Follow device",
+            "light": "Light",
+            "dark": "Dark",
+            "commandSystem": "Theme follows the device",
+            "commandLight": "Light theme",
+            "commandDark": "Dark theme"
+        },
         "reorg": {
             "blockData": "Block data and analysis",
             "roadData": "Road data and analysis",
@@ -5328,8 +5350,8 @@
         "binding": {
             "previewPrefix": "Preview",
             "serverPrefix": "Cadastre",
-            "bound": "Bound parcels ({{count}}):",
-            "more": "+{{count}} more",
+            "bound": "Bound parcels ({{count}})",
+            "drawingEmpty": "Close the outline to see the parcels it binds.",
             "noParcels": "Binds no parcel: it can only execute through an authority's verdict.",
             "openGround": "Hatched: open ground nobody can consent for; executing needs an authority's verdict.",
             "touched": "Reaches {{width}} into {{parcel}} — below the tolerance, not bound.",

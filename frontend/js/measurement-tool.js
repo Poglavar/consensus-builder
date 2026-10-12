@@ -16,8 +16,8 @@ function toggleMeasureTool() {
     const mapContainer = map.getContainer();
 
     if (window.measureMode) {
-        // Activate measurement mode
-        measureButton.classList.add('active-black-border');
+        // Activate measurement mode: the tool that is on is aria-pressed (css/primitives.css).
+        measureButton.setAttribute('aria-pressed', 'true');
         mapContainer.classList.add('crosshairs-cursor');
         map.getContainer().style.cursor = 'crosshair';
 
@@ -34,7 +34,7 @@ function toggleMeasureTool() {
         updateStatus('Click on the map to start measuring');
     } else {
         // Deactivate measurement mode
-        measureButton.classList.remove('active-black-border');
+        measureButton.setAttribute('aria-pressed', 'false');
         mapContainer.classList.remove('crosshairs-cursor');
         map.getContainer().style.cursor = '';
 
@@ -202,10 +202,11 @@ function clearAllMeasurements() {
     updateStatus('All measurements cleared');
 }
 
-// Update the visibility of the Cancel Measurements button
+// Update the visibility of the Cancel Measurements button (the hidden attribute; .btn[hidden] in
+// css/primitives.css)
 function updateCancelMeasurementsButton() {
     const button = document.getElementById('clearMeasurementsButton');
-    button.style.display = allMeasurements.length > 0 ? '' : 'none';
+    button.hidden = allMeasurements.length === 0;
 }
 
 // Handle mouse movement for measurement preview

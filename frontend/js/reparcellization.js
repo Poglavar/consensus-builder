@@ -287,8 +287,10 @@
         return options.map(option => {
             const checked = option.key === selectedKey ? 'checked' : '';
             const disabled = option.disabled ? 'disabled' : '';
+            // A segmented control around native radios (css/primitives.css); reparcel-alg-option is
+            // the hook the tests click.
             return `
-                <label class="reparcel-alg-option">
+                <label class="cb-segmented__option reparcel-alg-option">
                     <input type="radio" name="reparcel-algorithm" value="${option.key}" ${checked} ${disabled}>
                     <span>${option.label}</span>
                 </label>`;
@@ -402,15 +404,11 @@
             'The edits you made here have not been saved to the proposal. Closing now discards them.');
         const discardLabel = t('reparcellization.modal.discardConfirm', 'Discard changes');
         const keepLabel = t('reparcellization.modal.discardCancel', 'Keep editing');
-        // showStyledConfirm takes (message, { okText, cancelText }) — it has no title option, so the
-        // title rides in the message, and the confirm label is `okText` (not `confirmText`).
-        if (typeof window.showStyledConfirm === 'function') {
-            try {
-                return await window.showStyledConfirm(`${title}\n\n${message}`,
-                    { okText: discardLabel, cancelText: keepLabel });
-            } catch (_) { /* fall through to the native confirm */ }
-        }
-        return window.confirm(`${title}\n\n${message}`);
+        // The app's confirm (js/ui/dialogs.js) on its top rung, over this editor; discarding is the
+        // destructive answer, so keeping the edits is the inviting one.
+        return window.CbDialog.confirm(message, {
+            title, okText: discardLabel, cancelText: keepLabel, destructive: true
+        });
     }
 
     function closeModal(options = {}) {
@@ -487,8 +485,10 @@
     }
 
     function buildModalStructure() {
+        // The editor wears the dialog primitive (css/primitives.css: overlay, card, header, body,
+        // footer, the phone bottom sheet); css/modals.css lays out the tools, map and ledger inside.
         const overlay = document.createElement('div');
-        overlay.className = 'reparcel-modal-overlay';
+        overlay.className = 'reparcel-modal-overlay cb-dialog-overlay';
         const parcelCount = state.selection.ids.length;
         const algorithmOption = getAlgorithmOptionByKey(state.algorithm) || getAlgorithmOptionByKey('sweep-line');
         const algorithmLabel = algorithmOption ? algorithmOption.label : t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm');
@@ -506,10 +506,16 @@
         const cancelLabel = t('reparcellization.modal.cancel', 'Cancel');
         const allPublicLabel = t('reparcellization.modal.allPublic', 'All public');
         const assignOwnersLabel = t('reparcellization.modal.assignOwners', 'Assign owners');
+        // The drawing tools are icon buttons: the label is the accessible name and the tooltip.
+        const tool = (attrs, key, fallback, icon) => {
+            const label = t(key, fallback);
+            return `<button type="button" class="btn btn-icon" ${attrs} title="${label}" aria-label="${label}"><i class="fa-solid ${icon}" aria-hidden="true"></i></button>`;
+        };
+        const uploadLabel = t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON');
 
         const algorithmControls = `
                     <div class="reparcel-controls" data-reparcel-alg-group>
-                        <div class="reparcel-alg-options" role="group" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
+                        <div class="cb-segmented reparcel-alg-options" role="radiogroup" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
                         <div class="reparcel-courtyard-tools" data-reparcel-courtyard-tools hidden>
                             <span class="reparcel-courtyard-label">${t('reparcellization.modal.sharedCourtyard', 'Shared courtyard')}</span>
                             <button type="button" class="btn" data-reparcel-courtyard-building>${t('reparcellization.modal.courtyardFromBuilding', 'From a building block')}</button>
@@ -518,24 +524,24 @@
                         </div>
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
-                                <button type="button" class="btn-icon" data-reparcel-draw aria-pressed="false" title="${t('reparcellization.modal.drawPlot', 'Draw plot')}">&#x2B1F;</button>
-                                <button type="button" class="btn-icon" data-reparcel-line aria-pressed="false" title="${t('reparcellization.modal.drawLine', 'Draw a line')}">&#x2571;</button>
-                                <button type="button" class="btn-icon" data-reparcel-erase aria-pressed="false" title="${t('reparcellization.modal.eraseEdge', 'Erase a boundary')}">&#x232B;</button>
-                                <button type="button" class="btn-icon" data-reparcel-nodes aria-pressed="false" title="${t('reparcellization.modal.editNodes', 'Edit boundaries (nodes)')}">&#x2735;</button>
-                                <button type="button" class="btn-icon" data-reparcel-undo-edit disabled title="${t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')}">&#x21B6;</button>
-                                <button type="button" class="btn-icon" data-reparcel-shuffle title="${t('reparcellization.modal.shuffle', 'Shuffle ownership')}">&#x1f500;</button>
-                                <label class="btn-icon btn-upload-label" title="${t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON')}">
-                                    &#x1F4C2;
-                                    <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload hidden>
+                                ${tool('data-reparcel-draw aria-pressed="false"', 'reparcellization.modal.drawPlot', 'Draw plot', 'fa-draw-polygon')}
+                                ${tool('data-reparcel-line aria-pressed="false"', 'reparcellization.modal.drawLine', 'Draw a line', 'fa-slash')}
+                                ${tool('data-reparcel-erase aria-pressed="false"', 'reparcellization.modal.eraseEdge', 'Erase a boundary', 'fa-eraser')}
+                                ${tool('data-reparcel-nodes aria-pressed="false"', 'reparcellization.modal.editNodes', 'Edit boundaries (nodes)', 'fa-bezier-curve')}
+                                ${tool('data-reparcel-undo-edit disabled', 'reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)', 'fa-rotate-left')}
+                                ${tool('data-reparcel-shuffle', 'reparcellization.modal.shuffle', 'Shuffle ownership', 'fa-shuffle')}
+                                <label class="btn btn-icon" title="${uploadLabel}">
+                                    <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                                    <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
                                 </label>
-                                <button type="button" class="btn-icon reparcel-assign-btn" data-reparcel-assign aria-pressed="false" data-i18n-key="reparcellization.modal.assignOwners" data-i18n-attr="title" title="${assignOwnersLabel}">&#x1F464;</button>
-                                <button type="button" class="btn reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
+                                <button type="button" class="btn btn-icon reparcel-assign-btn" data-reparcel-assign aria-pressed="false" data-i18n-key="reparcellization.modal.assignOwners" data-i18n-attr="title,aria-label" title="${assignOwnersLabel}" aria-label="${assignOwnersLabel}"><i class="fa-solid fa-user-tag" aria-hidden="true"></i></button>
+                                <button type="button" class="btn btn-sm reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                                 <span class="reparcel-tools-spacer"></span>
                             </div>
                             <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
-                                <button type="button" class="btn-draw-tool" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
-                                <button type="button" class="btn-draw-tool btn-draw-finish" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
-                                <button type="button" class="btn-draw-tool" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
+                                <button type="button" class="btn btn-sm" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
+                                <button type="button" class="btn btn-sm btn-success" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
+                                <button type="button" class="btn btn-sm" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
                             </div>
                         </div>
                     </div>`;
@@ -544,15 +550,15 @@
         // went into the pool, and what the plan makes of it. Old plots is a READ-ONLY view — the
         // cadastre is the given, not something this editor edits.
         const sidePanel = `<section class="reparcel-legend-panel">
-                            <div class="reparcel-plots-tabs" role="tablist">
-                                <button type="button" role="tab" class="reparcel-plots-tab is-active" data-reparcel-plots-tab="new" aria-selected="true">${t('reparcellization.modal.newPlots', 'New plots')}</button>
-                                <button type="button" role="tab" class="reparcel-plots-tab" data-reparcel-plots-tab="old" aria-selected="false">${t('reparcellization.modal.oldPlots', 'Old plots')}</button>
+                            <div class="cb-tabs reparcel-plots-tabs" role="tablist">
+                                <button type="button" role="tab" class="cb-tab" data-reparcel-plots-tab="new" aria-selected="true">${t('reparcellization.modal.newPlots', 'New plots')}</button>
+                                <button type="button" role="tab" class="cb-tab" data-reparcel-plots-tab="old" aria-selected="false">${t('reparcellization.modal.oldPlots', 'Old plots')}</button>
                             </div>
                             <div class="reparcel-newplots-list" data-reparcel-newplots-table></div>
                             <div class="reparcel-oldplots-list" data-reparcel-oldplots-table hidden></div>
                             <div class="reparcel-owner-review" data-reparcel-owner-review></div>
                             <div class="reparcel-legend-header">
-                                <h3>${t('reparcellization.modal.owners', 'Owners')}</h3>
+                                <h3 class="cb-kicker">${t('reparcellization.modal.owners', 'Owners')}</h3>
                             </div>
                             <div class="reparcel-legend-list" data-reparcel-owners-table></div>
                             <div class="reparcel-cashtotal" data-reparcel-cashtotal></div>
@@ -560,27 +566,27 @@
                             <div class="reparcel-status" data-reparcel-status></div>
                         </section>`;
         overlay.innerHTML = `
-            <div class="reparcel-modal" role="dialog" aria-modal="true">
-                <div class="reparcel-header">
+            <div class="reparcel-modal cb-dialog cb-dialog--xl" role="dialog" aria-modal="true" aria-labelledby="reparcel-title">
+                <div class="reparcel-header cb-dialog__header">
                     <div class="reparcel-header__text">
-                        <h2 data-i18n-key="${titleKey}">${titleText}</h2>
+                        <h2 id="reparcel-title" class="cb-dialog__title" data-i18n-key="${titleKey}">${titleText}</h2>
                         <p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
                     </div>
                     <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" data-i18n-key="reparcellization.modal.closeAria" data-i18n-attr="aria-label" aria-label="${closeLabel}">&times;</button>
                 </div>
-                <div class="reparcel-content">
+                <div class="reparcel-content cb-dialog__body">
                     ${algorithmControls}
                     <div class="reparcel-layout">
                         <section class="reparcel-map-panel">
-                            <button type="button" class="reparcel-compare-btn" data-reparcel-compare hidden>${t('mapCompare.toggle', 'Before / After')}</button>
+                            <button type="button" class="btn btn-sm reparcel-compare-btn" data-reparcel-compare aria-pressed="false" hidden>${t('mapCompare.toggle', 'Before / After')}</button>
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
                         </section>
                         ${sidePanel}
-                        <div class="reparcel-actions reparcel-actions--commit">
-                            <button type="button" class="btn btn-secondary" data-reparcel-cancel data-i18n-key="reparcellization.modal.cancel" data-i18n-attr="text">${cancelLabel}</button>
-                            <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
-                        </div>
                     </div>
+                </div>
+                <div class="reparcel-actions reparcel-actions--commit cb-dialog__footer">
+                    <button type="button" class="btn" data-reparcel-cancel data-i18n-key="reparcellization.modal.cancel" data-i18n-attr="text">${cancelLabel}</button>
+                    <button type="button" class="btn btn-primary" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                 </div>
             </div>`;
         document.body.appendChild(overlay);
@@ -968,7 +974,7 @@
         for (const entry of candidates) {
             const button = document.createElement('button');
             button.type = 'button';
-            button.className = 'reparcel-owner-popup__joint';
+            button.className = 'btn reparcel-owner-popup__joint';
             button.textContent = entry.proposal.title || entry.proposal.name || String(entry.proposal.proposalId);
             button.addEventListener('click', () => {
                 dismissOwnerPopup();
@@ -1219,7 +1225,7 @@
                 tr.className = 'reparcel-newplot-row';
                 tr.innerHTML = `
                     <td class="plot-cell"><strong>${idx + 1}</strong> <span class="area-cell">${formatArea(area)}</span></td>
-                    <td>${ownerHtml}<button type="button" class="btn reparcel-edit-shares">${escapeHtml(t('reparcellization.modal.editShares', 'Edit shares'))}</button></td>`;
+                    <td>${ownerHtml}<button type="button" class="btn btn-sm reparcel-edit-shares">${escapeHtml(t('reparcellization.modal.editShares', 'Edit shares'))}</button></td>`;
                 tr.querySelector('.reparcel-edit-shares').addEventListener('click', () => {
                     exitCompare();
                     setPlotsTab('new');
@@ -1365,7 +1371,6 @@
         state.plotsTab = next;
         (state.plotsTabBtns || []).forEach(btn => {
             const active = btn.getAttribute('data-reparcel-plots-tab') === next;
-            btn.classList.toggle('is-active', active);
             btn.setAttribute('aria-selected', active ? 'true' : 'false');
         });
         if (state.newPlotsListEl) state.newPlotsListEl.hidden = next !== 'new';
@@ -1818,14 +1823,8 @@
         const active = state.drawing.active;
         const polyOn = active && state.drawing.mode === 'polygon';
         const lineOn = active && state.drawing.mode === 'line';
-        if (state.drawBtn) {
-            state.drawBtn.classList.toggle('active', polyOn);
-            state.drawBtn.setAttribute('aria-pressed', polyOn ? 'true' : 'false');
-        }
-        if (state.lineBtn) {
-            state.lineBtn.classList.toggle('active', lineOn);
-            state.lineBtn.setAttribute('aria-pressed', lineOn ? 'true' : 'false');
-        }
+        if (state.drawBtn) state.drawBtn.setAttribute('aria-pressed', polyOn ? 'true' : 'false');
+        if (state.lineBtn) state.lineBtn.setAttribute('aria-pressed', lineOn ? 'true' : 'false');
     }
 
     function clearDrawTemp() {
@@ -2323,10 +2322,7 @@
         if (next === state.erase.active) return;
         if (next && !eraseAvailable()) return;
         state.erase.active = next;
-        if (state.eraseBtn) {
-            state.eraseBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
-            state.eraseBtn.classList.toggle('active', next);
-        }
+        if (state.eraseBtn) state.eraseBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
             exitCompare();
             dismissOwnerPopup();
@@ -2633,10 +2629,7 @@
         const next = typeof force === 'boolean' ? force : !state.assignMode;
         if (next === state.assignMode) return;
         state.assignMode = next;
-        if (state.assignBtn) {
-            state.assignBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
-            state.assignBtn.classList.toggle('is-active', next);
-        }
+        if (state.assignBtn) state.assignBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (state.modal) state.modal.classList.toggle('reparcel-assign-mode', next);
         const allPublicBtn = state.modal && state.modal.querySelector('[data-reparcel-all-public]');
         if (allPublicBtn) allPublicBtn.hidden = !next;
@@ -3233,9 +3226,8 @@
             });
 
             const swatch = document.createElement('span');
-            swatch.className = 'legend-color';
+            swatch.className = owner.ownerKey === PUBLIC_LAND_KEY ? 'legend-color legend-color--public' : 'legend-color';
             swatch.style.background = owner.color;
-            if (owner.ownerKey === PUBLIC_LAND_KEY) swatch.style.border = '1px solid #9ca3af';
 
             const nameSpan = document.createElement('span');
             nameSpan.textContent = ownerDisplayName(owner.displayName);
@@ -3312,7 +3304,9 @@
         renderShareInputs();
 
         const closeBtn = document.createElement('button');
-        closeBtn.className = 'reparcel-owner-popup__close';
+        closeBtn.type = 'button';
+        closeBtn.className = 'close-circle-btn reparcel-owner-popup__close';
+        closeBtn.setAttribute('aria-label', t('reparcellization.modal.closeAria', 'Close'));
         closeBtn.textContent = '\u00d7';
         closeBtn.addEventListener('click', (evt) => {
             evt.stopPropagation();
@@ -3580,7 +3574,7 @@
         state.compare.session = session;
         state.compare.map2 = session.beforeMap;
         drawOwnerReviewHighlights();
-        if (state.compareBtn) state.compareBtn.classList.add('active');
+        if (state.compareBtn) state.compareBtn.setAttribute('aria-pressed', 'true');
     }
 
     function exitCompare() {
@@ -3590,7 +3584,7 @@
         state.compare.map2 = null;
         state.compare.active = false;
         drawOwnerReviewHighlights();
-        if (state.compareBtn) state.compareBtn.classList.remove('active');
+        if (state.compareBtn) state.compareBtn.setAttribute('aria-pressed', 'false');
     }
 
     function toggleCompare() {

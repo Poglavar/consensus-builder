@@ -13,6 +13,8 @@ const panelsCss = read('css/panels.css');
 const photorealCss = read('css/photoreal-mode.css');
 const grainCss = read('css/grain-score.css');
 const mapShellCss = read('css/map-shell.css');
+const primitivesCss = read('css/primitives.css');
+const indexHtml = read('index.html');
 const mapCreditsCss = read('css/map-credits.css');
 const selectionTrayCss = read('css/selection-tray.css');
 const proposalsCss = read('css/proposals.css');
@@ -225,14 +227,16 @@ describe('smaller fixes', () => {
         expect(prompt.indexOf('hideProposalLoadOverlay()')).toBeLessThan(prompt.indexOf('await askUser('));
     });
 
-    it('keeps the rooster card cream: its selector outranks the generic .btn', () => {
-        expect(grainCss).toMatch(/\.btn\.grain-score-button\s*\{/);
-        expect(grainCss).toMatch(/\.btn\.grain-score-button:hover:not\(:disabled\)/);
+    it('makes the rooster entry a plain .btn row: its stylesheet lays it out and paints nothing', () => {
+        expect(grainCss).not.toMatch(/\.btn\.grain-score-button\s*\{/);
+        expect(grainCss).not.toMatch(/\.grain-score-button(?::[\w-]+(?:\([^)]*\))?)*\s*\{[^}]*\bbackground/);
     });
 
     it('gives the shell buttons the page font (a <button> does not inherit it)', () => {
         expect(ruleBody(mapShellCss, '\\n\\.map-shell-button')).toMatch(/font:\s*inherit;/);
-        expect(ruleBody(mapShellCss, '\\n\\.activity-simulation-play')).toMatch(/font:\s*inherit;/);
+        // The simulation's play button is a .btn, whose primitive gives it the page font.
+        expect(indexHtml).toMatch(/id="game-play-pause-btn" class="btn\b[^"]*activity-simulation-play/);
+        expect(ruleBody(primitivesCss, '\\n\\.btn')).toMatch(/font:\s*inherit;/);
     });
 
     it('lets a proposal title wrap on phones instead of cutting its distinguishing end', () => {

@@ -50,7 +50,7 @@ test.describe('Parcel diagnostics @features', () => {
     await openCity(page);
     await openParcel(page, 'tools');
     await page.locator('#neighboursButton').click();
-    await expect(page.locator('#neighboursButton')).toHaveClass(/active/);
+    await expect(page.locator('#neighboursButton')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#floating-status-text')).toContainText('Highlighted 1 neighboring parcels');
     const highlights = () => page.evaluate(() => {
       let count = 0;

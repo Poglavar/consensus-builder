@@ -590,64 +590,66 @@
 
     // ---- the dialog -------------------------------------------------------------------------------
 
+    // The recovery dialog: the shared one (js/ui/dialogs.js) with `ground-fallback-dialog` as its
+    // identity class, on the ordinary dialog rung (the introduction sits above it). The close
+    // button, Escape (the modal router) and the backdrop all dismiss the offer for the session;
+    // choosing an option closes it without dismissing.
     function showDialog(context) {
         const { city, verdict } = context;
-        const overlay = el('div', 'cb-confirm-overlay ground-fallback-overlay');
-        const dialog = el('div', 'cb-confirm-dialog ground-fallback-dialog');
-        dialog.setAttribute('role', 'dialog');
-        dialog.setAttribute('aria-modal', 'true');
-        overlay.appendChild(dialog);
-
-        const header = el('div', 'ground-fallback-header');
-        const title = el('h3', 'ground-fallback-title', t('groundFallback.title', 'No parcel register could be loaded here'));
-        const closeBtn = el('button', 'close-circle-btn ground-fallback-close', '×');
-        closeBtn.type = 'button';
-        closeBtn.setAttribute('aria-label', t('modal.common.close', 'Close'));
-        header.appendChild(title);
-        header.appendChild(closeBtn);
-        dialog.appendChild(header);
-
         const statusLine = el('p', `ground-fallback-status ground-fallback-status--${verdict.kind}`, context.message || describeVerdict(city, verdict));
-        dialog.appendChild(statusLine);
-
         const body = el('div', 'ground-fallback-body');
-        dialog.appendChild(body);
+        const CHOSEN = 'chosen';
 
-        function close() {
-            document.removeEventListener('keydown', onKeydown, true);
-            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-            if (openDialog === overlay) openDialog = null;
-            document.body.classList.remove('ground-fallback-open');
-        }
+        const dialogApi = global.CbDialog.open({
+            title: t('groundFallback.title', 'No parcel register could be loaded here'),
+            size: 'md',
+            className: 'ground-fallback-dialog',
+            overlayClassName: 'ground-fallback-overlay',
+            closeLabel: t('modal.common.close', 'Close'),
+            autofocus: false,
+            onClose: result => {
+                document.removeEventListener('keydown', onKeydown, true);
+                if (openDialog === dialogApi.overlay) openDialog = null;
+                document.body.classList.remove('ground-fallback-open');
+                if (result !== CHOSEN) {
+                    dismiss(city);
+                    global.ParcelSourceSettings?.reportFailure?.(global, context.message || describeVerdict(city, verdict));
+                    status(t('groundFallback.status.dismissed', 'Parcel register unavailable. Open the parcel options to choose how to continue.'));
+                }
+            }
+        });
+        if (!dialogApi) return null;
+        dialogApi.body.appendChild(statusLine);
+        dialogApi.body.appendChild(body);
+        const closeBtn = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+        if (closeBtn) closeBtn.classList.add('ground-fallback-close');
 
-        function dismissAndClose() {
-            dismiss(city);
-            close();
-            global.ParcelSourceSettings?.reportFailure?.(global, context.message || describeVerdict(city, verdict));
-            status(t('groundFallback.status.dismissed', 'Parcel register unavailable. Open the parcel options to choose how to continue.'));
-        }
+        // A choice was made: close without dismissing the offer.
+        function close() { dialogApi.close(CHOSEN); }
+        // Not now / the close button / Escape / the backdrop: the offer is dismissed for the session.
+        function dismissAndClose() { dialogApi.close(null); }
 
         function onKeydown(event) {
             if (introVisible()) return;
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                event.stopPropagation();
-                dismissAndClose();
-                return;
-            }
+            // Escape belongs to the modal router (it closes the dialog); Tab stays inside it.
+            if (event.key === 'Escape' || event.key === 'Tab') return;
             // Drawing hotkeys listen on document; typing a URL must not start drawing a road.
             event.stopPropagation();
         }
         document.addEventListener('keydown', onKeydown, true);
-        closeBtn.addEventListener('click', dismissAndClose);
-        overlay.addEventListener('click', event => { if (event.target === overlay) dismissAndClose(); });
 
-        function option(key, titleText, descriptionText, onClick, options = {}) {
-            const button = el('button', `ground-fallback-option${options.disabled ? ' is-disabled' : ''}`);
+        // One choice: a cb-option row (css/primitives.css) with its icon, title and description.
+        function option(key, icon, titleText, descriptionText, onClick, options = {}) {
+            const button = el('button', 'cb-option ground-fallback-option');
             button.type = 'button';
             button.dataset.option = key;
-            button.appendChild(el('span', 'ground-fallback-option-title', titleText));
-            button.appendChild(el('span', 'ground-fallback-option-desc', descriptionText));
+            const glyph = el('i', `cb-option__icon fa-solid ${icon}`);
+            glyph.setAttribute('aria-hidden', 'true');
+            const text = el('span', 'cb-option__text');
+            text.appendChild(el('span', 'cb-option__title', titleText));
+            text.appendChild(el('span', 'cb-option__desc', descriptionText));
+            button.appendChild(glyph);
+            button.appendChild(text);
             if (options.disabled) {
                 button.disabled = true;
             } else {
@@ -660,7 +662,7 @@
             body.replaceChildren();
             const list = el('div', 'ground-fallback-options');
             if (verdict.retryable) {
-                list.appendChild(option('retry',
+                list.appendChild(option('retry', 'fa-rotate-right',
                     t('groundFallback.options.retry.title', 'Retry the official register'),
                     t('groundFallback.options.retry.desc', 'Ask the register again. Right for a network hiccup or a server that was briefly down.'),
                     async () => {
@@ -670,21 +672,21 @@
                         await refetchViewport();
                     }));
             }
-            list.appendChild(option('url',
+            list.appendChild(option('url', 'fa-link',
                 t('groundFallback.options.url.title', 'Enter your own link to a register'),
                 t('groundFallback.options.url.desc', 'A GeoJSON file, an OGC API Features collection, or an ArcGIS FeatureServer layer with parcel polygons.'),
                 renderUrl));
-            list.appendChild(option('ocr',
+            list.appendChild(option('ocr', 'fa-satellite',
                 t('groundFallback.options.ocr.title', 'Estimate parcel boundaries from satellite imagery'),
                 t('groundFallback.options.ocr.desc', 'Infer likely boundaries from visible features. Best effort: results may be incomplete or wrong and do not establish legal boundaries.'),
                 renderOcr));
-            list.appendChild(option('schelling',
+            list.appendChild(option('schelling', 'fa-border-all',
                 t('groundFallback.options.schelling.title', 'Apply a Schelling point algorithm'),
                 t('groundFallback.options.schelling.desc', 'A parcel plan anyone can derive on their own, so everyone arrives at the same one.'),
                 renderSchelling));
             body.appendChild(list);
             const foot = el('div', 'ground-fallback-foot');
-            const laterBtn = el('button', 'btn btn-secondary', t('groundFallback.options.later', 'Not now'));
+            const laterBtn = el('button', 'btn', t('groundFallback.options.later', 'Not now'));
             laterBtn.type = 'button';
             laterBtn.addEventListener('click', dismissAndClose);
             foot.appendChild(laterBtn);
@@ -692,7 +694,7 @@
         }
 
         function backButton() {
-            const back = el('button', 'btn btn-secondary ground-fallback-back', t('groundFallback.back', '← Back to the options'));
+            const back = el('button', 'btn ground-fallback-back', t('groundFallback.back', '← Back to the options'));
             back.type = 'button';
             back.addEventListener('click', renderOptions);
             return back;
@@ -714,7 +716,7 @@
             const result = el('p', 'ground-fallback-result');
             section.appendChild(result);
             const actions = el('div', 'ground-fallback-actions');
-            const check = el('button', 'btn btn-action', t('groundFallback.url.check', 'Check and use this link'));
+            const check = el('button', 'btn btn-primary btn-block', t('groundFallback.url.check', 'Check and use this link'));
             check.type = 'button';
             actions.appendChild(backButton());
             actions.appendChild(check);
@@ -760,7 +762,7 @@
             if (jobs && typeof jobs.start === 'function') {
                 section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.help', 'Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.')));
                 const actions = el('div', 'ground-fallback-actions');
-                const start = el('button', 'btn btn-action', t('groundFallback.ocr.start', 'Start boundary recognition'));
+                const start = el('button', 'btn btn-primary btn-block', t('groundFallback.ocr.start', 'Start boundary recognition'));
                 start.type = 'button';
                 start.addEventListener('click', async () => {
                     start.disabled = true;
@@ -793,7 +795,8 @@
             section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.schelling.intro', 'A Schelling point is a choice people make independently and still agree on, because every input is already common knowledge. The plan below needs only a GPS fix and arithmetic; two strangers get identical parcels.')));
 
             const picker = el('div', 'ground-fallback-algorithms');
-            const meridians = el('label', 'ground-fallback-algorithm is-selected');
+            // The chosen and the unavailable algorithm read from their radios (css :has()).
+            const meridians = el('label', 'ground-fallback-algorithm');
             const meridiansRadio = document.createElement('input');
             meridiansRadio.type = 'radio'; meridiansRadio.name = 'schelling-algorithm'; meridiansRadio.value = 'meridians-parallels'; meridiansRadio.checked = true;
             meridians.appendChild(meridiansRadio);
@@ -802,7 +805,7 @@
             meridiansText.appendChild(el('small', null, t('groundFallback.schelling.meridians.desc', 'Arterial roads on the graticule about 1 km apart, blocks by integer division.')));
             meridians.appendChild(meridiansText);
             picker.appendChild(meridians);
-            const contours = el('label', 'ground-fallback-algorithm is-disabled');
+            const contours = el('label', 'ground-fallback-algorithm');
             const contoursRadio = document.createElement('input');
             contoursRadio.type = 'radio'; contoursRadio.name = 'schelling-algorithm'; contoursRadio.value = 'contours'; contoursRadio.disabled = true;
             contours.appendChild(contoursRadio);
@@ -926,7 +929,7 @@
             }
 
             const actions = el('div', 'ground-fallback-actions');
-            const apply = el('button', 'btn btn-action', t('groundFallback.schelling.apply', 'Draw this plan here'));
+            const apply = el('button', 'btn btn-primary btn-block', t('groundFallback.schelling.apply', 'Draw this plan here'));
             apply.type = 'button';
             apply.addEventListener('click', async () => {
                 if (!plan) return;
@@ -957,14 +960,13 @@
         }
 
         renderOptions();
-        document.body.appendChild(overlay);
         document.body.classList.add('ground-fallback-open');
-        openDialog = overlay;
+        openDialog = dialogApi.overlay;
         requestAnimationFrame(() => {
             const first = body.querySelector('button:not([disabled])');
             if (first) first.focus({ preventScroll: true });
         });
-        return overlay;
+        return dialogApi.overlay;
     }
 
     // Lets the visitor reopen the screen on purpose (sidebar/refresh), bypassing the dismissal.

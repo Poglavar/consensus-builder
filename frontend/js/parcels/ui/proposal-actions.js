@@ -239,6 +239,9 @@
     //   disabled         — { toolKey: reason } shown disabled, the reason as its title and a note;
     //   labels           — { toolKey: label } replaces a tool's label (the site tool names Land
     //                      readjustment "Subdivide" on a site with open ground).
+    // The palette is the shared choice tiles (cb-tiles > cb-tile, css/primitives.css) under section
+    // kickers. parcel-build-btn and its --<tool> / parcel-transport-btn--<tool> modifiers stay on each
+    // tile as the hooks the specs and the site tool find them by; they paint nothing.
     function buildPaletteHtml(options = {}) {
         const buildHandler = options.buildHandler || 'startParcelBuildTool';
         const disabled = options.disabled || {};
@@ -248,10 +251,10 @@
             const label = labels[tool.key] || tParcel(tool.labelKey, {}, tool.fallback);
             const reason = disabled[tool.key];
             return `
-            <button type="button" class="parcel-build-btn parcel-build-btn--${tool.key}" onclick="${buildHandler}('${tool.key}')"
+            <button type="button" class="cb-tile parcel-build-btn parcel-build-btn--${tool.key}" onclick="${buildHandler}('${tool.key}')"
                 title="${escapeAttr(reason || label)}"${reason ? ' disabled aria-disabled="true"' : ''}>
-                <i class="fas ${tool.icon}"></i>
-                <span>${label}</span>
+                <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
+                <span class="cb-tile__label">${label}</span>
             </button>
             ${reason ? `<p class="parcel-build-disabled-reason">${escapeAttr(reason)}</p>` : ''}
         `;
@@ -269,18 +272,19 @@
         const ownershipButtons = PARCEL_OWNERSHIP_TOOLS.map(buttonHtml).join('');
         const rulesTitle = tParcel('panel.parcel.build.rulesCategory', {}, 'Urban rules');
         const structuresTitle = tParcel('panel.parcel.build.structuresCategory', {}, 'Structures');
+        // A station tile is a toggle: transit-stations.js marks the type being placed.
         const transportButtons = PARCEL_TRANSPORT_TOOLS
             .filter(tool => tool.stationType || roadToolsEnabled())
             .map(tool => {
                 const label = tParcel(tool.labelKey, {}, tool.fallback);
                 const title = tParcel(tool.titleKey, {}, tool.titleFallback);
-                const stationAttribute = tool.stationType ? ` data-station-type="${tool.stationType}"` : '';
+                const stationAttribute = tool.stationType ? ` data-station-type="${tool.stationType}" aria-pressed="false"` : '';
                 return `
-                    <button type="button" class="parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}"
+                    <button type="button" class="cb-tile parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}"
                         onclick="${options.transportHandler || 'startParcelTransportTool'}('${tool.key}')"${stationAttribute}
                         title="${title}" aria-label="${title}">
-                        <i class="fas ${tool.icon}" aria-hidden="true"></i>
-                        <span>${label}</span>
+                        <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
+                        <span class="cb-tile__label">${label}</span>
                     </button>
                 `;
             }).join('');
@@ -288,25 +292,23 @@
         const ownershipTitle = tParcel('panel.parcel.build.ownershipCategory', {}, 'Ownership');
         return `
             <div class="parcel-build-palette">
-                <div class="parcel-build-grid">
-                    ${readjustmentButton}
-                    <fieldset class="parcel-rules-group">
-                        <legend>${rulesTitle}</legend>
-                        <div class="parcel-rules-grid">${ruleButtons}</div>
-                    </fieldset>
-                    <fieldset class="parcel-structures-group">
-                        <legend>${structuresTitle}</legend>
-                        <div class="parcel-structures-grid">${structureButtons}</div>
-                    </fieldset>
-                    <fieldset class="parcel-transport-group">
-                        <legend>${transportTitle}</legend>
-                        <div class="parcel-transport-grid">${transportButtons}</div>
-                    </fieldset>
-                    ${options.includeOwnership === false ? '' : `<fieldset class="parcel-ownership-group">
-                        <legend>${ownershipTitle}</legend>
-                        <div class="parcel-ownership-grid">${ownershipButtons}</div>
-                    </fieldset>`}
-                </div>
+                <div class="cb-tiles parcel-build-grid">${readjustmentButton}</div>
+                <section class="parcel-rules-group">
+                    <h4 class="cb-kicker">${rulesTitle}</h4>
+                    <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
+                </section>
+                <section class="parcel-structures-group">
+                    <h4 class="cb-kicker">${structuresTitle}</h4>
+                    <div class="cb-tiles parcel-structures-grid">${structureButtons}</div>
+                </section>
+                <section class="parcel-transport-group">
+                    <h4 class="cb-kicker">${transportTitle}</h4>
+                    <div class="cb-tiles parcel-transport-grid">${transportButtons}</div>
+                </section>
+                ${options.includeOwnership === false ? '' : `<section class="parcel-ownership-group">
+                    <h4 class="cb-kicker">${ownershipTitle}</h4>
+                    <div class="cb-tiles parcel-ownership-grid">${ownershipButtons}</div>
+                </section>`}
             </div>
         `;
     }

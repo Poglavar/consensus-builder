@@ -2149,7 +2149,7 @@ const multiParcelSelection = {
 
         const content = `
             <div class="multi-parcel-actions" style="margin-bottom: 15px; text-align: center;">
-                <button class="btn btn-secondary" onclick="cancelMultiParcelSelection()" style="padding: 8px 16px;"
+                <button type="button" class="btn" onclick="cancelMultiParcelSelection()"
                     data-i18n-key="panel.parcel.multi.cancelSelection">
                     ${tParcelMulti('panel.parcel.multi.cancelSelection', {}, 'Cancel Selection')}
                 </button>

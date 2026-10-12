@@ -131,9 +131,9 @@ test.describe('Capture how-to screenshots', () => {
     // clicks; accept it whenever one shows up.
     const acceptConfirm = async () => {
       await page.evaluate(() => {
-        const overlay = document.querySelector('.cb-confirm-overlay');
+        const overlay = document.querySelector('.cb-dialog-overlay--confirm');
         if (!overlay) return;
-        const ok = overlay.querySelector('.cb-confirm-button, .cb-confirm-ok, button');
+        const ok = overlay.querySelector('button');
         if (ok) (ok as HTMLButtonElement).click();
         else overlay.remove();
       });
@@ -173,11 +173,11 @@ test.describe('Capture how-to screenshots', () => {
       // answer this one on its primary (Discard/Odbaci) button instead.
       for (let i = 0; i < 3; i++) {
         const handled = await page.evaluate(() => {
-          const overlay = document.querySelector('.cb-confirm-overlay');
+          const overlay = document.querySelector('.cb-dialog-overlay--confirm');
           if (!overlay) return false;
-          const message = overlay.querySelector('.cb-confirm-message')?.textContent || '';
+          const message = overlay.querySelector('.cb-dialog-overlay--confirm .cb-dialog__body')?.textContent || '';
           if (!/dizajn|design/i.test(message)) return false;
-          const discard = (overlay.querySelector('.btn-action') || overlay.querySelector('button:last-of-type')) as HTMLButtonElement | null;
+          const discard = (overlay.querySelector('.btn-primary') || overlay.querySelector('button:last-of-type')) as HTMLButtonElement | null;
           if (!discard) return false;
           discard.click();
           return true;
@@ -520,7 +520,7 @@ test.describe('Capture how-to screenshots', () => {
             drawing: !!w.roadDrawingMode,
             segments: (w.getAllRoadSegments?.(true) || []).length,
             proposals: all.map((p: any) => p.goal || p.adapterKey || '?'),
-            confirmOpen: !!document.querySelector('.cb-confirm-overlay'),
+            confirmOpen: !!document.querySelector('.cb-dialog-overlay--confirm'),
             dialogOpen: !!document.querySelector('.create-proposal-modal'),
           };
         });

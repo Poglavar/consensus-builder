@@ -1,99 +1,71 @@
-/* Shared styling for the how-to guide pages and roadmap: a calm editorial shell for the
-   hub and each per-proposal-type walkthrough, with reusable cards, steps and callouts. */
+/* Shared styling for the how-to guide pages and the roadmap: the shared page header
+   (css/page-chrome.css) over a guide navigation column and a calm editorial reading column for the
+   hub and each per-proposal-type walkthrough, with reusable cards, steps and callouts. The
+   reading column scrolls on its own, so the header and the guide navigation stay in view; the
+   landing page (css/urban-planning.css) returns to normal document flow. */
 
+/* The guides' palette, read through the product tokens (css/tokens.css): the accent is the
+   product primary, the ground and the paper are the page and card surfaces. */
 :root {
-    --guide-ink: #17394f;
-    --guide-muted: #63727b;
-    --guide-blue: #17678e;
-    --guide-blue-dark: #102f3e;
-    --guide-sand: #f4efe6;
-    --guide-paper: #fffdf9;
-    --guide-line: #ded8cd;
-    --guide-yellow: #f3c969;
+    --guide-ink: var(--cb-text-strong);
+    --guide-muted: var(--cb-text-muted);
+    --guide-blue: var(--cb-primary);
+    --guide-sand: var(--cb-bg);
+    --guide-paper: var(--cb-surface);
+    --guide-line: var(--cb-line);
 }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
+html {
     height: 100%;
-    overflow-y: auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+        "header header"
+        "nav main";
+    height: 100%;
     background-color: var(--guide-sand);
     color: var(--guide-ink);
 }
 
-body {
-    display: flex;
-    min-height: 100vh;
+body > .cb-page-header {
+    grid-area: header;
 }
 
-/* Left sidebar */
+/* Guide navigation: the hub, this guide's sections and the neighbouring pages. */
 .sidebar {
-    width: 280px;
-    min-width: 280px;
-    min-height: 100vh;
-    max-height: 100vh;
+    grid-area: nav;
     box-sizing: border-box;
-    position: sticky;
-    top: 0;
+    min-height: 0;
     overflow-y: auto;
-    background:
-        radial-gradient(circle at 20% 12%, rgba(93, 186, 201, 0.24), transparent 30%),
-        linear-gradient(160deg, var(--guide-blue-dark), #174f64 62%, #1d7080);
-    color: white;
-    padding: 32px 22px;
-    box-shadow: 8px 0 30px rgba(17, 45, 58, 0.12);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.sidebar img {
-    height: 64px;
-    margin-bottom: 15px;
-    filter: brightness(0) invert(1);
-    opacity: 0.86;
-}
-
-.sidebar h1 {
-    margin: 0 0 28px 0;
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.3;
+    padding: 20px 12px;
+    background: var(--guide-paper);
+    border-right: 1px solid var(--guide-line);
 }
 
 .sidebar-links {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    align-items: stretch;
+    gap: 4px;
 }
 
-.back-link {
-    color: white;
-    text-decoration: none;
-    padding: 11px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-weight: 500;
+.sidebar-links .btn {
+    justify-content: flex-start;
+    text-align: left;
 }
 
-.back-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.6);
+.sidebar-links .btn > i {
+    width: 18px;
+    text-align: center;
 }
 
 /* Main content */
 .main-content {
-    flex: 1;
+    grid-area: main;
+    min-height: 0;
     overflow-y: auto;
     background-color: var(--guide-sand);
 }
@@ -135,7 +107,7 @@ body {
     background: var(--guide-paper);
     border: 1px solid var(--guide-line);
     border-radius: 22px;
-    box-shadow: 0 18px 50px rgba(42, 52, 55, 0.08);
+    box-shadow: var(--cb-shadow-sm);
 }
 
 .intro-with-visual p {
@@ -147,7 +119,7 @@ body {
     min-width: 0;
     display: block;
     border-radius: 16px;
-    background: #edf4f3;
+    background: var(--cb-surface-2);
 }
 
 .eyebrow {
@@ -158,22 +130,6 @@ body {
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-}
-
-.primary-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 999px;
-    background: var(--guide-blue);
-    color: white;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.primary-link:hover {
-    background: var(--guide-blue-dark);
 }
 
 /* Hub: cards that link to each guide */
@@ -189,7 +145,7 @@ body {
     background: var(--guide-paper);
     border-radius: 14px;
     padding: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--cb-shadow-sm);
     text-decoration: none;
     color: inherit;
     border: 1px solid var(--guide-line);
@@ -198,15 +154,15 @@ body {
 
 .guide-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--cb-shadow-md);
 }
 
 .guide-card .card-icon {
     width: 48px;
     height: 48px;
     border-radius: 10px;
-    background: linear-gradient(135deg, var(--guide-blue), #4a9bad);
-    color: white;
+    background: var(--cb-primary-soft);
+    color: var(--guide-blue);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -222,7 +178,7 @@ body {
 
 .guide-card p {
     margin: 0;
-    color: #666;
+    color: var(--guide-muted);
     font-size: 14px;
     line-height: 1.5;
 }
@@ -230,17 +186,6 @@ body {
 .guide-card.disabled {
     opacity: 0.6;
     pointer-events: none;
-}
-
-.guide-card .soon {
-    display: inline-block;
-    margin-top: 10px;
-    font-size: 12px;
-    color: #856404;
-    background: #fff3cd;
-    border: 1px solid #ffeaa7;
-    border-radius: 12px;
-    padding: 2px 10px;
 }
 
 /* Compact landing-page sections used by the Croatian basics guide. */
@@ -256,7 +201,7 @@ body {
 }
 
 #izrada > h3 {
-    color: #2c3e50;
+    color: var(--guide-ink);
     margin: 34px 0 0;
 }
 
@@ -293,15 +238,14 @@ body {
     background: var(--guide-paper);
     border: 1px solid var(--guide-line);
     border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
 .view-number {
     flex: 0 0 46px;
     height: 46px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--guide-blue), #4a9bad);
-    color: white;
+    background: var(--guide-blue);
+    color: var(--cb-primary-ink);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -310,13 +254,13 @@ body {
 }
 
 .view-list h3 {
-    color: #2c3e50;
+    color: var(--guide-ink);
     font-size: 17px;
     margin: 0 0 4px;
 }
 
 .view-list p {
-    color: #666;
+    color: var(--guide-muted);
     line-height: 1.5;
     margin: 0;
 }
@@ -339,7 +283,6 @@ body {
     border-radius: 14px;
     padding: 22px 24px 22px 70px;
     margin-bottom: 22px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
     border: 1px solid var(--guide-line);
 }
 
@@ -352,8 +295,8 @@ body {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--guide-blue), #4a9bad);
-    color: white;
+    background: var(--guide-blue);
+    color: var(--cb-primary-ink);
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -363,11 +306,11 @@ body {
 .step h3 {
     margin: 4px 0 10px 0;
     font-size: 18px;
-    color: #2c3e50;
+    color: var(--guide-ink);
 }
 
 .step p {
-    color: #555;
+    color: var(--cb-text);
     line-height: 1.65;
     margin: 0 0 10px 0;
 }
@@ -379,9 +322,9 @@ body {
 /* UI label chip — used to quote the exact button text the user sees */
 .ui-label {
     display: inline-block;
-    background: #eef6f9;
-    color: #1a6d85;
-    border: 1px solid #cce5ec;
+    background: var(--cb-info-soft);
+    color: var(--cb-info-soft-ink);
+    border: 1px solid color-mix(in srgb, var(--cb-info) 25%, transparent);
     border-radius: 5px;
     padding: 1px 8px;
     font-weight: 600;
@@ -403,21 +346,21 @@ body {
 }
 
 .callout.tip {
-    background: #e8f6ef;
-    border: 1px solid #b7e2cd;
-    color: #1d6b47;
+    background: var(--cb-success-soft);
+    border: 1px solid color-mix(in srgb, var(--cb-success) 30%, transparent);
+    color: var(--cb-success-soft-ink);
 }
 
 .callout.note {
-    background: #eef2f7;
-    border: 1px solid #d3dce6;
-    color: #44546a;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--guide-line);
+    color: var(--cb-text);
 }
 
 .callout.warn {
-    background: #fff3cd;
-    border: 1px solid #ffeaa7;
-    color: #856404;
+    background: var(--cb-warning-soft);
+    border: 1px solid color-mix(in srgb, var(--cb-warning) 30%, transparent);
+    color: var(--cb-warning-soft-ink);
 }
 
 /* Screenshot frames. An <img> sits on top of a "pending" placeholder; when the
@@ -431,8 +374,8 @@ body {
     position: relative;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #d6dde4;
-    background: #f1f4f7;
+    border: 1px solid var(--guide-line);
+    background: var(--cb-surface-2);
     min-height: 120px;
     display: flex;
 }
@@ -443,7 +386,7 @@ body {
     width: 100%;
     height: auto;
     display: block;
-    background: #fff;
+    background: var(--cb-surface);
 }
 
 .shot-pending {
@@ -455,9 +398,9 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #8a96a3;
+    color: var(--cb-text-faint);
     font-size: 14px;
-    background: repeating-linear-gradient(45deg, #f1f4f7, #f1f4f7 10px, #eaeef2 10px, #eaeef2 20px);
+    background: repeating-linear-gradient(45deg, var(--cb-surface-2), var(--cb-surface-2) 10px, var(--cb-surface-3) 10px, var(--cb-surface-3) 20px);
 }
 
 .shot-pending i {
@@ -465,7 +408,7 @@ body {
 }
 
 .howto-shot figcaption {
-    color: #777;
+    color: var(--guide-muted);
     font-size: 13px;
     margin-top: 6px;
     font-style: italic;
@@ -473,38 +416,6 @@ body {
 
 /* Language switcher (hr <-> en). The guides are static pages, so this is a plain link
    pair rather than the app's i18n runtime. */
-.lang-switch {
-    display: flex;
-    gap: 6px;
-    margin-top: 22px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.25);
-    width: 100%;
-}
-
-.lang-switch a {
-    flex: 1;
-    color: white;
-    text-decoration: none;
-    padding: 7px 0;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    transition: background-color 0.2s ease;
-}
-
-.lang-switch a:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-.lang-switch a.is-current {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #1a6d85;
-    border-color: transparent;
-}
 
 /* The "draw first, propose later" flow strip on the hub page. */
 .flow-strip {
@@ -522,7 +433,6 @@ body {
     border-radius: 12px;
     padding: 14px 12px;
     text-align: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
 .flow-strip .flow-step i {
@@ -535,19 +445,19 @@ body {
 .flow-strip .flow-step strong {
     display: block;
     font-size: 14px;
-    color: #2c3e50;
+    color: var(--guide-ink);
     margin-bottom: 3px;
 }
 
 .flow-strip .flow-step span {
     font-size: 12px;
-    color: #7a8794;
+    color: var(--guide-muted);
     line-height: 1.4;
 }
 
 .flow-strip .flow-arrow {
     align-self: center;
-    color: #b9c4ce;
+    color: var(--cb-text-faint);
     font-size: 14px;
 }
 
@@ -560,12 +470,11 @@ body {
     border: 1px solid var(--guide-line);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     font-size: 14px;
 }
 
 .tool-table th {
-    background: #eef6f9;
+    background: var(--cb-surface-2);
     color: var(--guide-blue);
     text-align: left;
     padding: 11px 14px;
@@ -575,8 +484,8 @@ body {
 
 .tool-table td {
     padding: 11px 14px;
-    border-top: 1px solid #eef1f4;
-    color: #555;
+    border-top: 1px solid var(--guide-line);
+    color: var(--cb-text);
     line-height: 1.5;
     vertical-align: top;
 }
@@ -584,7 +493,7 @@ body {
 .tool-table td:first-child {
     white-space: nowrap;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--guide-ink);
 }
 
 .tool-table td:first-child i {
@@ -595,17 +504,7 @@ body {
 }
 
 .tool-table tr.is-grouped td {
-    background: #fbfdfe;
-}
-
-.tool-table a {
-    color: var(--guide-blue);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.tool-table a:hover {
-    text-decoration: underline;
+    background: var(--guide-sand);
 }
 
 /* Wide content must scroll inside itself rather than pushing the page sideways. */
@@ -626,11 +525,21 @@ body {
     min-width: 0;
 }
 
-/* Responsive */
+/* A heading's lighter aside ("Block — “Urban Rule”"). */
+.heading-note {
+    font-weight: var(--cb-weight-normal);
+}
+
+/* Responsive: on a phone the page scrolls as one document, the guide navigation a wrapping row
+   under the header. */
 @media (max-width: 767.98px) {
+    html,
     body {
-        flex-direction: column;
-        min-height: auto;
+        height: auto;
+    }
+
+    body {
+        display: block;
     }
 
     .shot-pair {
@@ -642,22 +551,19 @@ body {
     }
 
     .sidebar {
-        width: 100%;
-        min-width: auto;
-        min-height: auto;
-        max-height: none;
-        position: static;
         overflow-y: visible;
-        padding: 20px;
+        padding: 8px 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--guide-line);
     }
 
-    .sidebar h1 {
-        font-size: 20px;
-        margin-bottom: 20px;
+    .sidebar-links {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 
     .main-content {
-        flex: none;
+        overflow: visible;
     }
 
     .container {

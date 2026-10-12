@@ -42,16 +42,16 @@
 .urban-block-list-status-row p { margin: 0; flex: 1; }
 .urban-block-list-status-row button { min-width: var(--cb-control-height); min-height: var(--cb-control-height); flex-shrink: 0; }
 .urban-block-list { margin: 0; padding: 0; list-style: none; }
-.urban-block-list > li + li { border-top: 1px solid var(--cb-line); }
-.urban-block-list button { display: flex; align-items: center; gap: var(--cb-space-2); width: 100%; min-height: var(--cb-control-height-lg); padding: var(--cb-space-3) var(--cb-space-1); color: var(--cb-text); background: transparent; border: 0; border-radius: var(--cb-radius-sm); text-align: left; font: inherit; cursor: pointer; }
-.urban-block-list button:hover, .urban-block-list button[aria-current="true"] { background: var(--cb-primary-soft); }
-.urban-block-list button:focus-visible { outline: 2px solid var(--cb-primary); outline-offset: -2px; }
+.urban-block-list > li + li { margin-top: var(--cb-space-2); }
+/* Each block is a cb-option row (its look, hover and aria-current state are the primitive's). */
+.urban-block-row { align-items: center; gap: var(--cb-space-2); min-height: var(--cb-control-height-lg); padding: var(--cb-space-3) var(--cb-space-2); }
 .urban-block-rank { min-width: 2ch; font-size: var(--cb-text-sm); color: var(--cb-text-muted); text-align: right; }
 .urban-block-row-description { display: flex; flex-direction: column; gap: var(--cb-space-1); flex: 1; min-width: 0; }
 .urban-block-row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cb-text-md); }
 .urban-block-row-metrics { font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
 .urban-block-row-walk { flex-shrink: 0; font-size: var(--cb-text-md); font-variant-numeric: tabular-nums; }
-.urban-blocks-open-map { position: absolute; top: var(--map-shell-top-clearance); right: var(--right-dock-gap); z-index: var(--cb-z-panel); box-shadow: var(--cb-shadow-md); }
+/* The floating "Blocks · N" button is map chrome (map-shell-button); this only places it. */
+.urban-blocks-open-map { position: absolute; top: var(--map-shell-top-clearance); right: var(--right-dock-gap); z-index: var(--cb-z-panel); }
 .urban-block-info dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--cb-space-2) var(--cb-space-3); margin: 0; }
 .urban-block-info dt { color: var(--cb-text-muted); }
 .urban-block-info dd { margin: 0; font-weight: var(--cb-weight-semibold); text-align: right; }

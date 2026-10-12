@@ -13,6 +13,7 @@ const SAFE_GROUPS = [
         "name": "foundation",
         "paths": [
             "js/ui/modal-escape.js",
+            "js/ui/dialogs.js",
             "js/persistent-storage.js",
             "js/i18n.js",
             "js/format.js",

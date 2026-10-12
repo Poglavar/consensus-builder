@@ -451,8 +451,9 @@
         updatePanelState();
     }
 
+    // A tool is a .btn toggle: the chosen one is aria-pressed (css/primitives.css).
     function toolButton(tool, icon, label) {
-        return `<button type="button" data-tool="${tool}" aria-pressed="false"><span>${icon}</span>${label}</button>`;
+        return `<button type="button" class="btn btn-sm" data-tool="${tool}" aria-pressed="false"><i class="fa-solid ${icon}" aria-hidden="true"></i>${label}</button>`;
     }
 
     function ensurePanel() {
@@ -469,29 +470,29 @@
     function panelMarkup() {
         const tools = state.kind === 'park'
             ? [
-                toolButton('tree', '🌳', t('tools.tree', 'Tree')),
-                toolButton('flowerbed', '🌸', t('tools.flowerbed', 'Flowerbed')),
-                toolButton('pond', '💧', t('tools.pond', 'Pond')),
-                toolButton('path', '〰', t('tools.path', 'Footpath')),
-                toolButton('bench', '▰', t('tools.bench', 'Bench'))
+                toolButton('tree', 'fa-tree', t('tools.tree', 'Tree')),
+                toolButton('flowerbed', 'fa-seedling', t('tools.flowerbed', 'Flowerbed')),
+                toolButton('pond', 'fa-water', t('tools.pond', 'Pond')),
+                toolButton('path', 'fa-shoe-prints', t('tools.path', 'Footpath')),
+                toolButton('bench', 'fa-chair', t('tools.bench', 'Bench'))
             ].join('')
             : [
-                toolButton('fountain', '⛲', t('tools.fountain', 'Fountain')),
-                toolButton('tree', '🌳', t('tools.tree', 'Tree')),
-                toolButton('bench', '▰', t('tools.bench', 'Bench')),
-                toolButton('stall', '🍽️', t('tools.stall', 'Table')),
-                toolButton('statue', '🗿', t('tools.statue', 'Statue'))
+                toolButton('fountain', 'fa-droplet', t('tools.fountain', 'Fountain')),
+                toolButton('tree', 'fa-tree', t('tools.tree', 'Tree')),
+                toolButton('bench', 'fa-chair', t('tools.bench', 'Bench')),
+                toolButton('stall', 'fa-utensils', t('tools.stall', 'Table')),
+                toolButton('statue', 'fa-monument', t('tools.statue', 'Statue'))
             ].join('');
         const title = state.kind === 'park'
             ? t('titlePark', 'Park editor')
             : t('titleSquare', 'Square editor');
         return `
-            <header><div><strong>${title}</strong><small>${t('instructions', 'Choose an item, then click inside the boundary. Drag any item to move it.')}</small></div><button type="button" data-action="cancel" aria-label="${t('closeLabel', 'Close')}">×</button></header>
-            <div class="structure-geometry-tools">${tools}${toolButton('erase', '⌫', t('tools.erase', 'Remove'))}</div>
+            <header><div><strong>${title}</strong><small>${t('instructions', 'Choose an item, then click inside the boundary. Drag any item to move it.')}</small></div><button type="button" class="close-circle-btn" data-action="cancel" aria-label="${t('closeLabel', 'Close')}">×</button></header>
+            <div class="structure-geometry-tools">${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>
             <div class="structure-geometry-options">
-                <button type="button" data-action="finish-path">${t('finishPath', 'Finish path')}</button>
+                <button type="button" class="btn btn-sm" data-action="finish-path">${t('finishPath', 'Finish path')}</button>
             </div>
-            <footer><span data-role="hint"></span><div><button type="button" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" data-action="save" class="is-primary">${t('save', 'Save design')}</button></div></footer>`;
+            <footer><span data-role="hint"></span><div><button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button></div></footer>`;
     }
 
     function updatePanelState() {
@@ -499,7 +500,6 @@
         if (!panel) return;
         panel.querySelectorAll('[data-tool]').forEach(button => {
             const active = button.dataset.tool === state.tool;
-            button.classList.toggle('is-active', active);
             button.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
         const finish = panel.querySelector('[data-action="finish-path"]');

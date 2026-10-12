@@ -201,7 +201,7 @@ test.describe('Worldwide publication and city routing @core', () => {
     await expect(banner(other)).toHaveCount(0);
     expect(await readOnly(first)).toBe(false);
 
-    await banner(second).getByRole('button', { name: 'Dismiss' }).click();
+    await banner(second).getByRole('button', { name: 'Close' }).click();
     await expect(banner(second)).toHaveCount(0);
     // Dismiss only hides the warning; the secondary tab remains read-only.
     expect(await readOnly(second)).toBe(true);

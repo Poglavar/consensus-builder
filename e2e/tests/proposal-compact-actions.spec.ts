@@ -77,7 +77,7 @@ test.describe('compact proposal card actions @features', () => {
     await footer.locator('.btn-share-proposal').click();
     const shareDialog = page.locator('.share-modal-overlay');
     await expect(shareDialog).toBeVisible();
-    await shareDialog.locator('.share-modal-close').click();
+    await shareDialog.locator('.share-modal .close-circle-btn').click();
     await expect(shareDialog).toBeHidden();
 
     await footer.locator('.btn-edit-geometry').click();
@@ -120,7 +120,7 @@ test.describe('compact proposal card actions @features', () => {
     await share.click();
     const shareDialog = page.locator('.share-modal-overlay');
     await expect(shareDialog).toBeVisible();
-    await shareDialog.locator('.share-modal-close').click();
+    await shareDialog.locator('.share-modal .close-circle-btn').click();
     await expect(shareDialog).toBeHidden();
 
     await details.click();

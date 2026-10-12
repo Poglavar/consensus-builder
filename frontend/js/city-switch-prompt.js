@@ -44,71 +44,31 @@
         } catch (_) { /* a stale URL is better than a thrown error */ }
     }
 
-    function buildButton(label, className) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = className;
-        button.textContent = label;
-        return button;
-    }
-
-    // Resolves to true when the user wants to follow the proposal into its city.
+    // Resolves to true when the user wants to follow the proposal into its city. The shared dialog
+    // (js/ui/dialogs.js) with `city-switch-dialog` as its identity class; Escape, the backdrop and
+    // the close button stay, like the Stay button.
     function askUser(currentLabel, requestedLabel) {
-        return new Promise((resolve) => {
-            const overlay = document.createElement('div');
-            overlay.className = 'cb-confirm-overlay';
-
-            const dialog = document.createElement('div');
-            dialog.className = 'cb-confirm-dialog city-switch-dialog';
-
-            const heading = document.createElement('h3');
-            heading.className = 'city-switch-title';
-            heading.textContent = t(
+        const body = document.createElement('p');
+        body.textContent = t(
+            'city.switchPrompt.body',
+            'Opening it switches the map to {requested} and reloads. Your work in {current} is kept and will be here when you come back.',
+            { requested: requestedLabel, current: currentLabel }
+        );
+        const dialogApi = global.CbDialog.open({
+            title: t(
                 'city.switchPrompt.title',
                 'This proposal is in {requested} — you are viewing {current}',
                 { requested: requestedLabel, current: currentLabel }
-            );
-
-            const body = document.createElement('div');
-            body.className = 'cb-confirm-message';
-            body.textContent = t(
-                'city.switchPrompt.body',
-                'Opening it switches the map to {requested} and reloads. Your work in {current} is kept and will be here when you come back.',
-                { requested: requestedLabel, current: currentLabel }
-            );
-
-            const buttons = document.createElement('div');
-            buttons.className = 'cb-confirm-buttons city-switch-buttons';
-
-            const stayBtn = buildButton(
-                t('city.switchPrompt.stay', 'Stay in {current}', { current: currentLabel }),
-                'btn btn-secondary'
-            );
-            const switchBtn = buildButton(
-                t('city.switchPrompt.switch', 'Open in {requested}', { requested: requestedLabel }),
-                'btn btn-action'
-            );
-
-            function close(result) {
-                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                resolve(result);
-            }
-
-            stayBtn.addEventListener('click', () => close(false));
-            switchBtn.addEventListener('click', () => close(true));
-            overlay.addEventListener('click', (event) => {
-                if (event.target === overlay) close(false);
-            });
-
-            buttons.appendChild(stayBtn);
-            buttons.appendChild(switchBtn);
-            dialog.appendChild(heading);
-            dialog.appendChild(body);
-            dialog.appendChild(buttons);
-            overlay.appendChild(dialog);
-            document.body.appendChild(overlay);
-            switchBtn.focus();
+            ),
+            size: 'md',
+            className: 'city-switch-dialog',
+            body,
+            actions: [
+                { id: 'stay', value: false, label: t('city.switchPrompt.stay', 'Stay in {current}', { current: currentLabel }), role: 'secondary' },
+                { id: 'switch', value: true, label: t('city.switchPrompt.switch', 'Open in {requested}', { requested: requestedLabel }), role: 'primary', autofocus: true }
+            ]
         });
+        return dialogApi ? dialogApi.closed.then(result => result === true) : Promise.resolve(false);
     }
 
     // Resolves to true when the caller must abort — either the page is reloading into the other

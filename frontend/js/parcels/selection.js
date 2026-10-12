@@ -437,7 +437,7 @@
             if (typeof global.verticesDisplayActive !== 'undefined' && global.verticesDisplayActive) {
                 global.verticesDisplayActive = false;
                 const verticesBtn = document.getElementById('verticesButton');
-                if (verticesBtn) verticesBtn.classList.remove('active');
+                if (verticesBtn) verticesBtn.setAttribute('aria-pressed', 'false');
                 if (typeof global.clearVertexMarkers === 'function') {
                     global.clearVertexMarkers();
                 }

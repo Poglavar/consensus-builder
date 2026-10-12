@@ -86,13 +86,18 @@
             label.textContent = t()('claims.onParcels', 'On parcels:');
             wrap.appendChild(label);
 
+            // Each parcel is a script link (button.cb-link) to its own panel; the id clamps to two
+            // lines inside it (parcel-id-text).
             ids.forEach(id => {
                 const link = document.createElement('button');
                 link.type = 'button';
-                link.className = 'claim-breadcrumb-link parcel-id-text';
+                link.className = 'cb-link claim-breadcrumb-link';
                 const readableLabel = global.ProposalDisplayText?.parcelLabel(id);
-                link.textContent = readableLabel && readableLabel !== String(id)
+                const text = document.createElement('span');
+                text.className = 'parcel-id-text';
+                text.textContent = readableLabel && readableLabel !== String(id)
                     ? readableLabel : (api ? api.shortParcelLabel(id) : String(id));
+                link.appendChild(text);
                 link.title = String(id);
                 link.addEventListener('click', (event) => {
                     event.preventDefault();

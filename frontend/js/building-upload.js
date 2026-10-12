@@ -49,7 +49,8 @@
         const el = modalEl && modalEl.querySelector('#building-upload-status');
         if (!el) return;
         el.textContent = text || '';
-        el.style.color = isError ? '#b91c1c' : '#4b5563';
+        if (isError) el.dataset.tone = 'error';
+        else delete el.dataset.tone;
     }
 
     function setConfirmEnabled(enabled) {
@@ -75,24 +76,24 @@
         modal.className = 'cb-dialog-overlay';
 
         modal.innerHTML = `
-            <div id="building-upload-container" class="cb-dialog building-upload-dialog">
+            <div id="building-upload-container" class="cb-dialog cb-dialog--md building-upload-dialog" role="dialog" aria-modal="true" aria-labelledby="building-upload-title">
                 <div class="cb-dialog__header">
-                    <h2 class="cb-dialog__title">${text.title}</h2>
+                    <h2 id="building-upload-title" class="cb-dialog__title">${text.title}</h2>
                     <button id="building-upload-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${text.closeLabel}">×</button>
                 </div>
                 <div class="cb-dialog__body">
                     <label class="building-upload-file">
                         <span class="btn">${text.chooseFile}</span>
-                        <input id="building-upload-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" style="display:none;">
+                        <input id="building-upload-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" hidden>
                     </label>
                     <p class="building-upload-hint">${text.hint}</p>
                     <div class="cb-kicker">${text.previewLabel}</div>
                     <div id="building-upload-3d" class="building-upload-preview"></div>
-                    <div id="building-upload-status" class="building-upload-status">${text.noFile}</div>
+                    <div id="building-upload-status" class="building-upload-status" role="status" aria-live="polite">${text.noFile}</div>
                 </div>
                 <div class="cb-dialog__footer">
                     <button id="building-upload-cancel" type="button" class="btn">${text.cancel}</button>
-                    <button id="building-upload-confirm" type="button" class="btn btn-proposal" disabled>${text.confirm}</button>
+                    <button id="building-upload-confirm" type="button" class="btn btn-primary" disabled>${text.confirm}</button>
                 </div>
             </div>
         `;
@@ -102,7 +103,7 @@
 
         modal.querySelector('#building-upload-close').addEventListener('click', close);
         modal.querySelector('#building-upload-cancel').addEventListener('click', close);
-        modal.querySelector('#building-upload-confirm').addEventListener('click', confirm);
+        modal.querySelector('#building-upload-confirm').addEventListener('click', confirmUpload);
         modal.querySelector('#building-upload-file').addEventListener('change', onFileChosen);
         modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 
@@ -293,7 +294,8 @@
         return json.modelUrl;
     }
 
-    async function confirm() {
+    // Named so it does not shadow the browser's own confirm().
+    async function confirmUpload() {
         if (!loadedDims || !currentContext || !loadedFile) return;
         if (typeof window.createSingleBuildingFromUpload !== 'function') {
             setStatus('Single building pipeline is unavailable.', true);

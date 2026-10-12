@@ -306,7 +306,7 @@ test.describe('proposal detail button controls @features', () => {
     const share = page.locator('.share-modal-overlay');
     const openMissingPrerequisites = async () => {
       await share.getByRole('button', { name: 'Mint', exact: true }).click();
-      const prompt = page.locator('.cb-confirm-overlay');
+      const prompt = page.locator('.cb-dialog-overlay--confirm');
       await expect(prompt).toBeVisible();
       await expect(prompt).toContainText('not represented as an NFT');
       return prompt;

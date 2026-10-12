@@ -1,4 +1,6 @@
-/* Roadmap-specific capability horizons layered on the shared editorial guide shell. */
+/* Roadmap-specific capability horizons layered on the shared editorial guide shell
+   (css/howto.css). Colours are the product tokens: the horizons take the success, primary and muted
+   fills, the "Next" priorities sit on the inverse surface. */
 
 .roadmap-container {
     max-width: 1040px;
@@ -21,7 +23,7 @@
     gap: 7px;
     padding: 8px 12px;
     border-radius: 999px;
-    background: rgba(255, 253, 249, 0.78);
+    background: var(--guide-paper);
     border: 1px solid var(--guide-line);
     color: var(--guide-muted);
     font-size: 13px;
@@ -65,7 +67,7 @@
     justify-content: center;
     padding: 7px 10px;
     border-radius: 999px;
-    color: white;
+    color: var(--cb-primary-ink);
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -73,7 +75,8 @@
 }
 
 .roadmap-kicker.is-now {
-    background: #2f795b;
+    background: var(--cb-success);
+    color: var(--cb-success-ink);
 }
 
 .roadmap-kicker.is-next {
@@ -81,7 +84,8 @@
 }
 
 .roadmap-kicker.is-later {
-    background: #6a617c;
+    background: var(--cb-text-muted);
+    color: var(--cb-inverse-ink);
 }
 
 .roadmap-grid {
@@ -95,7 +99,6 @@
     border: 1px solid var(--guide-line);
     border-radius: 16px;
     background: var(--guide-paper);
-    box-shadow: 0 8px 24px rgba(42, 52, 55, 0.055);
 }
 
 .roadmap-card > i {
@@ -105,7 +108,7 @@
     height: 40px;
     margin-bottom: 18px;
     border-radius: 12px;
-    background: #dfeef1;
+    background: var(--cb-primary-soft);
     color: var(--guide-blue);
 }
 
@@ -136,23 +139,23 @@
     gap: 14px;
     padding: 22px;
     border-radius: 16px;
-    background: var(--guide-blue-dark);
-    color: white;
+    background: var(--cb-inverse);
+    color: var(--cb-inverse-ink);
 }
 
 .priority-list article > span {
-    color: var(--guide-yellow);
+    color: var(--cb-text-faint);
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.08em;
 }
 
 .priority-list h3 {
-    color: white;
+    color: var(--cb-inverse-ink);
 }
 
 .priority-list p {
-    color: #cbd8dc;
+    color: color-mix(in srgb, var(--cb-inverse-ink) 80%, transparent);
 }
 
 .roadmap-grid-later {
@@ -162,7 +165,7 @@
 .roadmap-principles {
     padding: 32px;
     border-radius: 20px;
-    background: #eadcae;
+    background: var(--cb-warning-soft);
     color: var(--guide-ink);
 }
 

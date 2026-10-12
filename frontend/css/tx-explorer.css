@@ -1,43 +1,19 @@
-/* Styles for tx-explorer.html — the standalone devnet transaction explorer.
-   Self-contained on purpose: css/base.css pins html/body to the viewport with overflow:hidden for
-   the full-screen map app, which would make this long scrolling ops page unreadable. The font stack
-   is the same one base.css uses, so the page still looks like the rest of the project. */
-
-:root {
-    --tx-bg: #f7f8fa;
-    --tx-surface: #fff;
-    --tx-ink: #1d2126;
-    --tx-muted: #767d87;
-    --tx-border: #e2e5ea;
-    --tx-border-strong: #c9cfd7;
-    --tx-accent: var(--cb-primary);
-    --tx-accent-ink: var(--cb-primary-hover);
-    --tx-warn-bg: #fdecea;
-    --tx-warn-ink: #8c2f22;
-    --tx-warn-border: #f0b4ab;
-    --tx-ok-bg: #e7f6ed;
-    --tx-ok-ink: #1c7a46;
-    --tx-tag-bg: #eef1f6;
-    --tx-tag-ink: #4a525d;
-    --tx-mono: var(--cb-font-mono);
-    --tx-sans: var(--cb-font-sans);
-}
+/* Layout for tx-explorer.html — the standalone devnet transaction explorer — under the shared page
+   header (css/page-chrome.css). It does not load the map app's css/base.css, which pins html/body to
+   the viewport with overflow:hidden, so this long ops page scrolls normally. Colours are the product
+   tokens and the controls are the primitives (css/primitives.css: btn, cb-segmented for the program
+   and action filters, cb-badge for statuses and tags, cb-link for the explorer links). */
 
 * {
     box-sizing: border-box;
 }
 
 .tx-body {
-    margin: 0;
-    padding: 0;
-    background: var(--tx-bg);
-    color: var(--tx-ink);
-    font-family: var(--tx-sans);
     font-size: 15px;
     line-height: 1.45;
-    -webkit-text-size-adjust: 100%;
 }
 
+/* One 16px gutter on every width, the same as the page header's. */
 .tx-wrap {
     max-width: 1280px;
     margin: 0 auto;
@@ -59,21 +35,16 @@
     min-width: 0;
 }
 
-.tx-title {
-    margin: 0;
-    font-size: 1.35rem;
-}
-
 .tx-sub {
     margin: 2px 0 0;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     font-size: 0.85rem;
     max-width: 60ch;
 }
 
 .tx-fetched {
     margin: 6px 0 0;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     font-size: 0.8rem;
     min-height: 1.2em;
 }
@@ -90,7 +61,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.82rem;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-control-check {
@@ -106,9 +77,9 @@
 .tx-control input[type="search"] {
     font: inherit;
     padding: 7px 9px;
-    color: var(--tx-ink);
-    background: var(--tx-surface);
-    border: 1px solid var(--tx-border-strong);
+    color: var(--cb-text);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line-strong);
     border-radius: 6px;
     min-width: 0;
     width: 100%;
@@ -118,47 +89,14 @@
     width: auto;
 }
 
-.tx-button {
-    font: inherit;
-    min-height: 36px;
-    padding: 7px 14px;
-    cursor: pointer;
-    color: #fff;
-    background: var(--tx-accent);
-    border: 1px solid var(--tx-accent);
-    border-radius: 6px;
-}
-
-.tx-button:hover {
-    background: var(--tx-accent-ink);
-    border-color: var(--tx-accent-ink);
-}
-
-.tx-button:disabled {
-    cursor: progress;
-    opacity: 0.6;
-}
-
-.tx-button-ghost {
-    color: var(--tx-tag-ink);
-    background: var(--tx-surface);
-    border-color: var(--tx-border-strong);
-}
-
-.tx-button-ghost:hover {
-    color: var(--tx-ink);
-    background: var(--tx-tag-bg);
-    border-color: var(--tx-border-strong);
-}
-
 /* ---------- banner / empty ---------- */
 
 .tx-banner {
     margin: 0 0 14px;
     padding: 10px 12px;
-    color: var(--tx-warn-ink);
-    background: var(--tx-warn-bg);
-    border: 1px solid var(--tx-warn-border);
+    color: var(--cb-danger-soft-ink);
+    background: var(--cb-danger-soft);
+    border: 1px solid color-mix(in srgb, var(--cb-danger) 30%, transparent);
     border-radius: 8px;
     font-size: 0.86rem;
     overflow-wrap: anywhere;
@@ -172,9 +110,9 @@
     margin: 16px 0;
     padding: 24px 12px;
     text-align: center;
-    color: var(--tx-muted);
-    background: var(--tx-surface);
-    border: 1px dashed var(--tx-border-strong);
+    color: var(--cb-text-muted);
+    background: var(--cb-surface);
+    border: 1px dashed var(--cb-line-strong);
     border-radius: 10px;
 }
 
@@ -184,13 +122,13 @@
 
 .tx-count {
     margin: 0 0 8px;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     font-size: 0.8rem;
     min-height: 1.1em;
 }
 
 .tx-muted {
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     font-size: 0.82rem;
     margin: 0;
 }
@@ -218,8 +156,8 @@
 .tx-filters {
     margin-bottom: 14px;
     padding: 12px;
-    background: var(--tx-surface);
-    border: 1px solid var(--tx-border);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-radius: 10px;
 }
 
@@ -239,7 +177,7 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-legend-list {
@@ -285,37 +223,14 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     flex: 0 0 72px;
 }
 
 .tx-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    flex: 1 1 0;
     min-width: 0;
-}
-
-.tx-chip {
-    font: inherit;
-    font-size: 0.76rem;
-    min-height: 28px;
-    padding: 3px 10px;
-    cursor: pointer;
-    color: var(--tx-tag-ink);
-    background: var(--tx-tag-bg);
-    border: 1px solid transparent;
-    border-radius: 999px;
-}
-
-.tx-chip:hover {
-    border-color: var(--tx-border-strong);
-}
-
-.tx-chip.is-on {
-    color: #fff;
-    background: var(--tx-accent-ink);
-    border-color: var(--tx-accent-ink);
+    gap: 6px;
 }
 
 /* ---------- table ---------- */
@@ -323,8 +238,8 @@
 .tx-table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--tx-surface);
-    border: 1px solid var(--tx-border);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-radius: 10px;
     overflow: hidden;
     font-size: 0.84rem;
@@ -339,33 +254,33 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     font-weight: 600;
     padding: 8px 10px;
-    border-bottom: 1px solid var(--tx-border);
+    border-bottom: 1px solid var(--cb-line);
     white-space: nowrap;
 }
 
 .tx-row {
     cursor: pointer;
-    border-top: 1px solid var(--tx-border);
+    border-top: 1px solid var(--cb-line);
 }
 
 .tx-row:hover {
-    background: #fafbfc;
+    background: var(--cb-surface-2);
 }
 
 .tx-row:focus-visible {
-    outline: 2px solid var(--tx-accent-ink);
+    outline: 2px solid var(--cb-primary-hover);
     outline-offset: -2px;
 }
 
 .tx-row.is-expanded {
-    background: #f4f8f6;
+    background: var(--cb-primary-soft);
 }
 
 .tx-row.is-failed .tx-summary {
-    color: var(--tx-warn-ink);
+    color: var(--cb-danger-soft-ink);
 }
 
 .tx-cell {
@@ -397,46 +312,11 @@
 .tx-row-error {
     display: block;
     font-size: 0.74rem;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-row-error {
-    color: var(--tx-warn-ink);
-}
-
-.tx-status {
-    display: inline-block;
-    padding: 1px 8px;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
-
-.tx-status-success {
-    color: var(--tx-ok-ink);
-    background: var(--tx-ok-bg);
-}
-
-.tx-status-failed {
-    color: var(--tx-warn-ink);
-    background: var(--tx-warn-bg);
-}
-
-.tx-tag {
-    display: inline-block;
-    margin: 0 4px 4px 0;
-    padding: 1px 7px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    color: var(--tx-tag-ink);
-    background: var(--tx-tag-bg);
-}
-
-.tx-tag-action {
-    font-family: var(--tx-mono);
-    color: var(--tx-accent-ink);
-    background: var(--tx-ok-bg);
+    color: var(--cb-danger-soft-ink);
 }
 
 .tx-amount {
@@ -450,18 +330,26 @@
 .tx-amount-owner {
     display: block;
     font-size: 0.72rem;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-address {
-    font-family: var(--tx-mono);
+    font-family: var(--cb-font-mono);
     font-size: 0.78rem;
     overflow-wrap: anywhere;
 }
 
+/* Program and action tags in a row: badges that wrap; action names are code. */
+.tx-cell-tags .cb-badge {
+    margin: 0 4px 4px 0;
+}
+
+.tx-tag-action {
+    font-family: var(--cb-font-mono);
+}
+
 .tx-link {
     font-size: 0.74rem;
-    color: var(--tx-accent-ink);
     white-space: nowrap;
 }
 
@@ -470,54 +358,31 @@
 }
 
 .tx-copy {
-    font: inherit;
-    font-size: 0.78rem;
-    line-height: 1;
-    min-height: 0;
     margin-left: 4px;
-    padding: 2px 5px;
-    cursor: pointer;
-    color: var(--tx-muted);
-    background: transparent;
-    border: 1px solid var(--tx-border);
-    border-radius: 4px;
-}
-
-.tx-copy:hover {
-    color: var(--tx-ink);
-    border-color: var(--tx-border-strong);
+    vertical-align: middle;
 }
 
 /* Copy feedback without a JS timer: the class is removed on animationend. */
-.tx-copy.is-copied {
-    animation: tx-copied 900ms ease-out;
+@media (prefers-reduced-motion: no-preference) {
+    .tx-copy.is-copied {
+        animation: tx-copied 900ms ease-out;
+    }
 }
 
 @keyframes tx-copied {
-    0% {
-        color: #fff;
-        background: var(--tx-accent-ink);
-        border-color: var(--tx-accent-ink);
-    }
-
+    0%,
     70% {
-        color: #fff;
-        background: var(--tx-accent-ink);
-        border-color: var(--tx-accent-ink);
-    }
-
-    100% {
-        color: var(--tx-muted);
-        background: transparent;
-        border-color: var(--tx-border);
+        color: var(--cb-primary-ink);
+        background: var(--cb-primary);
+        border-color: var(--cb-primary);
     }
 }
 
 /* ---------- details panel ---------- */
 
 .tx-details-row {
-    border-top: 1px solid var(--tx-border);
-    background: #f9fbfa;
+    border-top: 1px solid var(--cb-line);
+    background: var(--cb-bg);
 }
 
 .tx-details-cell {
@@ -529,7 +394,7 @@
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-ix-list {
@@ -540,8 +405,8 @@
 
 .tx-ix {
     padding: 8px 10px;
-    background: var(--tx-surface);
-    border: 1px solid var(--tx-border);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-radius: 8px;
 }
 
@@ -554,9 +419,9 @@
 }
 
 .tx-ix-index {
-    font-family: var(--tx-mono);
+    font-family: var(--cb-font-mono);
     font-size: 0.76rem;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-ix-program {
@@ -564,18 +429,9 @@
 }
 
 .tx-ix-name {
-    font-family: var(--tx-mono);
+    font-family: var(--cb-font-mono);
     font-size: 0.74rem;
-    color: var(--tx-muted);
-}
-
-.tx-ix-action {
-    font-family: var(--tx-mono);
-    font-size: 0.74rem;
-    padding: 1px 7px;
-    border-radius: 4px;
-    color: var(--tx-accent-ink);
-    background: var(--tx-ok-bg);
+    color: var(--cb-text-muted);
 }
 
 .tx-ix-sub {
@@ -583,7 +439,7 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-args {
@@ -600,12 +456,12 @@
 }
 
 .tx-arg-key {
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     margin-right: 4px;
 }
 
 .tx-arg-value {
-    font-family: var(--tx-mono);
+    font-family: var(--cb-font-mono);
 }
 
 .tx-accounts {
@@ -619,21 +475,21 @@
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
     font-weight: 600;
     padding: 4px 6px;
-    border-bottom: 1px solid var(--tx-border);
+    border-bottom: 1px solid var(--cb-line);
 }
 
 .tx-accounts td {
     padding: 4px 6px;
     vertical-align: top;
-    border-bottom: 1px solid var(--tx-border);
+    border-bottom: 1px solid var(--cb-line);
     overflow-wrap: anywhere;
 }
 
 .tx-account-role {
-    color: var(--tx-muted);
+    color: var(--cb-text-muted);
 }
 
 .tx-account-links a {
@@ -643,10 +499,6 @@
 /* ---------- mobile: the table becomes stacked cards (CSS only) ---------- */
 
 @media (max-width: 767.98px) {
-
-    .tx-wrap {
-        padding: 12px;
-    }
 
     .tx-header-controls {
         width: 100%;
@@ -674,8 +526,8 @@
     .tx-row {
         margin-bottom: 10px;
         padding: 8px 10px;
-        background: var(--tx-surface);
-        border: 1px solid var(--tx-border);
+        background: var(--cb-surface);
+        border: 1px solid var(--cb-line);
         border-radius: 10px;
     }
 
@@ -694,7 +546,7 @@
         font-size: 0.68rem;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: var(--tx-muted);
+        color: var(--cb-text-muted);
         padding-top: 2px;
     }
 
@@ -731,7 +583,7 @@
     .tx-account {
         margin-bottom: 6px;
         padding: 6px;
-        border: 1px solid var(--tx-border);
+        border: 1px solid var(--cb-line);
         border-radius: 6px;
     }
 
@@ -749,7 +601,7 @@
         font-size: 0.66rem;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: var(--tx-muted);
+        color: var(--cb-text-muted);
     }
 
     .tx-chip-legend {
@@ -758,13 +610,6 @@
 }
 
 @media (max-width: 400px) {
-    .tx-wrap {
-        padding: 10px;
-    }
-
-    .tx-title {
-        font-size: 1.15rem;
-    }
 
     .tx-header-controls {
         gap: 6px;

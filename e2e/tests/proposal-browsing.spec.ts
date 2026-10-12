@@ -7,7 +7,7 @@ const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 const PARCEL_PROGRAM = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
 
 async function chooseInMemoryProposal(page: import('@playwright/test').Page): Promise<void> {
-  const confirm = page.locator('.cb-confirm-overlay');
+  const confirm = page.locator('.cb-dialog-overlay--confirm');
   await expect(confirm).toContainText('Proceed to create an in-memory proposal?');
   const inMemoryButton = confirm.getByRole('button', { name: 'Create in memory', exact: true });
   if (await inMemoryButton.count()) await inMemoryButton.click();
@@ -95,11 +95,11 @@ test.describe('Proposal browsing @features', () => {
     await expect(list.locator('.proposal-list-item').last().locator('.proposal-list-title')).toHaveText('South park plan');
 
     await list.locator('.proposal-source-btn[data-source="blockchain"]').click();
-    await expect(list.locator('.proposal-source-btn[data-source="blockchain"]')).toHaveClass(/active/);
+    await expect(list.locator('.proposal-source-btn[data-source="blockchain"]')).toHaveAttribute('aria-pressed', 'true');
     await list.locator('.proposal-source-btn[data-source="local"]').click();
     await expect(list.locator('.proposal-list-item')).toHaveCount(2);
     await list.locator('.proposal-source-btn[data-source="server"]').click();
-    await expect(list.locator('.proposal-source-btn[data-source="server"]')).toHaveClass(/active/);
+    await expect(list.locator('.proposal-source-btn[data-source="server"]')).toHaveAttribute('aria-pressed', 'true');
     // Restore local source before deleting; deletion is offered only for locally held records.
     await list.locator('.proposal-source-btn[data-source="local"]').click();
     await list.locator('#proposal-filter-type').selectOption('all');

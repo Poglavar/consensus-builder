@@ -14,6 +14,8 @@
     const PANE = 'siteToolPane';
     const LOCK_OWNER = 'site-tool';
     const CLOSE_PX = 12;
+    // How far the site stays from the card when editing starts.
+    const SITE_CLEARANCE_PX = 32;
     // A preview binds at most this many loaded parcels (each needs an intrusion measurement).
     const PREVIEW_PARCEL_CAP = 250;
     const HATCH_ID = 'site-open-ground-hatch';
@@ -44,6 +46,7 @@
         infoPanel: null,
         proposeOpen: false,
         proposeMinimized: false,
+        panelMinimized: false, // the site card folded to its header row
         proposeTab: 'propose',
         plotTool: null,
         frontageIndex: null,
@@ -522,6 +525,55 @@
             }
         });
         siteChanged();
+        keepSiteClear();
+    }
+
+    // A CSS length (a custom property holding a calc()) in pixels, resolved through a probe.
+    function cssLength(name) {
+        const host = doc.getElementById('map-container') || doc.body;
+        const probe = doc.createElement('div');
+        probe.style.cssText = `position:absolute; visibility:hidden; pointer-events:none; width:var(${name});`;
+        host.appendChild(probe);
+        const width = probe.getBoundingClientRect().width;
+        probe.remove();
+        return Number.isFinite(width) ? width : 0;
+    }
+
+    // When editing starts, the site is brought into view a margin away from the card and the
+    // proposal panel (the right dock on a wide screen, the bottom sheet on a phone): one pan, or a
+    // zoom out when it is larger than the free part of the map. Never while corners are dragged.
+    function keepSiteClear() {
+        const m = map();
+        if (!m || !state.site || !state.panel || state.panel.hidden || !draftApi().panToClear) return;
+        const box = m.getContainer().getBoundingClientRect();
+        const local = rect => ({ left: rect.left - box.left, top: rect.top - box.top, right: rect.right - box.left, bottom: rect.bottom - box.top });
+        const panels = [state.panel, state.infoPanel]
+            .filter(panel => panel && !panel.hidden && panel.getClientRects().length)
+            .map(panel => local(panel.getBoundingClientRect()));
+        const view = {
+            left: cssLength('--map-mode-strip'),
+            top: cssLength('--map-shell-top-clearance'),
+            right: box.width,
+            bottom: box.height - (isPhone() ? 0 : cssLength('--map-shell-bottom-clearance'))
+        };
+        const bounds = win.L.geoJSON(state.site).getBounds();
+        const northWest = m.latLngToContainerPoint(bounds.getNorthWest());
+        const southEast = m.latLngToContainerPoint(bounds.getSouthEast());
+        const plan = draftApi().panToClear({ left: northWest.x, top: northWest.y, right: southEast.x, bottom: southEast.y }, view, panels, SITE_CLEARANCE_PX);
+        const animate = !win.__reducedMotion;
+        if (plan.fits) {
+            if (plan.dx || plan.dy) {
+                log(`site under a panel: panning ${Math.round(plan.dx)}, ${Math.round(plan.dy)} px`);
+                m.panBy([-plan.dx, -plan.dy], { animate });
+            }
+            return;
+        }
+        log('site larger than the free map: fitting it beside the panels');
+        m.fitBounds(bounds, {
+            paddingTopLeft: [plan.free.left, plan.free.top],
+            paddingBottomRight: [box.width - plan.free.right, box.height - plan.free.bottom],
+            animate
+        });
     }
 
     function destroyEditor() {
@@ -568,13 +620,25 @@
 
     // ---- panel ----
 
+    // The card keeps one size whatever it shows (css/site-tool.css): a header row, a body whose
+    // parcel list scrolls, and the actions. Its regions are rewritten only when their content
+    // changes, like the proposal panel's.
     function ensurePanel() {
         if (state.panel) return state.panel;
         const host = doc.getElementById('map-container') || doc.body;
         const panel = doc.createElement('section');
         panel.id = 'site-panel';
-        panel.className = 'site-panel';
+        panel.className = 'site-panel right-dock-panel';
         panel.setAttribute('role', 'region');
+        panel.innerHTML = `
+            <div class="site-panel__head" data-site-region="head"></div>
+            <div class="site-panel__body">
+                <div data-site-region="intro"></div>
+                <div data-site-region="summary"></div>
+                <div data-site-region="after"></div>
+                <div data-site-region="parcels"></div>
+            </div>
+            <div class="site-panel__actions" data-site-region="actions"></div>`;
         panel.addEventListener('click', onPanelClick);
         host.appendChild(panel);
         state.panel = panel;
@@ -627,7 +691,35 @@
         return map[reason] || reason;
     }
 
-    function bindingHtml() {
+    // The parcels the site binds, the flagged reaches (include it / trim the site) first: the list
+    // scrolls with the card's body under a header that keeps the count in view.
+    function parcelListHtml(sum) {
+        const warnings = sum.warnings.map(warning => {
+            const canReshape = state.previewParcels.has(warning.parcelId);
+            return `<li class="site-panel__warning site-panel__warning--${warning.kind}">
+                <span>${escapeHtml(warningText(warning))}</span>
+                ${canReshape ? `<span class="site-panel__warning-actions">
+                    <button type="button" class="btn btn-sm" data-site-include="${escapeHtml(warning.parcelId)}">${escapeHtml(t('siteTool.binding.include', 'Include it'))}</button>
+                    <button type="button" class="btn btn-sm" data-site-trim="${escapeHtml(warning.parcelId)}">${escapeHtml(t('siteTool.binding.trim', 'Trim the site'))}</button>
+                </span>` : ''}
+            </li>`;
+        });
+        const rows = sum.bound.map(hit => {
+            const area = Number.isFinite(hit.overlapM2) ? `<span class="site-panel__parcel-area">${escapeHtml(CbFormat.formatArea(hit.overlapM2))}</span>` : '';
+            return `<li class="site-panel__parcel"><span class="site-panel__parcel-id">${escapeHtml(hit.parcelId)}</span>${area}</li>`;
+        });
+        if (!rows.length && !warnings.length) {
+            if (sum.coverage === 'unknown') return '';
+            return `<p class="site-panel__parcels-empty">${escapeHtml(t('siteTool.binding.noParcels', 'Binds no parcel: it can only execute through an authority\'s verdict.'))}</p>`;
+        }
+        return `<div class="site-panel__parcels">
+            <p class="site-panel__parcels-title">${escapeHtml(t('siteTool.binding.bound', 'Bound parcels ({{count}})', { count: sum.bound.length }))}</p>
+            <ul class="site-panel__parcel-list">${warnings.join('')}${rows.join('')}</ul>
+        </div>`;
+    }
+
+    // The binding in words: the coverage, the open ground, where the answer comes from.
+    function bindingSummaryHtml() {
         if (state.phase === 'drawing' || !state.site) return '';
         const sum = summary();
         const parts = [];
@@ -636,29 +728,8 @@
         }
         if (sum) {
             parts.push(`<p class="site-panel__coverage site-panel__coverage--${sum.coverage}">${escapeHtml(coverageText(sum))}</p>`);
-            const bound = sum.bound.map(hit => hit.parcelId);
-            if (bound.length) {
-                const shown = bound.slice(0, 8).map(escapeHtml).join(', ');
-                const more = bound.length > 8 ? ` ${escapeHtml(t('siteTool.binding.more', '+{{count}} more', { count: bound.length - 8 }))}` : '';
-                parts.push(`<p class="site-panel__bound">${escapeHtml(t('siteTool.binding.bound', 'Bound parcels ({{count}}):', { count: bound.length }))} ${shown}${more}</p>`);
-            } else if (sum.coverage !== 'unknown') {
-                parts.push(`<p class="site-panel__bound">${escapeHtml(t('siteTool.binding.noParcels', 'Binds no parcel: it can only execute through an authority\'s verdict.'))}</p>`);
-            }
             if (sum.openGround && sum.coverage !== 'none') {
                 parts.push(`<p class="site-panel__note">${escapeHtml(t('siteTool.binding.openGround', 'Hatched: open ground nobody can consent for; executing needs an authority\'s verdict.'))}</p>`);
-            }
-            if (sum.warnings.length) {
-                const items = sum.warnings.map(warning => {
-                    const canReshape = state.previewParcels.has(warning.parcelId);
-                    return `<li class="site-panel__warning site-panel__warning--${warning.kind}">
-                        <span>${escapeHtml(warningText(warning))}</span>
-                        ${canReshape ? `<span class="site-panel__warning-actions">
-                            <button type="button" class="site-panel__mini" data-site-include="${escapeHtml(warning.parcelId)}">${escapeHtml(t('siteTool.binding.include', 'Include it'))}</button>
-                            <button type="button" class="site-panel__mini" data-site-trim="${escapeHtml(warning.parcelId)}">${escapeHtml(t('siteTool.binding.trim', 'Trim the site'))}</button>
-                        </span>` : ''}
-                    </li>`;
-                }).join('');
-                parts.push(`<ul class="site-panel__warnings">${items}</ul>`);
             }
         }
         const status = state.serverPending
@@ -671,6 +742,17 @@
                     : t('siteTool.binding.previewOnly', 'Preview from the parcels loaded on the map.')));
         parts.push(`<p class="site-panel__status">${escapeHtml(status)}</p>`);
         return parts.join('');
+    }
+
+    function boundParcelsHtml() {
+        if (state.phase === 'drawing' || !state.site) return '';
+        const sum = summary();
+        return sum ? parcelListHtml(sum) : '';
+    }
+
+    // The proposal panel's Info tab: the same summary and list as the card.
+    function bindingHtml() {
+        return bindingSummaryHtml() + boundParcelsHtml();
     }
 
     // A site with open ground is subdivided (PARCEL-OPTIONAL.md phase 4): the readjustment editor
@@ -703,7 +785,7 @@
         });
     }
 
-    function plotsHtml() {
+    function plotsNotesHtml() {
         const tool = state.plotTool === 'row'
             ? t('panel.parcel.build.row', 'Row houses') : t('panel.parcel.build.parcelBased', 'Detached');
         const edges = win.__sitePlots ? win.__sitePlots.frontageEdges(state.site) : [];
@@ -713,11 +795,24 @@
             <p class="site-panel__note">${escapeHtml(t('siteTool.plots.summary', '{{tool}}: plots {{count}}, along a {{length}} m frontage.', {
                 tool, count: state.plots.length, length: edge ? Math.round(edge.lengthM) : 0
             }))}</p>
-            ${basis ? `<p class="site-panel__note site-panel__frontage site-panel__frontage--${escapeHtml(state.frontageBasis.basis)}">${escapeHtml(basis)}</p>` : ''}
-            <div class="site-panel__actions">
-                <button type="button" class="site-panel__btn site-panel__btn--primary" data-site-action="plots-continue" ${state.plots.length ? '' : 'disabled'}>${escapeHtml(t('siteTool.plots.continue', 'Design on these plots'))}</button>
-                <button type="button" class="site-panel__btn" data-site-action="plots-back">${escapeHtml(t('siteTool.plots.back', 'Back'))}</button>
-            </div>`;
+            ${basis ? `<p class="site-panel__note site-panel__frontage site-panel__frontage--${escapeHtml(state.frontageBasis.basis)}">${escapeHtml(basis)}</p>` : ''}`;
+    }
+
+    function actionsHtml() {
+        if (state.phase === 'plots') {
+            return `<button type="button" class="btn btn-primary" data-site-action="plots-continue" ${state.plots.length ? '' : 'disabled'}>${escapeHtml(t('siteTool.plots.continue', 'Design on these plots'))}</button>
+                <button type="button" class="btn" data-site-action="plots-back">${escapeHtml(t('siteTool.plots.back', 'Back'))}</button>`;
+        }
+        const actions = [];
+        if (state.phase === 'drawing') {
+            actions.push(`<button type="button" class="btn btn-primary" data-site-action="finish" ${state.ring.length >= 3 ? '' : 'disabled'}>${escapeHtml(t('siteTool.actions.finish', 'Finish site'))}</button>`);
+            actions.push(`<button type="button" class="btn" data-site-action="undo" ${state.ring.length ? '' : 'disabled'}>${escapeHtml(t('siteTool.actions.undoCorner', 'Remove last corner'))}</button>`);
+        } else if (state.phase === 'editing') {
+            actions.push(`<button type="button" class="btn btn-primary" data-site-action="propose" ${state.site ? '' : 'disabled'} aria-expanded="${state.proposeOpen}">${escapeHtml(t('parcelMenu.actions.propose', 'Propose here'))}</button>`);
+            actions.push(`<button type="button" class="btn" data-site-action="redraw">${escapeHtml(t('siteTool.actions.redraw', 'Redraw'))}</button>`);
+        }
+        actions.push(`<button type="button" class="btn" data-site-action="cancel">${escapeHtml(t('siteTool.actions.cancel', 'Cancel'))}</button>`);
+        return actions.join('');
     }
 
     // The site's proposal panel: the parcel panel's twin (same dock, header and tabs), opened by
@@ -736,15 +831,15 @@
                 <button type="button" class="close-circle-btn close-circle-btn--lg" data-site-action="minimize-propose" aria-expanded="true"></button>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-site-action="close-propose"></button>
             </div>
-            <div class="parcel-tabs" role="tablist">
-                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="info"><span class="parcel-tab-label"></span></button>
-                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="propose"><span class="parcel-tab-label"></span></button>
-                <button type="button" role="tab" class="parcel-tab-btn" data-site-tab="proposals"><span class="parcel-tab-label"></span><span class="parcel-tab-count" hidden></span></button>
+            <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
+                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="info"><span class="parcel-tab-label"></span></button>
+                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="propose"><span class="parcel-tab-label"></span></button>
+                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="proposals"><span class="parcel-tab-label"></span><span class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
             </div>
             <div class="panel-body">
-                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="info"></div>
-                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="propose"></div>
-                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="proposals"></div>
+                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="info" hidden></div>
+                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="propose" hidden></div>
+                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="proposals" hidden></div>
             </div>`;
         panel.addEventListener('click', onInfoPanelClick);
         if (win.ParcelSetProposals) win.ParcelSetProposals.bindRows(panel.querySelector('[data-site-tab-panel="proposals"]'));
@@ -784,23 +879,15 @@
             button.querySelector('.parcel-tab-label').textContent = labels[tab];
             const badge = button.querySelector('.parcel-tab-count');
             if (badge) { badge.textContent = existing.entries.length ? String(existing.entries.length) : ''; badge.hidden = !existing.entries.length; }
-            button.classList.toggle('active', active);
             button.setAttribute('aria-selected', String(active));
         });
         const regions = { info: bindingHtml, propose: paletteHtml, proposals: () => existing.html };
         panel.querySelectorAll('[data-site-tab-panel]').forEach(region => {
             const tab = region.getAttribute('data-site-tab-panel');
-            region.classList.toggle('active', tab === state.proposeTab);
+            region.hidden = tab !== state.proposeTab;
             setRegion(region, regions[tab]());
         });
-        panel.style.setProperty('--site-sheet-clearance', '0px');
         panel.classList.add('visible');
-        // In a window too narrow for the site card and this panel side by side, stand above the card.
-        const sheet = state.panel && !state.panel.hidden ? state.panel.getBoundingClientRect() : null;
-        const own = panel.getBoundingClientRect();
-        if (sheet && sheet.width > 0 && own.width > 0 && sheet.left < own.right && own.left < sheet.right) {
-            panel.style.setProperty('--site-sheet-clearance', `${Math.ceil(sheet.height) + 8}px`);
-        }
     }
 
     // The proposals already on the parcels this site binds (ParcelSetProposals, which also asks the
@@ -821,7 +908,7 @@
         if (!count) return '';
         return `<p class="site-panel__existing">
             <span>${escapeHtml(t('siteTool.proposals.existing', '{{count}} proposals already on these parcels', { count }))}</span>
-            <button type="button" class="site-panel__mini" data-site-action="show-proposals">${escapeHtml(t('siteTool.proposals.show', 'Show'))}</button>
+            <button type="button" class="btn btn-sm" data-site-action="show-proposals">${escapeHtml(t('siteTool.proposals.show', 'Show'))}</button>
         </p>`;
     }
 
@@ -836,30 +923,42 @@
         const panel = ensurePanel();
         panel.hidden = false;
         panel.setAttribute('aria-label', t('siteTool.title', 'Site'));
+        panel.classList.toggle('is-minimized', state.panelMinimized);
+        const region = name => panel.querySelector(`[data-site-region="${name}"]`);
         const closeLabel = t('modal.common.close', 'Close');
-        const actions = [];
-        if (state.phase === 'drawing') {
-            actions.push(`<button type="button" class="site-panel__btn site-panel__btn--primary" data-site-action="finish" ${state.ring.length >= 3 ? '' : 'disabled'}>${escapeHtml(t('siteTool.actions.finish', 'Finish site'))}</button>`);
-            actions.push(`<button type="button" class="site-panel__btn" data-site-action="undo" ${state.ring.length ? '' : 'disabled'}>${escapeHtml(t('siteTool.actions.undoCorner', 'Remove last corner'))}</button>`);
-        } else if (state.phase === 'editing') {
-            actions.push(`<button type="button" class="site-panel__btn site-panel__btn--primary" data-site-action="propose" ${state.site ? '' : 'disabled'} aria-expanded="${state.proposeOpen}">${escapeHtml(t('parcelMenu.actions.propose', 'Propose here'))}</button>`);
-            actions.push(`<button type="button" class="site-panel__btn" data-site-action="redraw">${escapeHtml(t('siteTool.actions.redraw', 'Redraw'))}</button>`);
-        }
-        actions.push(`<button type="button" class="site-panel__btn" data-site-action="cancel">${escapeHtml(t('siteTool.actions.cancel', 'Cancel'))}</button>`);
+        const minimizeLabel = state.panelMinimized ? t('sidebar.areaMonitor.expand', 'Expand') : t('sidebar.areaMonitor.minimize', 'Minimize');
         const title = state.phase === 'drawing' ? t('siteTool.titleDrawing', 'Draw a site') : t('siteTool.title', 'Site');
-        panel.innerHTML = `
-            <div class="site-panel__head">
-                <h3 class="site-panel__title">${escapeHtml(title)}</h3>
-                <span class="site-panel__area">${escapeHtml(areaText())}</span>
-                <button type="button" class="close-circle-btn site-panel__close" data-site-action="cancel" aria-label="${escapeHtml(closeLabel)}" title="${escapeHtml(closeLabel)}">×</button>
-            </div>
+        setRegion(region('head'), `
+            <h3 class="site-panel__title">${escapeHtml(title)}</h3>
+            <span class="site-panel__area">${escapeHtml(areaText())}</span>
+            <button type="button" class="close-circle-btn site-panel__minimize" data-site-action="minimize" aria-expanded="${!state.panelMinimized}" aria-label="${escapeHtml(minimizeLabel)}" title="${escapeHtml(minimizeLabel)}">${state.panelMinimized ? '+' : '&#8722;'}</button>
+            <button type="button" class="close-circle-btn site-panel__close" data-site-action="cancel" aria-label="${escapeHtml(closeLabel)}" title="${escapeHtml(closeLabel)}">×</button>`);
+        const errorShown = state.siteError && (state.phase !== 'drawing' || state.ring.length >= 3);
+        setRegion(region('intro'), `
             <p class="site-panel__hint">${escapeHtml(hintText())}</p>
-            ${state.siteError && state.phase !== 'drawing' ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}
-            ${state.siteError && state.phase === 'drawing' && state.ring.length >= 3 ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}
-            <div class="site-panel__binding">${bindingHtml()}</div>
-            ${existingProposalsLineHtml()}
-            ${state.phase === 'plots' ? plotsHtml() : `<div class="site-panel__actions">${actions.join('')}</div>`}`;
+            ${errorShown ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}`);
+        setRegion(region('summary'), bindingSummaryHtml());
+        setRegion(region('after'), state.phase === 'plots' ? plotsNotesHtml() : existingProposalsLineHtml());
+        setRegion(region('parcels'), boundParcelsHtml() || (state.phase === 'drawing'
+            ? `<p class="site-panel__parcels-empty">${escapeHtml(t('siteTool.binding.drawingEmpty', 'Close the outline to see the parcels it binds.'))}</p>`
+            : ''));
+        setRegion(region('actions'), actionsHtml());
         renderInfoPanel();
+    }
+
+    // On a phone the card and the proposal panel share the bottom half of the screen, so opening
+    // one folds the other to its header row; in the right dock of a wider screen each folds alone.
+    const phoneQuery = win.matchMedia ? win.matchMedia('(max-width: 767.98px)') : null;
+    const isPhone = () => !!(phoneQuery && phoneQuery.matches);
+
+    function unfold(which) {
+        if (which === 'card') {
+            state.panelMinimized = false;
+            if (isPhone() && state.proposeOpen) state.proposeMinimized = true;
+        } else {
+            state.proposeMinimized = false;
+            if (isPhone()) state.panelMinimized = true;
+        }
     }
 
     function onPanelClick(event) {
@@ -877,12 +976,25 @@
             // list of proposals already here.
             try { if (typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel(); } catch (_) { }
             state.proposeOpen = true;
-            state.proposeMinimized = false;
+            unfold('propose');
             state.proposeTab = action === 'propose' ? 'propose' : 'proposals';
             renderPanel();
         }
-        else if (action === 'close-propose') { state.proposeOpen = false; renderPanel(); }
-        else if (action === 'minimize-propose') { state.proposeMinimized = !state.proposeMinimized; renderInfoPanel(); }
+        else if (action === 'close-propose') {
+            state.proposeOpen = false;
+            if (isPhone()) state.panelMinimized = false;
+            renderPanel();
+        }
+        else if (action === 'minimize-propose') {
+            if (state.proposeMinimized) unfold('propose');
+            else state.proposeMinimized = true;
+            renderPanel();
+        }
+        else if (action === 'minimize') {
+            if (state.panelMinimized) unfold('card');
+            else state.panelMinimized = true;
+            renderPanel();
+        }
         else if (action === 'redraw') redraw();
         else if (action === 'cancel') cancel();
         else if (action === 'plots-continue') continueWithPlots();
@@ -1031,6 +1143,7 @@
         state.serverPending = false;
         state.serverSeq += 1;
         state.proposeOpen = false;
+        state.panelMinimized = false;
         state.plotTool = null;
         state.plots = [];
         state.frontageIndex = null;
@@ -1119,7 +1232,10 @@
         state.phase = 'idle';
         doc.body.classList.remove('site-tool-active');
         doc.body.classList.remove('site-tool-drawing');
-        if (state.panel) { state.panel.hidden = true; state.panel.innerHTML = ''; }
+        if (state.panel) {
+            state.panel.hidden = true;
+            state.panel.querySelectorAll('[data-site-region]').forEach(region => setRegion(region, ''));
+        }
         if (win.__mapEditLock) win.__mapEditLock.release(LOCK_OWNER);
         if (!options.keepSynthetic) state.synthetic.clear();
         reset();
@@ -1150,6 +1266,12 @@
 
     // Re-render labels on a language switch.
     win.addEventListener('i18n:translationsLoaded', () => { if (isActive()) renderPanel(); });
+    // Narrowed to a phone with the card and the proposal panel both open: fold the card.
+    if (phoneQuery && typeof phoneQuery.addEventListener === 'function') phoneQuery.addEventListener('change', () => {
+        if (!isActive()) return;
+        if (phoneQuery.matches && state.proposeOpen && !state.proposeMinimized) state.panelMinimized = true;
+        renderPanel();
+    });
 
     win.resolveDesignParcelFeature = resolveDesignParcelFeature;
     win.SiteTool = {

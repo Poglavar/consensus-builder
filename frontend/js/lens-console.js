@@ -37,11 +37,17 @@
 
     function explorerLink(address) {
         const cluster = root.solanaWalletManager ? root.solanaWalletManager.getCluster() : 'devnet';
-        const link = el('a', 'lc-mono', address);
+        const link = el('a', 'cb-link cb-link--external lc-mono', address);
         link.href = `https://explorer.solana.com/address/${encodeURIComponent(address)}?cluster=${encodeURIComponent(cluster)}`;
         link.target = '_blank';
-        link.rel = 'noopener';
+        link.rel = 'noopener noreferrer';
         return link;
+    }
+
+    // An attestation's kind as a badge: the verdict kinds are lifecycle rungs and take their colour.
+    function kindBadge(kind) {
+        const lifecycle = kind === 'executed' || kind === 'expired' ? ` cb-badge--${kind}` : '';
+        return el('span', `cb-badge${lifecycle}`, kind || '?');
     }
 
     function outcomeMessage(outcome) {
@@ -113,7 +119,7 @@
         list.forEach(att => {
             const li = el('li', 'lc-item');
             const head = el('div', 'lc-item-head');
-            head.append(el('span', 'lc-tag', att.kind || '?'), explorerLink(att.address));
+            head.append(kindBadge(att.kind), explorerLink(att.address));
             li.append(head);
             if (att.parcelUid) li.append(line(t('lensConsole.attestations.parcel', 'Parcel'), att.parcelUid));
             if (att.owner) li.append(line(t('lensConsole.attestations.owner', 'Owner'), att.owner, true));

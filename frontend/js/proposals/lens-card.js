@@ -90,7 +90,7 @@
     }
 
     function txLink(url) {
-        return url ? `<a href="${escapeText(url)}" target="_blank" rel="noopener">${escapeText(t('panel.proposal.lens.viewTransaction', 'View transaction'))} ↗</a>` : '';
+        return url ? `<a class="cb-link cb-link--external" href="${escapeText(url)}" target="_blank" rel="noopener noreferrer">${escapeText(t('panel.proposal.lens.viewTransaction', 'View transaction'))}</a>` : '';
     }
 
     function errorText(error, members) {
@@ -139,13 +139,13 @@
                 ${withService.length ? `
                     <div class="proposal-lens-parcel-actions">
                         <select data-lens-parcel-member aria-label="${escapeText(t('panel.proposal.lens.memberSelect', 'Lens member'))}">${options}</select>
-                        <button type="button" class="btn btn-secondary" data-lens-attest>${escapeText(t('panel.proposal.lens.requestAttestation', 'Attest my ownership'))}</button>
+                        <button type="button" class="btn" data-lens-attest>${escapeText(t('panel.proposal.lens.requestAttestation', 'Attest my ownership'))}</button>
                     </div>
                     <div class="proposal-lens-parcel-actions" data-lens-yes-row>
                         <input type="text" class="lens-input" data-lens-payout autocomplete="off" spellcheck="false"
                             placeholder="${escapeText(t('panel.proposal.lens.payoutPlaceholder', 'Payout address (optional)'))}"
                             aria-label="${escapeText(t('panel.proposal.lens.payoutLabel', 'Payout address for your share of the proposal funds (optional)'))}">
-                        <button type="button" class="btn btn-action" data-lens-say-yes>${escapeText(t('panel.proposal.lens.sayYes', 'Say yes'))}</button>
+                        <button type="button" class="btn btn-primary btn-block" data-lens-say-yes>${escapeText(t('panel.proposal.lens.sayYes', 'Say yes'))}</button>
                     </div>` : `<small>${escapeText(t('panel.proposal.lens.noServiceUrl', 'No service URL: none of this lens publishes where to ask for an attestation.'))}</small>`}
                 <div class="proposal-lens-result" data-lens-result aria-live="polite"></div>
             </li>`;
@@ -204,7 +204,7 @@
                             ? t('panel.proposal.lens.attestedExisting', 'Already attested.')
                             : t('panel.proposal.lens.attested', 'Attested.');
                         out.innerHTML = `${escapeText(headline)}
-                            <span>${escapeText(t('panel.proposal.lens.attestationAddress', 'Attestation'))}: <a href="${explorerUrl(body.address, wallet.cluster)}" target="_blank" rel="noopener">${escapeText(body.address)}</a></span>
+                            <span>${escapeText(t('panel.proposal.lens.attestationAddress', 'Attestation'))}: <a class="cb-link cb-link--external" href="${explorerUrl(body.address, wallet.cluster)}" target="_blank" rel="noopener noreferrer">${escapeText(body.address)}</a></span>
                             <span>${escapeText(t('panel.proposal.lens.accountHash', 'Account hash'))}: <code>${escapeText(body.accountHash)}</code></span>`;
                     } else {
                         out.classList.add(result.step === 'payment' ? 'is-warn' : 'is-error');
@@ -315,7 +315,7 @@
             <li>
                 <strong>${escapeText(entry.member && entry.member.name ? entry.member.name : entry.key)}</strong>
                 ${entry.member && entry.member.kind ? `<span class="lens-picker-kind">${escapeText(entry.member.kind)}</span>` : ''}
-                ${entry.member && entry.member.name ? `<a class="proposal-lens-key" href="${explorerUrl(entry.key)}" target="_blank" rel="noopener">${escapeText(entry.key)}</a>` : `<a class="proposal-lens-key" href="${explorerUrl(entry.key)}" target="_blank" rel="noopener">${escapeText(t('panel.proposal.lens.unknownMember', 'not in the directory'))} ↗</a>`}
+                ${entry.member && entry.member.name ? `<a class="cb-link cb-link--external proposal-lens-key" href="${explorerUrl(entry.key)}" target="_blank" rel="noopener noreferrer">${escapeText(entry.key)}</a>` : `<a class="cb-link cb-link--external proposal-lens-key" href="${explorerUrl(entry.key)}" target="_blank" rel="noopener noreferrer">${escapeText(t('panel.proposal.lens.unknownMember', 'not in the directory'))}</a>`}
             </li>`).join('') : `<li>${escapeText(t('panel.proposal.lens.empty', 'This proposal names no lens.'))}</li>`;
         section.innerHTML = `
             <div class="proposal-funding-head">
@@ -340,7 +340,7 @@
                     <input type="text" class="lens-input" data-lens-verdict-address autocomplete="off" spellcheck="false"
                         placeholder="${escapeText(t('panel.proposal.lens.verdictPlaceholder', 'Verdict attestation address'))}"
                         aria-label="${escapeText(t('panel.proposal.lens.verdictPlaceholder', 'Verdict attestation address'))}">
-                    <button type="button" class="btn btn-secondary" data-lens-submit-verdict>${escapeText(t('panel.proposal.lens.submitVerdict', 'Submit verdict'))}</button>
+                    <button type="button" class="btn" data-lens-submit-verdict>${escapeText(t('panel.proposal.lens.submitVerdict', 'Submit verdict'))}</button>
                 </div>
                 <div class="proposal-lens-result" data-lens-verdict-result aria-live="polite"></div>` : ''}`;
 

@@ -22,10 +22,10 @@ test.describe('Area monitor @features', () => {
     await openWatchedAreas(page);
     const draw = page.locator('#areaMonitorDrawButton');
     await draw.click();
-    await expect(draw).toHaveClass(/active/);
+    await expect(draw).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.leaflet-container').first()).toHaveCSS('cursor', 'crosshair');
     await page.keyboard.press('Escape');
-    await expect(draw).not.toHaveClass(/active/);
+    await expect(draw).toHaveAttribute('aria-pressed', 'false');
   });
 
   test('a real monitor route loads detail, supports minimize and closes', async ({ mockApi: page }) => {

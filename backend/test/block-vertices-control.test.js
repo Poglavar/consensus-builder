@@ -4,6 +4,7 @@ import vm from 'node:vm';
 
 it('the vertices button follows the rendered layer through show and hide', () => {
     const classes = new Set();
+    const attributes = {};
     const button = {
         textContent: '',
         classList: {
@@ -11,6 +12,8 @@ it('the vertices button follows the rendered layer through show and hide', () =>
             remove: (...names) => names.forEach(name => classes.delete(name)),
             toggle: name => { if (classes.has(name)) { classes.delete(name); return false; } classes.add(name); return true; }
         },
+        setAttribute: (name, value) => { attributes[name] = String(value); },
+        getAttribute: name => (name in attributes ? attributes[name] : null),
         addEventListener: (_name, handler) => { button.click = handler; }
     };
     const feature = { type: 'Feature', properties: { parcelId: 'p' }, geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] } };
@@ -37,10 +40,10 @@ it('the vertices button follows the rendered layer through show and hide', () =>
     expect(layers.size).toBe(1);
     expect([...layers][0].vertices).toHaveLength(4);
     expect(button.textContent).toBe('Hide vertices');
-    expect(classes.has('active')).toBe(true);
+    expect(button.getAttribute('aria-pressed')).toBe('true');
 
     button.click();
     expect(layers.size).toBe(0);
     expect(button.textContent).toBe('Show vertices');
-    expect(classes.has('active')).toBe(false);
+    expect(button.getAttribute('aria-pressed')).toBe('false');
 });

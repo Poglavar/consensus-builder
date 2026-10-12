@@ -163,7 +163,7 @@
 
     <!-- Reduced-motion support: must run after Leaflet, before any map is constructed -->
     <script>
-        window.writeVersionedLocalScripts(['js/reduced-motion.js']);
+        window.writeVersionedLocalScripts(['js/ui/theme.js', 'js/reduced-motion.js']);
     </script>
 
     <!-- Proj4js for coordinate transformations.
@@ -273,7 +273,7 @@
         <div id="map"></div>
 
         <!-- Independent OSM block browser and inspector: side panel on desktop, collapsible phone sheet. -->
-        <button type="button" id="urban-blocks-open-map" class="btn urban-blocks-open-map" hidden></button>
+        <button type="button" id="urban-blocks-open-map" class="map-shell-button urban-blocks-open-map" hidden></button>
         <section id="urban-block-panel" class="urban-block-panel right-dock-panel" aria-labelledby="urban-block-panel-title" hidden>
             <header class="urban-block-panel-header">
                 <div class="urban-block-panel-heading">
@@ -358,7 +358,7 @@
         </div>
 
         <!-- 3D Toggle Button and 3D Container -->
-        <button id="mode-walk-toggle" class="map-mode-walk-btn" title="Take a walk through your changes" aria-label="Take a walk through your changes" data-i18n-key="threeMode.toggle.walk" data-i18n-attr="title,aria-label" hidden>
+        <button id="mode-walk-toggle" class="map-shell-button map-mode-walk-btn" title="Take a walk through your changes" aria-label="Take a walk through your changes" data-i18n-key="threeMode.toggle.walk" data-i18n-attr="title,aria-label" hidden>
             <i class="fas fa-person-walking" aria-hidden="true"></i>
         </button>
         <button type="button" id="measurement-button" class="map-shell-button map-utility-button" data-map-modes="2d" data-sheet-target="measurement-sheet" aria-controls="measurement-sheet" aria-expanded="false" title="Measure" aria-label="Measure" data-i18n-key="sidebar.measurement.measureButton" data-i18n-attr="title,aria-label"><i class="fas fa-ruler" aria-hidden="true"></i></button>
@@ -367,7 +367,7 @@
         <button id="mode-realistic-toggle" class="map-mode-realistic-btn map-mode-tile" title="3D aerial imagery (Google)" aria-label="3D aerial imagery (Google)" aria-pressed="false" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
             <span aria-hidden="true">3D</span>
         </button>
-        <button id="mode-ai-toggle" class="map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
+        <button id="mode-ai-toggle" class="map-shell-button map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
             <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
         </button>
         <div id="three-container" aria-hidden="true"></div>
@@ -396,7 +396,7 @@
                 <i class="fas fa-coins" aria-hidden="true"></i>
                 <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
                 <!-- "New" until the sheet has been opened once on this device (js/bets/bets-sheet.js) -->
-                <span id="bets-button-new" class="map-shell-badge map-shell-badge--text" data-i18n-key="mapShell.betsNew">New</span>
+                <span id="bets-button-new" class="map-shell-badge map-shell-badge--text cb-shimmer" data-i18n-key="mapShell.betsNew">New</span>
             </button>
             <button type="button" id="activity-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="activity-sheet" aria-controls="activity-sheet" aria-expanded="false"
@@ -460,7 +460,7 @@
                         </div>
 
                         <div class="btn-group layer-source-actions">
-<button type="button" id="parcel-source-settings-button" class="btn btn-secondary" data-section-independent="true" onclick="openParcelSourceSettings()">
+<button type="button" id="parcel-source-settings-button" class="btn" data-section-independent="true" onclick="openParcelSourceSettings()">
                                 <span data-i18n-key="parcelSources.title">Choose a parcel source</span>
                             </button>
 <button type="button" id="refreshParcelDataButton" class="btn" data-section-independent="true"
@@ -565,17 +565,17 @@
 <details class="layer-actions"><summary data-i18n-key="mapShell.reorg.blockData">Block data and analysis</summary>
                         <div class="control-group">
                             <div class="btn-group">
-                                <button class="btn btn-action" onclick="countBlocks()"
+                                <button class="btn btn-primary btn-block" onclick="countBlocks()"
                                     data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
                                     <i class="fas fa-shapes" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
                                 </button>
-                                <button class="btn btn-action" onclick="animateFloodfillFromSelected()"
+                                <button class="btn btn-primary btn-block" onclick="animateFloodfillFromSelected()"
                                     data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
                                     <i class="fas fa-fill-drip" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
                                 </button>
-                                <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled>
+                                <button id="showBlockListButton" class="btn btn-block" onclick="showBlocksList()" disabled>
                                     <i class="fas fa-list" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.showListButton">Show Block List</span>
                                 </button>
@@ -633,7 +633,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="btn-group layer-source-actions"><button type="button" id="building-source-settings-button" class="btn btn-secondary" data-section-independent="true" onclick="openBuildingSourceSettings()">
+                        <div class="btn-group layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
                                 <span data-i18n-key="buildingSources.title">Choose a building source</span>
                             </button></div>
                     </div>
@@ -690,49 +690,49 @@
                             <div class="control-group-title" data-i18n-key="sidebar.roads.existingTitle">Existing roads
                             </div>
                             <div class="btn-group">
-                                <button id="detectExistingRoadsButton" class="btn btn-detect-existing-roads"
+                                <button id="detectExistingRoadsButton" class="btn"
                                     data-i18n-key="sidebar.roads.detectExistingTooltip" data-i18n-attr="title"
                                     onclick="detectExistingRoads()">
                                     <i class="fas fa-road" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectExisting">Detect Existing Roads</span>
                                 </button>
-                                <button class="btn btn-action" onclick="detectRoadsUsingAI()" disabled hidden
+                                <button class="btn btn-primary btn-block" onclick="detectRoadsUsingAI()" disabled hidden
                                     data-i18n-key="sidebar.roads.detectAiTooltip" data-i18n-attr="title">
                                     <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectAi">Detect Roads using AI</span>
                                 </button>
-                                <button class="btn btn-action" onclick="algorithmicRoads()" disabled hidden
+                                <button class="btn btn-primary btn-block" onclick="algorithmicRoads()" disabled hidden
                                     data-i18n-key="sidebar.roads.drawAlgorithmicTooltip" data-i18n-attr="title">
                                     <i class="fas fa-diagram-project" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawAlgorithmic">Draw New Roads
                                         Algorithmically</span>
                                 </button>
-                                <button class="btn btn-action" onclick="drawOSMRoads()"
+                                <button class="btn btn-primary btn-block" onclick="drawOSMRoads()"
                                     data-i18n-key="sidebar.roads.drawOsmTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawOsm">Draw Roads from OSM</span>
                                 </button>
-                                <button class="btn btn-action" onclick="detectRoadsFromOSM()"
+                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromOSM()"
                                     data-i18n-key="sidebar.roads.detectOsmTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectOsm">Detect Roads from OSM</span>
                                 </button>
-                                <button class="btn btn-action" onclick="drawGUPRoads()"
+                                <button class="btn btn-primary btn-block" onclick="drawGUPRoads()"
                                     data-i18n-key="sidebar.roads.drawGupTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawGup">Draw Roads from GUP</span>
                                 </button>
-                                <button class="btn btn-action" onclick="detectRoadsFromGUP()"
+                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromGUP()"
                                     data-i18n-key="sidebar.roads.detectGupTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectGup">Detect Roads from GUP</span>
                                 </button>
-                                <button class="btn btn-action" onclick="drawWFSRoadParcels()"
+                                <button class="btn btn-primary btn-block" onclick="drawWFSRoadParcels()"
                                     data-i18n-key="sidebar.roads.drawDguTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawDgu">Draw roads from DGU</span>
                                 </button>
-                                <button class="btn btn-action" onclick="detectRoadsFromWFS()"
+                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromWFS()"
                                     data-i18n-key="sidebar.roads.detectDguTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectDgu">Detect roads from DGU</span>
@@ -744,7 +744,7 @@
                                 proposals
                             </div>
                             <div class="btn-group">
-                                <button id="applyGovernmentRoadPlanButton" class="btn btn-action"
+                                <button id="applyGovernmentRoadPlanButton" class="btn btn-primary btn-block"
                                     data-i18n-key="sidebar.roads.applyGovPlanTooltip" data-i18n-attr="title">
                                     <i class="fas fa-map-location-dot" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.applyGovPlan">Apply Government Road Plan</span>
@@ -760,7 +760,7 @@
                                 Processing...</div>
                         </div>
                         <div class="btn-group road-analysis-actions">
-                            <button id="analyzeAllRoadsButton" class="btn btn-action"
+                            <button id="analyzeAllRoadsButton" class="btn btn-primary btn-block"
                                 data-i18n-key="sidebar.roads.analyzeOsmTooltip" data-i18n-attr="title"
                                 onclick="analyzeAllOSMRoadSegmentsInView()">
                                 <i class="fas fa-chart-line" aria-hidden="true"></i>
@@ -841,16 +841,16 @@
                     <div class="sheet-section-body">
                         <div class="control-group">
                             <div class="btn-group">
-                                <button id="measureButton" class="btn btn-action" onclick="toggleMeasureTool()">
+                                <button id="measureButton" class="btn btn-block" aria-pressed="false" onclick="toggleMeasureTool()">
                                     <i class="fas fa-ruler" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.measurement.measureButton">Measure</span>
                                 </button>
-                                <button id="pinpointButton" class="btn btn-action" onclick="togglePinpointTool()">
+                                <button id="pinpointButton" class="btn btn-block" aria-pressed="false" onclick="togglePinpointTool()">
                                     <i class="fas fa-location-dot" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.measurement.pinpointButton">Pinpoint</span>
                                 </button>
-                                <button id="clearMeasurementsButton" class="btn btn-secondary"
-                                    onclick="clearAllMeasurements()" style="display: none;">
+                                <button id="clearMeasurementsButton" class="btn"
+                                    onclick="clearAllMeasurements()" hidden>
                                     <i class="fas fa-eraser" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.measurement.clearButton">Clear Measurements</span>
                                 </button>
@@ -876,9 +876,9 @@
                 <details id="proposal-list-actions" class="layer-actions"><summary data-i18n-key="mapShell.reorg.planActions">Plan actions</summary>
                 <div class="control-group">
                     <div class="btn-group">
-                        <button id="showProposalsButton" hidden class="btn btn-info sheet-action--primary" onclick="showAllProposalsModal()"
+                        <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
                             data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals List (0)</button>
-                        <button id="planStatsButton" class="btn btn-info plan-stats-button">
+                        <button id="planStatsButton" class="btn btn-block plan-stats-button">
                             <i class="fas fa-chart-pie" aria-hidden="true"></i>
                             <span class="plan-stats-label"
                                 data-i18n-key="sidebar.proposals.planStats.buttonLabel">Plan Stats</span>
@@ -903,12 +903,12 @@
                                     data-i18n-key="sidebar.proposals.grainScore.buttonEmpty">Apply a proposal first</small>
                             </span>
                         </button>
-                        <button id="mintedProposalsButton" class="btn btn-info minted-proposals-button"
-                            style="display: none;" onclick="openMintedProposalsModal()">
-                            <i class="fas fa-certificate"></i>
+                        <button id="mintedProposalsButton" class="btn btn-block minted-proposals-button"
+                            hidden onclick="openMintedProposalsModal()">
+                            <i class="fas fa-certificate" aria-hidden="true"></i>
                             <span data-i18n-key="sidebar.proposals.mintedButton">Minted Proposals</span>
                         </button>
-                        <button id="shareAppliedProposalsButton" class="btn btn-info share-plan-button" disabled
+                        <button id="shareAppliedProposalsButton" class="btn btn-block share-plan-button" disabled
                             onclick="shareAppliedProposals()">
                             <i class="fas fa-share-alt"></i>
                             <span class="share-plan-label" data-i18n-key="sidebar.proposals.shareButton">Share
@@ -947,9 +947,9 @@
                     <p data-i18n-key="bets.how.settle">Executed on-chain settles yes; cancelled or expired settles no. The winning side shares the whole pool in proportion to its bets.</p>
                     <p data-i18n-key="bets.how.devnet">Bets use devnet USDC, which has no value. Get devnet SOL and USDC from the faucets.</p>
                     <p class="bets-how-links">
-                        <a href="https://faucet.solana.com" target="_blank" rel="noopener" data-i18n-key="bets.how.faucetSol">Solana faucet</a>
+                        <a class="cb-link cb-link--external" href="https://faucet.solana.com" target="_blank" rel="noopener noreferrer" data-i18n-key="bets.how.faucetSol">Solana faucet</a>
                         ·
-                        <a href="https://faucet.circle.com" target="_blank" rel="noopener" data-i18n-key="bets.how.faucetUsdc">Circle USDC faucet</a>
+                        <a class="cb-link cb-link--external" href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" data-i18n-key="bets.how.faucetUsdc">Circle USDC faucet</a>
                     </p>
                 </details>
             </div>
@@ -965,11 +965,11 @@
             <div class="map-sheet-body">
                 <div id="activity-feed"></div>
                 <div class="btn-group activity-sheet-actions">
-                    <button type="button" id="activity-explorer-button" class="btn btn-info" onclick="showGameLogDialog()">
+                    <button type="button" id="activity-explorer-button" class="btn btn-block" onclick="showGameLogDialog()">
                         <i class="fas fa-wave-square" aria-hidden="true"></i>
                         <span data-i18n-key="mapShell.commands.activityExplorer">Open activity explorer</span>
                     </button>
-                    <button type="button" id="activity-agents-button" class="btn btn-info" onclick="showGameLogDialog({ view: 'actors' })">
+                    <button type="button" id="activity-agents-button" class="btn btn-block" onclick="showGameLogDialog({ view: 'actors' })">
                         <i class="fas fa-robot" aria-hidden="true"></i>
                         <span data-i18n-key="sidebar.game.showAgents">Actors</span>
                     </button>
@@ -988,7 +988,7 @@
                         <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
                     </label>
                     <div class="activity-simulation-row">
-                        <button type="button" id="game-play-pause-btn" class="activity-simulation-play"
+                        <button type="button" id="game-play-pause-btn" class="btn btn-icon btn-sm activity-simulation-play"
                             aria-pressed="false" onclick="toggleGamePlayPause()">
                             <i class="fas fa-play" aria-hidden="true"></i>
                             <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
@@ -1023,7 +1023,7 @@
                             </div>
 
                             <div class="btn-group">
-                                <button class="btn btn-warning" onclick="resetGameState(true)">
+                                <button class="btn btn-danger" onclick="resetGameState(true)">
                                     <i class="fas fa-rotate-left" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.game.newGame">New Game</span>
                                 </button>
@@ -1049,11 +1049,11 @@
 
                             <div class="btn-group" style="margin-top:6px;">
                                 <div class="btn-grid-2x2" data-map-modes="2d">
-                                    <button id="areaMonitorDrawButton" data-map-modes="2d" class="btn btn-action">
+                                    <button id="areaMonitorDrawButton" data-map-modes="2d" class="btn btn-primary btn-block">
                                         <i class="fas fa-draw-polygon" aria-hidden="true"></i>
                                         <span data-i18n-key="sidebar.areaMonitor.drawButton">Draw freely</span>
                                     </button>
-                                    <button id="areaMonitorFromPlanButton" data-map-modes="2d" class="btn btn-action" disabled>
+                                    <button id="areaMonitorFromPlanButton" data-map-modes="2d" class="btn btn-primary btn-block" disabled>
                                         <i class="fas fa-map" aria-hidden="true"></i>
                                         <span data-i18n-key="sidebar.areaMonitor.fromPlanButton">Draw from plan</span>
                                     </button>
@@ -1078,7 +1078,7 @@
                 <div class="settings-brand">
                     <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" class="settings-brand-logo">
                     <span class="settings-brand-title" data-i18n-key="sidebar.header.title">Consensus Builder</span>
-                    <span class="version-badge header-ai-badge" data-i18n-key="sidebar.header.aiBadgeTooltip"
+                    <span class="cb-badge cb-badge--info" data-i18n-key="sidebar.header.aiBadgeTooltip"
                         data-i18n-attr="title,aria-label"
                         title="This platform is AI-friendly, meaning that all the main functionality is accessible and usable by AI agents. Certified by the UN Bureau of Human–AI Affairs"
                         aria-label="This platform is AI-friendly, meaning that all the main functionality is accessible and usable by AI agents. Certified by the UN Bureau of Human–AI Affairs">
@@ -1086,32 +1086,47 @@
                         <span data-i18n-key="sidebar.header.aiBadge">AI-friendly</span>
                     </span>
                 </div>
-                <div class="settings-badge-bar">
-                    <span id="dev-badge" class="dev-badge"
+                <!-- The environment badges (cb-badge tones), shown in debug mode by environment.js
+                     updateBadgeVisibility through the hidden attribute. -->
+                <div class="settings-badge-bar" hidden>
+                    <span id="dev-badge" class="cb-badge cb-badge--warning" hidden
                         data-i18n-key="sidebar.header.devBadge">Development</span>
-                    <span id="debug-badge" class="dev-badge debug-badge"
+                    <span id="debug-badge" class="cb-badge cb-badge--warning" hidden
                         data-i18n-key="sidebar.header.debugBadge">Debug</span>
-                    <span id="version-badge" class="dev-badge version-badge" aria-label="Version"></span>
+                    <span id="version-badge" class="cb-badge cb-badge--neutral" aria-label="Version" hidden></span>
                 </div>
 
                 <!-- Every capability by name (js/ui/command-palette.js); also Ctrl/Cmd-K anywhere -->
                 <!-- The globe: choose a city or explore anywhere (js/ui/world-entry.js) -->
                 <div class="btn-group sheet-shortcuts">
-                    <button type="button" id="world-view-button" class="btn btn-secondary settings-palette-button">
+                    <button type="button" id="world-view-button" class="btn settings-palette-button">
                         <i class="fas fa-earth-europe" aria-hidden="true"></i>
                         <span data-i18n-key="mapShell.commands.worldView">World view</span>
                     </button>
-                    <button type="button" id="command-palette-button" class="btn btn-secondary settings-palette-button">
+                    <button type="button" id="command-palette-button" class="btn settings-palette-button">
                         <i class="fas fa-terminal" aria-hidden="true"></i>
                         <span data-i18n-key="commandPalette.open">Command palette</span>
                         <kbd class="settings-palette-shortcut" data-command-palette-shortcut>Ctrl K</kbd>
                     </button>
                 </div>
 
+                <!-- Appearance: the theme tokens (css/tokens.css) through js/ui/theme.js -->
+                <div class="settings-appearance">
+                    <p class="cb-kicker" id="settings-appearance-label" data-i18n-key="mapShell.appearance.label">Appearance</p>
+                    <div class="cb-segmented cb-segmented--fill" role="group" aria-labelledby="settings-appearance-label">
+                        <button type="button" id="theme-choice-system" class="cb-segmented__option" data-theme-choice="system" aria-pressed="true"
+                            data-i18n-key="mapShell.appearance.system">System</button>
+                        <button type="button" id="theme-choice-light" class="cb-segmented__option" data-theme-choice="light" aria-pressed="false"
+                            data-i18n-key="mapShell.appearance.light">Light</button>
+                        <button type="button" id="theme-choice-dark" class="cb-segmented__option" data-theme-choice="dark" aria-pressed="false"
+                            data-i18n-key="mapShell.appearance.dark">Dark</button>
+                    </div>
+                </div>
+
                 <!-- Data & maintenance: where the data comes from, then upkeep of what this browser has
                      stored. Each dataset's upkeep keeps its own section wrapper, so a city that hides
                      the section (sidebar.disabledSections; the explore city) hides its upkeep too. The
-                     per-dataset clears are .btn-danger, shown only in debug mode (css/utilities.css). -->
+                     per-dataset clears are developer controls (debug-only-control, css/utilities.css), shown only in debug mode. -->
                 <div class="accordion-section" data-section="data">
                     <h3 class="sheet-section-title">
                         <i class="fas fa-database" aria-hidden="true"></i>
@@ -1149,7 +1164,7 @@
                             <summary data-i18n-key="mapShell.maintenance.resetSummary">Reset data stored in this browser…</summary>
                         <div class="accordion-section sheet-subsection" data-section="parcels">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-danger"
+                                <button type="button" class="btn btn-danger debug-only-control"
                                     onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
                                     data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
@@ -1159,7 +1174,7 @@
                         </div>
                         <div class="accordion-section sheet-subsection" data-section="blocks">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-danger" onclick="clearBlocks()"
+                                <button type="button" class="btn btn-danger debug-only-control" onclick="clearBlocks()"
                                     data-i18n-key="sidebar.blocks.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.clearButton">Clear Blocks From Local Storage</span>
@@ -1168,7 +1183,7 @@
                         </div>
                         <div class="accordion-section sheet-subsection" data-section="roads">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-danger" onclick="clearDetectedRoads()"
+                                <button type="button" class="btn btn-danger debug-only-control" onclick="clearDetectedRoads()"
                                     data-i18n-key="sidebar.roads.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.clearButton">Clear Roads from Local Storage</span>
@@ -1177,7 +1192,7 @@
                         </div>
                         <div class="accordion-section sheet-subsection" data-section="proposals">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-danger" onclick="clearLocalProposalData()">
+                                <button type="button" class="btn btn-danger debug-only-control" onclick="clearLocalProposalData()">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.proposals.clearButton">Clear Proposals From Local Storage</span>
                                 </button>
@@ -1212,9 +1227,9 @@
                         <div class="info-subsection">
                             <h4 data-i18n-key="sidebar.info.contactTitle">Contact</h4>
                             <p>
-                                <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a
-                                    href="https://t.me/urbangametheory" target="_blank">https://t.me/urbangametheory</a><br>
-                                <span data-i18n-key="sidebar.info.xLabel">X</span>: <a
+                                <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a class="cb-link cb-link--external"
+                                    href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">https://t.me/urbangametheory</a><br>
+                                <span data-i18n-key="sidebar.info.xLabel">X</span>: <a class="cb-link cb-link--external"
                                     href="https://x.com/UrbanGameTheory" target="_blank" rel="me noopener noreferrer">@UrbanGameTheory</a><br>
                             </p>
                         </div>
@@ -1222,15 +1237,15 @@
                         <div class="info-subsection">
                             <h4 data-i18n-key="sidebar.info.aboutTitle">About</h4>
                             <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
-                                <strong>Consensus Builder</strong> is Urban Game Theory's free, map-based planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a href="/urban-planning.html">open city planning workflow</a>, open the
-                                <a href="/hackathon-demo.html">live hackathon demo</a>, read the
-                                <a href="/deck.html">pitch deck</a>, or see <a href="roadmap.html" target="_blank">the roadmap</a>.
+                                <strong>Consensus Builder</strong> is Urban Game Theory's free, map-based planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a class="cb-link" href="/urban-planning.html">open city planning workflow</a>, open the
+                                <a class="cb-link" href="/hackathon-demo.html">live hackathon demo</a>, read the
+                                <a class="cb-link" href="/deck.html">pitch deck</a>, or see <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">the roadmap</a>.
                             </p>
-                            <button type="button" class="btn btn-secondary site-intro-reopen" data-site-intro-open>
+                            <button type="button" class="btn site-intro-reopen" data-site-intro-open>
                                 <i class="fas fa-map" aria-hidden="true"></i>
                                 <span data-i18n-key="modal.siteIntro.open">How it works</span>
                             </button>
-                            <button type="button" id="parcel-source-notice-button" class="btn btn-secondary" onclick="openParcelSourceNotice()">
+                            <button type="button" id="parcel-source-notice-button" class="btn" onclick="openParcelSourceNotice()">
                                 <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
                             </button>
                         </div>
@@ -1240,8 +1255,8 @@
                             <p data-i18n-key="sidebar.info.instructionsParagraph" data-i18n-attr="html">
                                 <strong>Build first, propose second.</strong> New designs appear on the map immediately, so
                                 you can edit, park, compare and share them before adding formal terms. Read the
-                                <a href="how-to-use.html" target="_blank">step-by-step guide</a>, or see what works today
-                                and what comes next on the <a href="roadmap.html" target="_blank">roadmap</a>.
+                                <a class="cb-link" href="how-to-use.html" target="_blank" rel="noopener noreferrer">step-by-step guide</a>, or see what works today
+                                and what comes next on the <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">roadmap</a>.
                             </p>
                         </div>
                         <hr>
@@ -1278,19 +1293,25 @@
 
             <!-- Tab Navigation -->
             <!-- Propose holds the palette of things to create; Proposals lists what already exists
-                 here (its count rides in a badge); Tools is an icon so four tabs fit a phone. -->
-            <div class="parcel-tabs">
-                <button type="button" class="parcel-tab-btn active" data-parcel-tab-id="info-tab"
+                 here (its count rides in a badge); Tools is an icon so four tabs fit a phone. The
+                 strip is the shared cb-tabs (css/primitives.css); parcel-tab-btn / parcel-tabs stay
+                 as the hooks switchParcelTab (js/parcels/proposals.js) and the specs find them by. -->
+            <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
+                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="true"
+                    aria-controls="info-tab" data-parcel-tab-id="info-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"><span
                         class="parcel-tab-label" data-i18n-key="panel.parcel.tabInfo">Info</span></button>
-                <button type="button" class="parcel-tab-btn" data-parcel-tab-id="propose-tab"
+                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
+                    aria-controls="propose-tab" data-parcel-tab-id="propose-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"><span
                         class="parcel-tab-label" data-i18n-key="panel.parcel.tabPropose">Propose</span></button>
-                <button type="button" class="parcel-tab-btn" data-parcel-tab-id="proposals-tab"
+                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
+                    aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
                         class="parcel-tab-label" data-i18n-key="panel.parcel.tabProposals">Proposals</span><span
-                        class="parcel-tab-count" hidden></span></button>
-                <button type="button" class="parcel-tab-btn parcel-tab-btn--icon" data-parcel-tab-id="tools-tab"
+                        class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
+                <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="false"
+                    aria-controls="tools-tab" data-parcel-tab-id="tools-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')"
                     aria-label="Tools" title="Tools" data-i18n-key="panel.parcel.tabTools" data-i18n-attr="aria-label,title"><i
                         class="fas fa-screwdriver-wrench" aria-hidden="true"></i></button>
@@ -1298,7 +1319,7 @@
 
             <div class="panel-body">
                 <!-- Info Tab -->
-                <div id="info-tab" class="parcel-tab-content active">
+                <div id="info-tab" class="parcel-tab-content" role="tabpanel">
                     <div class="checkbox-group multi-select-group">
                         <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select multiple
                             parcels</span>
@@ -1321,70 +1342,61 @@
                 </div>
 
                 <!-- Propose Tab -->
-                <div id="propose-tab" class="parcel-tab-content">
+                <div id="propose-tab" class="parcel-tab-content" role="tabpanel" hidden>
                     <div id="propose-content"></div>
                 </div>
 
                 <!-- Proposals Tab -->
-                <div id="proposals-tab" class="parcel-tab-content">
+                <div id="proposals-tab" class="parcel-tab-content" role="tabpanel" hidden>
                     <div id="proposals-content"></div>
                 </div>
 
-                <!-- Tools Tab -->
-                <div id="tools-tab" class="parcel-tab-content">
+                <!-- Tools Tab: the parcel NFT first (Mint is the tab's one primary action; claim.js
+                     enables Mint or Claim from the chain status and, while several parcels are
+                     selected, hides every .button-row but the claim rows), then the inspection tools
+                     in two columns. Neighbors and Vertices are toggles (aria-pressed). Mint is the
+                     primary while the parcel can be minted, Claim once it is (claim.js swaps it). -->
+                <div id="tools-tab" class="parcel-tab-content" role="tabpanel" hidden>
                     <div class="parcel-info-buttons">
                         <div class="button-row button-row-5">
                             <div id="parcelMintStatus" class="claim-status-indicator"
                                 data-i18n-key="panel.parcel.nftStatusDefault">NFT status: Not checked yet.</div>
                         </div>
-                        <div class="button-row button-row-claim">
-                            <button id="mintAndClaimButton" class="parcel-info-btn claim-button" type="button"
+                        <div class="button-row button-row-claim cb-actions">
+                            <button id="mintAndClaimButton" class="btn btn-primary" type="button"
                                 onclick="(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()"
-                                title="Mint the parcel NFT" disabled data-i18n-key="panel.parcel.mintAndClaimButton">
-                                Mint
-                            </button>
-                            <button id="claimButton" class="parcel-info-btn claim-button" type="button"
+                                title="Mint the parcel NFT" disabled><i class="fas fa-stamp" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.mintAndClaimButton">Mint</span></button>
+                            <button id="claimButton" class="btn" type="button"
                                 onclick="(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()"
-                                title="Claim existing parcel NFT" disabled data-i18n-key="panel.parcel.claimButton">
-                                Claim
-                            </button>
+                                title="Claim existing parcel NFT" disabled><i class="fas fa-hand-holding" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.claimButton">Claim</span></button>
                         </div>
-                        <div class="button-row button-row-1">
-                            <button id="parcelBuilderButton" class="parcel-info-btn parcel-builder-button" type="button"
+                        <div class="button-row button-row-1 cb-actions">
+                            <button id="parcelBuilderButton" class="btn" type="button"
                                 onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
-                                title="Open Parcel Builder">
-                                <svg class="parcel-builder-icon" viewBox="0 0 64 32" aria-hidden="true"
-                                    focusable="false">
-                                    <path d="M6 22h30v-8h6l7 8v6h7v4H45a6 6 0 0 1-12 0h-9a6 6 0 0 1-12 0H6z"
-                                        fill="currentColor" />
-                                    <rect x="14" y="9" width="12" height="8" rx="2" ry="2" fill="currentColor" />
-                                    <path d="M50 12h10v12H50l-4-5v-2z" fill="currentColor" />
-                                    <circle cx="14" cy="30" r="4" fill="currentColor" />
-                                    <circle cx="32" cy="30" r="4" fill="currentColor" />
-                                </svg>
-                                <span class="parcel-builder-label" data-i18n-key="panel.parcel.builderLabel">Parcel
-                                    Builder</span>
-                            </button>
-                            <button id="visualizeButton" class="parcel-info-btn visualize-button"
-                                onclick="showAnimationModalForCurrentParcel()"
-                                data-i18n-key="panel.parcel.visualizeButton">Visualize</button>
+                                title="Open Parcel Builder"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
+                            <button id="visualizeButton" class="btn" type="button"
+                                onclick="showAnimationModalForCurrentParcel()"><i class="fas fa-film" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.visualizeButton">Visualize</span></button>
                         </div>
-                        <div class="button-row button-row-2">
-                            <button id="neighboursButton" class="parcel-info-btn neighbors-button"
-                                onclick="toggleNeighborsHighlight()"
-                                data-i18n-key="panel.parcel.neighborsButton">Neighbours</button>
-                            <button id="verticesButton" class="parcel-info-btn vertices-button"
-                                onclick="toggleVerticesDisplay()"
-                                data-i18n-key="panel.parcel.verticesButton">Vertices</button>
+                        <div class="button-row button-row-2 cb-actions">
+                            <button id="neighboursButton" class="btn" type="button" aria-pressed="false"
+                                onclick="toggleNeighborsHighlight()"><i class="fas fa-object-group" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.neighborsButton">Neighbors</span></button>
+                            <button id="verticesButton" class="btn vertices-button" type="button" aria-pressed="false"
+                                onclick="toggleVerticesDisplay()"><i class="fas fa-draw-polygon" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.verticesButton">Vertices</span></button>
                         </div>
-                        <div class="button-row button-row-3">
-                            <button id="analyzeRoadButton" class="parcel-info-btn analyze-button"
-                                onclick="showRoadAnalysisPanel()" data-i18n-key="panel.parcel.analyzeRoadButton">Analyze
-                                As Road</button>
-                            <button id="measureAsRoadButton" class="parcel-info-btn measure-road-button"
-                                onclick="(window.Parcels?.uiRoad?.measureAsRoad || window.measureAsRoad || function(){})()"
-                                data-i18n-key="panel.parcel.actions.measureAsRoad">Measure as
-                                road</button>
+                        <div class="button-row button-row-3 cb-actions">
+                            <button id="analyzeRoadButton" class="btn" type="button" aria-pressed="false"
+                                onclick="showRoadAnalysisPanel()"><i class="fas fa-road" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.analyzeRoadButton">Analyze as road</span></button>
+                            <button id="measureAsRoadButton" class="btn" type="button"
+                                onclick="(window.Parcels?.uiRoad?.measureAsRoad || window.measureAsRoad || function(){})()"><i
+                                    class="fas fa-ruler" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.actions.measureAsRoad">Measure as road</span></button>
                         </div>
                     </div>
                 </div>
@@ -1422,38 +1434,45 @@
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
                     aria-label="Close block info" onclick="hideBlockInfo()">×</button>
             </div>
-            <div class="block-tabs">
-                <button id="block-info-tab-button" class="block-tab-btn active" data-target="block-info-tab"
-                    onclick="switchBlockTab(this, 'block-info-tab')">Info</button>
-                <button id="block-proposals-tab-button" class="block-tab-btn" data-target="block-proposals-tab"
-                    onclick="switchBlockTab(this, 'block-proposals-tab')">Proposals (0)</button>
-                <button id="block-tools-tab-button" class="block-tab-btn" data-target="block-tools-tab"
-                    onclick="switchBlockTab(this, 'block-tools-tab')">Tools</button>
+            <!-- The block's tabs, the parcel panel's cb-tabs strip; switchBlockTab (js/parcel-blocks.js)
+                 moves aria-selected and the panels' hidden attribute. -->
+            <div class="cb-tabs cb-tabs--fill block-tabs" role="tablist">
+                <button type="button" id="block-info-tab-button" class="cb-tab" role="tab" aria-selected="true"
+                    aria-controls="block-info-tab" data-target="block-info-tab"
+                    onclick="switchBlockTab(this, 'block-info-tab')" data-i18n-key="panel.block.tabInfo">Info</button>
+                <button type="button" id="block-proposals-tab-button" class="cb-tab" role="tab" aria-selected="false"
+                    aria-controls="block-proposals-tab" data-target="block-proposals-tab"
+                    onclick="switchBlockTab(this, 'block-proposals-tab')"><span
+                        data-i18n-key="panel.parcel.tabProposals">Proposals</span><span
+                        class="cb-badge cb-badge--count block-tab-count" hidden></span></button>
+                <button type="button" id="block-tools-tab-button" class="cb-tab" role="tab" aria-selected="false"
+                    aria-controls="block-tools-tab" data-target="block-tools-tab"
+                    onclick="switchBlockTab(this, 'block-tools-tab')" data-i18n-key="panel.block.tabTools">Tools</button>
             </div>
             <div class="panel-body">
-                <div id="block-info-tab" class="block-tab-content active">
+                <div id="block-info-tab" class="block-tab-content" role="tabpanel">
                     <div id="block-info-content" class="block-info-content"></div>
                     <div id="block-parcels-section" class="block-parcels-section">
                         <div id="block-parcels-list" class="block-parcels-list"></div>
                     </div>
                 </div>
-                <div id="block-proposals-tab" class="block-tab-content">
+                <div id="block-proposals-tab" class="block-tab-content" role="tabpanel" hidden>
                     <div id="block-proposals-content" class="block-proposals-content"></div>
                 </div>
-                <div id="block-tools-tab" class="block-tab-content">
+                <div id="block-tools-tab" class="block-tab-content" role="tabpanel" hidden>
                     <div id="block-tools-content" class="block-tools-content"></div>
                 </div>
             </div>
         </div>
 
             <div id="road-drawing-controls" class="map-editor-toolbar" hidden>
-                <div style="display: flex; gap: 8px;">
-                    <button id="undoRoadButton" class="btn btn-secondary" onclick="undoLastRoadOrTrackSegment()"
+                <div class="cb-actions">
+                    <button id="undoRoadButton" class="btn" onclick="undoLastRoadOrTrackSegment()"
                         data-i18n-key="panel.road.undoButton">Undo (U)</button>
                     <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()"
                         data-i18n-key="panel.road.finishButtonShort">Finish road
                         (F)</button>
-                    <button type="button" class="btn btn-secondary" onclick="cancelRoadOrTrackDrawing()" data-i18n-key="common.cancel">Cancel</button>
+                    <button type="button" class="btn" onclick="cancelRoadOrTrackDrawing()" data-i18n-key="common.cancel">Cancel</button>
                 </div>
             </div>
 
@@ -1461,11 +1480,10 @@
         <div id="road-info-panel" class="info-panel right-dock-panel">
             <div class="road-panel-header">
                 <h3 id="road-panel-title" data-i18n-key="panel.road.title">Draw road</h3>
-                <button type="button" id="editRoadCrossSectionButton" class="road-cross-section-btn"
-                    onclick="openRoadDrawingCrossSectionEditor()">
-                    <span data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
-                        class="road-cross-section-width"></span>
-                </button>
+                <button type="button" id="editRoadCrossSectionButton" class="btn btn-sm"
+                    onclick="openRoadDrawingCrossSectionEditor()"><i class="fas fa-road" aria-hidden="true"></i><span
+                        data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
+                        class="road-cross-section-width"></span></button>
                 <!-- In the header's flex row, not absolutely positioned over it: out of flow, the header
                      could not reserve their width and the Cross-section button slid underneath them. -->
                 <div class="road-panel-actions">
@@ -1549,68 +1567,77 @@
         <!-- New Road Analysis Panel -->
         <div id="road-analysis-panel" class="info-panel">
             <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
-                aria-label="Close road analysis" onclick="hideRoadAnalysisPanel()">×</button>
+                aria-label="Close road analysis" data-i18n-key="modal.common.close" data-i18n-attr="aria-label,title"
+                onclick="hideRoadAnalysisPanel()">×</button>
             <h3 data-i18n-key="panel.roadAnalysis.title">Road width analysis</h3>
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab(this, 'segments-tab')">Segments</button>
-                <button class="tab-btn" onclick="switchTab(this, 'visualization-tab')">Visualization</button>
+            <!-- switchTab (js/road-analysis.js) moves aria-selected and the panels' hidden attribute; the
+                 tab-btn class and the onclick text stay as the hooks the code and the specs find them by. -->
+            <div class="cb-tabs tabs" role="tablist">
+                <button type="button" class="cb-tab tab-btn" role="tab" aria-selected="true" aria-controls="segments-tab"
+                    onclick="switchTab(this, 'segments-tab')" data-i18n-key="panel.roadAnalysis.tabSegments">Segments</button>
+                <button type="button" class="cb-tab tab-btn" role="tab" aria-selected="false" aria-controls="visualization-tab"
+                    onclick="switchTab(this, 'visualization-tab')" data-i18n-key="panel.roadAnalysis.tabVisualization">Visualization</button>
             </div>
 
             <!-- Segments Tab -->
-            <div id="segments-tab" class="tab-content">
+            <div id="segments-tab" class="tab-content" role="tabpanel">
                 <div id="segments-list">
-                    <p>No segments to display.</p>
+                    <p data-i18n-key="panel.roadAnalysis.noSegments">No segments to display.</p>
                 </div>
             </div>
 
             <!-- Visualization Tab -->
-            <div id="visualization-tab" class="tab-content">
+            <div id="visualization-tab" class="tab-content" role="tabpanel" hidden>
                 <div class="visualization-controls">
                     <div class="checkbox-group">
                         <label>
                             <input type="checkbox" id="showCenterline" checked
                                 onchange="toggleAnalysisLayer('centerline')">
-                            Show Centerline
+                            <span data-i18n-key="panel.roadAnalysis.showCenterline">Show centerline</span>
                         </label>
                         <label>
                             <input type="checkbox" id="showWidthLines" checked
                                 onchange="toggleAnalysisLayer('widthLines')">
-                            Show Width Measurements
+                            <span data-i18n-key="panel.roadAnalysis.showWidthLines">Show width measurements</span>
                         </label>
                         <label>
                             <input type="checkbox" id="showOutliers" disabled
                                 title="Outlier visualization is not available yet">
-                            Show Outliers
+                            <span data-i18n-key="panel.roadAnalysis.showOutliers">Show outliers</span>
                         </label>
                     </div>
                 </div>
-                <div class="action-buttons">
-                    <button class="btn" onclick="focusOnRoadAnalysis()" data-i18n-key="panel.roadAnalysis.focusButton">Focus view</button>
-                    <button class="btn" onclick="clearRoadAnalysisVisualization()" data-i18n-key="panel.roadAnalysis.clearButton">Clear all</button>
+                <div class="cb-actions action-buttons">
+                    <button type="button" class="btn" onclick="focusOnRoadAnalysis()"><i class="fas fa-crosshairs" aria-hidden="true"></i><span
+                            data-i18n-key="panel.roadAnalysis.focusButton">Focus view</span></button>
+                    <button type="button" class="btn" onclick="clearRoadAnalysisVisualization()"><i class="fas fa-eraser" aria-hidden="true"></i><span
+                            data-i18n-key="panel.roadAnalysis.clearButton">Clear all</span></button>
                 </div>
             </div>
         </div>
 
-        <!-- OSM Road Segment List Popup -->
-        <div id="osm-road-segment-list-popup" class="info-panel road-analysis-modal" style="display: none;">
-            <div class="road-analysis-modal__header">
-                <h3 data-i18n-key="panel.roadAnalysis.title">Road width analysis</h3>
+        <!-- OSM Road Segment List Popup: a right-dock panel under the top-right buttons. Shown and
+             hidden through style.display (js/road-analysis.js; three-mode.js hides it on entering 3D). -->
+        <div id="osm-road-segment-list-popup" class="info-panel right-dock-panel road-analysis-modal" role="region"
+            aria-labelledby="osm-road-segment-list-title" style="display: none;">
+            <div class="panel-header">
+                <h3 id="osm-road-segment-list-title" data-i18n-key="panel.roadAnalysis.modalTitle">Road width analysis</h3>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button" aria-label="Close"
+                    data-i18n-key="modal.common.close" data-i18n-attr="aria-label,title"
                     onclick="hideOSMRoadSegmentListPopup()">×</button>
             </div>
-            <div class="road-analysis-modal__body">
+            <div class="panel-body road-analysis-modal__body">
                 <div class="road-histogram-section">
                     <div class="road-histogram-header">
-                        <h4>Length by width bucket</h4>
-                        <p class="road-histogram-subtitle">Total visible road length aggregated by average width.</p>
+                        <h4 data-i18n-key="panel.roadAnalysis.histogramTitle">Length by width bucket</h4>
+                        <p class="road-histogram-subtitle" data-i18n-key="panel.roadAnalysis.histogramSubtitle">Total visible road length aggregated by average width.</p>
                     </div>
                     <div id="osm-road-histogram" class="road-histogram"></div>
                 </div>
                 <div class="road-segment-list-section">
                     <div class="road-segment-list-header">
-                        <h4>Segments</h4>
-                        <p class="road-segment-subtitle">Sorted by average width (descending). Click to focus the map.
-                        </p>
+                        <h4 data-i18n-key="panel.roadAnalysis.segmentTitle">Segments</h4>
+                        <p class="road-segment-subtitle" data-i18n-key="panel.roadAnalysis.segmentSubtitle">Sorted by average width (descending). Click to focus the map.</p>
                     </div>
                     <div id="osm-road-segment-list-content" class="road-segment-list"></div>
                 </div>
@@ -1625,6 +1652,7 @@
             'js/shared-utils.js',
             'js/ui/banner-stack.js',
             'js/ui/modal-escape.js',
+            'js/ui/dialogs.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
@@ -2255,201 +2283,194 @@
         </section>
     </div>
 
-    <!-- Version History Modal -->
-    <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">
-        <div class="version-modal-content" role="dialog" aria-modal="true" aria-labelledby="version-modal-title">
-            <div class="version-modal-header">
-                <h2 id="version-modal-title" data-i18n-key="modal.version.title">What's new</h2>
-                <button class="version-modal-close close-circle-btn close-circle-btn--lg" type="button"
-                    data-version-close aria-label="Close">&times;</button>
+    <!-- Version History Modal (the shared dialog chrome; shown by toggling [hidden], js/version-history.js) -->
+    <div id="version-modal" class="cb-dialog-overlay" hidden>
+        <div class="cb-dialog cb-dialog--md version-modal" role="dialog" aria-modal="true"
+            aria-labelledby="version-modal-title" tabindex="-1">
+            <div class="cb-dialog__header">
+                <h2 id="version-modal-title" class="cb-dialog__title" data-i18n-key="modal.version.title">What's new</h2>
+                <button class="close-circle-btn" type="button" data-version-close aria-label="Close"
+                    data-i18n-key="modal.version.closeLabel" data-i18n-attr="aria-label">&times;</button>
             </div>
-            <div class="version-modal-body">
+            <div class="cb-dialog__body">
                 <div class="version-modal-meta">
                     <span class="version-number" data-version-number></span>
                     <span class="version-datetime" data-version-datetime></span>
                 </div>
                 <div class="version-text" data-version-text></div>
             </div>
-            <div class="version-modal-footer">
-                <button class="btn" type="button" data-version-next>Next</button>
+            <div class="cb-dialog__footer">
+                <button class="btn btn-primary" type="button" data-version-next>Next</button>
             </div>
         </div>
     </div>
 
-    <!-- Welcome Modal -->
-    <div id="welcome-modal" class="welcome-modal" style="display: none;">
-        <div class="welcome-modal-content" role="dialog" aria-modal="true">
-            <button type="button" id="welcome-close-btn"
-                class="welcome-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close welcome dialog"
-                title="Close welcome dialog" data-i18n-key="modal.welcome.closeLabel" data-i18n-attr="aria-label,title"
-                onclick="hideWelcomeModal()">&times;</button>
-            <span class="welcome-product-kicker" data-i18n-key="modal.welcome.kicker">Consensus Builder · Urban Game Theory</span>
-            <h2 data-i18n-key="modal.welcome.title">Hyperstition: Markets for Possible Cities</h2>
-            <p class="welcome-product-statement" data-i18n-key="modal.welcome.statement">Humans and agents imagine, propose, fund and forecast changes to real parcels. Public records decide which possible futures became real.</p>
-            <div class="welcome-product-flow" aria-label="Product flow" data-i18n-key="modal.welcome.flowLabel" data-i18n-attr="aria-label">
-                <span data-i18n-key="modal.welcome.flowImagine">Imagine</span>
-                <span data-i18n-key="modal.welcome.flowPropose">Propose</span>
-                <span data-i18n-key="modal.welcome.flowBack">Back</span>
-                <span data-i18n-key="modal.welcome.flowForecast">Forecast</span>
-                <span data-i18n-key="modal.welcome.flowAttest">Attest</span>
-                <span data-i18n-key="modal.welcome.flowRealize">Realize</span>
+    <!-- Welcome Modal: the first dialog a newcomer sees, on the shared dialog chrome; shown by toggling
+         [hidden] (js/user-management.js showWelcomeModal). The language row is the shared language
+         picker (a cb-segmented filled on open); Get started sits in the footer, outside the scrolling
+         body, and submits the form through its form attribute. -->
+    <div id="welcome-modal" class="cb-dialog-overlay" hidden>
+        <div class="cb-dialog cb-dialog--md cb-dialog--fixed welcome-modal" role="dialog" aria-modal="true"
+            aria-labelledby="welcome-modal-title">
+            <div class="cb-dialog__header">
+                <div class="welcome-modal__heading">
+                    <p class="cb-kicker" data-i18n-key="modal.welcome.kicker">Consensus Builder · Urban Game Theory</p>
+                    <h2 id="welcome-modal-title" class="cb-dialog__title" data-i18n-key="modal.welcome.title">Hyperstition: Markets for Possible Cities</h2>
+                </div>
+                <button type="button" id="welcome-close-btn" class="close-circle-btn" aria-label="Close welcome dialog"
+                    title="Close welcome dialog" data-i18n-key="modal.welcome.closeLabel" data-i18n-attr="aria-label,title"
+                    onclick="hideWelcomeModal()">&times;</button>
             </div>
-            <div class="welcome-hackathon-links">
-                <a class="welcome-demo-link" href="/hackathon-demo.html" data-i18n-key="modal.welcome.demoLink">Open the live hackathon demo</a>
-                <a class="welcome-demo-link" href="/deck.html" data-i18n-key="modal.welcome.deckLink">Read the pitch deck</a>
+            <div class="cb-dialog__body">
+                <p class="welcome-product-statement" data-i18n-key="modal.welcome.statement">Humans and agents imagine, propose, fund and forecast changes to real parcels. Public records decide which possible futures became real.</p>
+                <div class="welcome-product-flow" role="list" aria-label="Product flow" data-i18n-key="modal.welcome.flowLabel" data-i18n-attr="aria-label">
+                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowImagine">Imagine</span>
+                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowPropose">Propose</span>
+                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowBack">Back</span>
+                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowForecast">Forecast</span>
+                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowAttest">Attest</span>
+                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowRealize">Realize</span>
+                </div>
+                <div class="cb-link-row welcome-hackathon-links">
+                    <a class="cb-link" href="/hackathon-demo.html" data-i18n-key="modal.welcome.demoLink">Open the live hackathon demo</a>
+                    <a class="cb-link" href="/deck.html" data-i18n-key="modal.welcome.deckLink">Read the pitch deck</a>
+                </div>
+                <p class="welcome-identity-prompt" data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
+                <form id="welcome-form" onsubmit="submitUsername(event)">
+                    <div class="form-group">
+                        <label class="welcome-field-label" for="selected-avatar" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar</label>
+                        <div id="avatar-selection" class="avatar-selection">
+                            <!-- The chosen avatar is a cb-option row that opens the grid of avatar
+                                 toggles below it (user-management.js showAvatarOptions). -->
+                            <button type="button" id="selected-avatar" class="cb-option selected-avatar"
+                                aria-controls="avatar-options" aria-expanded="false" onclick="showAvatarOptions()">
+                                <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar"
+                                    data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
+                                <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to
+                                    choose</span>
+                            </button>
+                            <div id="avatar-options" class="avatar-options" hidden>
+                                <!-- Avatar options will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div id="welcome-language-label" class="welcome-field-label" data-i18n-key="modal.welcome.languageLabel">Language</div>
+                        <div id="welcome-language-picker" class="cb-segmented welcome-language-picker" data-language-switcher
+                            role="group" aria-labelledby="welcome-language-label"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="username-input" placeholder="Your username" required
+                            data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder">
+                    </div>
+                    <div id="takeover-section" class="takeover-section" hidden>
+                        <p id="takeover-message"></p>
+                        <div class="takeover-buttons">
+                            <button type="button" id="takeover-yes-btn" class="btn btn-primary"
+                                data-i18n-key="modal.welcome.takeoverYes">Yes</button>
+                            <button type="button" id="takeover-no-btn" class="btn"
+                                data-i18n-key="modal.welcome.takeoverNo">No</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <p class="welcome-identity-prompt" data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
-            <form id="welcome-form" onsubmit="submitUsername(event)">
-                <div class="form-group">
-                    <label for="avatar-selection" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar:</label>
-                    <div id="avatar-selection" class="avatar-selection">
-                        <div id="selected-avatar" class="selected-avatar" onclick="showAvatarOptions()">
-                            <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar"
-                                data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
-                            <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to
-                                choose</span>
-                        </div>
-                        <div id="avatar-options" class="avatar-options" style="display: none;">
-                            <!-- Avatar options will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="welcome-language-picker" data-i18n-key="modal.welcome.languageLabel">Language:</label>
-                    <div id="welcome-language-picker" class="welcome-language-picker" data-language-switcher
-                        role="group" aria-label="Language selection" data-i18n-key="language.switcher.aria"
-                        data-i18n-attr="aria-label">
-                        <button type="button" class="language-toggle" data-language-toggle aria-haspopup="true"
-                            aria-expanded="false" title="Language" aria-label="Language"
-                            data-i18n-key="language.switcher.label" data-i18n-attr="title,aria-label">
-                            <span aria-hidden="true">🌐</span>
-                        </button>
-                        <div class="language-menu" data-language-menu role="menu">
-                            <button type="button" class="language-option" data-language="en" role="menuitem"
-                                title="Switch to English" aria-label="Switch to English"
-                                data-i18n-key="language.switcher.to_en" data-i18n-attr="title,aria-label">
-                                <span aria-hidden="true">🇬🇧</span>
-                            </button>
-                            <button type="button" class="language-option" data-language="es" role="menuitem"
-                                title="Switch to Spanish" aria-label="Switch to Spanish"
-                                data-i18n-key="language.switcher.to_es" data-i18n-attr="title,aria-label">
-                                <span aria-hidden="true">🇪🇸</span>
-                            </button>
-                            <button type="button" class="language-option" data-language="sr" role="menuitem"
-                                title="Switch to Serbian" aria-label="Switch to Serbian"
-                                data-i18n-key="language.switcher.to_sr" data-i18n-attr="title,aria-label">
-                                <span aria-hidden="true">🇷🇸</span>
-                            </button>
-                            <button type="button" class="language-option" data-language="hr" role="menuitem"
-                                title="Switch to Croatian" aria-label="Switch to Croatian"
-                                data-i18n-key="language.switcher.to_hr" data-i18n-attr="title,aria-label">
-                                <span aria-hidden="true">🇭🇷</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="username-input" placeholder="Your username" required
-                        data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder">
-                </div>
-                <div id="takeover-section" class="takeover-section" style="display: none;">
-                    <p id="takeover-message"></p>
-                    <div class="takeover-buttons">
-                        <button type="button" id="takeover-yes-btn" class="btn btn-action"
-                            data-i18n-key="modal.welcome.takeoverYes">Yes</button>
-                        <button type="button" id="takeover-no-btn" class="btn btn-secondary"
-                            data-i18n-key="modal.welcome.takeoverNo">No</button>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-action" id="welcome-submit-btn"
+            <div class="cb-dialog__footer">
+                <button type="submit" form="welcome-form" class="btn btn-primary btn-block cb-shimmer" id="welcome-submit-btn"
                     data-i18n-key="modal.welcome.submit">Get Started</button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- User Logout Modal -->
-    <div id="logout-modal" class="welcome-modal" style="display: none;">
-        <div class="welcome-modal-content">
-            <h2 data-i18n-key="modal.logout.title">Log Out</h2>
-            <p data-i18n-key="modal.logout.subtitle">What should happen to your agent?</p>
-            <div class="logout-options">
-                <button type="button" id="logout-ai-btn" class="btn btn-action"
+    <!-- User Logout Modal: opened from the agent dialog, so it takes the upper dialog rung
+         (js/user-management.js showLogoutModal toggles [hidden]). -->
+    <div id="logout-modal" class="cb-dialog-overlay cb-dialog-overlay--top" hidden>
+        <div class="cb-dialog cb-dialog--sm logout-modal" role="dialog" aria-modal="true"
+            aria-labelledby="logout-modal-title">
+            <div class="cb-dialog__header">
+                <h2 id="logout-modal-title" class="cb-dialog__title" data-i18n-key="modal.logout.title">Log Out</h2>
+                <button type="button" class="close-circle-btn" data-logout-close aria-label="Close"
+                    data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
+            </div>
+            <div class="cb-dialog__body">
+                <p data-i18n-key="modal.logout.subtitle">What should happen to your agent?</p>
+            </div>
+            <div class="cb-dialog__footer cb-dialog__footer--stack">
+                <button type="button" id="logout-ai-btn" class="btn btn-primary"
                     data-i18n-key="modal.logout.aiOption">Let AI run the agent</button>
-                <button type="button" id="logout-inactive-btn" class="btn btn-secondary"
+                <button type="button" id="logout-inactive-btn" class="btn"
                     data-i18n-key="modal.logout.inactiveOption">Agent should be inactive</button>
-                <button type="button" id="logout-cancel-btn" class="btn btn-outline"
+                <button type="button" id="logout-cancel-btn" class="btn btn-quiet"
                     data-i18n-key="modal.logout.cancel">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Locate Parcel Confirmation Modal -->
-    <div id="locate-parcel-modal" class="welcome-modal" style="display: none;">
-        <div class="welcome-modal-content">
-            <h2 data-i18n-key="modal.locate.title">Locate parcel confirmation</h2>
-            <div id="locate-parcel-modal-body"
-                style="max-height: 50vh; overflow: auto; font-family: monospace; font-size: 12px; white-space: pre-wrap;">
+    <!-- Track Speed Picker Modal (js/road-drawing.js showTrackSpeedPicker toggles [hidden]): the speeds
+         are cb-option rows; picking one starts drawing at once. -->
+    <div id="track-speed-modal" class="cb-dialog-overlay" hidden>
+        <div class="cb-dialog cb-dialog--md track-speed-modal" role="dialog" aria-modal="true"
+            aria-labelledby="track-speed-modal-title">
+            <div class="cb-dialog__header">
+                <h2 id="track-speed-modal-title" class="cb-dialog__title" data-i18n-key="modal.track.speedPickerTitle">Choose Track Speed</h2>
+                <button type="button" class="close-circle-btn" data-track-speed-close aria-label="Close"
+                    data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
             </div>
-            <div style="margin-top: 12px; text-align: right;">
-                <button type="button" id="locate-parcel-ok-btn" class="btn btn-action">OK</button>
-                <button type="button" id="locate-parcel-cancel-btn" class="btn btn-secondary">Cancel</button>
+            <div class="cb-dialog__body">
+                <p class="track-speed-description" data-i18n-key="modal.track.speedPickerDescription">Select the maximum
+                    speed for this track. This determines the minimum curvature radius. Press Enter to start with the
+                    default selection.</p>
+                <div id="track-speed-grid" class="track-speed-options" role="group" aria-label="Track speed options"></div>
+                <!-- No width slider: a track's width is the sum of its lanes, set in the cross-section editor
+                     (one standard-gauge track to start with), exactly as a road's is. -->
             </div>
-        </div>
-    </div>
-
-    <!-- Track Speed Picker Modal -->
-    <div id="track-speed-modal" class="welcome-modal" style="display: none;">
-        <div class="welcome-modal-content">
-            <h2 data-i18n-key="modal.track.speedPickerTitle">Choose Track Speed</h2>
-            <p style="margin-top: 0; color: #555;" data-i18n-key="modal.track.speedPickerDescription">Select the maximum
-                speed for this track. This determines the minimum curvature radius. Press Enter to start with the
-                default selection.</p>
-            <div id="track-speed-grid" class="roadwidth-grid" aria-label="Track speed options"></div>
-            <!-- No width slider: a track's width is the sum of its lanes, set in the cross-section editor
-                 (one standard-gauge track to start with), exactly as a road's is. -->
-            <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
-                <button type="button" id="track-speed-cancel-btn" class="btn btn-secondary"
+            <div class="cb-dialog__footer">
+                <button type="button" id="track-speed-cancel-btn" class="btn"
                     data-i18n-key="modal.track.cancel">Cancel</button>
-                <button type="button" id="track-speed-confirm-btn" class="btn btn-action"
+                <button type="button" id="track-speed-confirm-btn" class="btn btn-primary"
                     data-i18n-key="modal.track.startDrawing">Start Drawing</button>
             </div>
         </div>
     </div>
 
-    <!-- Parcel Coverage Modal -->
-    <div id="parcel-coverage-modal" class="parcel-coverage-modal debug-only-control" style="display: none;">
-        <div class="parcel-coverage-modal-content" role="dialog" aria-modal="true"
+    <!-- Parcel Coverage Modal (js/parcel-coverage-debug.js toggles [hidden]) -->
+    <div id="parcel-coverage-modal" class="cb-dialog-overlay" hidden>
+        <div class="cb-dialog cb-dialog--md parcel-coverage-modal" role="dialog" aria-modal="true"
             aria-labelledby="parcel-coverage-modal-title">
-            <div class="parcel-coverage-header">
-                <h2 id="parcel-coverage-modal-title" data-i18n-key="modal.coverage.title">Loaded parcels coverage</h2>
+            <div class="cb-dialog__header">
+                <h2 id="parcel-coverage-modal-title" class="cb-dialog__title" data-i18n-key="modal.coverage.title">Loaded parcels coverage</h2>
+                <button type="button" class="close-circle-btn" data-parcel-coverage-close aria-label="Close"
+                    data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
             </div>
-            <div class="parcel-coverage-body">
+            <div class="cb-dialog__body parcel-coverage-body">
                 <div class="parcel-coverage-legend" id="parcel-coverage-legend"></div>
                 <div id="parcel-coverage-map" aria-live="polite"></div>
-            </div>
-            <div class="parcel-coverage-footer">
                 <div id="parcel-coverage-summary" class="parcel-coverage-summary"></div>
-                <div class="parcel-coverage-actions">
-                    <button type="button" id="parcel-coverage-refresh-btn" class="btn btn-secondary">Refresh</button>
-                    <button type="button" id="parcel-coverage-close-btn" class="btn btn-outline">Close</button>
-                </div>
+            </div>
+            <div class="cb-dialog__footer">
+                <button type="button" id="parcel-coverage-refresh-btn" class="btn"
+                    data-i18n-key="modal.coverage.refresh">Refresh</button>
+                <button type="button" id="parcel-coverage-close-btn" class="btn"
+                    data-i18n-key="modal.coverage.close">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- Status log, popped out: the whole log rather than the strip's last fifty lines -->
-    <div id="status-log-modal" class="status-log-modal" style="display: none;">
-        <div class="status-log-modal-content" role="dialog" aria-modal="true"
+    <!-- Status log, popped out: the whole log rather than the strip's last fifty lines. The body is
+         the list itself (js/ui-helpers.js openStatusLogDialog toggles [hidden]). -->
+    <div id="status-log-modal" class="cb-dialog-overlay" hidden>
+        <div class="cb-dialog cb-dialog--lg status-log-modal" role="dialog" aria-modal="true"
             aria-labelledby="status-log-modal-title">
-            <div class="status-log-modal-header">
-                <h2 id="status-log-modal-title" data-i18n-key="hud.statusLogTitle" data-i18n-attr="text">Status log</h2>
+            <div class="cb-dialog__header">
+                <h2 id="status-log-modal-title" class="cb-dialog__title" data-i18n-key="hud.statusLogTitle" data-i18n-attr="text">Status log</h2>
                 <span id="status-log-modal-count" class="status-log-modal-count"></span>
+                <button type="button" class="close-circle-btn" data-status-log-close aria-label="Close"
+                    data-i18n-key="hud.statusLogClose" data-i18n-attr="aria-label">&times;</button>
             </div>
-            <div id="status-log-modal-list" class="status-log-modal-list" aria-live="polite"></div>
-            <div class="status-log-modal-footer">
-                <button type="button" id="status-log-modal-copy" class="btn btn-secondary"
+            <div id="status-log-modal-list" class="cb-dialog__body status-log-modal-list" aria-live="polite"></div>
+            <div class="cb-dialog__footer">
+                <button type="button" id="status-log-modal-copy" class="btn"
                     data-i18n-key="hud.copyStatusLog" data-i18n-attr="text">Copy all</button>
-                <button type="button" id="status-log-modal-close" class="btn btn-outline"
+                <button type="button" id="status-log-modal-close" class="btn"
                     data-i18n-key="hud.statusLogClose" data-i18n-attr="text">Close</button>
             </div>
         </div>

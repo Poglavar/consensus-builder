@@ -10,23 +10,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Transactions (devnet) · Consensus Builder</title>
     <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="css/tokens.css?v=1" />
-    <link rel="stylesheet" href="css/tx-explorer.css?v=1" />
+    <link rel="stylesheet" href="css/tokens.css?v=2" />
+    <link rel="stylesheet" href="css/primitives.css?v=2" />
+    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
+    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/tx-explorer.css?v=2" />
 </head>
 
-<body class="tx-body">
+<body class="cb-page tx-body">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1>Transactions (devnet)</h1></div>
+        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+    </header>
     <main id="tx-explorer" class="tx-wrap">
 
-        <header id="tx-header" class="tx-header">
+        <div id="tx-header" class="tx-header">
             <div class="tx-header-titles">
-                <h1 class="tx-title">Transactions (devnet)</h1>
                 <p class="tx-sub">Every devnet transaction the agent pipeline signs: who paid whom, which program,
                     which instruction.</p>
                 <p id="tx-fetched-at" class="tx-fetched"></p>
-                <p class="tx-nav"><a href="/">Back to the map</a></p>
             </div>
             <div class="tx-header-controls">
-                <button id="tx-refresh" type="button" class="tx-button">Refresh</button>
+                <button id="tx-refresh" type="button" class="btn">Refresh</button>
                 <label class="tx-control tx-control-check" for="tx-auto">
                     <input id="tx-auto" type="checkbox" />
                     <span>Auto-refresh (30 s)</span>
@@ -41,7 +47,7 @@
                     </select>
                 </label>
             </div>
-        </header>
+        </div>
 
         <p id="tx-banner" class="tx-banner" role="alert" hidden></p>
 
@@ -57,15 +63,15 @@
                     <input id="tx-search" type="search" autocomplete="off"
                         placeholder="Filter by signature, label, summary, program, action or address" />
                 </label>
-                <button id="tx-filter-clear" type="button" class="tx-button tx-button-ghost">Clear filters</button>
+                <button id="tx-filter-clear" type="button" class="btn">Clear filters</button>
             </div>
             <div class="tx-chip-row">
-                <span class="tx-chip-legend">Programs</span>
-                <div id="tx-program-chips" class="tx-chips"></div>
+                <span id="tx-programs-label" class="tx-chip-legend">Programs</span>
+                <div id="tx-program-chips" class="cb-segmented tx-chips" role="group" aria-labelledby="tx-programs-label"></div>
             </div>
             <div class="tx-chip-row">
-                <span class="tx-chip-legend">Actions</span>
-                <div id="tx-action-chips" class="tx-chips"></div>
+                <span id="tx-actions-label" class="tx-chip-legend">Actions</span>
+                <div id="tx-action-chips" class="cb-segmented tx-chips" role="group" aria-labelledby="tx-actions-label"></div>
             </div>
         </section>
 
@@ -91,7 +97,7 @@
 
     </main>
 
-    <script src="js/tx-explorer.js?v=2" defer></script>
+    <script src="js/tx-explorer.js?v=3" defer></script>
 </body>
 
 </html>

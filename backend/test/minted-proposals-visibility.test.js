@@ -5,7 +5,8 @@ import vm from 'node:vm';
 const source = readFileSync(new URL('../../frontend/js/minted-proposals.js', import.meta.url), 'utf8');
 
 function loadModule({ readyState = 'complete', status = 'connected' } = {}) {
-    const button = { style: { display: 'none' } };
+    // The button starts hidden (the hidden attribute in index.html) and shows with a wallet.
+    const button = { hidden: true };
     const documentListeners = new Map();
     const walletListeners = new Map();
     let currentStatus = status;
@@ -30,7 +31,7 @@ describe('minted proposal button wallet visibility', () => {
     it('initializes immediately when the deferred script loads after DOMContentLoaded', () => {
         const { button, document, walletManager, walletListeners } = loadModule({ readyState: 'complete' });
 
-        expect(button.style.display).toBe('');
+        expect(button.hidden).toBe(false);
         expect(walletManager.on).toHaveBeenCalledTimes(4);
         expect([...walletListeners.keys()]).toEqual(['stateChanged', 'connect', 'disconnect', 'accountsChanged']);
         expect(document.addEventListener).not.toHaveBeenCalledWith('DOMContentLoaded', expect.any(Function));
@@ -38,26 +39,26 @@ describe('minted proposal button wallet visibility', () => {
 
     it('refreshes immediately on DOMContentLoaded while the document is still loading', () => {
         const { button, document, documentListeners, walletManager } = loadModule({ readyState: 'loading' });
-        expect(button.style.display).toBe('none');
+        expect(button.hidden).toBe(true);
         expect(walletManager.on).not.toHaveBeenCalled();
 
         documentListeners.get('DOMContentLoaded')();
 
-        expect(button.style.display).toBe('');
+        expect(button.hidden).toBe(false);
         expect(walletManager.on).toHaveBeenCalledTimes(4);
     });
 
     it('updates visibility from connected and disconnected wallet state events', () => {
         const { button, walletListeners, setStatus } = loadModule({ readyState: 'complete', status: 'disconnected' });
-        expect(button.style.display).toBe('none');
+        expect(button.hidden).toBe(true);
 
         setStatus('connected');
         const refresh = walletListeners.get('stateChanged');
         expect(refresh).toBeTypeOf('function');
         refresh();
-        expect(button.style.display).toBe('');
+        expect(button.hidden).toBe(false);
         setStatus('disconnected');
         refresh();
-        expect(button.style.display).toBe('none');
+        expect(button.hidden).toBe(true);
     });
 });

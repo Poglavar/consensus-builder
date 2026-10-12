@@ -80,18 +80,14 @@
     gap: var(--cb-space-2);
 }
 
-/* The proposal name is the way into its details; a quiet button, left-aligned like a row title. */
+/* The proposal name is the way into its bet; a quiet button (btn btn-quiet), left-aligned like a
+   row title. Only its place in the row is set here; the look is the button's. */
 .bets-row__title {
     flex: 1 1 auto;
-    min-width: 0;
     text-align: left;
     justify-content: flex-start;
-    font-weight: var(--cb-weight-semibold);
-    color: var(--cb-text-strong);
     white-space: normal;
     line-height: var(--cb-leading);
-    padding-left: 0;
-    padding-right: 0;
 }
 
 .bets-row__chance {
@@ -134,27 +130,7 @@
     color: var(--cb-text-muted);
 }
 
-/* The row's shareable link sits in the meta line as quiet text, sized like the words around it.
-   Three classes outweigh the sheet-wide button rule (css/map-shell.css), which makes every sheet
-   button a full-width bordered row. */
-.map-sheet .bets-row__meta .bets-row__link {
-    display: inline;
-    width: auto;
-    margin: 0;
-    padding: 0;
-    min-height: 0;
-    border: 0;
-    background: transparent;
-    font-size: inherit;
-    line-height: inherit;
-    color: inherit;
-    text-decoration: underline;
-}
-
-.map-sheet .bets-row__meta .bets-row__link:hover {
-    background: transparent;
-    color: var(--cb-text-strong);
-}
+/* The row's shareable link sits in the meta line as a quiet cb-link, sized like the words around it. */
 
 .bets-row__actions {
     display: flex;
@@ -256,36 +232,8 @@
    A row's title opens the bet's own dialog; the chance sits beside it. The sheet's frame is the
    shared dock-sheet one (.map-sheet--dock in css/map-shell.css), as wide as Proposals and Activity. */
 
-/* The filter row above the contests: All · Open · Settled · Mine. */
-.bets-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--cb-space-1);
-}
-
-.map-sheet .bets-filter .bets-filter__btn {
-    width: auto;
-    margin: 0;
-    padding: var(--cb-space-1) var(--cb-space-3);
-    min-height: 0;
-    border: 1px solid transparent;
-    border-radius: var(--cb-radius-pill);
-    background: transparent;
-    font-size: var(--cb-text-sm);
-    font-weight: var(--cb-weight-medium);
-    color: var(--cb-text-muted);
-}
-
-.map-sheet .bets-filter .bets-filter__btn:hover {
-    background: var(--cb-surface-2);
-    color: var(--cb-text-strong);
-}
-
-.map-sheet .bets-filter .bets-filter__btn[aria-pressed="true"] {
-    border-color: var(--cb-line);
-    background: var(--cb-surface-3);
-    color: var(--cb-text-strong);
-}
+/* The filter row above the contests (All · Open · Settled · Mine) is the shared cb-segmented
+   control (css/primitives.css). */
 
 /* The row's second line: who proposed it and when, which tells twins of one title apart. */
 .bets-row__who {
@@ -314,11 +262,7 @@
     margin-top: var(--cb-space-1);
 }
 
-/* A named plan's row: "Plan of N proposals" reads as the row's kind, ahead of its pool. */
-.bets-row__plan {
-    font-weight: 600;
-    color: var(--cb-text);
-}
+/* A named plan's row: "Plan of N proposals" is a cb-badge, the row's kind ahead of its pool. */
 
 /* The row of a settled pool the wallet can still collect from. */
 .bets-row__collect {
@@ -348,11 +292,9 @@
     color: var(--cb-text-muted);
 }
 
-.cb-dialog .bets-dialog__contest {
+/* "N on this land": a script link (button.cb-link) back to the rivals in the Bets sheet. */
+.bets-dialog__contest {
     align-self: flex-start;
-    margin: 0;
-    padding: 0;
-    text-decoration: underline;
 }
 
 .bets-dialog__thumb {
@@ -475,12 +417,9 @@
     display: none;
 }
 
+/* The explorer links: a cb-link-row of external links. */
 .bets-dialog__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--cb-space-3);
     margin: 0;
-    font-size: var(--cb-text-sm);
 }
 
 .bets-dialog__sides {
@@ -528,18 +467,10 @@
     font-size: var(--cb-text-lg);
 }
 
-.bets-dialog__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--cb-space-2);
-}
-
-.cb-dialog .bets-dialog__chip {
-    margin: 0;
-    padding: var(--cb-space-1) var(--cb-space-3);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-pill);
-    font-size: var(--cb-text-sm);
+/* The quick stakes under the amount are a cb-segmented row (css/primitives.css); "Max" stays
+   hidden until the wallet's balance is read (the option's own display would show it). */
+.bets-dialog__chip[hidden] {
+    display: none;
 }
 
 .bets-dialog__towin {

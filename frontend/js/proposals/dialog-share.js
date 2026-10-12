@@ -1,45 +1,38 @@
 // proposals/dialog-share.js — extracted from proposals.js (behavior-preserving relocation).
 
+// The "waiting for transaction" box: a message dialog on the shared chrome (js/ui/dialogs.js) with
+// no answers, over any dialog it was opened from; it blocks the map until hideProposalWaitingPopup.
+let proposalWaitingDialog = null;
+
 function showProposalWaitingPopup(message = 'Waiting for transaction...') {
-    let popup = document.getElementById('proposal-waiting-popup');
-    if (!popup) {
-        popup = document.createElement('div');
-        popup.id = 'proposal-waiting-popup';
-        // Full-screen blocking overlay (styling in css/modals.css). It must NOT be
-        // pointer-events:none — it's what stops clicks from reaching the map/parcels
-        // behind the dimmed dialog while the transaction is pending.
-        popup.className = 'proposal-waiting-overlay';
-
-        const card = document.createElement('div');
-        card.className = 'proposal-waiting-card';
-
-        const indicator = document.createElement('span');
-        indicator.className = 'proposal-waiting-spinner';
-        indicator.setAttribute('aria-hidden', 'true');
-
-        const text = document.createElement('span');
-        text.className = 'proposal-waiting-text';
-        text.textContent = message;
-
-        card.appendChild(indicator);
-        card.appendChild(text);
-        popup.appendChild(card);
-        document.body.appendChild(popup);
-    } else {
-        popup.style.display = 'flex';
+    if (proposalWaitingDialog && proposalWaitingDialog.overlay.isConnected) {
+        const textEl = proposalWaitingDialog.body.querySelector('.proposal-waiting-text');
+        if (textEl) textEl.textContent = message;
+        return;
     }
-
-    const textEl = popup.querySelector('.proposal-waiting-text');
-    if (textEl) {
-        textEl.textContent = message;
-    }
+    if (!window.CbDialog) return;
+    const card = document.createElement('div');
+    card.className = 'proposal-waiting-card';
+    const indicator = document.createElement('span');
+    indicator.className = 'proposal-waiting-spinner';
+    indicator.setAttribute('aria-hidden', 'true');
+    const text = document.createElement('span');
+    text.className = 'proposal-waiting-text';
+    text.textContent = message;
+    card.appendChild(indicator);
+    card.appendChild(text);
+    proposalWaitingDialog = window.CbDialog.open({
+        message: true, size: 'sm', top: true, role: 'alertdialog',
+        className: 'proposal-waiting-dialog', overlayClassName: 'proposal-waiting-overlay',
+        body: card, closeOnBackdrop: false, closeOnEscape: false, autofocus: false,
+        onClose: () => { proposalWaitingDialog = null; }
+    });
+    if (proposalWaitingDialog) proposalWaitingDialog.overlay.id = 'proposal-waiting-popup';
 }
 
 function hideProposalWaitingPopup() {
-    const popup = document.getElementById('proposal-waiting-popup');
-    if (popup && popup.parentNode) {
-        popup.parentNode.removeChild(popup);
-    }
+    if (proposalWaitingDialog) proposalWaitingDialog.close(null);
+    proposalWaitingDialog = null;
 }
 
 function showProposalWaitingPopupTemporary(message = 'Transaction rejected', duration = 2000) {
@@ -262,7 +255,7 @@ function renderProposalListModal() {
     const syncButtonHtml = source === 'local' && syncBlockchainAvailable && (isWalletConnected || syncStatus.isSyncing) ? `
         <button
             id="sync-blockchain-proposals-btn"
-            class="btn btn-action"
+            class="btn btn-primary btn-block"
             ${syncDisabled ? 'disabled' : ''}
             data-i18n-key="${!isWalletConnected ? 'modal.roadWidth.proposalList.syncBlockchainNoWallet' : 'modal.roadWidth.proposalList.syncBlockchain'}"
             data-i18n-attr="title"
@@ -299,10 +292,10 @@ function renderProposalListModal() {
     const filtersToggleLabel = t('modal.roadWidth.proposalList.filters.toggle', 'Filters');
     const filtersToggleHtml = `
         <div class="proposal-filters-toggle-row">
-            <button type="button" class="proposal-filters-toggle" aria-expanded="${filtersOpen ? 'true' : 'false'}" aria-controls="proposal-list-controls">
+            <button type="button" class="btn btn-sm btn-quiet proposal-filters-toggle" aria-expanded="${filtersOpen ? 'true' : 'false'}" aria-controls="proposal-list-controls">
                 <i class="fas fa-sliders-h" aria-hidden="true"></i>
                 <span data-i18n-key="modal.roadWidth.proposalList.filters.toggle">${escapeHtml(filtersToggleLabel)}</span>
-                ${activeFilterCount ? `<span class="proposal-filters-badge">${activeFilterCount}</span>` : ''}
+                ${activeFilterCount ? `<span class="cb-badge cb-badge--count proposal-filters-badge">${activeFilterCount}</span>` : ''}
                 <i class="fas fa-chevron-down proposal-filters-chevron" aria-hidden="true"></i>
             </button>
             <span class="proposal-filters-toggle-count">${escapeHtml(resultCountText)}</span>
@@ -348,14 +341,14 @@ function renderProposalListModal() {
     `;
 
     const sourceToggleHtml = `
-        <div class="proposal-source-toggle">
-            <button class="proposal-source-btn ${source === 'local' ? 'active' : ''}" data-source="local">
+        <div class="cb-segmented cb-segmented--fill proposal-source-toggle" role="group">
+            <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'local' ? 'true' : 'false'}" data-source="local">
                 ${escapeHtml(modalStrings.sources.local)} (${localCount})
             </button>
-            <button class="proposal-source-btn ${source === 'server' ? 'active' : ''}" data-source="server">
+            <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'server' ? 'true' : 'false'}" data-source="server">
                 ${escapeHtml(modalStrings.sources.server)} (${serverCountLabel !== null ? serverCountLabel : '0'})
             </button>
-            <button class="proposal-source-btn ${source === 'blockchain' ? 'active' : ''}" data-source="blockchain">
+            <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'blockchain' ? 'true' : 'false'}" data-source="blockchain">
                 ${escapeHtml(modalStrings.sources.blockchain)} (${blockchainCount})
             </button>
         </div>
@@ -396,7 +389,7 @@ function renderProposalListModal() {
             ${controlsHtml}
             <div class="proposal-list-count">${escapeHtml(resultCountText)}</div>
             <div class="proposal-list-modal-body">
-                <div id="proposals-list" class="proposal-tab-content active">
+                <div id="proposals-list" class="proposal-tab-content">
                     ${buildTabContent(chosen.sorted)}
                 </div>
             </div>
@@ -601,11 +594,12 @@ function renderProposalListModal() {
     if (navigationHint) {
         if (document.body.classList.contains('three-mode-active')) {
             navigationHint.textContent = `${t('modal.roadWidth.proposalList.navigation.hint3d', 'Proposals are drawn on the 2D map.')} `;
-            const link = document.createElement('a');
-            link.href = '#';
+            // Switching the view runs script, so it is a button that reads as a link.
+            const link = document.createElement('button');
+            link.type = 'button';
+            link.className = 'cb-link';
             link.textContent = t('modal.roadWidth.proposalList.navigation.open2d', 'Open 2D map');
-            link.addEventListener('click', event => {
-                event.preventDefault();
+            link.addEventListener('click', () => {
                 if (typeof window.requestMapMode === 'function') window.requestMapMode('2d');
             });
             navigationHint.appendChild(link);
@@ -816,14 +810,15 @@ function showSharePlanPanel(options) {
         ];
         let highlightMode = 'all';
         const modeButtons = new Map();
+        // A cb-segmented control (css/primitives.css); share-plan-mode-btn stays as the hook.
         const modeWrap = document.createElement('div');
-        modeWrap.className = 'share-plan-mode-switch';
+        modeWrap.className = 'cb-segmented share-plan-mode-switch';
         modeWrap.setAttribute('role', 'group');
         modeWrap.setAttribute('aria-label', tShare('plan.filterLabel', 'Highlight on the map'));
         HIGHLIGHT_MODES.forEach(mode => {
             const button = document.createElement('button');
             button.type = 'button';
-            button.className = 'share-plan-mode-btn';
+            button.className = 'cb-segmented__option share-plan-mode-btn';
             button.textContent = tShare(mode.key, mode.fallback);
             button.setAttribute('aria-pressed', String(mode.value === highlightMode));
             button.addEventListener('click', () => { setHighlightMode(mode.value); });
@@ -1195,7 +1190,7 @@ function showSharePlanPanel(options) {
 
         const copyBtn = document.createElement('button');
         copyBtn.type = 'button';
-        copyBtn.className = 'btn share-modal-secondary';
+        copyBtn.className = 'btn';
         copyBtn.textContent = tShare('copyUrlButton', 'Copy URL');
         copyBtn.addEventListener('click', () => {
             if (!linkInput.value) return;
@@ -1258,7 +1253,7 @@ function showSharePlanPanel(options) {
 
         const planNameBtn = document.createElement('button');
         planNameBtn.type = 'button';
-        planNameBtn.className = 'btn share-modal-secondary';
+        planNameBtn.className = 'btn';
         planNameBtn.textContent = tShare('plan.nameButton', 'Save name');
 
         planNameRow.append(planNameInput, planSuffix, planNameBtn);
@@ -1446,9 +1441,11 @@ function showSharePlanPanel(options) {
             checkbox.addEventListener('change', () => onCheckboxChange(key, checkbox.checked));
             left.appendChild(checkbox);
 
-            // The chip carries the exact colour this proposal is painted with on the map.
+            // The chip (a cb-badge) carries the exact colour this proposal is painted with on the
+            // map: data, so the one inline style it may have.
             const chip = document.createElement('span');
-            chip.className = 'share-plan-color-chip';
+            chip.className = 'cb-badge share-plan-color-chip';
+            chip.setAttribute('aria-hidden', 'true');
             chip.style.background = colorByKey.get(key) || '#4363d8';
             left.appendChild(chip);
 
@@ -1479,7 +1476,7 @@ function showSharePlanPanel(options) {
 
             const uploadBtn = document.createElement('button');
             uploadBtn.type = 'button';
-            uploadBtn.className = 'btn share-modal-secondary';
+            uploadBtn.className = 'btn';
             uploadBtn.textContent = tShare('plan.upload', 'Upload');
 
             const uploadedLabel = document.createElement('span');
@@ -1905,127 +1902,45 @@ function showShareTooLargeModal() {
 }
 
 function showSimpleShareModal(options = {}) {
-    if (typeof document === 'undefined') return null;
+    if (typeof document === 'undefined' || !window.CbDialog) return null;
 
     const t = getProposalI18nHelper();
     const closeLabel = t('modal.common.close', 'Close');
+    const actions = (Array.isArray(options.actions) ? options.actions : []).map(action => ({
+        id: action && action.id != null ? action.id : undefined,
+        label: (action && action.label) || closeLabel,
+        role: action && action.primary ? 'primary' : 'secondary',
+        disabled: !!(action && action.disabled),
+        keepOpen: !!(action && action.keepOpen),
+        onClick: () => { if (action && typeof action.onClick === 'function') action.onClick(modalApi); }
+    }));
 
-    const overlay = document.createElement('div');
-    overlay.className = 'share-modal-overlay';
-
-    const modal = document.createElement('div');
-    modal.className = 'share-modal';
-
-    const closeOnOverlay = options.closeOnOverlay !== false;
-    const closeOnEscape = options.closeOnEscape !== false;
-    const autoCloseActions = options.autoCloseActions !== false;
-
-    const header = document.createElement('div');
-    header.className = 'share-modal-header';
-
-    const titleEl = document.createElement('h2');
-    titleEl.className = 'share-modal-title';
-    titleEl.textContent = options.title || '';
-    header.appendChild(titleEl);
-
-    const closeBtn = document.createElement('button');
-    closeBtn.type = 'button';
-    closeBtn.className = 'share-modal-close close-circle-btn close-circle-btn--lg';
-    closeBtn.setAttribute('aria-label', closeLabel);
-    closeBtn.innerHTML = '&times;';
-    header.appendChild(closeBtn);
-
-    modal.appendChild(header);
-
-    const bodyContainer = document.createElement('div');
-    bodyContainer.className = 'share-modal-body';
-
-    if (Array.isArray(options.body)) {
-        options.body.forEach(node => appendModalBody(bodyContainer, node));
-    } else if (options.body) {
-        appendModalBody(bodyContainer, options.body);
-    }
-
-    modal.appendChild(bodyContainer);
-
-    const actionsContainer = document.createElement('div');
-    actionsContainer.className = 'share-modal-actions';
-
-    const actions = Array.isArray(options.actions) ? options.actions : [];
-
-    let didClose = false;
-    const modalApi = {
-        close: closeModal,
-        overlay,
-        modal,
-        body: bodyContainer,
-        getActionButton: (id) => {
-            try { return actionsContainer.querySelector(`button[data-action-id="${id}"]`); } catch (_) { return null; }
-        }
-    };
-
-    actions.forEach(action => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = `btn ${action.primary ? 'share-modal-primary' : 'share-modal-secondary'}`;
-        button.textContent = action.label || closeLabel;
-        if (action && action.id) {
-            button.setAttribute('data-action-id', String(action.id));
-        }
-        if (action && action.disabled) {
-            button.disabled = true;
-            button.classList.add('disabled');
-        }
-        button.addEventListener('click', (e) => {
-            // If disabled, do nothing
-            if (button.disabled || button.classList.contains('disabled')) {
-                e.preventDefault();
-                e.stopPropagation();
-                return;
-            }
-            // keepOpen: an action that works ON the modal (copy its text, toggle a detail)
-            // must not dismiss it.
-            if (autoCloseActions && action.keepOpen !== true) {
-                closeModal();
-            }
-            if (typeof action.onClick === 'function') {
-                action.onClick(modalApi);
-            }
-        });
-        actionsContainer.appendChild(button);
+    // The share dialog on the shared chrome (js/ui/dialogs.js); `share-modal` stays as the identity
+    // class its inner rules in css/modals.css are keyed on.
+    const api = window.CbDialog.open({
+        title: options.title || '',
+        size: options.size || 'md',
+        className: 'share-modal' + (options.className ? ' ' + options.className : ''),
+        // `share-modal-overlay` is a hook for the e2e specs and paints nothing.
+        overlayClassName: 'share-modal-overlay',
+        bodyClassName: 'share-modal-body',
+        body: options.body,
+        actions,
+        closeLabel,
+        closeOnBackdrop: options.closeOnOverlay !== false,
+        closeOnEscape: options.closeOnEscape !== false,
+        autoCloseActions: options.autoCloseActions !== false,
+        onClose: () => { if (typeof options.onClose === 'function') options.onClose(); }
     });
+    if (!api) return null;
 
-    if (actions.length > 0) {
-        modal.appendChild(actionsContainer);
-    }
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    function onOverlayClick(event) {
-        if (!closeOnOverlay) return;
-        if (event.target === overlay) {
-            closeModal();
-        }
-    }
-
-    function closeModal() {
-        if (didClose) return;
-        didClose = true;
-        unregisterEscape?.();
-        try { overlay.removeEventListener('click', onOverlayClick); } catch (_) { }
-        try { overlay.remove(); } catch (_) { }
-
-        try {
-            if (typeof options.onClose === 'function') {
-                options.onClose();
-            }
-        } catch (_) { }
-    }
-
-    closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', onOverlayClick);
-    const unregisterEscape = closeOnEscape ? window.ModalEscape?.register(overlay, closeModal) : null;
-
+    const modalApi = {
+        close: () => api.close(null),
+        overlay: api.overlay,
+        modal: api.dialog,
+        body: api.body,
+        getActionButton: (id) => api.getActionButton(id)
+    };
     return modalApi;
 }
 

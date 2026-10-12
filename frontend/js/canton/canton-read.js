@@ -88,15 +88,15 @@
             const { hint, fp } = splitParty(p.party);
             return `
             <div class="canton-party-row">
-                <span class="canton-party-role">${p.role}</span>
+                <span class="cb-badge">${p.role}</span>
                 <span class="canton-party-id" title="${p.party}">${hint}</span>
                 ${fp ? `<span class="canton-party-fp" title="participant namespace — shared by all parties">::${fp.slice(0, 6)}</span>` : ''}
                 ${p.parcelId ? `<span class="canton-party-parcel">${p.parcelId}</span>` : ''}
                 <span class="canton-party-actions">
-                    <button class="canton-party-copy" data-copy="${p.party}" type="button" title="Copy full party id">Copy</button>
-                    <button class="canton-party-ccview" data-ccview="${p.party}" type="button" title="Look up this party on the CCView explorer">CCView</button>
-                    <button class="canton-party-view" data-view="${p.party}" type="button">View</button>
-                    <button class="canton-party-del" data-del="${p.party}" type="button" title="Forget">×</button>
+                    <button class="btn btn-sm" data-copy="${p.party}" type="button" title="Copy full party id">Copy</button>
+                    <button class="btn btn-sm" data-ccview="${p.party}" type="button" title="Look up this party on the CCView explorer">CCView</button>
+                    <button class="btn btn-sm" data-view="${p.party}" type="button">View</button>
+                    <button class="btn btn-quiet btn-sm btn-icon" data-del="${p.party}" type="button" title="Forget" aria-label="Forget"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                 </span>
                 <div class="canton-ccview-out"></div>
             </div>`;
@@ -112,7 +112,7 @@
         out.innerHTML = 'Looking up on CCView…';
         try {
             const d = await reqJson(`/canton/ccview/${encodeURIComponent(party)}`);
-            const link = `<a href="${d.explorerUrl}" target="_blank" rel="noopener">open on CCView ↗</a>`;
+            const link = `<a class="cb-link cb-link--external" href="${d.explorerUrl}" target="_blank" rel="noopener noreferrer">open on CCView</a>`;
             out.innerHTML = d.indexed
                 ? `<span class="canton-ccview-data">CC balance: <b>${d.coinBalance ?? '—'}</b> · transfers: <b>${d.transfers ?? 0}</b></span> ${link}`
                 : `<span class="canton-ccview-empty">Not yet indexed on CCView (no Canton Coin activity).</span> ${link}`;
@@ -162,7 +162,7 @@
         const canAccept = kind === 'proposals' && it.owner && it.owner === currentParty;
         // Which role the loaded party plays in this contract (it can be more than one).
         const roles = ['buyer', 'owner', 'lens'].filter((r) => it[r] && it[r] === currentParty);
-        const youTag = roles.length ? `<span class="canton-you">you: ${roles.join(', ')}</span>` : '';
+        const youTag = roles.length ? `<span class="cb-badge canton-you">you: ${roles.join(', ')}</span>` : '';
         return `
             <div class="canton-card">
                 <div class="canton-card-top">
@@ -176,20 +176,24 @@
                     ${it.lens ? `<dt>lens</dt><dd title="${it.lens}">${short(it.lens)}</dd>` : ''}
                     <dt>cid</dt><dd title="${it.contractId || ''}">${short(it.contractId)}</dd>
                 </dl>
-                ${canAccept ? `<button class="canton-accept" data-cid="${it.contractId}">Accept</button>` : ''}
+                ${canAccept ? `<button type="button" class="btn btn-success btn-sm canton-accept" data-cid="${it.contractId}">Accept</button>` : ''}
             </div>`;
     }
     const listHtml = (items, kind) => items.length ? items.map((it) => cardHtml(it, kind)).join('') : `<p class="canton-empty">No ${kind}.</p>`;
 
+    // The perspective switcher is a segmented control: the party being viewed is the pressed option.
     function renderPerspective() {
         const el = document.getElementById('canton-perspective');
         if (!el) return;
         if (!scenario) { el.innerHTML = ''; return; }
-        const btn = (label, party, extra = '') =>
-            `<button class="canton-persp${party && party === currentParty ? ' active' : ''}" ${extra} ${party ? `data-party="${party}"` : ''}>${label}</button>`;
-        el.innerHTML = `<span class="canton-persp-label">View as:</span>`
+        const pressed = (party) => (party && party === currentParty ? 'true' : 'false');
+        const btn = (label, party) =>
+            `<button type="button" class="cb-segmented__option" aria-pressed="${pressed(party)}" ${party ? `data-party="${party}"` : ''}>${label}</button>`;
+        el.innerHTML = `<span class="canton-persp-label" id="canton-persp-label">View as</span>`
+            + `<div class="cb-segmented" role="group" aria-labelledby="canton-persp-label">`
             + btn('Buyer', scenario.buyer) + btn('Owner', scenario.owner) + btn('Lens', scenario.lens)
-            + `<button class="canton-persp${strangerParty && strangerParty === currentParty ? ' active' : ''}" data-stranger="1">Stranger</button>`;
+            + `<button type="button" class="cb-segmented__option" aria-pressed="${pressed(strangerParty)}" data-stranger="1">Stranger</button>`
+            + `</div>`;
     }
 
     async function load(party) {

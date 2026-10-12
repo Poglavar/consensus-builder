@@ -155,7 +155,7 @@
 #proposal-details-panel .proposal-primary-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
 #proposal-details-panel.is-minimized .proposal-primary-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 #proposal-details-panel .proposal-primary-actions > button { grid-column: auto; order: 0; min-width: 0; min-height: 44px; margin: 0; font-size: 13px; padding: 8px; white-space: normal; }
-#proposal-details-panel .proposal-primary-actions > .btn-share-proposal { width: auto; }
+
 #proposal-details-panel:not(.is-minimized) .btn-proposal-details { display: none; }
 #proposal-details-panel .proposal-context-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; }
 #proposal-details-panel .proposal-context-actions > button { flex: 1 1 auto; min-width: 0; min-height: 40px; margin: 0; font-size: 12px; padding: 8px; white-space: normal; }
@@ -200,19 +200,194 @@
     #proposal-details-panel .panel-footer { padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border-radius: 0; }
 }
 
-/* Before / after on an applied proposal (js/proposals/before-after.js): pressed while comparing,
-   like the readjustment modal's own toggle. */
-.btn-compare-proposal[aria-pressed="true"],
-.btn-compare-parcel[aria-pressed="true"] {
-    background: var(--cb-success-soft);
-    border-color: var(--cb-success);
-    color: var(--cb-success-soft-ink);
-}
-
-/* One parcel's own before/after (M6), a small chip beside the parcel number. */
+/* Before / after on an applied proposal (js/proposals/before-after.js) is a toggle: btn with
+   aria-pressed while comparing. One parcel's own before/after (M6) is a small one (btn-sm) beside
+   the parcel number. */
 .btn-compare-parcel {
     margin-left: var(--cb-space-2);
-    padding: 0 var(--cb-space-2);
-    font-size: var(--cb-text-xs);
-    line-height: 1.6;
+}
+
+/* The proposal's parcels (proposals/details-panel.js): one bordered row each with the owner's
+   avatar and the parcel's acceptance. The state is a class: execution.js toggles is-accepted on
+   the row and parcel-status-* on the status as owners accept; the colours and the check mark are
+   the state's, from tokens, so the dark theme follows. */
+.proposal-parcels-list .proposal-parcel-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 6px;
+    margin-bottom: 5px;
+    padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-sm);
+    cursor: pointer;
+}
+
+.proposal-parcels-list .proposal-parcel-row:last-child {
+    border-bottom: 1px solid var(--cb-line-strong);
+}
+
+.proposal-parcels-list .proposal-parcel-row.is-accepted {
+    background: var(--cb-success-soft);
+}
+
+.proposal-parcels-list .proposal-parcel-row.is-removed {
+    opacity: 0.7;
+}
+
+.proposal-parcels-list .proposal-parcel-row:hover {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+}
+
+.proposal-parcels-list .proposal-parcel-row .parcel-number {
+    font-weight: var(--cb-weight-medium);
+}
+
+.proposal-parcel-row__info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.proposal-parcel-row__main {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    width: 100%;
+    min-width: 0;
+}
+
+.proposal-parcel-row__text {
+    flex: 1;
+    min-width: 0;
+}
+
+.parcel-status {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.parcel-status-accepted {
+    color: var(--cb-success-soft-ink);
+    font-weight: var(--cb-weight-medium);
+}
+
+.parcel-status-accepted::before {
+    content: "\f00c";
+    margin-right: var(--cb-space-1);
+    font: var(--fa-font-solid);
+}
+
+.parcel-status-removed {
+    color: var(--cb-text-faint);
+    font-style: italic;
+}
+
+/* The expiry countdown (details-panel.js renders it, lifecycle.js ticks it): the warning tone while
+   it runs, the danger tone in its last minute (is-urgent) and once expired. */
+.proposal-expiry-countdown {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+    text-align: center;
+}
+
+.proposal-expiry-countdown.is-urgent,
+.proposal-expiry-countdown.expired {
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+}
+
+.proposal-expiry-countdown > i {
+    margin-right: 6px;
+}
+
+.proposal-expiry-countdown .expiry-label {
+    font-weight: var(--cb-weight-medium);
+}
+
+.proposal-expiry-countdown.expired .expiry-label {
+    font-weight: var(--cb-weight-semibold);
+}
+
+.proposal-expiry-countdown .expiry-timer {
+    font-family: var(--cb-font-mono);
+    font-weight: var(--cb-weight-bold);
+}
+
+.proposal-expiry-countdown.expired .expiry-timer {
+    display: none;
+}
+
+/* The rule between the details panel's groups of metrics. */
+.proposal-details-divider {
+    height: 1px;
+    margin: 15px 0;
+    border: 0;
+    background-color: var(--cb-line);
+}
+
+.proposal-details-divider--tight {
+    margin: 10px 0;
+}
+
+/* The placeholder while the acceptance cards load. */
+.acceptance-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    margin: 6px 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.acceptance-loading .spinner-circle {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--cb-line-strong);
+    border-top-color: var(--cb-primary);
+    border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .acceptance-loading .spinner-circle {
+        animation: loader-spin 0.8s linear infinite;
+    }
+}
+
+/* The pledge / donation box (openProposalBoostDialog, a CbDialog with the identity
+   proposal-boost-modal): the amount field takes the row, the currency its own width, and the
+   transaction's progress reads under them. */
+.proposal-boost-modal .cb-dialog__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+}
+
+.proposal-boost-modal .proposal-boost-row {
+    align-items: center;
+}
+
+.proposal-boost-modal .proposal-boost-row input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.proposal-boost-modal .proposal-boost-row select {
+    flex: 0 0 112px;
+}
+
+.proposal-boost-modal .proposal-boost-status {
+    min-height: 18px;
+    font-size: var(--cb-text-sm);
+    text-align: center;
+}
+
+.proposal-boost-modal .proposal-boost-status:empty {
+    display: none;
 }

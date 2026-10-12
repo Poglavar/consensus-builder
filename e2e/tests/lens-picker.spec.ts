@@ -23,11 +23,11 @@ test.describe('Proposal Lens picker @features', () => {
     await page.locator('#username-display').click();
     const profile = page.locator('.agent-dialog-modal');
     await expect(profile).toBeVisible();
+    // The profile's language row is one cb-segmented picker (no toggle): exactly the chosen one is pressed.
     for (const language of ['es', 'sr', 'hr', 'en']) {
-      await profile.locator('[data-language-toggle]').click();
       await profile.locator(`[data-language="${language}"]`).click();
       await expect.poll(() => page.evaluate(() => (window as any).i18n.getLanguage())).toBe(language);
-      await expect(profile.locator('[data-language-toggle]')).toHaveAttribute('aria-expanded', 'false');
+      await expect(profile.locator('[data-language][aria-pressed="true"]')).toHaveAttribute('data-language', language);
     }
     await profile.locator('[data-lens-pattern]').click();
     const lens = page.locator('.lens-modal-overlay');
@@ -144,7 +144,7 @@ test.describe('Proposal Lens picker @features', () => {
     await expect(dialog.locator('#proposalOwnerOfferCheckbox')).toBeEnabled();
     // Recheck the selected member after its service stops supplying the owner's proof.
     proofAvailable = false;
-    await dialog.locator('.proposal-owner-offer-recheck').click();
+    await dialog.getByRole('button', { name: 'Check again', exact: true }).click();
     await expect(dialog.locator('#proposalOwnerOfferStatus')).toContainText('No lens member in your lens has attested', { timeout: 10000 });
     await expect(dialog.locator('#proposalOwnerOfferCheckbox')).toBeDisabled();
   });

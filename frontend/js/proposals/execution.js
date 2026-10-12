@@ -118,9 +118,9 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         const ownerFraction = parseOwnerShareFraction(entry.shareText);
         // LR cash is explicitly assigned in its owner ledger, never inferred from parcel area.
         const ownerPayoutText = proposalRequiresDealConsent(proposal) ? '' : formatPayout(parcelPayout * ownerFraction);
-        const payoutHtml = ownerPayoutText ? `<span class="owner-payout" style="color:#444; font-size:0.85em;">· ${ownerPayoutText}</span>` : '';
+        const payoutHtml = ownerPayoutText ? `<span class="owner-payout">· ${ownerPayoutText}</span>` : '';
         const shareHtml = safeShare
-            ? `<span class="owner-share" style="color:#666; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>${payoutHtml}`
+            ? `<span class="owner-share"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>${payoutHtml}`
             : (payoutHtml || '');
 
         let buttonsHtml = '';
@@ -143,7 +143,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
                     ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
                     : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
                 buttonsHtml = `
-                    <button class="btn btn-sm btn-outline-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${expiredTitle}">
+                    <button type="button" class="btn btn-sm" disabled title="${expiredTitle}">
                         ${undoLabel}
                     </button>`;
             }
@@ -152,7 +152,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
                     ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
                     : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
                 buttonsHtml = `
-                    <button class="btn btn-sm btn-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${expiredTitle}">
+                    <button type="button" class="btn btn-sm" disabled title="${expiredTitle}">
                         ${acceptLabel}
                     </button>`;
             }
@@ -164,7 +164,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
                 ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
                 : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
             buttonsHtml = `
-                <button class="btn btn-sm btn-outline-danger" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
+                <button type="button" class="btn btn-sm btn-danger" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)">
                     ${undoLabel}
                 </button>`;
         } else if (!entry.accepted && entry.canAccept) {
@@ -175,20 +175,20 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
                 ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
                 : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
             buttonsHtml = `
-                <button class="btn btn-sm ${isVote ? 'btn-primary' : 'btn-success'}" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
+                <button type="button" class="btn btn-sm ${isVote ? 'btn-primary' : 'btn-success'}" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)">
                     ${acceptLabel}
                 </button>`;
         }
 
         return `
-            <div class="owner-acceptance-row" data-owner-key="${entry.key}" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0;">
-                <div class="owner-identity" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; font-weight:500;">
+            <div class="owner-acceptance-row" data-owner-key="${entry.key}" onclick="event.stopPropagation(); event.preventDefault(); return false;">
+                <div class="owner-identity" onclick="event.stopPropagation(); event.preventDefault(); return false;">
                     ${safeName}${changedHint}
                 </div>
-                <div class="owner-share" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; color:#666; text-align:right;">
+                <div class="owner-share" onclick="event.stopPropagation(); event.preventDefault(); return false;">
                     ${shareHtml || '-'}
                 </div>
-                <div class="owner-actions" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="text-align:right;">
+                <div class="owner-actions" onclick="event.stopPropagation(); event.preventDefault(); return false;">
                     ${buttonsHtml}
                 </div>
             </div>`;
@@ -205,21 +205,21 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         const recipLabel = typeof escapeHtml === 'function' ? escapeHtml(consentRow.label) : consentRow.label;
         const recipTag = tUI('panel.proposal.acceptance.recipient', 'recipient');
         const actionHtml = consentRow.accepted
-            ? `<span style="color:#16a34a; font-size:12px;">✓ ${tUI('panel.proposal.acceptance.accepted', 'Accepted')}</span>`
+            ? `<span class="owner-acceptance-accepted"><i class="fa-solid fa-check" aria-hidden="true"></i> ${tUI('panel.proposal.acceptance.accepted', 'Accepted')}</span>`
             : (proposalExpired
-                ? `<button class="btn btn-sm btn-secondary" disabled style="font-size:11px; padding:2px 6px; min-width:60px; opacity:0.5; cursor:not-allowed;">${tUI('panel.proposal.acceptance.accept', 'Accept')}</button>`
-                : `<button class="btn btn-sm btn-success" onclick="(function(e){e.stopPropagation();e.preventDefault();acceptAsRecipient('${proposalId}');return false;})(event)" style="font-size:11px; padding:2px 6px; min-width:60px;">${tUI('panel.proposal.acceptance.accept', 'Accept')}</button>`);
+                ? `<button type="button" class="btn btn-sm" disabled>${tUI('panel.proposal.acceptance.accept', 'Accept')}</button>`
+                : `<button type="button" class="btn btn-sm btn-success" onclick="(function(e){e.stopPropagation();e.preventDefault();acceptAsRecipient('${proposalId}');return false;})(event)">${tUI('panel.proposal.acceptance.accept', 'Accept')}</button>`);
         recipientRowHtml = `
-            <div class="owner-acceptance-row owner-acceptance-recipient" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed #e5e7eb;">
-                <div class="owner-identity" style="font-size:13px; font-weight:600;">🏛️ ${recipLabel} <span style="color:#6b7280; font-weight:400; font-size:11px;">(${recipTag})</span></div>
-                <div class="owner-share" style="font-size:13px; color:#666; text-align:right;">-</div>
-                <div class="owner-actions" style="text-align:right;">${actionHtml}</div>
+            <div class="owner-acceptance-row owner-acceptance-recipient">
+                <div class="owner-identity"><i class="fa-solid fa-building-columns" aria-hidden="true"></i> ${recipLabel} <span class="owner-acceptance-recipient-tag">(${recipTag})</span></div>
+                <div class="owner-share">-</div>
+                <div class="owner-actions">${actionHtml}</div>
             </div>`;
     }
 
     const cashReview = proposalRequiresDealConsent(proposal) && (!firstParcel || firstParcel === parcelKey)
         ? buildReadjustmentCashReviewHtml(proposal) : '';
-    return `${cashReview}<div class="${compact}" style="width: 100%; box-sizing: border-box;">${recipientRowHtml}${rowsHtml}</div>`;
+    return `${cashReview}<div class="${compact}">${recipientRowHtml}${rowsHtml}</div>`;
 }
 
 function buildReadjustmentCashReviewHtml(proposal) {
@@ -287,23 +287,12 @@ function buildParcelAcceptanceStatusHtml(proposal) {
     // If more than 65 parcels, show progress bar instead of circles
     if (total > 65) {
         const percentage = total > 0 ? (acceptedCount / total) * 100 : 0;
+        // The fill's width is the data; the bar's look is its class.
         return `
             <div class="proposal-acceptance-status">
                 <div class="acceptance-label">${labelText}</div>
-                <div class="acceptance-progress-bar" style="
-                    width: 100%;
-                    height: 20px;
-                    background-color: #e0e0e0;
-                    border-radius: 4px;
-                    overflow: hidden;
-                    position: relative;
-                ">
-                    <div class="acceptance-progress-fill" style="
-                        width: ${percentage}%;
-                        height: 100%;
-                        background-color: #4caf50;
-                        transition: width 0.3s ease;
-                    "></div>
+                <div class="acceptance-progress-bar">
+                    <div class="acceptance-progress-fill" style="width: ${percentage}%;"></div>
                 </div>
             </div>`;
     }
@@ -401,20 +390,8 @@ function buildOwnerAcceptanceStatusHtml(proposal, summaryOverride) {
             return `
                 <div class="proposal-acceptance-status owner">
                     <div class="acceptance-label">${labelText}</div>
-                    <div class="acceptance-progress-bar" style="
-                        width: 100%;
-                        height: 20px;
-                        background-color: #e0e0e0;
-                        border-radius: 4px;
-                        overflow: hidden;
-                        position: relative;
-                    ">
-                        <div class="acceptance-progress-fill" style="
-                            width: ${percentage}%;
-                            height: 100%;
-                            background-color: #4caf50;
-                            transition: width 0.3s ease;
-                        "></div>
+                    <div class="acceptance-progress-bar">
+                        <div class="acceptance-progress-fill" style="width: ${percentage}%;"></div>
                     </div>
                 </div>`;
         }
@@ -685,8 +662,6 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
             : 'Applying...';
         button.disabled = true;
         button.innerHTML = `<span class="metric-spinner" aria-hidden="true"></span> ${applyingText}`;
-        button.style.opacity = '0.7';
-        button.style.cursor = 'wait';
     }
     console.debug(`[applyProposalToMap] Step 2: Updated button UI (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
@@ -707,8 +682,6 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
             if (button && originalButtonContent) {
                 button.innerHTML = originalButtonContent;
                 button.disabled = false;
-                button.style.opacity = '';
-                button.style.cursor = '';
             }
             return false;
         }
@@ -718,8 +691,6 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
         if (button && originalButtonContent) {
             button.innerHTML = originalButtonContent;
             button.disabled = false;
-            button.style.opacity = '';
-            button.style.cursor = '';
         }
         return false;
     }
@@ -807,19 +778,7 @@ function openAcceptOwnershipTransferDialog(idOrHash = null) {
         return;
     }
 
-    const existing = document.getElementById('acceptOwnershipTransferOverlay');
-    if (existing && existing.parentNode) {
-        existing.parentNode.removeChild(existing);
-    }
-
-    const overlay = document.createElement('div');
-    overlay.id = 'acceptOwnershipTransferOverlay';
-    overlay.className = 'proposal-boost-overlay';
-    overlay.addEventListener('click', event => {
-        if (event.target === overlay) {
-            closeAcceptOwnershipTransferDialog();
-        }
-    });
+    closeAcceptOwnershipTransferDialog();
 
     const modalTitle = tProposalUI('panel.proposal.acceptTransfer.title', 'Accept ownership transfer');
     const modalCloseLabel = tProposalUI('panel.proposal.acceptTransfer.closeLabel', 'Close dialog');
@@ -835,34 +794,38 @@ function openAcceptOwnershipTransferDialog(idOrHash = null) {
         || window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
     const formattedAmount = CbFormat.formatMoney(amountNeeded, currency);
 
-    overlay.innerHTML = `
-        <div class="proposal-boost-modal" role="dialog" aria-modal="true">
-            <div class="proposal-boost-header">
-                <h3>${modalTitle}</h3>
-                <button type="button" class="proposal-boost-close" aria-label="${modalCloseLabel}" onclick="closeAcceptOwnershipTransferDialog()">×</button>
+    // On the shared dialog (js/ui/dialogs.js) with the boost dialog's identity class, so it shares
+    // the boost dialog's inner rules; the overlay keeps its id for the scripts and specs that find it.
+    const dialogApi = window.CbDialog.open({
+        title: modalTitle,
+        size: 'sm',
+        className: 'proposal-boost-modal',
+        closeLabel: modalCloseLabel,
+        body: `
+            <p class="proposal-boost-copy">${modalCopy}</p>
+            <div class="accept-transfer-amount-row">
+                <span class="accept-transfer-amount-label">${amountNeededLabel}</span>
+                <span class="accept-transfer-amount-value">${formattedAmount}</span>
             </div>
-            <div class="proposal-boost-body">
-                <p class="proposal-boost-copy">${modalCopy}</p>
-                <div class="accept-transfer-amount-row" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:16px 0;">
-                    <span class="accept-transfer-amount-label" style="font-size:13px; color:#666;">${amountNeededLabel}:</span>
-                    <span class="accept-transfer-amount-value" style="font-size:20px; font-weight:600; color:#2e7d32;">${formattedAmount}</span>
-                </div>
-                <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                    <button type="button" class="btn proposal-boost-send" style="min-width:100px; width:120px;" onclick="submitAcceptOwnershipTransfer(${inlineJsArg(proposal.proposalId || '')})">${fundLabel}</button>
-                    <div class="accept-transfer-status" id="acceptTransferStatus" aria-live="polite" style="font-size:12px; text-align:center; min-height:18px;"></div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(overlay);
+            <div class="accept-transfer-status" id="acceptTransferStatus" aria-live="polite"></div>`,
+        actions: [{
+            id: 'fund',
+            label: fundLabel,
+            role: 'primary',
+            keepOpen: true,
+            onClick: () => submitAcceptOwnershipTransfer(proposal.proposalId || '')
+        }]
+    });
+    if (!dialogApi) return;
+    dialogApi.overlay.id = 'acceptOwnershipTransferOverlay';
+    dialogApi.overlay.__acceptTransferDialog = dialogApi;
 }
 
 function closeAcceptOwnershipTransferDialog() {
     const overlay = document.getElementById('acceptOwnershipTransferOverlay');
-    if (overlay && overlay.parentNode) {
-        overlay.parentNode.removeChild(overlay);
-    }
+    if (!overlay) return;
+    if (overlay.__acceptTransferDialog) overlay.__acceptTransferDialog.close(null);
+    else overlay.remove();
 }
 
 function submitAcceptOwnershipTransfer(idOrHash = null) {
@@ -919,7 +882,7 @@ function setOwnershipTransferDirection(direction) {
     currentOwnershipTransferDirection = direction;
     const buttons = document.querySelectorAll('.proposal-ownership-transfer-button');
     buttons.forEach(btn => {
-        btn.classList.toggle('selected', btn.getAttribute('data-transfer-direction') === direction);
+        btn.setAttribute('aria-pressed', String(btn.getAttribute('data-transfer-direction') === direction));
     });
 
     // Update proposal type based on direction - directly set currentProposalTool
@@ -1130,12 +1093,16 @@ function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
 
     const statusSpan = parcelItem.querySelector('.parcel-status');
     if (statusSpan) {
-        statusSpan.textContent = hasAccepted ? '✓ Accepted' : 'Pending';
+        const t = getProposalI18nHelper();
+        statusSpan.textContent = hasAccepted
+            ? t('panel.proposal.acceptance.accepted', 'Accepted')
+            : t('panel.proposal.acceptance.pending', 'Pending');
+        // The look of each state (colour, the accepted check mark) is its class's
+        // (css/proposal-details.css, the parcel list in proposals/details-panel.js).
         statusSpan.classList.toggle('parcel-status-accepted', hasAccepted);
         statusSpan.classList.toggle('parcel-status-pending', !hasAccepted);
-        statusSpan.style.color = hasAccepted ? '#28a745' : '#666';
-        statusSpan.style.fontWeight = hasAccepted ? '500' : '';
     }
+    parcelItem.classList.toggle('is-accepted', hasAccepted);
 
     const acceptanceHtml = buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true, skipParcelPanelFocus: true });
     let acceptanceContainer = parcelItem.querySelector('.parcel-owner-acceptance');
@@ -1625,9 +1592,11 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         : targetEntry.displayName;
 
     if (typeof addUserActionToGameLog === 'function') {
+        // The agent's name runs script (the game log binds .agent-link-clickable), so it is a cb-link button.
+        const agentLink = `<button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`;
         const logMsg = isVote
-            ? `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> rescinded the yes-vote as ${ownerLabel} on proposal ${proposalId}.`
-            : `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`;
+            ? `${agentLink} rescinded the yes-vote as ${ownerLabel} on proposal ${proposalId}.`
+            : `${agentLink} revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`;
         addUserActionToGameLog(logMsg);
     }
 

@@ -56,9 +56,10 @@ function applyContiguityConstraints() {
     });
 }
 
+// The typology tiles (cb-tile) carry their selection in aria-pressed, never in a class.
 function resetUrbanRuleTypologySelection() {
     const buttons = document.querySelectorAll('.proposal-typology-button');
-    buttons.forEach(btn => btn.classList.remove('selected'));
+    buttons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
 }
 
 function handleUrbanRuleTypologyClick(typologyKey = 'block', options = {}) {
@@ -70,19 +71,15 @@ function handleUrbanRuleTypologyClick(typologyKey = 'block', options = {}) {
     buttons.forEach(btn => {
         const btnTypology = btn.getAttribute('data-proposal-typology');
         const isTarget = btnTypology === typologyKey;
-        if (isTarget) {
-            targetButton = btn;
-            btn.classList.add('selected');
-        } else {
-            btn.classList.remove('selected');
-        }
+        if (isTarget) targetButton = btn;
+        btn.setAttribute('aria-pressed', String(isTarget));
     });
 
     if (!targetButton) return false;
     // Allow 'block', 'row', and 'parcelBased' typologies
     const supportedTypologies = ['block', 'row', 'parcelBased'];
     if (targetButton.disabled || !supportedTypologies.includes(typologyKey)) {
-        targetButton.classList.remove('selected');
+        targetButton.setAttribute('aria-pressed', 'false');
         return false;
     }
 
@@ -153,7 +150,7 @@ function getSelectedProposalTool() {
 }
 
 function openUrbanRuleGeometry() {
-    const selectedBtn = document.querySelector('.proposal-typology-button.selected');
+    const selectedBtn = document.querySelector('.proposal-typology-button[aria-pressed="true"]');
     const selectedKey = selectedBtn ? selectedBtn.getAttribute('data-proposal-typology') : null;
 
     // Prefer selected typology when enabled; otherwise fall back to the first enabled typology.
@@ -189,12 +186,7 @@ function setProposalBoundaryMode(mode = 'multiple', options = {}) {
     const buttons = document.querySelectorAll('.proposal-boundary-button');
     buttons.forEach(btn => {
         const btnMode = btn.getAttribute('data-boundary-mode');
-        const isSelected = btnMode === normalized;
-        if (isSelected) {
-            btn.classList.add('selected');
-        } else {
-            btn.classList.remove('selected');
-        }
+        btn.setAttribute('aria-pressed', String(btnMode === normalized));
         if (lockSelection) {
             btn.disabled = true;
             btn.setAttribute('aria-disabled', 'true');
@@ -285,7 +277,7 @@ function applyFacetLockUI(groupId, staticId, name, mode, lock, reason) {
         if (group) group.style.display = 'none';
         if (staticEl) {
             staticEl.style.display = '';
-            staticEl.innerHTML = `<span class="lock-ico">🔒</span>${facetModeLabel(name, mode)}${reason ? ` · ${reason}` : ''}`;
+            staticEl.innerHTML = `<i class="fa-solid fa-lock lock-ico" aria-hidden="true"></i>${facetModeLabel(name, mode)}${reason ? ` · ${reason}` : ''}`;
         }
     } else {
         if (group) group.style.display = '';
@@ -426,17 +418,15 @@ function setProposalType(type) {
     if (input) {
         input.value = effectiveType;
     }
-    // Support both old .proposal-tool-button and new .proposal-type-button classes
-    const buttons = document.querySelectorAll('.proposal-tool-button, .proposal-type-button[data-proposal-tool]');
+    // Type buttons in the create dialog that name a tool (data-proposal-tool); the selection is
+    // their aria-pressed.
+    const buttons = document.querySelectorAll('.create-proposal-modal [data-proposal-tool]');
     let resolvedTool = null;
     buttons.forEach(btn => {
         const btnType = btn.getAttribute('data-proposal-type');
-        if (btnType === effectiveType) {
-            btn.classList.add('selected');
-            resolvedTool = btn.getAttribute('data-proposal-tool') || null;
-        } else {
-            btn.classList.remove('selected');
-        }
+        const isSelected = btnType === effectiveType;
+        if (isSelected) resolvedTool = btn.getAttribute('data-proposal-tool') || null;
+        btn.setAttribute('aria-pressed', String(isSelected));
     });
     // Only adopt a tool actually resolved from the (legacy) type buttons. The facets-based dialog
     // has no such buttons, so resolvedTool is null there — in that case keep the tool the caller
@@ -455,14 +445,9 @@ function setProposalType(type) {
 
 function setProposalMainType(type, options = {}) {
     const skipReparcelLaunch = options.skipReparcelLaunch === true;
-    const buttons = document.querySelectorAll('.proposal-type-button[data-proposal-main-type]');
+    const buttons = document.querySelectorAll('[data-proposal-main-type]');
     buttons.forEach(btn => {
-        const btnType = btn.getAttribute('data-proposal-main-type');
-        if (btnType === type) {
-            btn.classList.add('selected');
-        } else {
-            btn.classList.remove('selected');
-        }
+        btn.setAttribute('aria-pressed', String(btn.getAttribute('data-proposal-main-type') === type));
     });
 
     const input = document.getElementById('proposalMainType');

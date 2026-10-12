@@ -152,14 +152,12 @@
         const original = button.dataset.label || button.textContent;
         button.dataset.label = original;
         button.textContent = t('threeMode.ai.linkCopied', 'Link copied');
-        button.classList.add('ai-scene-copy--copied');
         if (copyLabelTimer) clearTimeout(copyLabelTimer);
         copyLabelTimer = setTimeout(() => {
             copyLabelTimer = null;
             const current = overlayEl && overlayEl.querySelector('.ai-scene-copy');
             if (!current) return;
             current.textContent = current.dataset.label || t('threeMode.ai.copyLink', 'Copy link');
-            current.classList.remove('ai-scene-copy--copied');
         }, 1800);
     }
 
@@ -283,55 +281,59 @@
     // Amount then code ("0.0390 USD"), four decimals because a render costs cents.
     function fmtUsd(n) { return CbFormat.formatMoney(Number(n) || 0, 'USD', { maxFractionDigits: 4, minFractionDigits: 4 }); }
 
+    // The render dialog keeps its own markup (state lives in it between opens: the capture, the
+    // running request, the share row), so it wears the dialog primitive's classes instead of being
+    // rebuilt by CbDialog.open on every press.
     function ensureOverlay() {
         if (overlayEl) return overlayEl;
         overlayEl = document.createElement('div');
         overlayEl.id = 'ai-scene-overlay';
-        overlayEl.className = 'ai-scene-overlay';
+        overlayEl.className = 'cb-dialog-overlay ai-scene-overlay';
         overlayEl.hidden = true;
         overlayEl.innerHTML = `
-            <div class="ai-scene-modal" role="dialog" aria-modal="true" aria-labelledby="ai-scene-title">
-                <div class="ai-scene-header">
-                    <h3 id="ai-scene-title">${t('threeMode.ai.title', 'AI photorealistic render')}</h3>
-                    <button type="button" class="ai-scene-close" aria-label="${t('common.close', 'Close')}">&times;</button>
+            <div class="cb-dialog cb-dialog--lg ai-scene-modal" role="dialog" aria-modal="true" aria-labelledby="ai-scene-title">
+                <div class="cb-dialog__header ai-scene-header">
+                    <h2 class="cb-dialog__title" id="ai-scene-title">${t('threeMode.ai.title', 'AI photorealistic render')}</h2>
+                    <button type="button" class="close-circle-btn ai-scene-close" aria-label="${t('common.close', 'Close')}">&times;</button>
                 </div>
-                <div class="ai-scene-body">
+                <div class="cb-dialog__body ai-scene-body">
                     <div class="ai-scene-source">
-                        <div class="ai-scene-label">${t('threeMode.ai.sourceLabel', 'Captured scene')}</div>
+                        <div class="cb-kicker">${t('threeMode.ai.sourceLabel', 'Captured scene')}</div>
                         <img class="ai-scene-source-img" alt="captured 3D scene" />
-                        <button type="button" class="ai-scene-height-toggle" hidden aria-expanded="false"></button>
+                        <button type="button" class="btn btn-quiet btn-sm ai-scene-height-toggle" hidden aria-expanded="false"></button>
                         <img class="ai-scene-height-img" alt="height map" hidden title="${t('threeMode.ai.heightMapTitle', 'Height map (white = tallest) — sent to keep heights faithful')}" />
                     </div>
                     <div class="ai-scene-controls">
-                        <label class="ai-scene-label" for="ai-scene-model">${t('threeMode.ai.modelLabel', 'Model')}</label>
+                        <label class="cb-kicker" for="ai-scene-model">${t('threeMode.ai.modelLabel', 'Model')}</label>
                         <select id="ai-scene-model" class="ai-scene-model"></select>
-                        <label class="ai-scene-label" for="ai-scene-prompt">${t('threeMode.ai.promptLabel', 'Prompt (editable)')}</label>
+                        <label class="cb-kicker" for="ai-scene-prompt">${t('threeMode.ai.promptLabel', 'Prompt (editable)')}</label>
                         <textarea id="ai-scene-prompt" class="ai-scene-prompt" rows="5"></textarea>
                         <div class="ai-scene-actions">
-                            <button type="button" class="btn btn-info ai-scene-generate"></button>
+                            <button type="button" class="btn btn-primary btn-block ai-scene-generate"></button>
                             <span class="ai-scene-cost-hint">${t('threeMode.ai.costHint', '~{{c}} per image', { c: fmtUsd(NOMINAL_COST_HINT) })}</span>
                         </div>
                         <div class="ai-scene-status" role="status" aria-live="polite"></div>
                     </div>
                     <div class="ai-scene-result" hidden>
-                        <div class="ai-scene-label">${t('threeMode.ai.resultLabel', 'Result')}</div>
+                        <div class="cb-kicker">${t('threeMode.ai.resultLabel', 'Result')}</div>
                         <img class="ai-scene-result-img" alt="AI photorealistic render" />
                         <div class="ai-scene-warning" hidden></div>
                         <!-- Sharing first, saving last: the point of a render is to show someone.
                              Download and Share on X stay ANCHORS on purpose — the download
                              attribute names the file and target=_blank keeps middle-click and
-                             "open in new tab" working, neither of which a button can do — so the
-                             CSS makes them read as buttons instead (see .ai-scene-result-actions). -->
+                             "open in new tab" working, neither of which a button can do — and
+                             wear the button classes (an <a class="btn">), so the row reads as one
+                             set of buttons. -->
                         <div class="ai-scene-result-actions">
-                            <button type="button" class="btn btn-action ai-scene-share" hidden>${t('threeMode.ai.share', 'Share')}</button>
-                            <button type="button" class="btn btn-action ai-scene-copy" hidden>${t('threeMode.ai.copyLink', 'Copy link')}</button>
-                            <a class="btn btn-action ai-scene-tweet" target="_blank" rel="noopener noreferrer" hidden>${t('threeMode.ai.tweet', 'Share on X')}</a>
-                            <a class="btn btn-action ai-scene-download" download="ai-scene.png">${t('threeMode.ai.download', 'Download')}</a>
+                            <button type="button" class="btn btn-block ai-scene-share" hidden>${t('threeMode.ai.share', 'Share')}</button>
+                            <button type="button" class="btn btn-block ai-scene-copy" hidden>${t('threeMode.ai.copyLink', 'Copy link')}</button>
+                            <a class="btn btn-block ai-scene-tweet" target="_blank" rel="noopener noreferrer" hidden>${t('threeMode.ai.tweet', 'Share on X')}</a>
+                            <a class="btn btn-block ai-scene-download" download="ai-scene.png">${t('threeMode.ai.download', 'Download')}</a>
                         </div>
                         <div class="ai-scene-share-status" role="status" aria-live="polite"></div>
                     </div>
                 </div>
-                <div class="ai-scene-footer">
+                <div class="cb-dialog__footer ai-scene-footer">
                     <span class="ai-scene-session-total"></span>
                 </div>
             </div>`;
@@ -465,10 +467,9 @@
         }
     }
 
-    // The app's own dialog, with the browser's as the last resort (ephemerals.md).
+    // The app's own dialog (js/ui/dialogs.js), never the browser's.
     function sayAlert(message) {
-        if (typeof window.showStyledAlert === 'function') window.showStyledAlert(message);
-        else alert(message);
+        window.CbDialog.alert(message);
     }
 
     function openOverlay() {

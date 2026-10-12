@@ -99,11 +99,11 @@
             const target = notice.reboundAs.proposalId || notice.reboundAs.serverProposalId;
             const label = notice.reboundAs.title || target;
             action = `<p class="proposal-binding-drift-note">${escape(text('panel.proposal.bindingDrift.reboundAs', 'Re-bound as'))}
-                <button type="button" class="proposal-binding-drift-link" data-binding-drift-open="${escape(target)}">${escape(label)}</button></p>`;
+                <button type="button" class="cb-link" data-binding-drift-open="${escape(target)}">${escape(label)}</button></p>`;
         } else if (notice.canRebind) {
             action = `<p class="proposal-binding-drift-note">${escape(text('panel.proposal.bindingDrift.note',
                 'Re-binding publishes a new record with the current parcels. This one stays as it was published.'))}</p>
-                <button type="button" class="btn btn-outline-primary proposal-binding-drift-rebind" data-binding-drift-rebind>
+                <button type="button" class="btn proposal-binding-drift-rebind" data-binding-drift-rebind>
                     <i class="fas fa-link" aria-hidden="true"></i> ${escape(text('panel.proposal.bindingDrift.rebind', 'Re-bind'))}
                 </button>`;
         }
@@ -157,19 +157,17 @@
         const source = typeof global.getProposalByIdOrHash === 'function' ? global.getProposalByIdOrHash(proposalKey) : null;
         const serverId = serverIdOf(source);
         const response = serverId ? cache.get(serverId)?.response : null;
-        const alertText = message => (typeof global.showStyledAlert === 'function' ? global.showStyledAlert(message) : global.alert?.(message));
+        const alertText = message => global.CbDialog.alert(message);
         if (!source || !response || !response.current) {
             alertText(text('panel.proposal.bindingDrift.unavailable', 'The current binding of this record is not available. Reopen it and try again.'));
             return null;
         }
         const question = text('panel.proposal.bindingDrift.confirm',
             'Publish a new record with the same site and design and the current parcels? The record you are viewing is not changed.');
-        const ok = typeof global.showStyledConfirm === 'function'
-            ? await global.showStyledConfirm(question, {
-                okText: text('panel.proposal.bindingDrift.rebind', 'Re-bind'),
-                cancelText: text('panel.proposal.bindingDrift.cancel', 'Cancel')
-            })
-            : global.confirm?.(question);
+        const ok = await global.CbDialog.confirm(question, {
+            okText: text('panel.proposal.bindingDrift.rebind', 'Re-bind'),
+            cancelText: text('panel.proposal.bindingDrift.cancel', 'Cancel')
+        });
         if (!ok) return null;
 
         let derived;

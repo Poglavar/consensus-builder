@@ -293,10 +293,12 @@
         return node;
     }
 
+    // A native <dialog> (showModal) that wears the dialog primitive's classes (css/primitives.css):
+    // card, header with one close button, body; the backdrop is the token's (css/proposals.css).
     function ensureDialog() {
         let dialog = doc.getElementById(DIALOG_ID);
         if (dialog) return dialog;
-        dialog = el('dialog', 'parcel-compare');
+        dialog = el('dialog', 'cb-dialog cb-dialog--lg parcel-compare');
         dialog.id = DIALOG_ID;
         dialog.setAttribute('aria-labelledby', `${DIALOG_ID}-title`);
         dialog.addEventListener('close', () => { state.hydration += 1; });
@@ -362,20 +364,22 @@
         const parcel = state.parcel;
         dialog.textContent = '';
 
-        const header = el('div', 'parcel-compare__head');
-        const title = el('h2', 'parcel-compare__title', t('parcelCompare.title', 'Compare proposals on parcel {{number}}', { number: parcel.displayId }));
+        const header = el('div', 'cb-dialog__header parcel-compare__head');
+        const title = el('h2', 'cb-dialog__title parcel-compare__title', t('parcelCompare.title', 'Compare proposals on parcel {{number}}', { number: parcel.displayId }));
         title.id = `${DIALOG_ID}-title`;
-        const close = el('button', 'parcel-compare__close close-circle-btn close-circle-btn--lg', '×');
+        const close = el('button', 'close-circle-btn parcel-compare__close', '×');
         close.type = 'button';
         close.setAttribute('aria-label', t('modal.common.close', 'Close'));
         close.addEventListener('click', () => dialog.close());
         header.appendChild(title);
         header.appendChild(close);
         dialog.appendChild(header);
+        const content = el('div', 'cb-dialog__body parcel-compare__body');
+        dialog.appendChild(content);
 
         const picked = state.picked.map(key => state.candidates.find(c => keyOf(c.proposal) === key) || null);
         if (picked.some(p => !p)) {
-            dialog.appendChild(el('p', 'parcel-compare__empty', t('parcelCompare.needTwo', 'At least two proposals must touch this parcel to compare them.')));
+            content.appendChild(el('p', 'parcel-compare__empty', t('parcelCompare.needTwo', 'At least two proposals must touch this parcel to compare them.')));
             return;
         }
         const channels = channelsFor(parcel, state.candidates);
@@ -401,7 +405,7 @@
             wrap.appendChild(caption);
             wrap.appendChild(select);
             if (type) wrap.appendChild(el('span', 'parcel-compare__type', type));
-            const details = el('button', 'btn btn-sm btn-outline-secondary parcel-compare__details', t('parcelCompare.openDetails', 'Details'));
+            const details = el('button', 'btn btn-sm parcel-compare__details', t('parcelCompare.openDetails', 'Details'));
             details.type = 'button';
             details.addEventListener('click', event => {
                 event.preventDefault();
@@ -420,7 +424,7 @@
             figure.innerHTML = svg;
             top.appendChild(figure);
         }
-        dialog.appendChild(top);
+        content.appendChild(top);
 
         // The comparison grid.
         const grid = el('div', 'parcel-compare__grid');
@@ -448,7 +452,7 @@
         row(grid, t('parcelCompare.rows.pledges', 'Pledges'), both(() => [DASH]), { dataKey: 'pledges' });
         row(grid, t('parcelCompare.rows.market', 'Market: executes (YES)'), both(() => [DASH]), { dataKey: 'market' });
         row(grid, t('parcelCompare.rows.status', 'Status'), both(statusText));
-        dialog.appendChild(grid);
+        content.appendChild(grid);
 
         hydrateSupport(dialog, picked.map(p => p.proposal));
     }
@@ -552,7 +556,7 @@
         const bar = el('div', 'parcel-compare-bar');
         const hint = el('span', 'parcel-compare-bar__hint', t('parcelCompare.bar.hint', 'Tick two proposals to compare them on this parcel'));
         hint.id = 'parcel-compare-bar-hint';
-        const button = el('button', 'btn btn-sm btn-outline-primary parcel-compare-bar__run', t('parcelCompare.bar.compare', 'Compare'));
+        const button = el('button', 'btn btn-sm parcel-compare-bar__run', t('parcelCompare.bar.compare', 'Compare'));
         button.type = 'button';
         button.disabled = true;
         button.setAttribute('aria-describedby', hint.id);

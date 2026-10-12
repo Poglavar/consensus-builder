@@ -47,96 +47,71 @@
     };
     const rememberedBuildingLayers = () => (remembered ? { ...remembered } : null);
 
+    // The shared dialog (js/ui/dialogs.js) with `building-layers-dialog` as its identity class;
+    // resolves the picked surveys, or null when cancelled (Cancel, Escape, the backdrop).
     function open() {
-        return new Promise(resolve => {
-            const showing = currentBuildingLayerState();
-            const anyShowing = SURVEYS.some(survey => showing[survey.key]);
-            // Prefill from the map when something is on it, otherwise from the last answer.
-            const start = anyShowing ? showing : (rememberedBuildingLayers() || { gdi: true, dgu: false, osm: false });
-            const overlay = document.createElement('div');
-            overlay.className = 'cb-confirm-overlay';
-            const dialog = document.createElement('div');
-            dialog.className = 'cb-confirm-dialog building-layers-dialog';
-            dialog.setAttribute('role', 'dialog');
-            dialog.setAttribute('aria-modal', 'true');
+        const showing = currentBuildingLayerState();
+        const anyShowing = SURVEYS.some(survey => showing[survey.key]);
+        // Prefill from the map when something is on it, otherwise from the last answer.
+        const start = anyShowing ? showing : (rememberedBuildingLayers() || { gdi: true, dgu: false, osm: false });
 
-            const title = document.createElement('div');
-            title.className = 'cb-confirm-message';
-            title.textContent = translate('modal.buildingLayers.title', 'Which buildings to show?');
-            dialog.appendChild(title);
+        const list = document.createElement('div');
+        list.className = 'building-layers-options';
+        const inputs = {};
+        SURVEYS.forEach(survey => {
+            const row = document.createElement('label');
+            row.className = 'building-layers-option';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.checked = start[survey.key];
+            inputs[survey.key] = input;
+            const text = document.createElement('span');
+            const name = document.createElement('strong');
+            name.textContent = translate(survey.label, survey.key.toUpperCase());
+            const hint = document.createElement('small');
+            hint.textContent = translate(survey.hint, '');
+            text.appendChild(name);
+            text.appendChild(hint);
+            row.appendChild(input);
+            row.appendChild(text);
+            list.appendChild(row);
+        });
 
-            const list = document.createElement('div');
-            list.className = 'building-layers-options';
-            const inputs = {};
-            SURVEYS.forEach(survey => {
-                const row = document.createElement('label');
-                row.className = 'building-layers-option';
-                const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.checked = start[survey.key];
-                inputs[survey.key] = input;
-                const text = document.createElement('span');
-                const name = document.createElement('strong');
-                name.textContent = translate(survey.label, survey.key.toUpperCase());
-                const hint = document.createElement('small');
-                hint.textContent = translate(survey.hint, '');
-                text.appendChild(name);
-                text.appendChild(hint);
-                row.appendChild(input);
-                row.appendChild(text);
-                list.appendChild(row);
-            });
-            dialog.appendChild(list);
+        const answer = () => {
+            const picked = {};
+            SURVEYS.forEach(survey => { picked[survey.key] = !!inputs[survey.key].checked; });
+            rememberBuildingLayers(picked);
+            return picked;
+        };
 
-            const buttons = document.createElement('div');
-            buttons.className = 'cb-confirm-buttons';
-            const cancel = document.createElement('button');
-            cancel.type = 'button';
-            cancel.className = 'btn btn-secondary';
-            cancel.textContent = translate('modal.buildingLayers.cancel', 'Cancel');
-            const confirm = document.createElement('button');
-            confirm.type = 'button';
-            confirm.className = 'btn btn-action';
-            confirm.textContent = translate('modal.buildingLayers.show', 'Show');
-            buttons.appendChild(cancel);
-            buttons.appendChild(confirm);
-            dialog.appendChild(buttons);
-
-            function cleanup(result) {
-                document.removeEventListener('keydown', onKeydown, true);
-                unregisterEscape?.();
-                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                resolve(result);
+        let dialogApi = null;
+        function onKeydown(event) {
+            if (event.key === 'Enter') {
+                // Enter means Show wherever the focus sits — including on a checkbox, where
+                // Enter would otherwise do nothing at all.
+                event.preventDefault();
+                dialogApi.close(answer());
             }
-            const unregisterEscape = global.ModalEscape?.register(overlay, () => cleanup(null));
-            const answer = () => {
-                const picked = {};
-                SURVEYS.forEach(survey => { picked[survey.key] = !!inputs[survey.key].checked; });
-                rememberBuildingLayers(picked);
-                return picked;
-            };
-
-            function onKeydown(event) {
-                if (event.key === 'Enter') {
-                    // Enter means Show wherever the focus sits — including on a checkbox, where
-                    // Enter would otherwise do nothing at all.
-                    event.preventDefault();
-                    cleanup(answer());
-                }
-                // Nothing else may leak to the page behind: B, R and the drawing hotkeys all
-                // listen on document too.
-                event.stopPropagation();
-            }
-            document.addEventListener('keydown', onKeydown, true);
-            cancel.addEventListener('click', () => cleanup(null));
-            confirm.addEventListener('click', () => cleanup(answer()));
-            overlay.addEventListener('click', event => { if (event.target === overlay) cleanup(null); });
-
-            overlay.appendChild(dialog);
-            document.body.appendChild(overlay);
-            // Focus after layout — a synchronous focus from inside another event handler loses to
-            // whatever refocuses afterwards (the map container does).
-            requestAnimationFrame(() => confirm.focus({ preventScroll: true }));
+            // Nothing else may leak to the page behind: B, R and the drawing hotkeys all listen on
+            // document too. (Escape is the modal router's, which runs first and closes the dialog.)
+            event.stopPropagation();
+        }
+        dialogApi = global.CbDialog.open({
+            title: translate('modal.buildingLayers.title', 'Which buildings to show?'),
+            size: 'sm',
+            className: 'building-layers-dialog',
+            body: list,
+            actions: [
+                { id: 'cancel', value: null, label: translate('modal.buildingLayers.cancel', 'Cancel'), role: 'secondary' },
+                { id: 'show', label: translate('modal.buildingLayers.show', 'Show'), role: 'primary', autofocus: true,
+                    keepOpen: true, onClick: api => api.close(answer()) }
+            ]
+        });
+        if (!dialogApi) return Promise.resolve(null);
+        document.addEventListener('keydown', onKeydown, true);
+        return dialogApi.closed.then(result => {
+            document.removeEventListener('keydown', onKeydown, true);
+            return result && typeof result === 'object' ? result : null;
         });
     }
 

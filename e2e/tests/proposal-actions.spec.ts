@@ -28,7 +28,7 @@ async function loadParcelOwnershipFixture(page: import('@playwright/test').Page)
 }
 
 async function chooseLocalProposal(page: import('@playwright/test').Page): Promise<void> {
-  const confirm = page.locator('.cb-confirm-overlay');
+  const confirm = page.locator('.cb-dialog-overlay--confirm');
   await expect(confirm).toContainText('Proceed to create an in-memory proposal?');
   const inMemoryButton = confirm.getByRole('button', { name: 'Create in memory', exact: true });
   if (await inMemoryButton.count()) await inMemoryButton.click();
@@ -242,7 +242,7 @@ test.describe('Proposal actions @features', () => {
     await dialog.locator('[data-support-submit]').click();
 
     await expect(dialog).toBeHidden();
-    const confirmation = page.locator('.cb-confirm-overlay');
+    const confirmation = page.locator('.cb-dialog-overlay--confirm');
     await expect(confirmation).toContainText('Success! Thank you for boosting this proposal with 1.25 of USDC.');
     const chainEvents = await page.evaluate(() => (window as any).__proposalActionChainEvents as string[]);
     expect(chainEvents).toContain('send');

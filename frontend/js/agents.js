@@ -928,6 +928,9 @@ function agentDecideAction(agent, turnContext = null) {
 
 /**
  * Build a consistent proposal link for agent/game log entries using proposal ids.
+ * Log links run script (the activity binders in game.js and setupAgentLogClickListeners find them by
+ * their *-link-clickable class), so they are <button class="cb-link">, never an anchor with a
+ * placeholder "#" href.
  */
 function buildProposalLogLinkAgent(proposalIdOrHash, proposalOverride = null) {
     const proposal = proposalOverride
@@ -942,7 +945,7 @@ function buildProposalLogLinkAgent(proposalIdOrHash, proposalOverride = null) {
         ? dataId
         : (proposalIdOrHash ? String(proposalIdOrHash).substring(0, 8) : 'unknown');
     const hashAttr = proposalIdOrHash ? ` data-proposal-hash="${proposalIdOrHash}"` : '';
-    return `<a href="#" data-proposal-id="${dataId}"${hashAttr} class="proposal-link proposal-link-clickable">${displayId}</a>`;
+    return `<button type="button" class="cb-link proposal-link-clickable" data-proposal-id="${dataId}"${hashAttr}>${displayId}</button>`;
 }
 
 /**
@@ -954,7 +957,7 @@ function buildProposalLogLinkAgent(proposalIdOrHash, proposalOverride = null) {
 async function executeAgentAction(agent, action) {
     switch (action.type) {
         case 'nothing':
-            return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> did nothing this turn.`;
+            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> did nothing this turn.`;
 
         case 'accept':
             if (typeof acceptProposal === 'function') {
@@ -967,7 +970,7 @@ async function executeAgentAction(agent, action) {
                     suppressAlerts: true
                 });
                 if (!result) {
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to accept proposal ${String(action.proposalId).substring(0, 8)} but could not resolve owner acceptance.`;
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to accept proposal ${String(action.proposalId).substring(0, 8)} but could not resolve owner acceptance.`;
                 }
                 if (result && result.proposalExecuted) {
                     if (!agent.proposalsExecuted.includes(action.proposalId)) {
@@ -1017,9 +1020,9 @@ async function executeAgentAction(agent, action) {
                     : null;
                 const proposalLink = buildProposalLogLinkAgent(action.proposalId, proposal);
 
-                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> accepted proposal ${proposalLink} for parcel <a href="#" data-parcel-id="${action.parcelId}" class="parcel-link parcel-link-clickable">${parcelNumber}</a>.`;
+                return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> accepted proposal ${proposalLink} for parcel <button type="button" class="cb-link parcel-link-clickable" data-parcel-id="${action.parcelId}">${parcelNumber}</button>.`;
             }
-            return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to accept a proposal but failed.`;
+            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to accept a proposal but failed.`;
 
         case 'create':
             if (typeof proposalStorage !== 'undefined') {
@@ -1031,18 +1034,18 @@ async function executeAgentAction(agent, action) {
 
                 const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
                 if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
                         + ' failed to create a proposal because cadastral ground is unavailable.';
                 }
                 let cadastreParcelIds;
                 try {
                     cadastreParcelIds = fabric.cadastreIdsForParcelIds(action.parcelIds);
                 } catch (_) {
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
                         + ' failed to create a proposal because its selected ground is no longer current.';
                 }
                 if (!cadastreParcelIds.length || !action.geometry?.type) {
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
                         + ' failed to create a proposal because its authored geometry is incomplete.';
                 }
 
@@ -1069,7 +1072,7 @@ async function executeAgentAction(agent, action) {
                 });
                 if (proposalId === null) {
                     // console.log('Attempt failed:This exact proposal already exists');
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
                         + ` failed to create a proposal because it already exists.`;
                 }
 
@@ -1104,9 +1107,9 @@ async function executeAgentAction(agent, action) {
                     : null;
                 const proposalLink = buildProposalLogLinkAgent(proposalId, storedProposal);
 
-                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ${getChainCurrencySymbol()}.`;
+                return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ${getChainCurrencySymbol()}.`;
             }
-            return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to create a proposal but failed.`;
+            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to create a proposal but failed.`;
 
         case 'donate':
             if (typeof proposalStorage !== 'undefined') {
@@ -1115,7 +1118,7 @@ async function executeAgentAction(agent, action) {
                     try {
                         window.AgentSupportSimulation.donate(proposal, agent, action.amount);
                     } catch (_) {
-                        return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to donate to a proposal but failed.`;
+                        return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to donate to a proposal but failed.`;
                     }
                     proposal.proposalId = proposal.proposalId || proposal.tokenId || action.proposalId;
                     if (typeof proposalStorage._indexProposal === 'function') {
@@ -1145,10 +1148,10 @@ async function executeAgentAction(agent, action) {
                     }
 
                     const proposalLink = buildProposalLogLinkAgent(action.proposalId, proposal);
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ${getChainCurrencySymbol()} to proposal ${proposalLink}.`;
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> donated ${action.amount} ${getChainCurrencySymbol()} to proposal ${proposalLink}.`;
                 }
             }
-            return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to donate to a proposal but failed.`;
+            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to donate to a proposal but failed.`;
 
         case 'pledge':
             if (typeof proposalStorage !== 'undefined' && window.AgentSupportSimulation) {
@@ -1157,7 +1160,7 @@ async function executeAgentAction(agent, action) {
                     try {
                         window.AgentSupportSimulation.pledge(proposal, agent, action.amount);
                     } catch (_) {
-                        return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to pledge to a proposal but failed.`;
+                        return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to pledge to a proposal but failed.`;
                     }
                     proposal.proposalId = proposal.proposalId || proposal.tokenId || action.proposalId;
                     if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
@@ -1170,13 +1173,13 @@ async function executeAgentAction(agent, action) {
                             action: `pledged ${action.amount} ${getChainCurrencySymbol()} to proposal`
                         });
                     }
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> pledged ${action.amount} ${getChainCurrencySymbol()} to proposal ${buildProposalLogLinkAgent(action.proposalId, proposal)}.`;
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> pledged ${action.amount} ${getChainCurrencySymbol()} to proposal ${buildProposalLogLinkAgent(action.proposalId, proposal)}.`;
                 }
             }
-            return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to pledge to a proposal but failed.`;
+            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to pledge to a proposal but failed.`;
 
         default:
-            return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> performed an unknown action.`;
+            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> performed an unknown action.`;
     }
 }
 
@@ -1276,10 +1279,6 @@ function handleAgentDialogChainChange(chainId) {
     }
 }
 
-function escapeAttribute(value) {
-    return String(value == null ? '' : value).replace(/"/g, '&quot;');
-}
-
 function getI18nApi() {
     return (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
 }
@@ -1299,61 +1298,14 @@ function translateText(key, fallback, params = {}) {
     return formatString(fallback, params);
 }
 
+// The agent dialog's language row: the one language picker the welcome dialog uses too
+// (renderLanguagePickerHtml / bindLanguageSegmented, js/user-management.js), on the current language.
 function renderAgentLanguageSwitcher() {
     const i18nApi = getI18nApi();
     const currentLang = i18nApi && typeof i18nApi.getLanguage === 'function'
         ? i18nApi.getLanguage()
         : 'en';
-    const switcherLabel = escapeAttribute(
-        (i18nApi && typeof i18nApi.t === 'function'
-            ? (i18nApi.t('language.switcher.aria') || i18nApi.t('language.switcher.label'))
-            : null) || 'Language'
-    );
-    const englishLabel = escapeAttribute(
-        (i18nApi && typeof i18nApi.t === 'function'
-            ? i18nApi.t('language.switcher.to_en')
-            : null) || 'Switch to English'
-    );
-    const spanishLabel = escapeAttribute(
-        (i18nApi && typeof i18nApi.t === 'function'
-            ? i18nApi.t('language.switcher.to_es')
-            : null) || 'Switch to Spanish'
-    );
-    const serbianLabel = escapeAttribute(
-        (i18nApi && typeof i18nApi.t === 'function'
-            ? i18nApi.t('language.switcher.to_sr')
-            : null) || 'Switch to Serbian'
-    );
-    const croatianLabel = escapeAttribute(
-        (i18nApi && typeof i18nApi.t === 'function'
-            ? i18nApi.t('language.switcher.to_hr')
-            : null) || 'Switch to Croatian'
-    );
-
-    const flagByLang = { en: '🌐', es: '🇪🇸', sr: '🇷🇸', hr: '🇭🇷' };
-    const activeFlag = escapeHtml(flagByLang[currentLang] || '🌐');
-
-    return `
-        <div class="agent-language-switcher" data-language-switcher role="group" aria-label="${switcherLabel}" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">
-            <button type="button" class="language-toggle" data-language-toggle aria-haspopup="true" aria-expanded="false" title="${switcherLabel}" aria-label="${switcherLabel}">
-                <span aria-hidden="true">${activeFlag}</span>
-            </button>
-            <div class="language-menu" data-language-menu role="menu">
-                <button type="button" class="language-option ${currentLang === 'en' ? 'is-active' : ''}" data-language="en" role="menuitem" title="${englishLabel}" aria-label="${englishLabel}" data-i18n-key="language.switcher.to_en" data-i18n-attr="title,aria-label">
-                    <span aria-hidden="true">🇬🇧</span>
-                </button>
-                <button type="button" class="language-option ${currentLang === 'es' ? 'is-active' : ''}" data-language="es" role="menuitem" title="${spanishLabel}" aria-label="${spanishLabel}" data-i18n-key="language.switcher.to_es" data-i18n-attr="title,aria-label">
-                    <span aria-hidden="true">🇪🇸</span>
-                </button>
-                <button type="button" class="language-option ${currentLang === 'sr' ? 'is-active' : ''}" data-language="sr" role="menuitem" title="${serbianLabel}" aria-label="${serbianLabel}" data-i18n-key="language.switcher.to_sr" data-i18n-attr="title,aria-label">
-                    <span aria-hidden="true">🇷🇸</span>
-                </button>
-                <button type="button" class="language-option ${currentLang === 'hr' ? 'is-active' : ''}" data-language="hr" role="menuitem" title="${croatianLabel}" aria-label="${croatianLabel}" data-i18n-key="language.switcher.to_hr" data-i18n-attr="title,aria-label">
-                    <span aria-hidden="true">🇭🇷</span>
-                </button>
-            </div>
-        </div>
-    `;
+    return window.renderLanguagePickerHtml(currentLang, 'agent-language-switcher');
 }
 
 /**
@@ -1367,8 +1319,7 @@ async function showAgentDialog(agentId, options = {}) {
     const onClose = typeof safeOptions.onClose === 'function' ? safeOptions.onClose : null;
     const agent = agentStorage.getAgent(agentId);
     if (!agent) {
-        const missing = translateText('agentDialog.agentNotFound', 'Agent not found.');
-        if (typeof window.showStyledAlert === 'function') window.showStyledAlert(missing); else alert(missing);
+        window.CbDialog.alert(translateText('agentDialog.agentNotFound', 'Agent not found.'));
         return;
     }
 
@@ -1424,7 +1375,6 @@ async function showAgentDialog(agentId, options = {}) {
         : '-';
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
-    const lensIconLabel = translateText('modal.lens.iconLabel', 'Lens icon');
     const labelEthBalance = translateText('agentDialog.ethBalance', `${currencySymbol} Balance`);
     const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Portfolio Value');
     const labelTotalWealth = translateText('agentDialog.totalWealth', 'Total Wealth');
@@ -1437,57 +1387,57 @@ async function showAgentDialog(agentId, options = {}) {
     const labelUser = translateText('agentDialog.userLabel', 'You');
     const labelLogout = translateText('agentDialog.logoutButton', 'Log Out');
 
+    // The dialog wears the shared chrome (css/primitives.css cb-dialog): an overlay on the dialog rung
+    // (the upper rung when it opens over another dialog, e.g. the activity explorer or the welcome
+    // dialog's takeover preview) around a cb-dialog--lg card. agent-dialog-modal on the card and
+    // agent-dialog-modal-close beside close-circle-btn are hooks for scripts and the e2e specs.
+    const overlay = document.createElement('div');
+    overlay.className = 'cb-dialog-overlay' + (elevated ? ' cb-dialog-overlay--top' : '');
     const modal = document.createElement('div');
-    modal.className = 'agent-dialog-modal';
-    if (elevated) {
-        modal.classList.add('agent-dialog-elevated');
-    }
+    modal.className = 'cb-dialog cb-dialog--lg agent-dialog-modal';
     if (readOnly) {
         modal.classList.add('agent-dialog-readonly');
     }
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'agent-dialog-title');
     if (onClose) {
         modal.__onClose = onClose;
     }
     modal.innerHTML = `
-        <div class="agent-dialog-modal-content">
-            <div class="agent-dialog-modal-header">
+            <div class="cb-dialog__header agent-dialog-modal-header">
                 <div class="agent-header-main">
-                    <div class="agent-dialog-header-actions">
-                        ${languageSwitcherHtml}
-                        <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()" data-readonly-allow="true">&times;</button>
-                    </div>
                     <div class="agent-header-top">
                         <div class="agent-avatar-stack">
                             <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" alt="Agent Avatar">
-                            ${isUserAgent ? `<span class="user-label user-label-overlay" data-i18n-key="agentDialog.userLabel">${labelUser}</span>` : ''}
                         </div>
                         <div class="agent-header-details">
                             <div class="agent-name-row">
-                                <div class="agent-name-group">
-                                    <h2>${agent.name}</h2>
-                                </div>
+                                <h2 id="agent-dialog-title" class="cb-dialog__title">${escapeHtml(agent.name)}</h2>
+                                ${isUserAgent ? `<span class="cb-badge" data-i18n-key="agentDialog.userLabel">${labelUser}</span>` : ''}
                             </div>
                             ${isUserAgent ? `
                                 <div class="agent-user-identity">
-                                    <button class="logout-button" type="button" onclick="showLogoutModal()" data-i18n-key="agentDialog.logoutButton">${labelLogout}</button>
+                                    <button class="btn btn-sm logout-button" type="button" onclick="showLogoutModal()" data-i18n-key="agentDialog.logoutButton">${labelLogout}</button>
                                 </div>
                             ` : ''}
                         </div>
                     </div>
                     ${isUserAgent ? `
                         <div class="agent-header-bottom">
-                            <button type="button" class="lens-pattern-button agent-lens-button" data-lens-pattern onclick="showLensModal()" title="${lensButtonTitle}" aria-label="${lensButtonTitle}" data-i18n-key="modal.lens.triggerDescription" data-i18n-attr="title,aria-label">
-                                <span role="img" aria-label="${lensIconLabel}" data-i18n-key="modal.lens.iconLabel" data-i18n-attr="aria-label">👓</span>
+                            <button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensButtonTitle}" aria-label="${lensButtonTitle}" data-i18n-key="modal.lens.triggerDescription" data-i18n-attr="title,aria-label">
+                                <i class="fa-solid fa-glasses" aria-hidden="true"></i>
                             </button>
                             <div class="agent-wallet-actions">
-                                <button class="wallet-connect-button btn" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
-                                <div class="wallet-chain-info" style="display: none;"></div>
+                                <button class="btn btn-sm wallet-connect-button" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
+                                <button type="button" class="btn btn-sm wallet-chain-info" role="button"></button>
                             </div>
                         </div>
                     ` : ''}
                 </div>
+                <button type="button" class="close-circle-btn agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()" data-readonly-allow="true">&times;</button>
             </div>
-            <div class="agent-dialog-modal-body">
+            <div class="cb-dialog__body agent-dialog-modal-body">
                 <div class="agent-stats-grid">
                     <div class="stat-item">
                             <div class="stat-label" data-i18n-key="agentDialog.ethBalance">${labelEthBalance}</div>
@@ -1531,10 +1481,14 @@ async function showAgentDialog(agentId, options = {}) {
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="cb-dialog__footer agent-dialog-footer">
+                ${languageSwitcherHtml}
+            </div>
     `;
-    document.body.appendChild(modal);
-    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeAgentDialog);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    // The overlay is what stacks (its z-index is the dialog rung), so it is what Escape compares.
+    modal.__unregisterEscape = window.ModalEscape?.register(overlay, closeAgentDialog);
     if (readOnly) {
         applyAgentDialogReadOnlyState(modal);
     }
@@ -1678,100 +1632,20 @@ function applyAgentDialogReadOnlyState(modal) {
     });
 }
 
+// Wires the footer's language row (the shared picker, js/user-management.js). A change re-labels the
+// wallet button and the network chip, whose text is translated in script.
 function setupAgentDialogLanguageSwitcher(modal) {
     if (!modal) return;
     const switcher = modal.querySelector('[data-language-switcher]');
     if (!switcher) return;
-    const toggle = switcher.querySelector('[data-language-toggle]');
-    const menu = switcher.querySelector('[data-language-menu]');
-    if (!toggle || !menu) return;
-
-    const i18nApi = getI18nApi();
-    const flagByLang = { en: '🌐', es: '🇪🇸', sr: '🇷🇸', hr: '🇭🇷' };
-    const getFlag = (lang) => flagByLang[lang] || '🌐';
-
-    const setExpanded = (expanded) => {
-        switcher.classList.toggle('is-open', expanded);
-        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        if (!expanded) {
-            menu.scrollTop = 0;
-        }
-    };
-
-    const setActive = (lang) => {
-        const targetLang = lang || (i18nApi && typeof i18nApi.getLanguage === 'function' ? i18nApi.getLanguage() : 'en');
-        switcher.querySelectorAll('[data-language]').forEach(button => {
-            const isActive = button.getAttribute('data-language') === targetLang;
-            button.classList.toggle('is-active', isActive);
-            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        });
-        const flagEl = toggle.querySelector('span');
-        if (flagEl) {
-            flagEl.textContent = getFlag(targetLang);
-        }
+    modal.__i18nCleanup = window.bindLanguageSegmented(switcher, () => {
         if (typeof updateAgentDialogWalletButton === 'function') {
             try { updateAgentDialogWalletButton(); } catch (_) { }
         }
         if (typeof updateAgentDialogChainInfo === 'function') {
             try { updateAgentDialogChainInfo(); } catch (_) { }
         }
-    };
-
-    const handleOptionClick = (event) => {
-        const targetButton = event.target.closest ? event.target.closest('[data-language]') : null;
-        if (!targetButton || !menu.contains(targetButton)) return;
-        const selectedLang = targetButton.getAttribute('data-language');
-        if (!selectedLang) return;
-
-        if (i18nApi && typeof i18nApi.setLanguage === 'function') {
-            i18nApi.setLanguage(selectedLang, { userChoice: true });
-        }
-        setActive(selectedLang);
-        setExpanded(false);
-    };
-
-    const handleToggle = () => {
-        const expanded = toggle.getAttribute('aria-expanded') === 'true';
-        setExpanded(!expanded);
-    };
-
-    const handleOutsideClick = (event) => {
-        if (!switcher.contains(event.target)) {
-            setExpanded(false);
-        }
-    };
-
-    const handleKeydown = (event) => {
-        if (event.key === 'Escape') {
-            setExpanded(false);
-        }
-    };
-
-    toggle.addEventListener('click', handleToggle);
-    menu.addEventListener('click', handleOptionClick);
-    document.addEventListener('click', handleOutsideClick);
-    document.addEventListener('keydown', handleKeydown);
-
-    let unsubscribe = null;
-    if (i18nApi && typeof i18nApi.onChange === 'function') {
-        unsubscribe = i18nApi.onChange(setActive);
-    }
-
-    setActive();
-
-    if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
-        i18nApi.applyTranslations(switcher);
-    }
-
-    modal.__i18nCleanup = () => {
-        toggle.removeEventListener('click', handleToggle);
-        menu.removeEventListener('click', handleOptionClick);
-        document.removeEventListener('click', handleOutsideClick);
-        document.removeEventListener('keydown', handleKeydown);
-        if (typeof unsubscribe === 'function') {
-            try { unsubscribe(); } catch (_) { }
-        }
-    };
+    });
 }
 
 /**
@@ -1792,7 +1666,7 @@ function setListLoading(listType, message = 'Loading from chain...') {
 function setListError(listType, message = 'Could not connect to chain') {
     const listContainer = document.querySelector(`[data-list-type="${listType}"]`);
     if (listContainer) {
-        listContainer.innerHTML = `<div class="loader-spinner" style="color:#c0392b;font-weight:600;">${message}</div>`;
+        listContainer.innerHTML = `<div class="loader-spinner is-error">${message}</div>`;
     }
 }
 
@@ -1978,6 +1852,26 @@ function getAgentProposalTitle(proposal, fallbackId = '') {
     return fallbackTitle;
 }
 
+// A proposal's rung on the lifecycle ladder as the shared badge (docs/design-language.md: Draft →
+// Published → Minted → Executed), decided the way the proposals list decides it: executed, else
+// minted, else published (it has a server serial), else draft. proposal may be null (a cached id
+// only), and then only minted can be known.
+function agentProposalLifecycleBadgeHtml(proposal, minted) {
+    const executed = !!proposal && typeof getLifecycleStatus === 'function' && getLifecycleStatus(proposal) === 'Executed';
+    const published = !!proposal && typeof getSerialProposalId === 'function' && !!getSerialProposalId(proposal);
+    const rung = executed ? 'executed' : minted ? 'minted' : published ? 'published' : 'draft';
+    const label = rung === 'executed' ? translateText('panel.proposal.lifecycle.executed', 'Executed')
+        : rung === 'minted' ? translateText('panel.proposal.lifecycle.minted', 'Minted')
+            : rung === 'published' ? translateText('common.lifecycle.published', 'Published')
+                : translateText('common.lifecycle.draft', 'Draft');
+    return `<span class="cb-badge cb-badge--${rung}">${label}</span>`;
+}
+
+// The proposal's type as a neutral badge beside the lifecycle one.
+function agentProposalTypeBadgeHtml(typeLabel) {
+    return typeLabel ? `<span class="cb-badge">${typeLabel}</span>` : '';
+}
+
 function renderProposalListItem(proposalId) {
     const fallbackId = proposalId !== undefined && proposalId !== null ? proposalId : '';
     let { minted, displayId, chainLabel } = getProposalDisplayMeta(null, fallbackId);
@@ -1985,11 +1879,11 @@ function renderProposalListItem(proposalId) {
     let typeLabel = '';
     let offerAmountLabel = '-';
     let offerCurrencyLabel = '';
-    const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
-    const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
+    let proposal = null;
     if (typeof proposalStorage !== 'undefined') {
         const p = proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(proposalId) : proposalStorage.getProposal && proposalStorage.getProposal(proposalId);
         if (p) {
+            proposal = p;
             const meta = getProposalDisplayMeta(p, fallbackId);
             minted = meta.minted;
             displayId = meta.displayId;
@@ -2001,11 +1895,9 @@ function renderProposalListItem(proposalId) {
             offerCurrencyLabel = offerInfo.currencyLabel;
         }
     }
-    const badge = minted
-        ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
-        : `<span class="proposal-status is-local">${localLabel}</span>`;
+    const badge = agentProposalLifecycleBadgeHtml(proposal, minted);
     const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
-    const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
+    const typeBadge = agentProposalTypeBadgeHtml(typeLabel);
     const offerAmount = `<span class="proposal-offer-amount">${offerAmountLabel}</span>`;
     const offerCurrency = offerCurrencyLabel ? `<span class="proposal-offer-currency">${offerCurrencyLabel}</span>` : '';
     return `<div class="proposal-list-item proposal-clickable" data-proposal-id="${proposalId}" onclick="focusOnProposal(${inlineJsArg(proposalId)})">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
@@ -2809,7 +2701,7 @@ function renderParcelItem(parcel) {
     // The i18n plural lookup picks the form per language (Croatian has three), not a one/other guess.
     const countLabel = translateText('agentDialog.proposalCount', parcel.proposalCount === 1 ? '{{count}} proposal' : '{{count}} proposals', { count: parcel.proposalCount });
     const proposalBadge = parcel.proposalCount > 0
-        ? `<span class="proposal-status is-minted">${countLabel}</span>`
+        ? `<span class="cb-badge">${countLabel}</span>`
         : '';
     return `<div class="proposal-item parcel-item" onclick="focusOnParcelFromAgent(${inlineJsArg(parcel.id)})">
         ${parcelLabel} ${proposalBadge}
@@ -2828,20 +2720,15 @@ function renderProposalItem(proposalId) {
     const resolvedId = proposal && (proposal.proposalId || proposal.tokenId)
         ? String(proposal.proposalId || proposal.tokenId)
         : fallbackKey;
-    const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
-    const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
     if (proposal) {
         const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(resolvedId) : null;
         const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
         const colorClass = proposalColor ? 'has-color' : '';
         const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, resolvedId);
-        const badge = minted
-            ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
-            : `<span class="proposal-status is-local">${localLabel}</span>`;
+        const badge = agentProposalLifecycleBadgeHtml(proposal, minted);
         const displayTitle = getAgentProposalTitle(proposal, displayId || resolvedId);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
-        const typeLabel = getAgentProposalTypeLabel(proposal);
-        const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
+        const typeBadge = agentProposalTypeBadgeHtml(getAgentProposalTypeLabel(proposal));
         const offerInfo = getAgentProposalOfferDisplay(proposal);
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
@@ -2872,8 +2759,6 @@ function renderPendingProposalItem(proposalId) {
     const resolvedId = proposal && (proposal.proposalId || proposal.tokenId)
         ? String(proposal.proposalId || proposal.tokenId)
         : fallbackKey;
-    const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
-    const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
     if (proposal) {
         const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(resolvedId) : null;
         const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
@@ -2886,13 +2771,10 @@ function renderPendingProposalItem(proposalId) {
         const unseenIndicator = isUnseen ? '<span class="unseen-indicator">●</span>' : '';
 
         const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, resolvedId);
-        const badge = minted
-            ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
-            : `<span class="proposal-status is-local">${localLabel}</span>`;
+        const badge = agentProposalLifecycleBadgeHtml(proposal, minted);
         const displayTitle = getAgentProposalTitle(proposal, displayId || resolvedId);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
-        const typeLabel = getAgentProposalTypeLabel(proposal);
-        const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
+        const typeBadge = agentProposalTypeBadgeHtml(getAgentProposalTypeLabel(proposal));
         const offerInfo = getAgentProposalOfferDisplay(proposal);
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
@@ -3012,7 +2894,7 @@ function viewPendingProposal(proposalId) {
 }
 
 /**
- * Close the agent dialog
+ * Close the agent dialog: the card (.agent-dialog-modal) goes with the overlay around it.
  */
 function closeAgentDialog() {
     const modal = document.querySelector('.agent-dialog-modal');
@@ -3022,7 +2904,7 @@ function closeAgentDialog() {
         if (typeof modal.__i18nCleanup === 'function') {
             try { modal.__i18nCleanup(); } catch (_) { }
         }
-        document.body.removeChild(modal);
+        (modal.closest('.cb-dialog-overlay') || modal).remove();
         if (onClose) {
             try {
                 onClose();

@@ -121,7 +121,7 @@ test.describe('shared dialog button controls @features', () => {
         .toMatch(/Shared plan result/i);
       await expect(result).toContainText('Applied 1 proposal');
       await expect(result).toContainText('Not found on server');
-      await result.locator('.share-modal-primary').click();
+      await result.locator('.share-modal .btn-primary').click();
       await expect(result).toBeHidden();
       await expect.poll(async () => (await proposalState(receiver.page, String(server.records.get(serverId)?.proposalId)))?.applied, { timeout: 60_000 }).toBe(true);
     } finally {

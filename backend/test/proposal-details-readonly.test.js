@@ -20,7 +20,8 @@ describe('proposal details authoring contract', () => {
         expect(detailsSource).toContain("typeof canEditProposalGeometry === 'function'");
         expect(detailsSource).toContain("typeof editProposalGeometry === 'function'");
         expect(detailsSource).toContain('canEditProposalGeometry(fullProposal || proposal)');
-        expect(detailsSource).toContain('class="btn btn-outline-secondary btn-edit-geometry"');
+        // The edit action is a secondary `btn` (docs/design-language.md) with its hook class.
+        expect(detailsSource).toMatch(/class="btn[^"]*btn-edit-geometry"/);
         expect(detailsSource).toContain('onclick="editProposalGeometry(${inlineJsArg(proposalKey)})"');
         expect(detailsSource).toContain('crossSectionButtonHtml + editGeometryButtonHtml');
     });

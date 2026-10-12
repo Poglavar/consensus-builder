@@ -129,7 +129,7 @@
         if (!sides.length) return;
         const collect = el('div', 'bets-row__collect');
         sides.forEach(side => {
-            const button = el('button', 'btn btn-success', t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: sideWord(side) }));
+            const button = el('button', 'btn btn-success btn-sm', t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: sideWord(side) }));
             button.type = 'button';
             button.addEventListener('click', () => marketTransaction(li, full.row, 'claim', button, side === 'yes' ? 1 : 0));
             collect.append(button);
@@ -324,10 +324,12 @@
         }
     }
 
+    // The bet pair (btn-yes / btn-no, css/primitives.css); btn-market-yes / -no stay as the hooks the
+    // specs find them by.
     function betButton(row, side) {
         const yes = side === 1;
         const multiple = yes ? row.paysYes : row.paysNo;
-        const button = el('button', `btn ${yes ? 'btn-market-yes' : 'btn-market-no'}`);
+        const button = el('button', yes ? 'btn btn-yes btn-market-yes' : 'btn btn-no btn-market-no');
         button.type = 'button';
         button.append(el('strong', 'bets-bet__side', yes ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')));
         if (multiple !== null && multiple !== undefined) {
@@ -380,15 +382,16 @@
         if (who) li.append(el('p', 'bets-row__who', who));
 
         const meta = el('div', 'bets-row__meta');
-        if (row.kind === 'plan') meta.append(el('span', 'bets-row__plan', t('bets.row.plan', 'Plan of {{count}} proposals', { count: row.memberCount })));
+        if (row.kind === 'plan') meta.append(el('span', 'cb-badge bets-row__plan', t('bets.row.plan', 'Plan of {{count}} proposals', { count: row.memberCount })));
         if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
         // The market's deadline; a legacy pool has none, and then the proposal's own expiry is the date.
         const closes = row.closesAt || row.expiresAt;
         if (closes) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(closes) })));
         if (row.agent) meta.append(el('span', null, t('panel.proposal.agent.badge', 'Agent proposal')));
         if (row.proposalAccount) {
-            // Every bet has a link worth passing on, whatever state its pool is in.
-            const share = el('button', 'btn btn-quiet bets-row__link', t('bets.copyLink', 'Copy link'));
+            // Every bet has a link worth passing on, whatever state its pool is in: a quiet script
+            // link in the meta line.
+            const share = el('button', 'cb-link cb-link--quiet bets-row__link', t('bets.copyLink', 'Copy link'));
             share.type = 'button';
             share.addEventListener('click', () => copyLink(row.proposalAccount));
             meta.append(share);
@@ -526,17 +529,18 @@
         mine: ['bets.filter.mine', 'Mine']
     };
 
-    // The filter row sits above the contests, drawn once; its pressed button follows the state.
+    // The filter row sits above the contests, drawn once: a cb-segmented group whose pressed
+    // option follows the state (bets-filter__btn stays as the hook the specs find it by).
     function renderFilter(container) {
         let bar = doc.getElementById(FILTER_ID);
         if (!bar) {
-            bar = el('div', 'bets-filter');
+            bar = el('div', 'cb-segmented bets-filter');
             bar.id = FILTER_ID;
             bar.setAttribute('role', 'group');
             bar.setAttribute('aria-label', t('modal.buildingLayers.show', 'Show'));
             (root.BetsModel ? root.BetsModel.FILTERS : Object.keys(FILTER_LABELS)).forEach(filter => {
                 const [key, fallback] = FILTER_LABELS[filter];
-                const button = el('button', 'btn btn-quiet bets-filter__btn', t(key, fallback));
+                const button = el('button', 'cb-segmented__option bets-filter__btn', t(key, fallback));
                 button.type = 'button';
                 button.dataset.filter = filter;
                 button.addEventListener('click', () => {

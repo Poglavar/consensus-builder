@@ -15,11 +15,11 @@
 /* An open result list paints over the mode strip and the docked panels; an expanded phone box
    over everything in the shell. */
 .map-shell-slot--search:has(.map-search.is-open) {
-    z-index: 1700;
+    z-index: var(--cb-z-open-menu);
 }
 
 body.map-search-expanded .map-shell-slot--search {
-    z-index: 4600;
+    z-index: var(--cb-z-search-expanded);
 }
 
 /* The search moves the 2D map, which the model/photo views cover. */
@@ -40,15 +40,15 @@ body.app-loading .map-search {
     height: var(--map-search-height);
     box-sizing: border-box;
     padding: 0 4px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--cb-line-glass);
     border-radius: calc(var(--map-search-height) / 2);
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-sm);
     font-size: 14px;
 }
 
 .map-search:focus-within {
-    border-color: #2563eb;
+    border-color: var(--cb-primary);
 }
 
 .map-search__chip {
@@ -61,15 +61,15 @@ body.app-loading .map-search {
     padding: 0 12px;
     border: none;
     border-radius: 17px;
-    background: #eef2ff;
-    color: #1e3a8a;
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
     font: inherit;
     font-weight: 600;
     cursor: pointer;
 }
 
 .map-search__chip:hover {
-    background: #e0e7ff;
+    background: var(--cb-primary-soft);
 }
 
 .map-search__chip-label {
@@ -104,7 +104,7 @@ body.app-loading .map-search {
     border: none;
     border-radius: 18px;
     background: transparent;
-    color: #4b5563;
+    color: var(--cb-text-muted);
     font-size: 15px;
     cursor: pointer;
 }
@@ -112,14 +112,14 @@ body.app-loading .map-search {
 .map-search__icon-button:hover,
 .map-search__clear:hover,
 .map-search__back:hover {
-    background: #f3f4f6;
+    background: var(--cb-surface-2);
 }
 
 .map-search__chip:focus-visible,
 .map-search__icon-button:focus-visible,
 .map-search__clear:focus-visible,
 .map-search__back:focus-visible {
-    outline: 2px solid #2563eb;
+    outline: 2px solid var(--cb-primary);
     outline-offset: 1px;
 }
 
@@ -139,7 +139,7 @@ body.app-loading .map-search {
     border: none;
     border-radius: 0;
     background: transparent;
-    color: #111827;
+    color: var(--cb-text-strong);
     font: inherit;
     font-size: 15px;
     outline: none;
@@ -173,10 +173,10 @@ body.app-loading .map-search {
     overflow-y: auto;
     box-sizing: border-box;
     padding: 4px 0;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--cb-line-glass);
     border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-md);
 }
 
 .map-search__results[hidden] {
@@ -184,12 +184,12 @@ body.app-loading .map-search {
 }
 
 .map-search__group + .map-search__group {
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--cb-line);
 }
 
 .map-search__group-title {
     padding: 8px 14px 2px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -205,7 +205,7 @@ body.app-loading .map-search {
 }
 
 .map-search__item[aria-selected="true"] {
-    background: #eef2ff;
+    background: var(--cb-primary-soft);
 }
 
 .map-search__item[aria-disabled="true"] {
@@ -215,12 +215,12 @@ body.app-loading .map-search {
 .map-search__item-icon {
     flex: 0 0 18px;
     margin-top: 2px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     text-align: center;
 }
 
 .map-search__item.is-current .map-search__item-icon {
-    color: #2563eb;
+    color: var(--cb-primary);
 }
 
 .map-search__item-text {
@@ -229,7 +229,7 @@ body.app-loading .map-search {
 }
 
 .map-search__item-label {
-    color: #111827;
+    color: var(--cb-text-strong);
     font-size: 14px;
     overflow-wrap: anywhere;
 }
@@ -239,13 +239,13 @@ body.app-loading .map-search {
 }
 
 .map-search__item--info .map-search__item-label {
-    color: #374151;
+    color: var(--cb-text);
     font-size: 13px;
 }
 
 .map-search__item-sub {
     margin-top: 1px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     font-size: 12px;
     overflow-wrap: anywhere;
 }
@@ -256,30 +256,30 @@ body.app-loading .map-search {
 }
 
 .map-search__item-note--pending {
-    color: #2563eb;
+    color: var(--cb-primary);
 }
 
 .map-search__item-note--error {
-    color: #b91c1c;
+    color: var(--cb-danger);
 }
 
 .map-search__item-note--info {
-    color: #374151;
+    color: var(--cb-text);
 }
 
 .map-search__status {
     padding: 6px 14px 8px 42px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     font-size: 13px;
 }
 
 .map-search__status--error {
-    color: #b91c1c;
+    color: var(--cb-danger);
 }
 
 .map-search__footer {
     padding: 0 14px 6px 42px;
-    color: #9ca3af;
+    color: var(--cb-text-faint);
     font-size: 11px;
 }
 
@@ -287,16 +287,16 @@ body.app-loading .map-search {
     flex: 0 0 auto;
     align-self: center;
     padding: 1px 6px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 4px;
-    background: #f9fafb;
-    color: #4b5563;
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
     font-family: inherit;
     font-size: 11px;
 }
 
 .map-search__item--hint .map-search__item-label {
-    color: #4b5563;
+    color: var(--cb-text-muted);
 }
 
 /* ---- Phones ---- */
@@ -338,7 +338,8 @@ body.app-loading .map-search {
         display: inline;
     }
 
-    /* Expanded: the whole top edge, results as a full-height sheet under it. */
+    /* Expanded: the whole top edge, results as a full-height sheet under it. Map chrome, not an
+       overlay: a 56px bar pinned to the top (the overlay audit reads its top/left/right as full). */
     .map-search.is-expanded {
         position: fixed;
         top: 0;
@@ -350,8 +351,8 @@ body.app-loading .map-search {
         padding: 0 6px;
         border-width: 0 0 1px;
         border-radius: 0;
-        background: #fff;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+        background: var(--cb-surface);
+        box-shadow: var(--cb-shadow-sm);
     }
 
     .map-search.is-expanded .map-search__back {

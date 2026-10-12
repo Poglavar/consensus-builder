@@ -189,7 +189,7 @@
                 }
                 const mayWithdraw = proposal.ownerApprovals?.[id]?.actorId === signerFor(proposal, id);
                 return `<span class="approval-card__accepted" data-approval-accepted="${esc(id)}"><i class="fas fa-check" aria-hidden="true"></i> ${esc(t('proposalApproval.acceptedAs', 'Accepted as {{owner}}', { owner: label(id) }))}</span>`
-                    + (mayWithdraw ? `<button type="button" class="btn btn-outline-danger btn-sm" data-approval-action="withdraw" data-owner-id="${esc(id)}">${esc(t('proposalApproval.withdraw', 'Withdraw acceptance'))}</button>` : '');
+                    + (mayWithdraw ? `<button type="button" class="btn btn-danger btn-sm" data-approval-action="withdraw" data-owner-id="${esc(id)}">${esc(t('proposalApproval.withdraw', 'Withdraw acceptance'))}</button>` : '');
             }).join('') + '</div>';
         }
         html += `<div class="approval-card__verify">
@@ -218,8 +218,8 @@
         return `<div class="approval-card__chain" data-approval-chain="${esc(chain.status)}">
             <p class="approval-card__chain-line" data-approval-chain-line>${esc(line)}</p>
             ${chain.message ? `<p class="approval-card__note" data-approval-chain-status role="status">${esc(chain.message)}</p>` : ''}
-            ${last ? `<p class="approval-card__note"><a href="${esc(explorerTx(last, ref.cluster))}" target="_blank" rel="noopener noreferrer" data-approval-chain-tx>${esc(t('proposalApproval.chain.lastAnchor', 'Latest anchor transaction'))}</a></p>` : ''}
-            ${canAnchor ? `<div class="approval-card__actions"><button type="button" class="btn btn-sm btn-outline-primary" data-approval-action="anchor">${esc(t('proposalApproval.chain.anchor', 'Anchor on chain'))}</button></div>` : ''}
+            ${last ? `<p class="approval-card__note"><a class="cb-link cb-link--external" href="${esc(explorerTx(last, ref.cluster))}" target="_blank" rel="noopener noreferrer" data-approval-chain-tx>${esc(t('proposalApproval.chain.lastAnchor', 'Latest anchor transaction'))}</a></p>` : ''}
+            ${canAnchor ? `<div class="approval-card__actions"><button type="button" class="btn btn-sm" data-approval-action="anchor">${esc(t('proposalApproval.chain.anchor', 'Anchor on chain'))}</button></div>` : ''}
             <small class="approval-card__need">${esc(t('proposalApproval.chain.scope', 'The chain keeps the approval setup and the signed decisions so anyone can recount them; it does not count or pay them.'))}</small>
         </div>`;
     }

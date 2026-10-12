@@ -132,7 +132,7 @@ test.describe('Navigation button controls @features', () => {
       await opening.page.goto(`/proposals/${record.id}?city=explore&reduceMotion=1`);
       const prompt = opening.page.locator('.city-switch-dialog');
       await expect(prompt).toBeVisible({ timeout: 30_000 });
-      const openInRequestedCity = prompt.locator('.city-switch-buttons .btn-action');
+      const openInRequestedCity = prompt.locator('.cb-dialog__footer .btn-primary');
       await expect(openInRequestedCity).toContainText('Open in Zagreb');
       await Promise.all([
         // This shared route is already on /proposals/<server-id>; following it changes the city

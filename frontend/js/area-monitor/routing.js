@@ -64,11 +64,8 @@
 
         const monitorCityLabel = getCityLabel(monitorCityId);
         const currentCityLabel = getCityLabel(currentCityId);
-        const confirmFn = typeof global.showStyledConfirm === 'function'
-            ? global.showStyledConfirm
-            : global.confirm;
         const message = `This area monitor was created for ${monitorCityLabel}, but the current city is ${currentCityLabel}.\n\nSwitch to ${monitorCityLabel} and load the monitor?`;
-        const proceed = await confirmFn(message, {
+        const proceed = await global.CbDialog.confirm(message, {
             okText: 'Switch city',
             cancelText: 'Cancel'
         });

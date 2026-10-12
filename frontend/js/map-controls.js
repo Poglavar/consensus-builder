@@ -288,7 +288,7 @@ function toggleDebugMode() {
             try { window.updateBadgeVisibility(); } catch (_) { }
         } else {
             const debugBadge = document.getElementById('debug-badge');
-            if (debugBadge) debugBadge.style.display = 'inline-flex';
+            if (debugBadge) debugBadge.hidden = false;
         }
     } else {
         body.classList.remove('debug-mode');
@@ -299,7 +299,7 @@ function toggleDebugMode() {
             try { window.updateBadgeVisibility(); } catch (_) { }
         } else {
             const debugBadge = document.getElementById('debug-badge');
-            if (debugBadge) debugBadge.style.display = 'none';
+            if (debugBadge) debugBadge.hidden = true;
         }
     }
 }
@@ -622,7 +622,7 @@ function initializeMapControls() {
     } else {
         const debugBadge = document.getElementById('debug-badge');
         if (debugBadge) {
-            debugBadge.style.display = document.body.classList.contains('debug-mode') ? 'inline-flex' : 'none';
+            debugBadge.hidden = !document.body.classList.contains('debug-mode');
         }
     }
 }

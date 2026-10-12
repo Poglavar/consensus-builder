@@ -219,7 +219,7 @@ function ownerOfferStatusText(check) {
     const t = getProposalI18nHelper();
     if (!check.ok) {
         const messages = {
-            'no-lens': ['modal.createProposal.ownerOffer.needLens', 'Choose your lens (👓) first: the offer needs a lens member that attested your ownership.'],
+            'no-lens': ['modal.createProposal.ownerOffer.needLens', 'Choose your lens first: the offer needs a lens member that attested your ownership.'],
             'no-parcels': ['modal.createProposal.ownerOffer.needParcels', 'Select the parcels you own.'],
             'no-service': ['modal.createProposal.ownerOffer.noService', 'None of your lens members publishes a service URL, so your ownership cannot be checked.'],
             unavailable: ['modal.createProposal.ownerOffer.unavailable', 'Ownership attestations cannot be checked right now.']
@@ -266,7 +266,7 @@ async function requireOwnerOfferProof() {
         if (gap === 'attestation') {
             // With a wallet, the eligibility check knows the precise reason (no lens, no service...).
             if (check) return ownerOfferStatusText(check);
-            return t('modal.createProposal.ownerOffer.proof.attestation', 'ask a member of your lens (👓) to attest your wallet as the owner of these parcels');
+            return t('modal.createProposal.ownerOffer.proof.attestation', 'ask a member of your lens to attest your wallet as the owner of these parcels');
         }
         return t('modal.createProposal.ownerOffer.proof.name', 'choose a profile name (top-right bubble)');
     });
@@ -693,7 +693,7 @@ async function createProposal() {
     // A Solana mint needs a lens the proposer chose; nothing substitutes one.
     if (typeof window.isSolanaLensPath === 'function' && window.isSolanaLensPath()
         && !window.LensCore.validateSolanaLens(getLensEntries()).ok) {
-        showProposalAlertMessage('solana_lens_required', 'Choose at least one lens member (the 👓 button) before minting on Solana.');
+        showProposalAlertMessage('solana_lens_required', 'Choose at least one lens member (the lens button) before minting on Solana.');
         if (typeof showLensModal === 'function') showLensModal();
         return;
     }
@@ -1557,9 +1557,9 @@ async function createProposal() {
                     hasWalletProvider = walletManager && walletManager.getProvider();
                 }
             } else {
-                // Fallback: show alert if wallet manager is not available
+                // Fallback: ask (the shared confirm) if wallet manager is not available
                 const walletPrompt = t('alerts.messages.blockchain_mint_wallet_prompt', 'Blockchain minting is available but no wallet is connected. Would you like to connect a wallet to mint this proposal on-chain?');
-                const connectWallet = confirm(walletPrompt);
+                const connectWallet = await window.CbDialog.confirm(walletPrompt);
                 if (connectWallet && walletManager && typeof walletManager.openConnectorModal === 'function') {
                     walletManager.openConnectorModal();
                     markDraftPublishFailed(Object.assign(new Error('Connect the wallet, then retry publishing.'), { code: 'WALLET_CONNECTION_REQUIRED' }));
@@ -1936,7 +1936,7 @@ async function createProposal() {
                             // The lens is exactly the members the proposer picked; an empty one is an error.
                             const solanaLens = window.LensCore.validateSolanaLens(lensEntriesForMint);
                             if (!solanaLens.ok) {
-                                throw new Error(t('alerts.messages.solana_lens_required', 'Choose at least one lens member (the 👓 button) before minting on Solana.'));
+                                throw new Error(t('alerts.messages.solana_lens_required', 'Choose at least one lens member (the lens button) before minting on Solana.'));
                             }
                             // An owner offer names an asking price; bids arrive as pledges and donations
                             // from others, so nothing is escrowed from the owner's own wallet at mint.
@@ -2173,10 +2173,11 @@ async function createProposal() {
             const proposalIdAttr = storedProposal && storedProposal.proposalId !== undefined && storedProposal.proposalId !== null
                 ? String(storedProposal.proposalId)
                 : String(proposalId);
-            const proposalLinkHtml = `<a href="#" data-proposal-id="${proposalIdAttr}" class="proposal-link proposal-link-clickable">${proposalIdForLog}</a>`;
+            // The links run script (the game log binds the -clickable hooks): cb-link buttons.
+            const proposalLinkHtml = `<button type="button" data-proposal-id="${proposalIdAttr}" class="cb-link proposal-link-clickable">${proposalIdForLog}</button>`;
             const budgetCurrencyLabel = offerCurrency || 'USDT';
             const onchainNote = onchainResult ? ' (on-chain)' : '';
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal${onchainNote} (${proposalLinkHtml}) for ${proposal.cadastreParcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
+            addUserActionToGameLog(`<button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button> created a ${proposalType} proposal${onchainNote} (${proposalLinkHtml}) for ${proposal.cadastreParcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
 
             // Update user agent's created proposals
             if (!userAgent.proposalsCreated) {
@@ -2269,7 +2270,7 @@ async function createProposal() {
         if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {
             window.showStyledAlert(message);
         } else {
-            alert(message);
+            window.CbDialog.alert(message);
         }
     } finally {
         hideWaitingPopupSafe();

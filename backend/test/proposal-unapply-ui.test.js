@@ -60,7 +60,8 @@ describe('proposal action after unapply', () => {
         const reconcile = loadReconciler(document, proposal);
 
         reconcile('park');
-        expect(current.className).toBe('btn btn-warning');
+        // Unapply is the destructive role of the vocabulary (docs/design-language.md).
+        expect(current.className).toBe('btn btn-danger');
         expect(current.innerHTML).toContain('fa-box-archive');
         expect(current.attributes.get('onclick')).toBe("removeProposalFromMap('park')");
 

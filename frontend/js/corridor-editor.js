@@ -723,9 +723,10 @@ function corridorEditorCorridorBodyHtml() {
     } else if (!singleSegment) {
         fitHtml = `<div class="corridor-stats-note">${corridorEditorI18n('modal.corridor.fitPickSegment', 'Moving works one segment at a time — reopen the editor from a single segment of this road.')}</div>`;
     } else if (fit && fit.feasible && fit.shift !== 0) {
+        // A tool action of this tab: the panel's one primary stays Apply in the footer.
         fitHtml = `
             <div class="corridor-stats-fit-move">${corridorEditorI18n('modal.corridor.fitIfMoved', 'The road would fit if moved {{move}}.', { move: corridorEditorShiftText(flat, fit.shift) })}</div>
-            <button type="button" class="btn btn-primary corridor-fit-move" data-shift="${fit.shift}">
+            <button type="button" class="btn corridor-fit-move" data-shift="${fit.shift}">
                 ${corridorEditorI18n('modal.corridor.moveToFit', 'Move road {{move}}', { move: corridorEditorShiftText(flat, fit.shift) })}
             </button>`;
     } else if (stats.minWidth >= width - 0.05) {
@@ -749,7 +750,7 @@ function corridorEditorCorridorBodyHtml() {
         ];
         const buttons = options.map(option => {
             const possible = fit.feasible && option.shift >= fit.dMin - 1e-9 && option.shift <= fit.dMax + 1e-9;
-            return `<button type="button" class="btn btn-outline-secondary corridor-fit-side" data-shift="${option.shift}"
+            return `<button type="button" class="btn corridor-fit-side" data-shift="${option.shift}"
                 ${possible ? '' : ' disabled'}>${corridorEditorI18n('modal.corridor.widenInto', 'Widen toward: {{side}}', { side: option.side })}</button>`;
         }).join('');
         sideHtml = `<div class="corridor-stats-sides">
@@ -1375,7 +1376,6 @@ function corridorEditorSyncTabs() {
     const state = corridorEditorState;
     document.querySelectorAll('.corridor-editor-tab').forEach(tab => {
         const active = state && tab.dataset.tab === state.activeTab;
-        tab.classList.toggle('corridor-editor-tab--active', !!active);
         tab.setAttribute('aria-selected', active ? 'true' : 'false');
     });
 }
@@ -1393,6 +1393,7 @@ function corridorEditorSectionHtml(profile) {
         const isParking = (typeof corridorParkingOrientation === 'function')
             ? !!corridorParkingOrientation(lane.type) : /^parking/.test(lane.type);
         const tag = isParking ? '<span class="corridor-section-lane-tag">P</span>' : '';
+        // The lane's measured width and its surface colour are data: the one inline style a control may carry.
         return `<button type="button" draggable="true" class="corridor-section-lane${selected}" style="width:${percent}%;background:${laneType.surface}"
                     data-lane-index="${index}" title="${laneLabel} · ${CbFormat.formatLength(Number(lane.width), { maxFractionDigits: 2 })} — drag to reorder"
                     aria-label="${laneLabel}, ${lane.width} metres">${tag}</button>`;
@@ -1457,9 +1458,9 @@ function corridorEditorStandardHtml(lane, index) {
     if (Math.abs(lane.width - standard) < 1e-6) {
         return `<span class="corridor-lane-standard" title="${corridorEditorI18n('modal.corridor.standardWidth', 'Standard width: {{width}} m', { width: CbFormat.formatNumber(Number(standard), { maxFractionDigits: 2 }) })}">${label}</span>`;
     }
-    return `<button type="button" class="corridor-lane-standard corridor-lane-standard--reset" data-reset-standard="${index}"
+    return `<button type="button" class="btn btn-sm corridor-lane-standard--reset" data-reset-standard="${index}"
                 title="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: CbFormat.formatNumber(Number(standard), { maxFractionDigits: 2 }) })}"
-                aria-label="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: CbFormat.formatNumber(Number(standard), { maxFractionDigits: 2 }) })}">↺ ${label}</button>`;
+                aria-label="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: CbFormat.formatNumber(Number(standard), { maxFractionDigits: 2 }) })}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> ${label}</button>`;
 }
 
 function corridorEditorRowsHtml(profile) {
@@ -1497,11 +1498,11 @@ function corridorEditorRowsHtml(profile) {
         // A directional lane carries the way it runs; a clickable arrow in the row flips it, and the map's
         // painted direction arrow turns with it. Glyph is abstract (the section is a cross-view), tooltip explains.
         const direction = laneType.directional ? (lane.direction || 'forward') : null;
-        const directionGlyph = direction === 'backward' ? '←' : (direction === 'both' ? '↔' : '→');
+        const directionIcon = direction === 'backward' ? 'fa-arrow-left' : (direction === 'both' ? 'fa-arrows-left-right' : 'fa-arrow-right');
         const directionBtn = direction ? `
-                <button type="button" class="corridor-lane-btn corridor-lane-direction" data-direction-index="${index}"
+                <button type="button" class="btn btn-icon btn-sm" data-direction-index="${index}"
                     title="${corridorEditorI18n('modal.corridor.flipDirection', 'Traffic direction (click to reverse)')}"
-                    aria-label="${corridorEditorI18n('modal.corridor.flipDirection', 'Traffic direction (click to reverse)')}">${directionGlyph}</button>` : '';
+                    aria-label="${corridorEditorI18n('modal.corridor.flipDirection', 'Traffic direction (click to reverse)')}"><i class="fa-solid ${directionIcon}" aria-hidden="true"></i></button>` : '';
         // A parking lane can reserve every Nth bay for a tree (0 = none). The parking width is fixed, so this
         // is the row's editable number — placed on the extras line, the same spot a green strip's planting takes.
         const parkingOrientation = typeof corridorParkingOrientation === 'function' && corridorParkingOrientation(lane.type);
@@ -1516,18 +1517,18 @@ function corridorEditorRowsHtml(profile) {
         return `
         <div class="corridor-lane-row${selected}" data-lane-index="${index}" tabindex="0">
             <span class="corridor-lane-move">
-                <button type="button" class="corridor-lane-btn corridor-lane-move-btn" data-move-up="${index}" aria-label="Move outward" ${index === 0 ? 'disabled' : ''}>↑</button>
-                <button type="button" class="corridor-lane-btn corridor-lane-move-btn" data-move-down="${index}" aria-label="Move inward" ${index === profile.strips.length - 1 ? 'disabled' : ''}>↓</button>
+                <button type="button" class="btn btn-icon btn-sm" data-move-up="${index}" aria-label="Move outward" ${index === 0 ? 'disabled' : ''}><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+                <button type="button" class="btn btn-icon btn-sm" data-move-down="${index}" aria-label="Move inward" ${index === profile.strips.length - 1 ? 'disabled' : ''}><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
             </span>
             <span class="corridor-lane-swatch" style="background:${laneType.surface}"></span>
             <select class="corridor-lane-type" data-lane-index="${index}" aria-label="Lane type">${typeOptions}</select>
-            <input class="corridor-lane-width${fixedWidth ? ' corridor-lane-width--fixed' : ''}" type="number" min="0.5" step="0.25" value="${lane.width}"
+            <input class="corridor-lane-width" type="number" min="0.5" step="0.25" value="${lane.width}"
                    data-lane-index="${index}" aria-label="Lane width in metres"${fixedWidth ? ` disabled title="${corridorEditorI18n('modal.corridor.fixedWidth', 'Fixed at the standard bay depth')}"` : ''}>
             <span class="corridor-lane-unit">m</span>
             ${corridorEditorStandardHtml(lane, index)}
             <span class="corridor-lane-actions">
                 ${directionBtn}
-                <button type="button" class="corridor-lane-btn corridor-lane-btn--remove" data-remove="${index}" aria-label="Remove lane">✕</button>
+                <button type="button" class="btn btn-icon btn-sm" data-remove="${index}" aria-label="Remove lane"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
             </span>
             ${landscapeSelect}${pavingSelect}${gaugeSelect}${treesControl}
         </div>`;
@@ -1579,6 +1580,7 @@ function corridorEditorPickersHtml() {
         const width = Number(corridorStandardWidth(type));
         const surface = (CORRIDOR_LANE_TYPES[type] || {}).surface || '#888888';
         const text = corridorEditorReadableText(surface);
+        // The lane type's surface colour (and the ink that reads on it) is data, so it stays inline.
         return `<button type="button" role="option" class="cb-lane-option" data-lane-type="${type}"
                     style="background:${surface};color:${text}">${corridorLaneTypeLabel(type)} (${CbFormat.formatLength(width, { maxFractionDigits: 2 })})</button>`;
     }).join('');
@@ -2098,8 +2100,8 @@ function corridorEditorOpenOverlay() {
 // on the map yet. Pure, so the shell can be asserted headlessly.
 function corridorEditorCompareHtml({ mode, canCompare, active, label } = {}) {
     if (mode !== 'proposal' || canCompare !== true) return '';
-    return `<button type="button" class="corridor-editor-indicator corridor-editor-compare btn-compare-proposal"`
-        + ` aria-pressed="${active ? 'true' : 'false'}">↔ ${label || 'Before / after'}</button>`;
+    return `<button type="button" class="btn btn-sm corridor-editor-compare btn-compare-proposal"`
+        + ` aria-pressed="${active ? 'true' : 'false'}"><i class="fa-solid fa-left-right" aria-hidden="true"></i> ${label || 'Before / after'}</button>`;
 }
 
 function corridorEditorOpenOverlayBody() {
@@ -2121,9 +2123,9 @@ function corridorEditorOpenOverlayBody() {
             </div>` : '';
     const indicatorsHtml = drawing ? '' : `
             <div class="corridor-editor-indicators">
-                <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'This footprint intersects buildings; replay derives the resulting impact')}</span>
-                <span class="corridor-editor-indicator corridor-editor-indicator--structures" hidden>${corridorEditorI18n('modal.corridor.cutsStructures', 'Cuts applied parks/squares/lakes')}</span>
-                <button type="button" class="corridor-editor-indicator corridor-editor-indicator--fit" hidden>${corridorEditorI18n('modal.corridor.fitHint', 'Can it fit if moved? Open the Corridor tab')}</button>
+                <span class="cb-badge corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'This footprint intersects buildings; replay derives the resulting impact')}</span>
+                <span class="cb-badge corridor-editor-indicator corridor-editor-indicator--structures" hidden>${corridorEditorI18n('modal.corridor.cutsStructures', 'Cuts applied parks/squares/lakes')}</span>
+                <button type="button" class="btn btn-sm corridor-editor-indicator--fit" hidden>${corridorEditorI18n('modal.corridor.fitHint', 'Can it fit if moved? Open the Corridor tab')}</button>
                 ${corridorEditorCompareHtml({
                     mode: corridorEditorState.mode,
                     canCompare: !!(window.ProposalBeforeAfter && window.ProposalBeforeAfter.canCompare(corridorEditorState.source)),
@@ -2134,18 +2136,18 @@ function corridorEditorOpenOverlayBody() {
     // Two tabs for a placed road: the cross-section (what the road is) and the corridor (what the
     // room around it allows). Drawing mode keeps the single cross-section view.
     const tabsHtml = drawing ? '' : `
-            <div class="corridor-editor-tabs" role="tablist">
-                <button type="button" class="corridor-editor-tab corridor-editor-tab--active" data-tab="section" role="tab" aria-selected="true">${corridorEditorI18n('modal.corridor.tabSection', 'Cross-section')}</button>
-                <button type="button" class="corridor-editor-tab" data-tab="corridor" role="tab" aria-selected="false">${corridorEditorI18n('modal.corridor.tabCorridor', 'Corridor')}</button>
+            <div class="cb-tabs corridor-editor-tabs" role="tablist">
+                <button type="button" class="cb-tab corridor-editor-tab" data-tab="section" role="tab" aria-selected="true">${corridorEditorI18n('modal.corridor.tabSection', 'Cross-section')}</button>
+                <button type="button" class="cb-tab corridor-editor-tab" data-tab="corridor" role="tab" aria-selected="false">${corridorEditorI18n('modal.corridor.tabCorridor', 'Corridor')}</button>
             </div>`;
     const overlay = document.createElement('div');
     overlay.id = 'corridor-editor-overlay';
     overlay.className = 'corridor-editor-overlay';
     overlay.innerHTML = `
-        <div class="corridor-editor" role="dialog" aria-label="Cross-section">
+        <div class="corridor-editor" role="dialog" aria-labelledby="corridor-editor-title">
             <div class="corridor-editor-header">
                 <div>
-                    <div class="corridor-editor-title">${corridorEditorI18n('modal.corridor.title', 'Cross-section')}</div>
+                    <h2 id="corridor-editor-title" class="corridor-editor-title">${corridorEditorI18n('modal.corridor.title', 'Cross-section')}</h2>
                     <div class="corridor-editor-subtitle">${drawing
                         ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
                         : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then apply them to an editable road drawing')}</div>
@@ -2160,7 +2162,7 @@ function corridorEditorOpenOverlayBody() {
             <div class="corridor-editor-limit-host"></div>${indicatorsHtml}${tabsHtml}
             <div class="corridor-editor-body"></div>
             <div class="corridor-editor-footer">
-                <button type="button" class="btn btn-outline-secondary corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
+                <button type="button" class="btn corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
                 <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${drawing
                     ? corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')
                     : corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')}</button>
@@ -2369,8 +2371,10 @@ function corridorEditorLimitRowHtml() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal') return '';
     const parcelLimit = state.clearanceMode === 'parcels';
+    // Segmented controls (css/primitives.css): the chosen option is aria-pressed; corridor-limit-option
+    // stays as the hook the handlers and tests use.
     const option = (limit, on, title) => `
-        <button type="button" class="corridor-limit-option${on ? ' corridor-limit-option--on' : ''}"
+        <button type="button" class="cb-segmented__option corridor-limit-option"
                 data-limit="${limit}" aria-pressed="${on}" title="${title}" aria-label="${title}">
             ${CORRIDOR_LIMIT_ICONS[limit]}
         </button>`;
@@ -2385,10 +2389,10 @@ function corridorEditorLimitRowHtml() {
     const surveyRow = parcelLimit ? '' : `
         <div class="corridor-editor-limit-row">
             <span class="corridor-limit-label">${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}</span>
-            <div class="corridor-limit-toggle corridor-survey-toggle" role="group"
+            <div class="cb-segmented corridor-limit-toggle corridor-survey-toggle" role="group"
                  aria-label="${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}">
                 ${['gdi', 'dgu', 'osm'].map(key => `
-                    <button type="button" class="corridor-limit-option${surveys[key] && !surveys.fallback ? ' corridor-limit-option--on' : ''}"
+                    <button type="button" class="cb-segmented__option corridor-limit-option"
                             data-survey="${key}" aria-pressed="${!!surveys[key] && !surveys.fallback}" title="${titles[key]}">
                         ${names[key]}
                     </button>`).join('')}
@@ -2399,7 +2403,7 @@ function corridorEditorLimitRowHtml() {
     return `
         <div class="corridor-editor-limit-row">
             <span class="corridor-limit-label">${corridorEditorI18n('modal.corridor.limitLabel', 'Limited by')}</span>
-            <div class="corridor-limit-toggle" role="group" aria-label="${corridorEditorI18n('modal.corridor.limitLabel', 'Limited by')}">
+            <div class="cb-segmented corridor-limit-toggle" role="group" aria-label="${corridorEditorI18n('modal.corridor.limitLabel', 'Limited by')}">
                 ${option('parcels', parcelLimit, corridorEditorI18n('modal.corridor.limitParcelsTitle', 'Road parcels — the road keeps to road land: it stops at the road parcel boundary, and buildings beyond it are not considered.'))}
                 ${option('buildings', !parcelLimit, corridorEditorI18n('modal.corridor.limitBuildingsTitle', 'Buildings — the road ignores the road parcel and runs to the buildings: each parcel gives up the strip in front of its main building.'))}
             </div>

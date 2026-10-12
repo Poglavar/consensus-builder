@@ -26,7 +26,7 @@
         const measurementsDiv = document.getElementById('roadMeasurements');
         if (!button || !measurementsDiv) return;
 
-        button.innerHTML = tParcel('panel.parcel.actions.measureLoading', {}, '⏳ Calculating...');
+        button.innerHTML = tParcel('panel.parcel.actions.measureLoading', {}, 'Calculating…');
         button.disabled = true;
 
         try {

@@ -265,8 +265,8 @@ function openRoadDesignationModal() {
             : tCorridor('statusContiguity', 'Parcels must be contiguous to designate them as road land.');
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', message);
-        } else if (typeof alert === 'function') {
-            alert(message);
+        } else {
+            window.CbDialog.alert(message);
         }
         return;
     }
@@ -316,43 +316,48 @@ function openRoadDesignationModal() {
         constrainedCorridorState.close();
     }
 
-    const overlay = document.createElement('div');
-    overlay.className = 'constrained-corridor-overlay';
-
     const mapId = `road-designation-map-${Date.now()}`;
     const text = {
-        ariaLabel: tCorridor('designationAriaLabel', 'Designate as road land'),
         title: tCorridor('designationTitle', 'Designate as road land'),
         hint: tCorridor('designationHint', 'The selected parcels, merged, become road land. Nothing is designed — to lay out a road with lanes, draw it with the road tool instead.'),
         closeLabel: tCorridor('closeLabel', 'Close'),
         mapAriaLabel: tCorridor('mapAriaLabel', 'Designation map'),
-        done: tCorridor('done', 'Done')
+        done: tCorridor('done', 'Done'),
+        cancel: (typeof t === 'function') ? t('common.cancel', 'Cancel') : 'Cancel'
     };
 
-    overlay.innerHTML = `
-        <div class="constrained-corridor-modal" role="dialog" aria-modal="true" aria-label="${text.ariaLabel}">
-            <div class="corridor-header">
-                <div class="corridor-title">${text.title}</div>
-                <button type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${text.closeLabel}" data-corridor-close>&times;</button>
-            </div>
-            <div class="corridor-layout">
-                <div class="corridor-map-panel">
-                    <div id="${mapId}" class="corridor-map" aria-label="${text.mapAriaLabel}"></div>
-                </div>
-                <div class="corridor-sidebar">
-                    <div class="corridor-hint">${text.hint}</div>
-                    <div class="corridor-actions">
-                        <button type="button" class="btn btn-proposal" data-corridor-done>${text.done}</button>
-                    </div>
-                </div>
-            </div>
-        </div>`;
+    // The shared dialog (js/ui/dialogs.js), on the rung above the create dialog it is opened from.
+    // .constrained-corridor-overlay / -modal stay as its identity for the inner rules and the specs;
+    // Done keeps its data-corridor-done hook. Closing it (×, Cancel, Escape, the backdrop or Done)
+    // tears the preview map down.
+    let map = null;
+    const dialogApi = window.CbDialog.open({
+        title: text.title,
+        size: 'xl',
+        top: true,
+        className: 'constrained-corridor-modal',
+        overlayClassName: 'constrained-corridor-overlay',
+        closeLabel: text.closeLabel,
+        body: `
+            <p class="corridor-hint">${text.hint}</p>
+            <div id="${mapId}" class="corridor-map" aria-label="${text.mapAriaLabel}"></div>`,
+        actions: [
+            { id: 'cancel', label: text.cancel, role: 'secondary' },
+            { id: 'done', label: text.done, role: 'primary', keepOpen: true, onClick: () => persistGeometryAndClose() }
+        ],
+        onClose: () => {
+            if (map) map.remove();
+            constrainedCorridorState = null;
+        }
+    });
+    if (!dialogApi) return;
+    dialogApi.getActionButton('done').setAttribute('data-corridor-done', '');
+    const closeModal = () => dialogApi.close(null);
+    constrainedCorridorState = { close: closeModal, overlay: dialogApi.overlay };
 
-    document.body.appendChild(overlay);
-
-    const map = (typeof L !== 'undefined' && L.map) ? L.map(mapId, { zoomControl: true, scrollWheelZoom: true }) : null;
+    map = (typeof L !== 'undefined' && L.map) ? L.map(mapId, { zoomControl: true, scrollWheelZoom: true }) : null;
     if (!map) {
-        overlay.remove();
+        closeModal();
         if (typeof updateStatus === 'function') {
             updateStatus(tCorridor('statusMapUnavailable', 'Map library unavailable.'));
         }
@@ -369,36 +374,13 @@ function openRoadDesignationModal() {
     }).addTo(map);
 
     // The merged outline IS the geometry being designated — so it is what the preview shows, filled.
-    const boundaryLayer = L.geoJSON(superFeature, {
+    L.geoJSON(superFeature, {
         style: () => ({ color: '#0f172a', weight: 4, fillColor: '#6b7280', fillOpacity: 0.35 })
     }).addTo(map);
 
     const bounds = parcelLayer.getBounds();
     if (bounds && bounds.isValid()) {
         map.fitBounds(bounds.pad(0.1));
-    }
-
-    const closeModal = () => {
-        map.removeLayer(parcelLayer);
-        map.removeLayer(boundaryLayer);
-        map.remove();
-        overlay.removeEventListener('click', handleOverlayClick);
-        overlay.removeEventListener('keydown', handleKeydown, true);
-        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-        constrainedCorridorState = null;
-    };
-
-    constrainedCorridorState = { close: closeModal, overlay };
-
-    function handleOverlayClick(event) {
-        if (event.target === overlay) closeModal();
-    }
-
-    function handleKeydown(event) {
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            closeModal();
-        }
     }
 
     // A designation has no centerline — that absence is what says it was never designed, and it is what
@@ -418,17 +400,12 @@ function openRoadDesignationModal() {
         }
         if (typeof setGeometryStatus === 'function') {
             const submittedLabel = (typeof t === 'function')
-                ? t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
-                : '✔️ geometry submitted';
+                ? t('modal.createProposal.geometry.status.submitted', 'Geometry submitted')
+                : 'Geometry submitted';
             setGeometryStatus(submittedLabel, { submitted: true });
         }
         closeModal();
     }
-
-    overlay.querySelector('[data-corridor-close]')?.addEventListener('click', closeModal);
-    overlay.querySelector('[data-corridor-done]')?.addEventListener('click', persistGeometryAndClose);
-    overlay.addEventListener('click', handleOverlayClick);
-    overlay.addEventListener('keydown', handleKeydown, true);
 
     setTimeout(() => {
         try { map.invalidateSize(); } catch (_) { }
@@ -441,7 +418,9 @@ function setProposalModalInteractivity(enabled) {
     const controls = modal.querySelectorAll('input, textarea, select, button');
 
     controls.forEach(control => {
-        const isCloseButton = control.classList && control.classList.contains('proposal-modal-close');
+        // The × and Cancel stay live while a proposal is being created: both only close the dialog.
+        const isCloseButton = !!control.classList && (control.classList.contains('close-circle-btn')
+            || control.dataset.actionId === 'cancel');
         if (enabled) {
             if (control.dataset.disabledByCreate === '1') {
                 control.disabled = false;
@@ -558,8 +537,12 @@ function showProposalDialog(overrides = null) {
 
     // Remove any existing create-proposal modal so re-opening the dialog (e.g. after editing a
     // proposal's geometry, which calls showProposalDialog() again) replaces it instead of stacking
-    // a second modal on top of the first.
-    document.querySelectorAll('.create-proposal-modal').forEach(m => m.remove());
+    // a second modal on top of the first. A replaced dialog closes as 'replaced', which skips the
+    // close cleanup: the proposal state it was opened for carries over to the new one.
+    document.querySelectorAll('.create-proposal-modal').forEach(existing => {
+        if (existing.__proposalDialog) existing.__proposalDialog.close('replaced');
+        else existing.remove();
+    });
 
     const t = getProposalI18nHelper();
     const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
@@ -574,11 +557,11 @@ function showProposalDialog(overrides = null) {
         ? t('modal.createProposal.editTitle', 'Proposal')
         : t('modal.createProposal.title', 'Create Proposal');
     const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
-    const authorLabel = t('modal.createProposal.authorLabel', 'Author:');
+    const authorLabel = t('modal.createProposal.authorLabel', 'Author');
     const authorPlaceholder = t('modal.createProposal.authorPlaceholder', 'Your name');
     const authorAvatarAlt = t('modal.createProposal.authorAvatarAlt', 'Author avatar');
-    const proposalTypeLabel = t('modal.createProposal.proposalTypeLabel', 'Proposal Type:');
-    const proposalGoalLabel = t('modal.createProposal.proposalGoalLabel', 'Proposal Goal:');
+    const proposalTypeLabel = t('modal.createProposal.proposalTypeLabel', 'Proposal type');
+    const proposalGoalLabel = t('modal.createProposal.proposalGoalLabel', 'Proposal goal');
     const proposalTypologyLabel = t('modal.createProposal.typologyLabel', 'Typology');
     const acquisitionLabel = t('modal.createProposal.acquisitionLabel', 'Acquisition strategy');
     const acquisitionOptions = {
@@ -591,7 +574,7 @@ function showProposalDialog(overrides = null) {
         single: t('modal.createProposal.ownershipOptions.single', 'Single owner'),
         multiple: t('modal.createProposal.ownershipOptions.multiple', 'Multiple owners')
     };
-    const nameLabel = t('modal.createProposal.nameLabel', 'Name:');
+    const nameLabel = t('modal.createProposal.nameLabel', 'Name');
     // Epoha plana: koje desetljeće ovaj prijedlog gradi (vremenska crta u listi).
     const epochLabel = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
     const namePlaceholder = t('modal.createProposal.namePlaceholderProposal', 'Proposal name');
@@ -651,11 +634,11 @@ function showProposalDialog(overrides = null) {
         row: t('modal.createProposal.typologyOptions.row', 'Row'),
         parcelBased: t('modal.createProposal.typologyOptions.parcelBased', 'Parcel-based')
     };
-    const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description:');
-    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholder', 'Describe your proposal...');
-    const offerLabel = t('modal.createProposal.offerLabel', 'Offer:');
+    const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description');
+    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholder', 'Describe your proposal…');
+    const offerLabel = t('modal.createProposal.offerLabel', 'Offer');
     const offerPlaceholder = t('modal.createProposal.offerPlaceholder', '0');
-    const optionsLabel = t('modal.createProposal.optionsLabel', 'Options:');
+    const optionsLabel = t('modal.createProposal.optionsLabel', 'Options');
     // Title for the collapsible "Options" section that hides Offer + advanced settings by default.
     const optionsSectionTitle = t('modal.createProposal.optionsSectionTitle', 'Options');
     const conditionalLabel = t('modal.createProposal.options.conditional', 'Conditional');
@@ -689,6 +672,7 @@ function showProposalDialog(overrides = null) {
     const submitLabel = isEditingExisting
         ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
         : t('modal.createProposal.submit', 'Create Proposal');
+    const cancelLabel = t('common.cancel', 'Cancel');
 
     const overrideGoal = normalizeGoalKey(proposalDialogOverrides?.goal) || null;
     const overrideAcquisition = proposalDialogOverrides?.acquisitionMode || null;
@@ -783,13 +767,13 @@ function showProposalDialog(overrides = null) {
                 if (owner && typeof getAvatarImagePath === 'function') {
                     const ownerName = owner.name || unknownOwnerLabel;
                     const ownerTooltip = formatOwnerTooltip(ownerName);
-                    ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #007bff; margin-right: 6px;" title="${ownerTooltip}">`;
+                    ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" title="${ownerTooltip}">`;
                 }
             }
         }
 
         return `
-            <div class="proposal-parcel-item" style="display: flex; align-items: center;">
+            <div class="proposal-parcel-item">
                 ${ownerAvatarHtml}
                 <div>
                     <span class="parcel-number">${parcelLabel} ${parcelNumber}</span>
@@ -798,71 +782,64 @@ function showProposalDialog(overrides = null) {
         `;
     }).join('');
 
-    // Shared inline style for helper text in the options column
-    const optionHelperStyle = 'color:#6b7280; font-size:12px; line-height:1.3;';
-
-    // Create modal dialog
-    const modal = document.createElement('div');
-    modal.className = 'create-proposal-modal';
-    modal.innerHTML = `
-        <div class="proposal-modal-content">
-            <div class="proposal-modal-header">
-                <h2>${modalTitle}</h2>
-                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeAriaLabel}" onclick="closeProposalDialog()">&times;</button>
-            </div>
-            <div class="proposal-modal-body">
+    // The dialog body. Its chrome (title, close, footer actions, focus trap, phone bottom sheet) is
+    // CbDialog's; the ids and radio names below are what the facet, geometry and create scripts
+    // read. The facets are native radios in cb-segmented rows (.proposal-radio is the hook core.js
+    // reads a choice's label from), the typology a cb-tiles grid; the hidden main-type and
+    // transfer-direction rows are cb-segmented buttons. Selected is :checked or aria-pressed.
+    const bodyHtml = `
                 ${mintChainHtml}
                 ${siteSummaryHtml}
-                ${hasScreenshotCandidate ? '<div class="form-group proposal-screenshot-loading" id="proposalScreenshotContainer" style="margin-bottom: 15px;"><div class="proposal-screenshot-spinner" aria-label="Preparing preview"></div></div>' : ''}
+                ${hasScreenshotCandidate ? '<div class="form-group proposal-screenshot-loading" id="proposalScreenshotContainer"><div class="proposal-screenshot-spinner" aria-label="Preparing preview"></div></div>' : ''}
                 <div class="form-group proposal-author-row">
                     <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
                     <input type="text" id="proposalAuthor" class="proposal-author-name" placeholder="${authorPlaceholder}" disabled>
                 </div>
-                <div class="form-group" id="proposalMainTypeGroup" style="display:none;">
-                    <label>${proposalTypeLabel}</label>
-                    <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button selected" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">${proposalTypeLabels.Purchase}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Urban Rule" onclick="handleUrbanRuleMainTypeClick()">${proposalTypeLabels['Urban Rule']}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">${proposalTypeLabels.Reparcellization}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Joint Investment" disabled>${proposalTypeLabels['Joint Investment']}</button>
+                <div class="proposal-choices" id="proposalMainTypeGroup" hidden>
+                    <div class="cb-kicker" id="proposalMainTypeHeading">${proposalTypeLabel}</div>
+                    <div class="cb-segmented" role="group" aria-labelledby="proposalMainTypeHeading">
+                        <button type="button" class="cb-segmented__option" aria-pressed="true" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">${proposalTypeLabels.Purchase}</button>
+                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Urban Rule" onclick="handleUrbanRuleMainTypeClick()">${proposalTypeLabels['Urban Rule']}</button>
+                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">${proposalTypeLabels.Reparcellization}</button>
+                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Joint Investment" disabled>${proposalTypeLabels['Joint Investment']}</button>
                     </div>
                 </div>
                 <input type="hidden" id="proposalMainType" value="Purchase">
-                <div class="form-group" id="proposalGoalGroup">
+                <div class="proposal-choices" id="proposalGoalGroup">
                     <div class="proposal-goal-section" data-goal-section="land-use">
-                        <span class="proposal-goal-subhead">${goalSectionLabels.landUse}</span>
-                        <div class="proposal-radio-group" id="proposalLandUseGroup">
-                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="as-is" checked onchange="onProposalLandUseChange()"><span>${asIsLandUseLabel}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="square" onchange="onProposalLandUseChange()"><span>⛲️ ${goalLabels.square}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="park" onchange="onProposalLandUseChange()"><span>🌳 ${goalLabels.park}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="lake" onchange="onProposalLandUseChange()"><span>🐟 ${goalLabels.lake}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="single" onchange="onProposalLandUseChange()"><span>🏠 ${goalLabels.single}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="road-track" onchange="onProposalLandUseChange()"><span>🛣️ ${goalLabels.roadTrack}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="urban-rule" onchange="onProposalLandUseChange()"><span>📜 ${goalLabels.urbanRule}</span></label>
+                        <div class="cb-kicker" id="proposalLandUseHeading">${goalSectionLabels.landUse}</div>
+                        <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalLandUseHeading" id="proposalLandUseGroup">
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="as-is" checked onchange="onProposalLandUseChange()"><span>${asIsLandUseLabel}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="square" onchange="onProposalLandUseChange()"><i class="fa-solid fa-chess-board" aria-hidden="true"></i><span>${goalLabels.square}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="park" onchange="onProposalLandUseChange()"><i class="fa-solid fa-tree" aria-hidden="true"></i><span>${goalLabels.park}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="lake" onchange="onProposalLandUseChange()"><i class="fa-solid fa-water" aria-hidden="true"></i><span>${goalLabels.lake}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="single" onchange="onProposalLandUseChange()"><i class="fa-solid fa-building" aria-hidden="true"></i><span>${goalLabels.single}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="road-track" onchange="onProposalLandUseChange()"><i class="fa-solid fa-road" aria-hidden="true"></i><span>${goalLabels.roadTrack}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="urban-rule" onchange="onProposalLandUseChange()"><i class="fa-solid fa-scroll" aria-hidden="true"></i><span>${goalLabels.urbanRule}</span></label>
                         </div>
                     </div>
                     <div class="proposal-goal-section" data-goal-section="parcels">
-                        <span class="proposal-goal-subhead">${goalSectionLabels.parcels}</span>
-                        <div class="proposal-radio-group" id="proposalParcelsGroup">
-                            <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><span>✂️ ${parcelsOptions.readjust}</span></label>
+                        <div class="cb-kicker" id="proposalParcelsHeading">${goalSectionLabels.parcels}</div>
+                        <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalParcelsHeading" id="proposalParcelsGroup">
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><i class="fa-solid fa-vector-square" aria-hidden="true"></i><span>${parcelsOptions.readjust}</span></label>
                         </div>
                         <div class="proposal-facet-static" id="proposalParcelsStatic" style="display:none;"></div>
                     </div>
                     <div class="proposal-goal-section" data-goal-section="ownership">
-                        <span class="proposal-goal-subhead">${goalSectionLabels.ownership}</span>
-                        <div class="proposal-radio-group" id="proposalOwnershipGroup">
-                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="no-change" checked onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.noChange}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="to-me" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toMe}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="to-city" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toCity}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="third-party" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.thirdParty}</span></label>
-                            <label class="proposal-radio proposal-ownership-perslice" style="display:none;"><input type="radio" name="proposalOwnership" value="per-slice" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.perSlice}</span></label>
+                        <div class="cb-kicker" id="proposalOwnershipHeading">${goalSectionLabels.ownership}</div>
+                        <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalOwnershipHeading" id="proposalOwnershipGroup">
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="no-change" checked onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.noChange}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-me" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toMe}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-city" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toCity}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="third-party" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.thirdParty}</span></label>
+                            <label class="cb-segmented__option proposal-radio proposal-ownership-perslice" style="display:none;"><input type="radio" name="proposalOwnership" value="per-slice" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.perSlice}</span></label>
                         </div>
                         <div class="proposal-facet-static" id="proposalOwnershipStatic" style="display:none;"></div>
                         <div class="proposal-inset" id="proposalRecipientOptions" style="display:none;">
-                            <div class="proposal-radio-group">
-                                <label class="proposal-radio"><input type="radio" name="proposalRecipientScope" value="any" checked onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.any}</span></label>
-                                <label class="proposal-radio"><input type="radio" name="proposalRecipientScope" value="specific" onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.specific}</span></label>
+                            <div class="cb-segmented" role="radiogroup" aria-label="${ownershipRecipients.thirdParty}">
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalRecipientScope" value="any" checked onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.any}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalRecipientScope" value="specific" onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.specific}</span></label>
                             </div>
                             <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
                         </div>
@@ -871,45 +848,45 @@ function showProposalDialog(overrides = null) {
                 <div class="form-group proposal-owner-offer" id="proposalOwnerOfferGroup" hidden>
                     <div class="proposal-owner-offer-row">
                         <label class="proposal-owner-offer-toggle"><input type="checkbox" id="proposalOwnerOfferCheckbox" disabled onchange="onProposalOwnerOfferChange()"><span>${ownerOfferLabels.label}</span></label>
-                        <button type="button" class="btn btn-secondary proposal-owner-offer-recheck" onclick="refreshOwnerOfferMode()">${ownerOfferLabels.recheck}</button>
+                        <button type="button" class="btn btn-sm" onclick="refreshOwnerOfferMode()">${ownerOfferLabels.recheck}</button>
                     </div>
                     <p class="proposal-owner-offer-status" id="proposalOwnerOfferStatus" aria-live="polite"></p>
                     <p class="proposal-owner-offer-explain" id="proposalOwnerOfferExplain" hidden>${ownerOfferLabels.explain}</p>
                 </div>
-                <div class="form-group" id="proposalOwnershipTransferGroup" style="display:none;">
-                    <label>${t('modal.createProposal.ownershipTransfer.label', 'Transfer direction:')}</label>
-                    <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button proposal-ownership-transfer-button selected" data-transfer-direction="to-me" onclick="setOwnershipTransferDirection('to-me')">${ownershipTransferLabels.toMe}</button>
-                        <button type="button" class="btn proposal-type-button proposal-ownership-transfer-button" data-transfer-direction="from-me" onclick="setOwnershipTransferDirection('from-me')">${ownershipTransferLabels.fromMe}</button>
+                <div class="proposal-choices" id="proposalOwnershipTransferGroup" style="display:none;">
+                    <div class="cb-kicker" id="proposalTransferHeading">${t('modal.createProposal.ownershipTransfer.label', 'Transfer direction')}</div>
+                    <div class="cb-segmented" role="group" aria-labelledby="proposalTransferHeading">
+                        <button type="button" class="cb-segmented__option proposal-ownership-transfer-button" aria-pressed="true" data-transfer-direction="to-me" onclick="setOwnershipTransferDirection('to-me')">${ownershipTransferLabels.toMe}</button>
+                        <button type="button" class="cb-segmented__option proposal-ownership-transfer-button" aria-pressed="false" data-transfer-direction="from-me" onclick="setOwnershipTransferDirection('from-me')">${ownershipTransferLabels.fromMe}</button>
                     </div>
                 </div>
-                <div class="form-group" id="proposalAcquisitionGroup">
-                    <span class="proposal-goal-subhead">${acquisitionLabel}</span>
-                    <div class="proposal-radio-group">
-                        <label class="proposal-radio"><input type="radio" name="proposalAcquisition" value="full" checked onchange="setProposalAcquisitionMode('full')"><span>${acquisitionOptions.full}</span></label>
-                        <label class="proposal-radio"><input type="radio" name="proposalAcquisition" value="partial" onchange="setProposalAcquisitionMode('partial')"><span class="proposal-acquisition-partial-label">${acquisitionOptions.partial}</span></label>
+                <div class="proposal-choices" id="proposalAcquisitionGroup">
+                    <div class="cb-kicker" id="proposalAcquisitionHeading">${acquisitionLabel}</div>
+                    <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalAcquisitionHeading">
+                        <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalAcquisition" value="full" checked onchange="setProposalAcquisitionMode('full')"><span>${acquisitionOptions.full}</span></label>
+                        <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalAcquisition" value="partial" onchange="setProposalAcquisitionMode('partial')"><span class="proposal-acquisition-partial-label">${acquisitionOptions.partial}</span></label>
                     </div>
                 </div>
                 <div class="form-group proposal-inset" id="proposalTypologyGroup" style="display:none;">
-                    <label>${proposalTypologyLabel}</label>
-                    <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="block" onclick="handleUrbanRuleTypologyClick('block', { skipLaunch: true })">${typologyOptions.block}</button>
-                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="row" onclick="handleUrbanRuleTypologyClick('row', { skipLaunch: true })">${typologyOptions.row}</button>
-                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="parcelBased" onclick="handleUrbanRuleTypologyClick('parcelBased', { skipLaunch: true })">${typologyOptions.parcelBased}</button>
+                    <div class="cb-kicker" id="proposalTypologyHeading">${proposalTypologyLabel}</div>
+                    <div class="cb-tiles" role="group" aria-labelledby="proposalTypologyHeading">
+                        <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="block" onclick="handleUrbanRuleTypologyClick('block', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-city" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.block}</span></button>
+                        <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="row" onclick="handleUrbanRuleTypologyClick('row', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-grip" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.row}</span></button>
+                        <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="parcelBased" onclick="handleUrbanRuleTypologyClick('parcelBased', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-house" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.parcelBased}</span></button>
                     </div>
                 </div>
                 <div class="form-group proposal-inset" id="proposalGeometryGroup" style="display:none;">
-                    <div id="proposalGeometryStatus" class="proposal-geometry-status" style="font-size:12px; color:#4b5563; margin-bottom:6px;">${t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry')}</div>
-                    <div class="proposal-type-group proposal-geometry-buttons" id="proposalGeometryButtons" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;"></div>
+                    <div id="proposalGeometryStatus" class="proposal-geometry-status">${t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry')}</div>
+                    <div class="proposal-geometry-buttons" id="proposalGeometryButtons"></div>
                 </div>
                 <input type="hidden" id="proposalType" value="">
                 <input type="hidden" id="proposalAcquisitionMode" value="full">
                 <input type="hidden" id="proposalBoundaryMode" value="multiple">
                 <hr class="proposal-section-divider">
                 <div class="form-group">
-                    <label for="proposalName" style="display: flex; align-items: center; gap: 8px;">
+                    <label for="proposalName" class="proposal-inline-field">
                         <span>${nameLabel}</span>
-                        <input type="text" id="proposalName" style="flex: 1;" placeholder="${namePlaceholder}">
+                        <input type="text" id="proposalName" placeholder="${namePlaceholder}">
                     </label>
                 </div>
                 <div class="form-group">
@@ -917,13 +894,13 @@ function showProposalDialog(overrides = null) {
                     <input type="text" id="proposalDescription" class="proposal-description-input" placeholder="${descriptionPlaceholder}">
                 </div>
                 <div class="form-group">
-                    <label for="proposalEpochYear" style="display: flex; align-items: center; gap: 8px;">
+                    <label for="proposalEpochYear" class="proposal-inline-field">
                         <span>${epochLabel}</span>
-                        <select id="proposalEpochYear" style="flex: 1;"></select>
+                        <select id="proposalEpochYear"></select>
                     </label>
                 </div>
-                <div class="proposal-options-collapsible collapsible collapsed" id="proposalOptionsSection" style="margin-top:8px;">
-                    <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalOptionsContent" onclick="(function(){
+                <div class="proposal-options-collapsible collapsible collapsed" id="proposalOptionsSection">
+                    <div class="collapsible-header proposal-collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalOptionsContent" onclick="(function(){
                         var section = document.getElementById('proposalOptionsSection');
                         var content = document.getElementById('proposalOptionsContent');
                         var icon = document.getElementById('proposalOptionsChevron');
@@ -940,144 +917,158 @@ function showProposalDialog(overrides = null) {
                             section.setAttribute('aria-expanded', 'true');
                         }
                     })()">
-                        <h3 style="display:inline; font-size: 1.1em; font-weight: 600; margin:0;">${optionsSectionTitle}</h3>
-                        <i id="proposalOptionsChevron" class="fas fa-chevron-down" style="margin-left: 8px;"></i>
+                        <h3 class="proposal-collapsible-title">${optionsSectionTitle}</h3>
+                        <i id="proposalOptionsChevron" class="fas fa-chevron-down proposal-collapsible-chevron" aria-hidden="true"></i>
                     </div>
                     <div id="proposalOptionsContent" style="display:none;">
-                <div class="form-group">
-                    <label for="proposalOffer">${offerLabel}</label>
-                    <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
-                        <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
-                        <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
-                            <option value="EUR">EUR</option>
-                            <option value="USD">USD</option>
-                            <option value="ETH">ETH</option>
-                            <option value="ARS">ARS</option>
-                            <option value="USDC">USDC</option>
-                            <option value="USDT" selected>USDT</option>
-                        </select>
+                        <div class="form-group">
+                            <label for="proposalOffer">${offerLabel}</label>
+                            <div class="proposal-offer-row">
+                                <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" oninput="handleProposalOfferInput(this)">
+                                <select id="proposalCurrency">
+                                    <option value="EUR">EUR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="ETH">ETH</option>
+                                    <option value="ARS">ARS</option>
+                                    <option value="USDC">USDC</option>
+                                    <option value="USDT" selected>USDT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group proposal-options-section">
+                            <div class="proposal-option-row" id="proposalOptionConditional">
+                                <div class="proposal-option-toggle">
+                                    <input type="checkbox" id="proposalConditionalCheckbox" checked>
+                                    <label for="proposalConditionalCheckbox">${conditionalLabel}</label>
+                                </div>
+                                <div class="proposal-option-helper" id="proposalConditionalHelperText">
+                                    ${conditionalHelperOnText}
+                                </div>
+                            </div>
+                            <div class="proposal-option-row proposal-option-row--split" id="proposalOptionExpire">
+                                <div class="proposal-option-toggle">
+                                    <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
+                                    <label for="proposalExpireCheckbox">${expireAfterLabel}</label>
+                                </div>
+                                <div>
+                                    <input type="text" id="proposalExpiryTime" class="proposal-option-time" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" disabled>
+                                </div>
+                            </div>
+                            <div class="proposal-option-row proposal-option-row--split" id="proposalVoteExpiryWrap" style="display:none;">
+                                <div class="proposal-option-toggle">
+                                    <label for="proposalVoteExpiryDays">${voteExpiryLabel}</label>
+                                </div>
+                                <div class="proposal-option-value proposal-option-value--end">
+                                    <input type="number" id="proposalVoteExpiryDays" class="proposal-option-number" min="1" max="365" value="365">
+                                    <span class="proposal-option-suffix">${voteExpiryDaysSuffix}</span>
+                                </div>
+                            </div>
+                            <div class="proposal-option-row" id="proposalOptionDecay">
+                                <div class="proposal-option-toggle">
+                                    <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
+                                    <label for="proposalDecayCheckbox">${decayLabel}</label>
+                                </div>
+                                <div class="proposal-option-helper">${decayHelperText}</div>
+                            </div>
+                            <div class="proposal-option-row proposal-option-row--split proposal-decay-inputs" id="proposalOptionDecayInputs">
+                                <div class="proposal-option-value proposal-option-value--indent">
+                                    <input type="text" id="proposalDecayPercent" class="proposal-option-number" value="50" pattern="[0-9]*" inputmode="numeric" disabled>
+                                    <span class="proposal-option-suffix">${decayPercentSuffix}</span>
+                                </div>
+                                <div>
+                                    <input type="text" id="proposalDecayTime" class="proposal-option-time" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" disabled>
+                                </div>
+                            </div>
+                            <div class="proposal-option-row" id="proposalOptionDeposit">
+                                <div class="proposal-option-toggle">
+                                    <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
+                                    <label for="proposalDepositCheckbox">${depositLabel}</label>
+                                </div>
+                                <div class="proposal-option-value">
+                                    <input type="text" id="proposalDepositPercent" class="proposal-option-number" value="100" pattern="[0-9]*" inputmode="numeric" disabled>
+                                    <span class="proposal-option-suffix">${depositHelperText}</span>
+                                </div>
+                            </div>
+                            <div class="proposal-tolerance-row" id="proposalToleranceRow">
+                                <label for="proposalToleranceM">${toleranceLabel}</label>
+                                <input type="number" id="proposalToleranceM" min="0" max="1" step="0.01" value="${toleranceValue}" inputmode="decimal">
+                                <p class="proposal-tolerance-help">${toleranceHelp}</p>
+                            </div>
+                            <div class="proposal-option-row" id="proposalOptionAreaProportional">
+                                <div class="proposal-option-toggle">
+                                    <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
+                                    <label for="proposalAreaProportionalCheckbox">${areaProportionalText}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="proposal-summary collapsible collapsed" id="proposalSummarySection">
+                            <div class="collapsible-header proposal-collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalSummaryContent" onclick="(function(e){
+                                var section = document.getElementById('proposalSummarySection');
+                                var content = document.getElementById('proposalSummaryContent');
+                                var icon = document.getElementById('proposalSummaryChevron');
+                                var expanded = section.classList.toggle('collapsed');
+                                if (section.classList.contains('collapsed')) {
+                                    content.style.display = 'none';
+                                    icon.classList.remove('fa-chevron-up');
+                                    icon.classList.add('fa-chevron-down');
+                                    section.setAttribute('aria-expanded', 'false');
+                                } else {
+                                    content.style.display = '';
+                                    icon.classList.remove('fa-chevron-down');
+                                    icon.classList.add('fa-chevron-up');
+                                    section.setAttribute('aria-expanded', 'true');
+                                }
+                            })(event)">
+                                <h3 class="proposal-collapsible-title">${summaryTitle}</h3>
+                                <i id="proposalSummaryChevron" class="fas fa-chevron-down proposal-collapsible-chevron" aria-hidden="true"></i>
+                            </div>
+                            <div id="proposalSummaryContent" style="display:none;">
+                                <div class="summary-stats">
+                                    <p><strong>${summaryParcelsLabel}</strong> ${selectedParcels.length}</p>
+                                    <p><strong>${summaryAreaLabel}</strong> ${CbFormat.formatArea(totalArea)}</p>
+                                    <p><strong>${summaryOwnersLabel}</strong> ${totalOwners}</p>
+                                </div>
+                                <div class="parcel-list">
+                                    <h4>${summarySelectedLabel}</h4>
+                                    ${parcelListHTML}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="proposal-similar-section" id="proposalSimilarSection" style="display:none;">
+                            <h4>${similarTitle}</h4>
+                            <div id="proposalSimilarList" class="proposal-similar-list"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group proposal-options-section">
-                    <div class="proposal-option-row" id="proposalOptionConditional" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="proposalConditionalCheckbox" checked>
-                            <label for="proposalConditionalCheckbox" style="margin:0; cursor:pointer;">${conditionalLabel}</label>
-                        </div>
-                        <div id="proposalConditionalHelperText" style="${optionHelperStyle} flex:1;">
-                            ${conditionalHelperOnText}
-                        </div>
-                    </div>
-                    <div class="proposal-option-row" id="proposalOptionExpire" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
-                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">${expireAfterLabel}</label>
-                        </div>
-                        <div>
-                            <input type="text" id="proposalExpiryTime" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" style="width:100%; text-align:center;" disabled>
-                        </div>
-                    </div>
-                    <div class="proposal-option-row" id="proposalVoteExpiryWrap" style="display:none; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:6px;">
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <label for="proposalVoteExpiryDays" style="margin:0;">${voteExpiryLabel}</label>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
-                            <input type="number" id="proposalVoteExpiryDays" min="1" max="365" value="365" style="width:64px; text-align:center;">
-                            <span style="color:#666;">${voteExpiryDaysSuffix}</span>
-                        </div>
-                    </div>
-                    <div class="proposal-option-row" id="proposalOptionDecay" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">${decayLabel}</label>
-                        </div>
-                        <div style="flex:1; ${optionHelperStyle}">${decayHelperText}</div>
-                    </div>
-                    <div class="proposal-option-row proposal-decay-inputs" id="proposalOptionDecayInputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
-                        <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
-                            <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
-                            <span style="color:#666;">${decayPercentSuffix}</span>
-                        </div>
-                        <div>
-                            <input type="text" id="proposalDecayTime" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" style="width:100%; text-align:center;" disabled>
-                        </div>
-                    </div>
-                    <div class="proposal-option-row" id="proposalOptionDeposit" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
-                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">${depositLabel}</label>
-                        </div>
-                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
-                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
-                            <span style="color:#666;">${depositHelperText}</span>
-                        </div>
-                    </div>
-                    <div class="proposal-tolerance-row" id="proposalToleranceRow">
-                        <label for="proposalToleranceM">${toleranceLabel}</label>
-                        <input type="number" id="proposalToleranceM" min="0" max="1" step="0.01" value="${toleranceValue}" inputmode="decimal">
-                        <p class="proposal-tolerance-help">${toleranceHelp}</p>
-                    </div>
-                    <div class="proposal-option-row" id="proposalOptionAreaProportional" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
-                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">${areaProportionalText}</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="proposal-summary collapsible collapsed" id="proposalSummarySection">
-                    <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalSummaryContent" onclick="(function(e){
-                        var section = document.getElementById('proposalSummarySection');
-                        var content = document.getElementById('proposalSummaryContent');
-                        var icon = document.getElementById('proposalSummaryChevron');
-                        var expanded = section.classList.toggle('collapsed');
-                        if (section.classList.contains('collapsed')) {
-                            content.style.display = 'none';
-                            icon.classList.remove('fa-chevron-up');
-                            icon.classList.add('fa-chevron-down');
-                            section.setAttribute('aria-expanded', 'false');
-                        } else {
-                            content.style.display = '';
-                            icon.classList.remove('fa-chevron-down');
-                            icon.classList.add('fa-chevron-up');
-                            section.setAttribute('aria-expanded', 'true');
-                        }
-                    })(event)">
-                        <h3 style="display:inline; font-size: 1.1em; font-weight: 600; margin:0;">${summaryTitle}</h3>
-                        <i id="proposalSummaryChevron" class="fas fa-chevron-down" style="margin-left: 8px;"></i>
-                    </div>
-                    <div id="proposalSummaryContent" style="display:none;">
-                        <div class="summary-stats">
-                            <p><strong>${summaryParcelsLabel}</strong> ${selectedParcels.length}</p>
-                            <p><strong>${summaryAreaLabel}</strong> ${CbFormat.formatArea(totalArea)}</p>
-                            <p><strong>${summaryOwnersLabel}</strong> ${totalOwners}</p>
-                        </div>
-                        <div class="parcel-list">
-                            <h4>${summarySelectedLabel}</h4>
-                            ${parcelListHTML}
-                        </div>
-                    </div>
-                </div>
-                <div class="proposal-similar-section" id="proposalSimilarSection" style="margin-top:12px; display:none;">
-                    <h4 style="margin-bottom:6px;">${similarTitle}</h4>
-                    <div id="proposalSimilarList" class="proposal-similar-list" style="display:flex; flex-direction:column; gap:6px;"></div>
-                </div>
-                    </div>
-                </div>
-            </div>
-            <div class="proposal-modal-footer lens-footer-layout">
-                <div class="lens-footer-row">
-                    <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}">👓</button>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; width:100%;">
-                    <button id="createProposalSubmitButton" class="btn btn-proposal" onclick="createProposal()">${submitLabel}</button>
-                    <div id="proposalGeometryRequirementHint" style="font-size:11px; color:#c00; min-height:14px; text-align:right;"></div>
-                </div>
-            </div>
-        </div>
     `;
 
-    document.body.appendChild(modal);
-    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeProposalDialog);
+    // The dialog on the shared chrome (js/ui/dialogs.js). The overlay keeps the .create-proposal-modal
+    // identity every script finds the dialog by, the card .proposal-modal-content and the footer
+    // .proposal-modal-footer. The backdrop does not close it (a stray click must not drop a
+    // half-filled form); the ×, Cancel and Escape run the close cleanup through onClose.
+    const dialogApi = window.CbDialog.open({
+        title: modalTitle,
+        className: 'proposal-modal-content',
+        overlayClassName: 'create-proposal-modal',
+        footerClassName: 'proposal-modal-footer',
+        closeLabel: closeAriaLabel,
+        closeOnBackdrop: false,
+        autofocus: false,
+        body: bodyHtml,
+        actions: [
+            { id: 'cancel', label: cancelLabel, role: 'secondary' },
+            { id: 'create', label: submitLabel, role: 'primary', keepOpen: true, onClick: () => createProposal() }
+        ],
+        onClose: onProposalDialogClosed
+    });
+    if (!dialogApi) return;
+    const modal = dialogApi.overlay;
+    modal.__proposalDialog = dialogApi;
+    decorateProposalDialogChrome(dialogApi, {
+        submitId: 'createProposalSubmitButton',
+        lensTooltip,
+        hintId: 'proposalGeometryRequirementHint'
+    });
 
     // Reset stored screenshot
     proposalModalScreenshotDataUrl = null;
@@ -1110,7 +1101,6 @@ function showProposalDialog(overrides = null) {
                 try {
                     const previewWrapper = document.createElement('div');
                     previewWrapper.className = 'map-screenshot-container';
-                    previewWrapper.style.margin = '0 auto';
                     screenshotContainer.appendChild(previewWrapper);
 
                     const resolveGoalBadge = () => getProposalGoalBadge(currentProposalTool || 'square');
@@ -1230,8 +1220,7 @@ function showProposalDialog(overrides = null) {
                     console.warn('Failed to render proposal screenshot preview', error);
                     screenshotContainer.innerHTML = '';
                     const fallbackDiv = document.createElement('div');
-                    fallbackDiv.className = 'map-screenshot-container';
-                    fallbackDiv.style.color = '#999';
+                    fallbackDiv.className = 'map-screenshot-container proposal-screenshot-unavailable';
                     fallbackDiv.textContent = 'Preview unavailable';
                     screenshotContainer.appendChild(fallbackDiv);
                 }
@@ -1239,7 +1228,8 @@ function showProposalDialog(overrides = null) {
         }
     }
 
-    // Lock secondary selectors that are derived from the selected goal.
+    // Lock secondary selectors that are derived from the selected goal (a disabled choice reads as
+    // inert from its own :disabled look).
     // Urban Rule typology is a user choice and must remain selectable because the Geometry → Edit action
     // opens different modals depending on the selected typology (block/row/parcelBased).
     const lockSecondarySelectors = () => {
@@ -1247,11 +1237,9 @@ function showProposalDialog(overrides = null) {
         secondaryGroupIds.forEach(groupId => {
             const groupEl = modal.querySelector(`#${groupId}`);
             if (!groupEl) return;
-            groupEl.classList.add('proposal-secondary-locked');
-            const buttons = groupEl.querySelectorAll('.proposal-type-button, input[type="radio"]');
+            const buttons = groupEl.querySelectorAll('button, input[type="radio"]');
             buttons.forEach(btn => {
                 btn.disabled = true;
-                btn.classList.add('proposal-selection-static');
                 btn.setAttribute('aria-disabled', 'true');
             });
         });
@@ -1299,7 +1287,6 @@ function showProposalDialog(overrides = null) {
         modal.querySelectorAll('#proposalAcquisitionGroup input[type="radio"]').forEach(radio => {
             if (desired) radio.checked = (radio.value === desired);
             radio.disabled = true;
-            radio.classList.add('proposal-selection-static');
             radio.setAttribute('aria-disabled', 'true');
         });
         if (overrideAcquisition === 'partial-preferred') {
@@ -1323,9 +1310,8 @@ function showProposalDialog(overrides = null) {
         });
         modal.querySelectorAll('[data-goal-section="land-use"], [data-goal-section="parcels"]')
             .forEach(section => section.classList.add('proposal-goal-section--locked'));
-        modal.querySelectorAll('#proposalMainTypeGroup .proposal-type-button').forEach(button => {
+        modal.querySelectorAll('#proposalMainTypeGroup [data-proposal-main-type]').forEach(button => {
             button.disabled = true;
-            button.classList.add('proposal-selection-static');
         });
     }
 
@@ -1345,10 +1331,7 @@ function showProposalDialog(overrides = null) {
         const disableConditional = isSingleParcelSelection;
         conditionalCheckbox.checked = !disableConditional;
         conditionalCheckbox.disabled = disableConditional;
-        if (conditionalRow) {
-            conditionalRow.style.opacity = disableConditional ? '0.6' : '';
-            conditionalRow.style.cursor = '';
-        }
+        if (conditionalRow) conditionalRow.toggleAttribute('data-disabled', disableConditional);
         conditionalCheckbox.addEventListener('change', updateConditionalHelper);
     }
     updateConditionalHelper();
@@ -1365,20 +1348,15 @@ function showProposalDialog(overrides = null) {
             const disableButtons = overrideGeometryPreset.disableButtons !== false;
             buttonsRow.querySelectorAll('button').forEach(btn => {
                 const action = btn.getAttribute('data-geometry-action') || btn.dataset.geometryAction;
-                if (action === preferredAction) {
-                    btn.classList.add('selected');
-                } else {
-                    btn.classList.remove('selected');
-                }
+                // The action that produced the preset geometry reads as the pressed one.
+                btn.setAttribute('aria-pressed', String(action === preferredAction));
                 if (disableButtons) {
                     btn.disabled = true;
-                    btn.classList.add('proposal-selection-static');
                     btn.setAttribute('aria-disabled', 'true');
                 }
             });
-            if (disableButtons) {
-                buttonsRow.style.pointerEvents = 'none';
-            }
+            // Locked for good: buttons a later facet change re-renders here take no clicks either.
+            if (disableButtons) buttonsRow.dataset.locked = 'true';
         }
         // Re-run submit state guard after presetting geometry to avoid stale "No geometry" hint
         updateCreateProposalSubmitState();
@@ -1432,10 +1410,9 @@ function showProposalDialog(overrides = null) {
             if (lines.length) {
                 const statsBlock = document.createElement('div');
                 statsBlock.className = 'proposal-summary-extra';
-                statsBlock.style.marginTop = '8px';
                 statsBlock.innerHTML = `
                     <div class="summary-stats">
-                        <h4 style="margin: 6px 0 4px;">Ownership & Acquisition Stats</h4>
+                        <h4>Ownership & Acquisition Stats</h4>
                         ${lines.join('')}
                     </div>
                 `;
@@ -1591,12 +1568,15 @@ function showProposalDialog(overrides = null) {
                     ? formatProposalTypeLabel(goalKey)
                     : (goalKey || '');
                 const createdDate = p.createdAt ? CbFormat.formatDate(p.createdAt) : '';
+                // A selectable row (cb-option) that opens the similar proposal.
                 return `
-                    <div class="proposal-similar-item" data-proposal-id="${proposalId}" style="display:flex; flex-direction:column; gap:2px; padding:8px; border:1px solid #ddd; border-radius:6px; cursor:pointer; background:#fafafa;">
-                        <span style="font-weight:600;">${title}</span>
-                        <span style="font-size:12px; color:#555;">${author}${createdDate ? ` • ${createdDate}` : ''}</span>
-                        <span style="font-size:12px; color:#555;">${typeLabel}</span>
-                    </div>
+                    <button type="button" class="cb-option proposal-similar-item" data-proposal-id="${proposalId}">
+                        <span class="cb-option__text">
+                            <span class="cb-option__title">${title}</span>
+                            <span class="cb-option__desc">${author}${createdDate ? ` • ${createdDate}` : ''}</span>
+                            <span class="cb-option__desc">${typeLabel}</span>
+                        </span>
+                    </button>
                 `;
             }).join('');
             similarList.innerHTML = itemsHtml;
@@ -1618,7 +1598,60 @@ function showProposalDialog(overrides = null) {
     }
 }
 
+// The create dialogs' chrome around CbDialog's: the submit action's id (the scripts that relabel and
+// disable it look it up), the lens swatch left of Cancel and the submit action, the line under them
+// that says why the submit is disabled (main dialog), and the close control's old hook class for the
+// scripts and specs that find it.
+function decorateProposalDialogChrome(dialogApi, { submitId, lensTooltip, hintId = null }) {
+    const submit = dialogApi.getActionButton('create');
+    if (submit) submit.id = submitId;
+    const close = dialogApi.header ? dialogApi.header.querySelector('.close-circle-btn') : null;
+    if (close) close.classList.add('proposal-modal-close');
+    if (!dialogApi.footer) return;
+    const lens = document.createElement('button');
+    lens.type = 'button';
+    lens.className = 'btn btn-icon btn-sm lens-pattern-button';
+    lens.setAttribute('data-lens-pattern', '');
+    lens.title = lensTooltip;
+    lens.setAttribute('aria-label', lensTooltip);
+    lens.innerHTML = '<i class="fa-solid fa-glasses" aria-hidden="true"></i>';
+    lens.addEventListener('click', () => { if (typeof showLensModal === 'function') showLensModal(); });
+    dialogApi.footer.prepend(lens);
+    if (hintId) {
+        const hint = document.createElement('p');
+        hint.id = hintId;
+        hint.className = 'proposal-geometry-hint';
+        hint.setAttribute('aria-live', 'polite');
+        dialogApi.footer.appendChild(hint);
+    }
+}
+
+// CbDialog's onClose for both create dialogs. A re-open replaces the box ('replaced') and keeps the
+// state it was opened for; every other close (×, Cancel, Escape, closeProposalDialog) runs the
+// cleanup. CbDialog swallows what onClose throws, so a failure is logged here.
+function onProposalDialogClosed(result) {
+    if (result === 'replaced') return;
+    try {
+        finishProposalDialogClose();
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] [proposal-dialog] cleanup after closing the dialog failed`, error);
+    }
+}
+
 function closeProposalDialog() {
+    // The open create dialog closes through CbDialog, whose onClose runs the cleanup. With no
+    // create dialog open (or only a box another script built) the cleanup still runs.
+    const modal = document.querySelector('.create-proposal-modal');
+    if (modal && modal.__proposalDialog) {
+        modal.__proposalDialog.close(null);
+        return;
+    }
+    if (modal) modal.remove();
+    finishProposalDialogClose();
+}
+
+// What closing the create dialog undoes: the pending proposal state it was opened for.
+function finishProposalDialogClose() {
     const closingDraftId = (typeof window !== 'undefined' && window.pendingProposalDraftId)
         ? String(window.pendingProposalDraftId)
         : null;
@@ -1628,11 +1661,6 @@ function closeProposalDialog() {
     // If this dialog seeded multi-select for its parcel context, disarm it — a cancelled
     // Propose must not leave the "Multiparcel selection" panel armed for later clicks.
     try { if (typeof window !== 'undefined') window.releaseEditorSeededMultiSelection?.(); } catch (_) { }
-    const modal = document.querySelector('.create-proposal-modal');
-    if (modal) {
-        modal.__unregisterEscape?.();
-        modal.remove();
-    }
     currentProposalTool = null;
     proposalModalScreenshotDataUrl = null; // Clear stored screenshot
     proposalModalScreenshotPromise = null;
@@ -1725,31 +1753,28 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         return `<div class="proposal-parcel-item"><span class="parcel-number">${parcelLabel} ${number}</span> <span class="parcel-area">(${area})</span></div>`;
     }).join('');
 
-    // Shared inline style for helper text in the options column
-    const optionHelperStyle = 'color:#6b7280; font-size:12px; line-height:1.3;';
-
     const modalTitle = validKind === 'park'
         ? t('modal.createProposal.titlePark', 'Create Park Proposal')
         : validKind === 'square'
             ? t('modal.createProposal.titleSquare', 'Create Square Proposal')
             : t('modal.createProposal.titleLake', 'Create Lake Proposal');
     const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
-    const authorLabel = t('modal.createProposal.authorLabel', 'Author:');
+    const authorLabel = t('modal.createProposal.authorLabel', 'Author');
     const authorPlaceholder = t('modal.createProposal.authorPlaceholder', 'Your name');
     const authorAvatarAlt = t('modal.createProposal.authorAvatarAlt', 'Author avatar');
-    const nameLabel = t('modal.createProposal.nameLabel', 'Name:');
-    const typeLabel = t('modal.createProposal.typeLabel', 'Type:');
+    const nameLabel = t('modal.createProposal.nameLabel', 'Name');
+    const typeLabel = t('modal.createProposal.typeLabel', 'Type');
     const typeDisplay = validKind === 'park'
         ? t('modal.createProposal.typePark', 'Park')
         : validKind === 'square'
             ? t('modal.createProposal.typeSquare', 'Square')
             : t('modal.createProposal.typeLake', 'Lake');
     const namePlaceholder = t('modal.createProposal.namePlaceholder', 'Name your {{kind}}', { kind: typeDisplay.toLowerCase() });
-    const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description:');
-    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholderStructure', 'Describe your {{kind}}...', { kind: typeDisplay.toLowerCase() });
-    const offerLabel = t('modal.createProposal.offerLabel', 'Offer:');
+    const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description');
+    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholderStructure', 'Describe your {{kind}}…', { kind: typeDisplay.toLowerCase() });
+    const offerLabel = t('modal.createProposal.offerLabel', 'Offer');
     const offerPlaceholder = t('modal.createProposal.offerPlaceholder', '0');
-    const optionsLabel = t('modal.createProposal.optionsLabel', 'Options:');
+    const optionsLabel = t('modal.createProposal.optionsLabel', 'Options');
     const expireAfterLabel = t('modal.createProposal.options.expireAfter', 'Expire after');
     const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
     const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
@@ -1764,17 +1789,10 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const summarySelectedLabel = t('modal.createProposal.summary.selected', 'Selected Parcels:');
     const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
     const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
+    const cancelLabel = t('common.cancel', 'Cancel');
 
-    const modal = document.createElement('div');
-    modal.className = 'create-proposal-modal';
     const defaultName = generateStructureName(validKind);
-    modal.innerHTML = `
-        <div class="proposal-modal-content">
-            <div class="proposal-modal-header">
-                <h2>${modalTitle}</h2>
-                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeAriaLabel}" onclick="closeProposalDialog()">&times;</button>
-            </div>
-            <div class="proposal-modal-body">
+    const bodyHtml = `
                 <div class="form-group">
                     <div class="proposal-author-row">
                         <label for="proposalAuthor">${authorLabel}</label>
@@ -1796,9 +1814,9 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                 </div>
                 <div class="form-group">
                     <label for="proposalOffer">${offerLabel}</label>
-                    <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
-                        <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
-                        <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
+                    <div class="proposal-offer-row">
+                        <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" oninput="handleProposalOfferInput(this)">
+                        <select id="proposalCurrency">
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
                             <option value="ETH">ETH</option>
@@ -1810,45 +1828,45 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                 </div>
                 <div class="form-group proposal-options-section">
                     <label>${optionsLabel}</label>
-                    <div class="proposal-option-row" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
-                        <div style="display:flex; align-items:center; gap:6px;">
+                    <div class="proposal-option-row proposal-option-row--split">
+                        <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
-                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">${expireAfterLabel}</label>
+                            <label for="proposalExpireCheckbox">${expireAfterLabel}</label>
                         </div>
                         <div>
-                            <input type="text" id="proposalExpiryTime" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" style="width:100%; text-align:center;" disabled>
+                            <input type="text" id="proposalExpiryTime" class="proposal-option-time" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" disabled>
                         </div>
                     </div>
-                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                    <div class="proposal-option-row">
+                        <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">${decayLabel}</label>
+                            <label for="proposalDecayCheckbox">${decayLabel}</label>
                         </div>
-                        <div style="flex:1; ${optionHelperStyle}">${decayHelperText}</div>
+                        <div class="proposal-option-helper">${decayHelperText}</div>
                     </div>
-                    <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
-                        <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
-                            <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
-                            <span style="color:#666;">${decayPercentSuffix}</span>
+                    <div class="proposal-option-row proposal-option-row--split proposal-decay-inputs">
+                        <div class="proposal-option-value proposal-option-value--indent">
+                            <input type="text" id="proposalDecayPercent" class="proposal-option-number" value="50" pattern="[0-9]*" inputmode="numeric" disabled>
+                            <span class="proposal-option-suffix">${decayPercentSuffix}</span>
                         </div>
                         <div>
-                            <input type="text" id="proposalDecayTime" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" style="width:100%; text-align:center;" disabled>
+                            <input type="text" id="proposalDecayTime" class="proposal-option-time" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" disabled>
                         </div>
                     </div>
-                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                    <div class="proposal-option-row">
+                        <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
-                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">${depositLabel}</label>
+                            <label for="proposalDepositCheckbox">${depositLabel}</label>
                         </div>
-                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
-                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
-                            <span style="color:#666;">${depositHelperText}</span>
+                        <div class="proposal-option-value">
+                            <input type="text" id="proposalDepositPercent" class="proposal-option-number" value="100" pattern="[0-9]*" inputmode="numeric" disabled>
+                            <span class="proposal-option-suffix">${depositHelperText}</span>
                         </div>
                     </div>
-                    <div class="proposal-option-row" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
-                        <div style="display:flex; align-items:center; gap:6px;">
+                    <div class="proposal-option-row">
+                        <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
-                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">${areaProportionalText}</label>
+                            <label for="proposalAreaProportionalCheckbox">${areaProportionalText}</label>
                         </div>
                     </div>
                 </div>
@@ -1861,18 +1879,38 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                         <h4>${summarySelectedLabel}</h4>
                         ${parcelListHTML}
                     </div>
-                </div>
-                <div class="proposal-actions-block">
-                    <div class="lens-inline-control lens-footer-control lens-footer-row">
-                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}">👓</button>
-                    </div>
-                    <button type="button" class="btn btn-proposal" id="create-structure-proposal-btn">${submitLabel}</button>
-                </div>
-            </div>
-        </div>`;
+                </div>`;
 
-    document.body.appendChild(modal);
-    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeProposalDialog);
+    // The same shared chrome and identity classes as the main create dialog (showProposalDialog).
+    const dialogApi = window.CbDialog.open({
+        title: modalTitle,
+        className: 'proposal-modal-content',
+        overlayClassName: 'create-proposal-modal',
+        footerClassName: 'proposal-modal-footer',
+        closeLabel: closeAriaLabel,
+        closeOnBackdrop: false,
+        autofocus: false,
+        body: bodyHtml,
+        actions: [
+            { id: 'cancel', label: cancelLabel, role: 'secondary' },
+            {
+                id: 'create',
+                label: submitLabel,
+                role: 'primary',
+                keepOpen: true,
+                onClick: () => createStructureProposalFromDialog(
+                    validKind,
+                    Array.isArray(parcelIds) ? parcelIds : [],
+                    geometry || null,
+                    blockName || ''
+                )
+            }
+        ],
+        onClose: onProposalDialogClosed
+    });
+    if (!dialogApi) return;
+    dialogApi.overlay.__proposalDialog = dialogApi;
+    decorateProposalDialogChrome(dialogApi, { submitId: 'create-structure-proposal-btn', lensTooltip });
     if (typeof refreshLensPatternPreviews === 'function') {
         refreshLensPatternPreviews();
     }
@@ -1890,18 +1928,6 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     }
     attachProposalCurrencyHandlers();
     document.getElementById('proposalName').focus();
-
-    const confirmButton = document.getElementById('create-structure-proposal-btn');
-    if (confirmButton) {
-        confirmButton.addEventListener('click', () => {
-            createStructureProposalFromDialog(
-                validKind,
-                Array.isArray(parcelIds) ? parcelIds : [],
-                geometry || null,
-                blockName || ''
-            );
-        });
-    }
 }
 
 function showWalkUploadGateModal(options = {}) {
@@ -1927,48 +1953,34 @@ function showWalkUploadGateModal(options = {}) {
             proposalsByKey.set(String(key), p);
         });
 
+        // The body: why, the last upload error, and one row per proposal still to upload. "Upload
+        // all" is the dialog's primary action.
         const container = document.createElement('div');
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-        container.style.gap = '12px';
+        container.className = 'walk-upload-gate';
 
-        const intro = document.createElement('div');
-        intro.style.fontSize = '13px';
-        intro.style.color = '#475569';
+        const intro = document.createElement('p');
+        intro.className = 'walk-upload-gate__intro';
         intro.textContent = 'These applied proposals are not yet on the server. The walk view loads proposals by their server ID, so they need to be uploaded first. The dialog will close and the walk will start as soon as they all have a server ID.';
         container.appendChild(intro);
 
-        const statusLine = document.createElement('div');
-        statusLine.style.minHeight = '18px';
-        statusLine.style.color = '#b3261e';
-        statusLine.style.fontSize = '12px';
+        const statusLine = document.createElement('p');
+        statusLine.className = 'walk-upload-gate__status';
+        statusLine.setAttribute('aria-live', 'polite');
         container.appendChild(statusLine);
         const setStatus = (msg) => { statusLine.textContent = msg || ''; };
 
         const listWrap = document.createElement('div');
-        listWrap.style.maxHeight = '320px';
-        listWrap.style.overflowY = 'auto';
-        listWrap.style.border = '1px solid #d8ddf0';
-        listWrap.style.borderRadius = '8px';
-        listWrap.style.padding = '8px';
-        listWrap.style.background = '#f9fafb';
+        listWrap.className = 'walk-upload-gate__list';
         container.appendChild(listWrap);
-
-        const uploadAllRow = document.createElement('div');
-        uploadAllRow.style.display = 'flex';
-        uploadAllRow.style.justifyContent = 'flex-end';
-        uploadAllRow.style.marginTop = '4px';
-        const uploadAllBtn = document.createElement('button');
-        uploadAllBtn.type = 'button';
-        uploadAllBtn.className = 'btn share-modal-primary';
-        uploadAllBtn.textContent = 'Upload all';
-        uploadAllRow.appendChild(uploadAllBtn);
-        container.appendChild(uploadAllRow);
 
         const modalApi = showSimpleShareModal({
             title: 'Upload before walking',
-            body: container
+            body: container,
+            actions: [{ id: 'upload-all', label: 'Upload all', primary: true, keepOpen: true, onClick: () => uploadAll() }]
         });
+        const uploadAllBtn = modalApi && typeof modalApi.getActionButton === 'function'
+            ? modalApi.getActionButton('upload-all')
+            : null;
 
         const rowControls = new Map(); // key -> { row, uploadBtn }
         const rowState = new Map();    // key -> { uploading, uploaded }
@@ -1988,7 +2000,7 @@ function showWalkUploadGateModal(options = {}) {
             const state = rowState.get(key) || {};
             if (!ctrl) return;
             if (state.uploaded) {
-                ctrl.row.style.opacity = '0.55';
+                ctrl.row.dataset.uploaded = 'true';
                 ctrl.uploadBtn.disabled = true;
                 ctrl.uploadBtn.textContent = 'Uploaded';
                 return;
@@ -2025,47 +2037,32 @@ function showWalkUploadGateModal(options = {}) {
 
         const renderRow = (key, proposal) => {
             const row = document.createElement('div');
-            row.style.display = 'flex';
-            row.style.alignItems = 'center';
-            row.style.justifyContent = 'space-between';
-            row.style.gap = '8px';
-            row.style.padding = '6px 4px';
-            row.style.borderBottom = '1px solid #e7e9f0';
+            row.className = 'walk-upload-gate__row';
 
             const left = document.createElement('div');
-            left.style.flex = '1';
-            left.style.minWidth = '0';
+            left.className = 'walk-upload-gate__info';
             const title = document.createElement('div');
-            title.style.fontSize = '13px';
-            title.style.fontWeight = '600';
-            title.style.color = '#212744';
-            title.style.overflow = 'hidden';
-            title.style.textOverflow = 'ellipsis';
-            title.style.whiteSpace = 'nowrap';
+            title.className = 'walk-upload-gate__title';
             title.textContent = proposal.name || proposal.title || (proposal.proposalId || key);
             left.appendChild(title);
 
             const meta = document.createElement('div');
-            meta.style.fontSize = '11px';
-            meta.style.color = '#64748b';
+            meta.className = 'walk-upload-gate__meta';
             const displayId = proposal.proposalId || getProposalKey(proposal) || 'local';
             meta.textContent = `${displayId} · ${(resolveProposalGoalKey(proposal) || 'proposal')}`;
             left.appendChild(meta);
 
-            const right = document.createElement('div');
-            right.style.flexShrink = '0';
             const uploadBtn = document.createElement('button');
             uploadBtn.type = 'button';
-            uploadBtn.className = 'btn share-modal-secondary';
+            uploadBtn.className = 'btn btn-sm';
             uploadBtn.textContent = 'Upload';
             uploadBtn.addEventListener('click', async () => {
                 const ok = await uploadOne(key);
                 if (ok) checkAllUploaded();
             });
-            right.appendChild(uploadBtn);
 
             row.appendChild(left);
-            row.appendChild(right);
+            row.appendChild(uploadBtn);
             listWrap.appendChild(row);
 
             rowControls.set(key, { row, uploadBtn });
@@ -2074,8 +2071,8 @@ function showWalkUploadGateModal(options = {}) {
 
         proposalsByKey.forEach((p, k) => renderRow(k, p));
 
-        uploadAllBtn.addEventListener('click', async () => {
-            uploadAllBtn.disabled = true;
+        const uploadAll = async () => {
+            if (uploadAllBtn) uploadAllBtn.disabled = true;
             try {
                 const pending = Array.from(rowState.entries())
                     .filter(([, s]) => !s.uploaded && !s.uploading)
@@ -2084,10 +2081,10 @@ function showWalkUploadGateModal(options = {}) {
                     if (!rowState.get(key).uploaded) await uploadOne(key);
                 }
             } finally {
-                uploadAllBtn.disabled = false;
+                if (uploadAllBtn) uploadAllBtn.disabled = false;
             }
             checkAllUploaded();
-        });
+        };
 
         return modalApi;
     } catch (error) {

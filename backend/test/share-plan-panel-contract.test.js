@@ -215,7 +215,8 @@ describe('share plan panel contract', () => {
         expect(proposalsCss).toContain('body.share-plan-mode .map-shell-cluster');
         expect(proposalsCss).toContain('body.share-plan-mode .map-sheet');
         expect(proposalsCss).not.toContain('.game-pill'); // the simulation is inside a sheet now
-        expect(proposalsCss).toContain('body.share-plan-mode .map-mode-toggle');
+        // The view strip's tiles (2D, 3D models, 3D aerial imagery) are .map-mode-tile.
+        expect(proposalsCss).toContain('body.share-plan-mode .map-mode-tile');
         const zoomRule = sourceSection(proposalsCss,
             'body.share-plan-mode .leaflet-control-container .leaflet-control-zoom', '}');
         expect(zoomRule).toContain('pointer-events: auto');

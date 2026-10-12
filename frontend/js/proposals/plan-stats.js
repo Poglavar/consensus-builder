@@ -175,9 +175,10 @@
         });
     }
 
-    function el(tag, style, text) {
+    // Looks live in css/modals.css (.plan-stats-*) and css/primitives.css, never inline.
+    function el(tag, className, text) {
         const node = document.createElement(tag);
-        if (style) Object.assign(node.style, style);
+        if (className) node.className = className;
         if (text !== undefined) node.textContent = text;
         return node;
     }
@@ -209,103 +210,101 @@
         { i18nKey: 'sidebar.proposals.planStats.colPeople', label: 'people', get: b => formatNumber(b.people) }
     ];
 
+    // The dialog wears the dialog primitive (css/primitives.css): overlay, card, header with one
+    // close button, body. It is kept between opens, so the assumptions typed into it survive, and
+    // is shown and hidden with the `hidden` attribute.
     function ensureModal() {
         let overlay = document.getElementById('plan-stats-modal');
         if (overlay) return overlay;
 
-        overlay = el('div', {
-            position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.45)', display: 'none',
-            alignItems: 'center', justifyContent: 'center', zIndex: '12000'
-        });
+        overlay = el('div', 'cb-dialog-overlay plan-stats-overlay');
         overlay.id = 'plan-stats-modal';
+        overlay.hidden = true;
 
-        const dialog = el('div', {
-            background: '#fff', borderRadius: '12px', padding: '20px', width: 'min(760px, 94vw)',
-            maxHeight: '90vh', overflow: 'auto', boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-        });
-        dialog.className = 'plan-stats-card';
+        const dialog = el('div', 'cb-dialog cb-dialog--lg plan-stats-card');
         // A modal over the Proposals sheet it opens from: the shell's Escape chain and shortcuts
         // recognise it by these (MapShell.isBlockingDialogOpen).
         dialog.setAttribute('role', 'dialog');
         dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('aria-labelledby', 'plan-stats-title');
+        dialog.tabIndex = -1;
 
-        const header = el('div', { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' });
-        const title = el('h3', { margin: '0' }, tPlanStats('sidebar.proposals.planStats.modalTitle', 'Plan Stats'));
+        const header = el('div', 'cb-dialog__header');
+        const title = el('h2', 'cb-dialog__title', tPlanStats('sidebar.proposals.planStats.modalTitle', 'Plan Stats'));
+        title.id = 'plan-stats-title';
         title.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.modalTitle');
         header.appendChild(title);
 
-        const closeBtn = el('button', {
-            border: 'none', background: 'transparent', fontSize: '22px', cursor: 'pointer', lineHeight: '1'
-        }, '×');
+        const closeBtn = el('button', 'close-circle-btn', '×');
         closeBtn.type = 'button';
+        closeBtn.setAttribute('data-plan-stats-close', '');
         closeBtn.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.closeAria', 'Close plan stats'));
         closeBtn.addEventListener('click', () => hidePlanStatsModal());
         header.appendChild(closeBtn);
 
-        const scope = el('div', { fontSize: '12px', color: '#64748b', marginBottom: '14px' });
+        const body = el('div', 'cb-dialog__body plan-stats-body');
+
+        const scope = el('p', 'plan-stats-scope');
         scope.dataset.planStat = 'scope';
 
-        const body = el('div', { display: 'flex', flexDirection: 'column', gap: '16px' });
-
-        const summaryList = el('div', { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px' });
-        summaryList.className = 'plan-stats-grid';
+        const summaryList = el('div', 'plan-stats-grid');
         SUMMARY_ROWS.forEach(row => {
-            const wrapper = el('div', { display: 'flex', flexDirection: 'column', gap: '2px' });
-            const label = el('div', { fontSize: '13px', color: '#444' }, tPlanStats(row.i18nKey, row.label));
+            const wrapper = el('div', 'plan-stats-figure');
+            const label = el('div', 'plan-stats-figure__label', tPlanStats(row.i18nKey, row.label));
             label.setAttribute('data-i18n-key', row.i18nKey);
-            const value = el('div', { fontWeight: '600', fontSize: '18px' }, '—');
+            const value = el('div', 'plan-stats-figure__value', '—');
             value.dataset.planStat = row.key;
             wrapper.appendChild(label);
             wrapper.appendChild(value);
             summaryList.appendChild(wrapper);
         });
 
-        const assumptions = el('div', { display: 'flex', flexDirection: 'column', gap: '6px' });
-        const assumptionsLabel = el('div', { fontSize: '13px', fontWeight: '600', color: '#334155' },
+        const assumptions = el('div', 'plan-stats-section');
+        const assumptionsLabel = el('div', 'plan-stats-heading',
             tPlanStats('sidebar.proposals.planStats.assumptionsLabel', 'Assumptions'));
         assumptionsLabel.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.assumptionsLabel');
         assumptions.appendChild(assumptionsLabel);
 
-        const grid = el('div', { display: 'grid', gridTemplateColumns: '90px 1fr 90px 1fr', alignItems: 'center', gap: '8px 10px' });
+        const grid = el('div', 'plan-stats-assumptions');
         const defaults = (yieldApi() || {}).DEFAULTS || {};
         ASSUMPTION_INPUTS.forEach(spec => {
-            const input = el('input', {
-                width: '100%', padding: '6px 8px', border: '1px solid #ccc', borderRadius: '6px', boxSizing: 'border-box'
-            });
+            const input = el('input', 'plan-stats-input');
             input.type = 'number';
             input.id = spec.id;
             if (spec.min !== undefined) input.min = String(spec.min);
             if (spec.max !== undefined) input.max = String(spec.max);
             if (spec.step !== undefined) input.step = String(spec.step);
             input.value = String(typeof spec.value === 'function' ? spec.value(defaults) : spec.value);
-            const suffix = el('span', { fontSize: '13px', color: '#555' }, tPlanStats(spec.i18nKey, spec.label));
+            const suffix = el('label', 'plan-stats-suffix', tPlanStats(spec.i18nKey, spec.label));
+            suffix.setAttribute('for', spec.id);
             suffix.setAttribute('data-i18n-key', spec.i18nKey);
             grid.appendChild(input);
             grid.appendChild(suffix);
         });
         assumptions.appendChild(grid);
 
-        const epochSection = el('div', { display: 'none', flexDirection: 'column', gap: '8px' });
+        const epochSection = el('div', 'plan-stats-section');
+        epochSection.hidden = true;
         epochSection.dataset.planStat = 'epoch-section';
 
-        const epochHeader = el('div', { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' });
-        const epochTitle = el('div', { fontSize: '13px', fontWeight: '600', color: '#334155' },
+        const epochHeader = el('div', 'plan-stats-epoch-head');
+        const epochTitle = el('div', 'plan-stats-heading',
             tPlanStats('sidebar.proposals.planStats.byPeriod', 'By period'));
         epochTitle.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.byPeriod');
         epochHeader.appendChild(epochTitle);
 
-        const toggle = el('div', { display: 'flex', gap: '4px' });
+        // Added · Standing: a segmented control; the chosen view carries aria-pressed.
+        const toggle = el('div', 'cb-segmented');
+        toggle.setAttribute('role', 'group');
+        toggle.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.byPeriod', 'By period'));
         [
             { mode: 'added', i18nKey: 'sidebar.proposals.planStats.viewAdded', label: 'Added' },
             { mode: 'cumulative', i18nKey: 'sidebar.proposals.planStats.viewCumulative', label: 'Standing' }
         ].forEach(option => {
-            const button = el('button', {
-                padding: '4px 10px', fontSize: '12px', borderRadius: '6px', cursor: 'pointer',
-                border: '1px solid #cbd5e1', background: '#fff'
-            }, tPlanStats(option.i18nKey, option.label));
+            const button = el('button', 'cb-segmented__option', tPlanStats(option.i18nKey, option.label));
             button.type = 'button';
             button.setAttribute('data-i18n-key', option.i18nKey);
+            button.setAttribute('aria-pressed', String(option.mode === epochView));
             button.dataset.epochView = option.mode;
             button.addEventListener('click', () => {
                 epochView = option.mode;
@@ -316,22 +315,23 @@
         epochHeader.appendChild(toggle);
         epochSection.appendChild(epochHeader);
 
-        const epochTable = el('div', { overflowX: 'auto' });
+        const epochTable = el('div', 'plan-stats-epoch-table');
         epochTable.dataset.planStat = 'epoch-table';
         epochSection.appendChild(epochTable);
 
-        const notes = el('div', { fontSize: '12px', color: '#b45309' });
+        const notes = el('div', 'plan-stats-notes');
         notes.dataset.planStat = 'notes';
 
+        body.appendChild(scope);
         body.appendChild(summaryList);
         body.appendChild(assumptions);
         body.appendChild(epochSection);
         body.appendChild(notes);
 
         dialog.appendChild(header);
-        dialog.appendChild(scope);
         dialog.appendChild(body);
         overlay.appendChild(dialog);
+        overlay.addEventListener('click', event => { if (event.target === overlay) hidePlanStatsModal(); });
         document.body.appendChild(overlay);
         overlay.__unregisterEscape = window.ModalEscape?.register(overlay, hidePlanStatsModal);
 
@@ -350,16 +350,13 @@
         const result = stats.yield;
         const periods = epochView === 'cumulative' ? result.cumulative : result.byEpoch;
         if (!periods || !periods.length) {
-            section.style.display = 'none';
+            section.hidden = true;
             return;
         }
-        section.style.display = 'flex';
+        section.hidden = false;
 
         modal.querySelectorAll('[data-epoch-view]').forEach(button => {
-            const active = button.dataset.epochView === epochView;
-            button.style.background = active ? '#1e293b' : '#fff';
-            button.style.color = active ? '#fff' : '#334155';
-            button.style.borderColor = active ? '#1e293b' : '#cbd5e1';
+            button.setAttribute('aria-pressed', String(button.dataset.epochView === epochView));
         });
 
         const rows = periods.slice();
@@ -367,37 +364,27 @@
         // cumulative view they are already inside every year, and repeating them would double them.
         if (epochView === 'added' && result.unassigned.proposals > 0) rows.push(result.unassigned);
 
-        const table = document.createElement('table');
-        Object.assign(table.style, { width: '100%', borderCollapse: 'collapse', fontSize: '13px' });
+        const table = el('table', 'plan-stats-table');
 
         const head = document.createElement('tr');
-        const periodTh = document.createElement('th');
-        periodTh.textContent = tPlanStats('sidebar.proposals.planStats.colPeriod', 'period');
+        const periodTh = el('th', null, tPlanStats('sidebar.proposals.planStats.colPeriod', 'period'));
         periodTh.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.colPeriod');
-        Object.assign(periodTh.style, { textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontWeight: '600' });
         head.appendChild(periodTh);
         EPOCH_COLUMNS.forEach(column => {
-            const th = document.createElement('th');
-            th.textContent = tPlanStats(column.i18nKey, column.label);
+            const th = el('th', 'plan-stats-table__number', tPlanStats(column.i18nKey, column.label));
             th.setAttribute('data-i18n-key', column.i18nKey);
-            Object.assign(th.style, { textAlign: 'right', padding: '4px 8px', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontWeight: '600' });
             head.appendChild(th);
         });
         table.appendChild(head);
 
         rows.forEach(bucket => {
             const tr = document.createElement('tr');
-            const td = document.createElement('td');
-            td.textContent = bucket.year === null
+            const td = el('td', null, bucket.year === null
                 ? tPlanStats('sidebar.proposals.planStats.noEpoch', 'no period')
-                : String(bucket.year);
-            Object.assign(td.style, { padding: '4px 8px', borderBottom: '1px solid #f1f5f9' });
+                : String(bucket.year));
             tr.appendChild(td);
             EPOCH_COLUMNS.forEach(column => {
-                const cell = document.createElement('td');
-                cell.textContent = column.get(bucket);
-                Object.assign(cell.style, { padding: '4px 8px', borderBottom: '1px solid #f1f5f9', textAlign: 'right', fontVariantNumeric: 'tabular-nums' });
-                tr.appendChild(cell);
+                tr.appendChild(el('td', 'plan-stats-table__number', column.get(bucket)));
             });
             table.appendChild(tr);
         });
@@ -418,7 +405,7 @@
 
         if (stats.unavailable) {
             set('scope', tPlanStats('sidebar.proposals.planStats.unavailable', 'Plan arithmetic is unavailable — plan-yield.js did not load.'));
-            modal.style.display = 'flex';
+            modal.hidden = false;
             return;
         }
 
@@ -474,13 +461,17 @@
 
         renderEpochTable(modal, stats);
 
-        modal.style.display = 'flex';
-        modal.focus();
+        const wasHidden = modal.hidden;
+        modal.hidden = false;
+        // Focus moves into the dialog when it opens (not on every re-render while the reader
+        // types), to its first control, as in every shared dialog.
+        const firstControl = modal.querySelector('[data-plan-stats-close]');
+        if (wasHidden && firstControl) firstControl.focus();
     }
 
     function hidePlanStatsModal() {
         const modal = document.getElementById('plan-stats-modal');
-        if (modal) modal.style.display = 'none';
+        if (modal) modal.hidden = true;
     }
 
     function setPlanStatsButtonBusy(busy) {
@@ -564,7 +555,7 @@
 
     function planStatsModalIsOpen() {
         const modal = document.getElementById('plan-stats-modal');
-        return !!modal && modal.style.display === 'flex';
+        return !!modal && modal.hidden === false;
     }
 
     // A plan does not arrive at once. The dialog counts only APPLIED proposals and computes

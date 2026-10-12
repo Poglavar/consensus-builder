@@ -110,21 +110,13 @@
         const message = key
             ? translateRowHouseText(`alerts.messages.${key}`, fallback, params)
             : translateRowHouseText('', fallback, params);
-        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-            ? window.showStyledAlert
-            : window.alert;
-        if (typeof alertFn === 'function') {
-            alertFn(message);
-        }
+        window.CbDialog.alert(message);
         return message;
     }
 
     function showRowHouseEditorAlert(key, fallback) {
         const message = translateRowHouseText(`rowHouses.modal.${key}`, fallback);
-        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-            ? window.showStyledAlert
-            : window.alert;
-        if (typeof alertFn === 'function') alertFn(message);
+        window.CbDialog.alert(message);
         return message;
     }
 
@@ -1128,7 +1120,7 @@
         const group = document.getElementById('rowhouse-minheight-group');
         if (group) group.style.display = rowRuleKind === 'range' ? '' : 'none';
         const regenerate = document.getElementById('btn-rowhouse-regenerate');
-        if (regenerate) regenerate.style.display = rowRuleKind === 'exact' ? 'none' : '';
+        if (regenerate) regenerate.hidden = rowRuleKind === 'exact';
         const slider = document.getElementById('rowhouse-minheight-slider');
         if (!slider) return;
         const ceiling = Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT;
@@ -1573,32 +1565,32 @@
 
         // Create modal if it doesn't exist
         if (!document.getElementById('rowhouse-modal')) {
+            // The editor wears the dialog primitive (css/primitives.css: overlay, card, header,
+            // body, footer, the phone bottom sheet); css/modals.css only lays out its map, 3D
+            // preview and sidebar inside it, the same as the Urban rule editor.
             const modalDiv = document.createElement('div');
             modalDiv.id = 'rowhouse-modal';
-            // Use same structure as blockify modal for consistent styling
-            modalDiv.className = 'rowhouse-modal-overlay';
+            modalDiv.className = 'cb-dialog-overlay';
 
             const container = document.createElement('div');
             container.id = 'rowhouse-container';
+            container.className = 'cb-dialog cb-dialog--xl';
+            container.setAttribute('role', 'dialog');
+            container.setAttribute('aria-modal', 'true');
+            container.setAttribute('aria-labelledby', 'rowhouse-title');
 
             container.innerHTML = `
+                <div id="rowhouse-header" class="cb-dialog__header">
+                    <h2 id="rowhouse-title" class="cb-dialog__title" data-i18n-key="rowHouses.modal.title">Row houses</h2>
+                    <button id="rowhouse-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="rowHouses.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close row houses modal">×</button>
+                </div>
+                <div id="rowhouse-body" class="cb-dialog__body">
                 <div id="rowhouse-main">
-                    <div id="rowhouse-header">
-                        <h2 data-i18n-key="rowHouses.modal.title">Row Houses</h2>
-                        <button id="rowhouse-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="rowHouses.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close row houses modal">×</button>
-                    </div>
                     <div id="rowhouse-map"></div>
                     <div id="rowhouse-3d"></div>
-                    <div id="rowhouse-controls">
-                        <div id="rowhouse-info" data-i18n-attr="text"></div>
-                        <div id="rowhouse-buttons" style="display: flex; justify-content: center;">
-                            <button class="btn btn-secondary" id="btn-rowhouse-regenerate" style="width: auto; padding: 8px 24px; display: none; margin-right: 10px;" data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
-                            <button class="btn btn-proposal" id="btn-rowhouse-done" style="width: auto; padding: 8px 24px;" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
-                        </div>
-                    </div>
                 </div>
                 <div id="rowhouse-sidebar">
-                    <h3 data-i18n-key="rowHouses.modal.parametersTitle">Parameters</h3>
+                    <h3 class="cb-kicker" data-i18n-key="rowHouses.modal.parametersTitle">Parameters</h3>
                     <div class="parameter-group">
                         <label for="rowhouse-ruletype-select" data-i18n-key="rowHouses.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
                         <select id="rowhouse-ruletype-select">
@@ -1652,12 +1644,12 @@
                     <div class="parameter-group">
                         <label data-i18n-key="rowHouses.modal.labels.rotation" data-i18n-attr="text">Rotate footprint</label>
                         <div class="single-building-rotation-buttons">
-                            <button id="rowhouse-rotate-counterclockwise" class="btn btn-light" type="button" data-i18n-key="rowHouses.modal.rotateCounterclockwise" data-i18n-attr="aria-label" aria-label="Rotate counterclockwise 5 degrees">&#8634; 5°</button>
-                            <button id="rowhouse-rotate-clockwise" class="btn btn-light" type="button" data-i18n-key="rowHouses.modal.rotateClockwise" data-i18n-attr="aria-label" aria-label="Rotate clockwise 5 degrees">&#8635; 5°</button>
+                            <button id="rowhouse-rotate-counterclockwise" class="btn" type="button" data-i18n-key="rowHouses.modal.rotateCounterclockwise" data-i18n-attr="aria-label" aria-label="Rotate counterclockwise 5 degrees"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
+                            <button id="rowhouse-rotate-clockwise" class="btn" type="button" data-i18n-key="rowHouses.modal.rotateClockwise" data-i18n-attr="aria-label" aria-label="Rotate clockwise 5 degrees"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                         </div>
                     </div>
                     <div class="parameter-group">
-                        <button id="rowhouse-geojson-upload" class="btn btn-secondary" type="button" style="width:100%;" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                        <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
                         <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                     </div>
                     <div class="parameter-metrics">
@@ -1678,6 +1670,14 @@
                         <p data-i18n-key="rowHouses.modal.helper.adjust">Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.</p>
                         <p data-i18n-key="rowHouses.modal.helper.dimensions">Length is parallel to the longest parcel side. Width is perpendicular.</p>
                         <p data-i18n-key="rowHouses.modal.helper.chamfer">Chamfer cuts the corners at 45° angles.</p>
+                    </div>
+                </div>
+                </div>
+                <div id="rowhouse-controls" class="cb-dialog__footer">
+                    <div id="rowhouse-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
+                    <div id="rowhouse-buttons">
+                        <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn btn-primary" id="btn-rowhouse-done" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
             `;

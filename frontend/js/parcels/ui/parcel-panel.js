@@ -309,17 +309,17 @@
         const cityId = typeof global.getCurrentCityId === 'function' ? global.getCurrentCityId() : 'zagreb';
         const isBuenosAires = cityId === 'buenos_aires';
 
+        // The block's name is a script link that shows the block on the map.
         let blockHtml;
         if (blockName) {
-            if (isBuenosAires) {
-                blockHtml = `<span class="block-tag" onclick="selectBuenosAiresBlock(${inlineJsArg(parcelId)})" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
-            } else {
-                blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock(${inlineJsArg(blockName)})" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
-            }
+            const blockAction = isBuenosAires
+                ? `selectBuenosAiresBlock(${inlineJsArg(parcelId)})`
+                : `highlightAndCenterBlock(${inlineJsArg(blockName)})`;
+            blockHtml = `<button type="button" class="cb-link block-tag" onclick="${blockAction}">${blockName}</button>`;
         } else {
             // The detect ACTION lives in the "Select multiple parcels" group at the top of the
             // tab (Detect block button); this row only reports block membership.
-            blockHtml = `<span data-i18n-key="panel.parcel.block.notPart" style="color: #6c757d; font-size: 12px;">${notPartOfBlockLabel}</span>`;
+            blockHtml = `<span class="parcel-block-none" data-i18n-key="panel.parcel.block.notPart">${notPartOfBlockLabel}</span>`;
         }
 
         const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
@@ -400,9 +400,9 @@
         const simulatedOwnerHtml = ownershipIsUnknown ? '' : buildSimulatedOwnerHtml(parcelId);
         const fallbackOwnerName = tParcel('panel.parcel.owner.single', {}, 'Single owner');
         const fallbackOwnerHtml = ownershipIsUnknown ? unknownOwnerHtml : (simulatedOwnerHtml || `
-            <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
+            <div class="owner-row parcel-owner-row">
                 <span data-i18n-key="panel.parcel.owner.single">${fallbackOwnerName}</span>
-                <span style="color: #666; font-size: 0.9em;">100%</span>
+                <span class="parcel-owner-share">100%</span>
             </div>
         `);
         let ownershipHtml = fallbackOwnerHtml;
@@ -433,9 +433,9 @@
                     const safeName = typeof global.escapeHtml === 'function' ? global.escapeHtml(name) : name;
                     const safeShare = typeof global.escapeHtml === 'function' ? global.escapeHtml(share) : share;
                     return `
-                        <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
+                        <div class="owner-row parcel-owner-row">
                             <span>${safeName}</span>
-                            <span style="color: #666; font-size: 0.9em;">${safeShare}</span>
+                            <span class="parcel-owner-share">${safeShare}</span>
                         </div>
                     `;
                 }).join('');
@@ -449,7 +449,7 @@
                 ownershipUiCache.set(parcelId.toString(), ownershipListFromProps);
             }
         } else if (shouldFetchRealOwners) {
-            ownershipHtml = `<span class="owner-loading" data-i18n-key="panel.parcel.owner.loading" style="color: #666;">${tParcel('panel.parcel.owner.loading', {}, 'Loading real ownership data...')}</span>`;
+            ownershipHtml = `<span class="owner-loading" data-i18n-key="panel.parcel.owner.loading">${tParcel('panel.parcel.owner.loading', {}, 'Loading real ownership data...')}</span>`;
         }
 
         let proposalsHtml = tParcel('panel.parcel.proposalsSection.empty', {}, 'No proposals');
@@ -459,8 +459,6 @@
         const proposalAuthorLabel = tParcel('panel.parcel.proposalsSection.details.author', {}, 'Author:');
         const proposalUnknownAuthor = tParcel('panel.parcel.proposalsSection.details.unknownAuthor', {}, 'Unknown');
         const proposalOfferLabel = tParcel('panel.parcel.proposalsSection.details.offer', {}, 'Offer:');
-        const activeStatusLabel = tParcel('panel.parcel.proposalsSection.status.active', {}, 'Active');
-        const appliedBadgeLabel = tParcel('panel.parcel.proposalsSection.badges.applied', {}, 'Applied');
 
         const getProposalDisplayId = (proposal) => {
             const resolvedId = proposal.proposalId;
@@ -479,13 +477,6 @@
                 const isRoadProposal = goalKey === 'road-track' || (!!proposal.roadProposal && goalKey === '');
                 const isBuildingProposal = (!isRoadProposal) && (['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey) || !!proposal.buildingProposal);
                 const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && (['park', 'square', 'lake'].includes(goalKey) || !!proposal.structureProposal);
-                const lifecycleKey = (typeof global.getProposalLifecycleKey === 'function') ? global.getProposalLifecycleKey(proposal) : null;
-                const statusText = (typeof global.getProposalLifecycleLabel === 'function' && lifecycleKey)
-                    ? global.getProposalLifecycleLabel(lifecycleKey)
-                    : (typeof global.getLifecycleStatus === 'function' ? global.getLifecycleStatus(proposal) : activeStatusLabel);
-                const statusClass = (typeof global.getProposalLifecycleClass === 'function' && lifecycleKey)
-                    ? global.getProposalLifecycleClass(lifecycleKey)
-                    : 'active';
                 const mapApplied = (typeof global.isProposalApplied === 'function') ? global.isProposalApplied(proposal) : false;
 
                 const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
@@ -495,11 +486,12 @@
                     String(feature?.properties?.producedByProposalId || '') === String(proposal.proposalId)
                 );
                 const producerPill = isParcelProducer
-                    ? `<span class="proposal-item-producer-pill" data-i18n-key="panel.parcel.proposalsSection.producerPill">${tParcel('panel.parcel.proposalsSection.producerPill', {}, 'Parcel source')}</span>`
+                    ? `<span class="cb-badge proposal-item-producer-pill" data-i18n-key="panel.parcel.proposalsSection.producerPill">${tParcel('panel.parcel.proposalsSection.producerPill', {}, 'Parcel source')}</span>`
                     : '';
 
                 // The consent channel this proposal lands in for THIS parcel (§10), plus what its
-                // formation takes when it takes anything.
+                // formation takes when it takes anything. A cb-badge whose tone says how much it asks
+                // of the owner: acceptance (their signature) is the loud one.
                 const dossierEntry = dossierEntryByPid.get(String(proposal.proposalId)) || null;
                 const channelChip = dossierEntry ? (() => {
                     const labels = {
@@ -508,8 +500,9 @@
                         vote: tParcel('panel.parcel.dossier.channel.vote', {}, 'Vote'),
                         disclosure: tParcel('panel.parcel.dossier.channel.disclosure', {}, 'Info')
                     };
+                    const tones = { acceptance: ' cb-badge--expired', offer: ' cb-badge--applied', vote: ' cb-badge--published', disclosure: '' };
                     const label = labels[dossierEntry.channel];
-                    return label ? `<span class="proposal-item-channel proposal-item-channel-${dossierEntry.channel}">${label}</span>` : '';
+                    return label ? `<span class="cb-badge${tones[dossierEntry.channel]} proposal-item-channel" data-channel="${dossierEntry.channel}">${label}</span>` : '';
                 })() : '';
                 const takesLine = (dossierEntry && dossierEntry.channel === 'acceptance' && dossierEntry.cededM2 > 0) ? (() => {
                     const destinations = {
@@ -524,10 +517,6 @@
                         destination
                     }, 'Takes {{area}} m² of this parcel → {{destination}}')}</div>`;
                 })() : '';
-
-                const isActive = (typeof global.getLifecycleStatus !== 'function' || global.getLifecycleStatus(proposal) !== 'Executed') && !mapApplied;
-
-                let actionButtons = '';
 
                 // Acceptance as compact bars sharing the ID/Author rows (grey track filling green);
                 // exact figures live in the proposal details, keeping list items two rows shorter.
@@ -601,8 +590,7 @@
                             <div class="proposal-item-badges">
                                 ${producerPill}
                                 ${channelChip}
-                                <span class="proposal-item-status ${statusClass}">${statusText}</span>
-                                ${mapApplied ? `<span class="proposal-item-map-badge applied">${appliedBadgeLabel}</span>` : ''}
+                                ${global.proposalLadderBadgesHtml(proposal, { applied: mapApplied })}
                             </div>
                         </div>
                         ${takesLine}
@@ -619,14 +607,10 @@
                                 <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.offer">${proposalOfferLabel}</span> ${currencySymbol}${formattedOfferValue}${currencySuffix}
                             </div>
                         ` : ''}
-                        ${actionButtons ? `
-                        <div class="proposal-item-actions" style="margin-top: 8px; text-align: right;">
-                            ${actionButtons}
-                        </div>` : ''}
                     </div>
                 `;
                 return `
-                    <div class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})" style="cursor: pointer;">
+                    <div class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})">
                         ${thumbHtml ? `<div class="proposal-item-row">${thumbHtml}${proposalBody}</div>` : proposalBody}
                     </div>
                 `;
@@ -676,7 +660,7 @@
         };
         const adLink = resolveAdLink();
         const adButtonHtml = adLink ? `
-            <button class="btn btn-success btn-sm parcel-ad-link-btn"
+            <button type="button" class="btn btn-success btn-sm parcel-ad-link-btn"
                 onclick="(window.toggleAdActionsDialog || function(){} )('${adLink}'); return false;"
                 data-i18n-key="panel.parcel.forSale">
                 ${tParcel('panel.parcel.forSale', {}, 'For sale')}
@@ -696,43 +680,37 @@
             </div>
             ${adLink ? `
             <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" style="display:none;">
-                <button class="parcel-info-btn parcel-builder-button"
+                <button type="button" class="btn btn-sm"
                     onclick="window.open(${inlineJsArg(adLink)}, '_blank', 'noopener,noreferrer'); return false;">
-                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    <i class="fas fa-cart-shopping" aria-hidden="true"></i>
                     <span data-i18n-key="panel.parcel.marketplace">${tParcel('panel.parcel.marketplace', {}, 'Marketplace')}</span>
                 </button>
-                <button class="parcel-info-btn parcel-builder-button"
+                <button type="button" class="btn btn-sm"
                     onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})(); return false;">
-                    <svg class="parcel-builder-icon" viewBox="0 0 64 32" aria-hidden="true" focusable="false">
-                        <path d="M6 22h30v-8h6l7 8v6h7v4H45a6 6 0 0 1-12 0h-9a6 6 0 0 1-12 0H6z" fill="currentColor"></path>
-                        <rect x="14" y="9" width="12" height="8" rx="2" ry="2" fill="currentColor"></rect>
-                        <path d="M50 12h10v12H50l-4-5v-2z" fill="currentColor"></path>
-                        <circle cx="14" cy="30" r="4" fill="currentColor"></circle>
-                        <circle cx="32" cy="30" r="4" fill="currentColor"></circle>
-                    </svg>
-                    <span data-i18n-key="panel.parcel.builderButton">${tParcel('panel.parcel.builderButton', {}, 'Parcel Builder')}</span>
+                    <i class="fas fa-trowel-bricks" aria-hidden="true"></i>
+                    <span data-i18n-key="panel.parcel.builderButton">${tParcel('panel.parcel.builderButton', {}, 'Parcel builder')}</span>
                 </button>
             </div>
             ` : ''}
             <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
         ${geometryReferenceNoteHtml}
-        <div style="display: flex; gap: 8px;">
-            <div class="metric-group" style="flex: 1;">
+        <div class="parcel-metric-row">
+            <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.owners">${ownersLabel}</div>
                 <div class="metric-value" id="parcel-owners-count">-</div>
             </div>
-            <div class="metric-group" style="flex: 1;">
+            <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.block">${blockLabel}</div>
                 <div class="metric-value">${blockHtml}</div>
             </div>
         </div>
-        <div style="display: flex; gap: 8px;">
-            <div class="metric-group" style="flex: 1;">
+        <div class="parcel-metric-row">
+            <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.area">${areaLabel}</div>
                 <div class="metric-value">${formattedArea}</div>
             </div>
-            <div class="metric-group" style="flex: 1;">
+            <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.marketPrice">${marketPriceLabel}</div>
                 <div class="metric-value">${formattedPrice}</div>
             </div>
@@ -1030,7 +1008,7 @@
             global.resetParcelMintStatusState();
         }
         const toolsTabContent = global.document.getElementById('tools-tab');
-        if (toolsTabContent && toolsTabContent.classList.contains('active') && typeof global.triggerParcelToolsTabActivated === 'function') {
+        if (toolsTabContent && !toolsTabContent.hidden && typeof global.triggerParcelToolsTabActivated === 'function') {
             global.triggerParcelToolsTabActivated();
         }
 
@@ -1046,7 +1024,8 @@
         const measurementsDiv = global.document.getElementById('roadMeasurements');
 
         if (button) {
-            button.innerHTML = tParcel('panel.parcel.actions.measureAsRoad', {}, 'Measure as road');
+            // The Tools tab's icon + label (index.html); measuring writes its progress over them.
+            button.innerHTML = `<i class="fas fa-ruler" aria-hidden="true"></i><span data-i18n-key="panel.parcel.actions.measureAsRoad">${tParcel('panel.parcel.actions.measureAsRoad', {}, 'Measure as road')}</span>`;
             button.disabled = false;
         }
 
@@ -1098,7 +1077,7 @@
         if (typeof global.neighborHighlightActive !== 'undefined' && global.neighborHighlightActive) {
             global.neighborHighlightActive = false;
             const neighborBtn = global.document.getElementById('neighboursButton');
-            if (neighborBtn) neighborBtn.classList.remove('active');
+            if (neighborBtn) neighborBtn.setAttribute('aria-pressed', 'false');
             if (typeof global.clearHighlightedNeighbors === 'function') {
                 global.clearHighlightedNeighbors();
             }
@@ -1106,7 +1085,7 @@
         if (typeof global.verticesDisplayActive !== 'undefined' && global.verticesDisplayActive) {
             global.verticesDisplayActive = false;
             const verticesBtn = global.document.getElementById('verticesButton');
-            if (verticesBtn) verticesBtn.classList.remove('active');
+            if (verticesBtn) verticesBtn.setAttribute('aria-pressed', 'false');
             if (typeof global.clearVertexMarkers === 'function') {
                 global.clearVertexMarkers();
             }

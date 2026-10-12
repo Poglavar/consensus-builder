@@ -482,7 +482,7 @@ function renderGeometrySection(goalKey) {
         edit: t('modal.createProposal.geometry.buttons.edit', 'Edit'),
         upload: t('modal.createProposal.geometry.buttons.upload', 'Upload'),
         noGeometry: t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry'),
-        submitted: t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted'),
+        submitted: t('modal.createProposal.geometry.status.submitted', 'Geometry submitted'),
         auto: t('modal.createProposal.geometry.status.auto', 'Algorithmic geometry will be generated')
     };
 
@@ -494,23 +494,29 @@ function renderGeometrySection(goalKey) {
 
     currentGeometryGoal = goalKey;
     proposalGeometrySubmitted = false;
+    // The row lays itself out (.proposal-geometry-buttons, css/utilities.css).
     buttonsRow.innerHTML = '';
-    buttonsRow.style.display = 'flex';
-    buttonsRow.style.flexWrap = 'wrap';
-    buttonsRow.style.gap = '8px';
 
     // Default hidden
     group.style.display = 'none';
     setGeometryStatus('', { submitted: false });
 
+    // Steps inside the create dialog, whose one primary is its submit: small .btn toggles with an
+    // icon, the action that made the geometry pressed (aria-pressed).
+    const GEOMETRY_ACTION_ICONS = { edit: 'fa-pen', upload: 'fa-upload' };
     const makeButton = (actionKey, text, { disabled = false, selected = false }) => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn btn-action';
-        if (selected) btn.classList.add('selected');
+        btn.className = 'btn btn-sm';
+        btn.setAttribute('aria-pressed', String(selected));
         if (disabled) btn.setAttribute('disabled', 'disabled');
         btn.dataset.geometryAction = actionKey;
-        btn.textContent = text;
+        const icon = document.createElement('i');
+        icon.className = `fa-solid ${GEOMETRY_ACTION_ICONS[actionKey] || 'fa-shapes'}`;
+        icon.setAttribute('aria-hidden', 'true');
+        const textNode = document.createElement('span');
+        textNode.textContent = text;
+        btn.append(icon, textNode);
         btn.addEventListener('click', () => handleGeometryAction(actionKey));
         return btn;
     };
@@ -540,7 +546,6 @@ function renderGeometrySection(goalKey) {
         setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: false }));
-        buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
     }
@@ -550,7 +555,6 @@ function renderGeometrySection(goalKey) {
         setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
-        buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
     }
@@ -560,7 +564,6 @@ function renderGeometrySection(goalKey) {
         setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
-        buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
     }
@@ -570,7 +573,6 @@ function renderGeometrySection(goalKey) {
         setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
-        buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
     }
@@ -582,7 +584,7 @@ async function handleGeometryAction(actionKey) {
     const t = getProposalI18nHelper();
     const tCorridor = getRoadDesignationTranslator(t);
     const label = {
-        submitted: t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
+        submitted: t('modal.createProposal.geometry.status.submitted', 'Geometry submitted')
     };
 
     switch (actionKey) {

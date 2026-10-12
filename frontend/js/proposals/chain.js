@@ -858,158 +858,55 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
     }
 }
 
+// Asked over the create dialog (js/ui/dialogs.js confirm): resolves true to create in memory.
 async function showWalletNotConnectedModal() {
-    return new Promise((resolve) => {
-        const t = getProposalI18nHelper();
-        setProposalModalDimmed(true);
-        const overlay = document.createElement('div');
-        overlay.className = 'cb-confirm-overlay';
-        // Ensure this modal sits above the create proposal modal
-        overlay.style.position = 'fixed';
-        overlay.style.inset = '0';
-        overlay.style.zIndex = '30000';
-
-        const dialog = document.createElement('div');
-        dialog.className = 'cb-confirm-dialog';
-        dialog.style.maxWidth = '600px';
-        dialog.style.zIndex = '30001';
-
-        const message = document.createElement('div');
-        message.className = 'cb-confirm-message';
-        message.style.marginBottom = '20px';
-
-        const introMessage = t(
-            'modal.createProposal.walletNotConnected.message',
-            'You are not connected with a wallet, so you can\'t mint proposals on chain.'
-        );
-        const proceedPrompt = t(
-            'modal.createProposal.walletNotConnected.proceedQuestion',
-            'Proceed to create an in-memory proposal?'
-        );
-
-        message.innerHTML = `
-            <p style="margin-bottom: 12px;">${introMessage}</p>
-            <p style="margin-top: 12px;">${proceedPrompt}</p>
-        `;
-
-        const buttons = document.createElement('div');
-        buttons.className = 'cb-confirm-buttons';
-        buttons.style.display = 'flex';
-        buttons.style.gap = '10px';
-        buttons.style.justifyContent = 'flex-end';
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'btn btn-secondary';
-        cancelBtn.textContent = t('modal.createProposal.walletNotConnected.cancel', 'Cancel');
-
-        const createBtn = document.createElement('button');
-        createBtn.type = 'button';
-        createBtn.className = 'btn btn-action';
-        createBtn.textContent = t('modal.createProposal.walletNotConnected.confirm', 'Create');
-
-        function cleanup(result) {
-            if (overlay && overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
-            }
-            setProposalModalDimmed(false);
-            resolve(result);
-        }
-
-        cancelBtn.addEventListener('click', () => cleanup(false));
-        createBtn.addEventListener('click', () => cleanup(true));
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                cleanup(false);
-            }
+    const t = getProposalI18nHelper();
+    setProposalModalDimmed(true);
+    const introMessage = t(
+        'modal.createProposal.walletNotConnected.message',
+        'You are not connected with a wallet, so you can\'t mint proposals on chain.'
+    );
+    const proceedPrompt = t(
+        'modal.createProposal.walletNotConnected.proceedQuestion',
+        'Proceed to create an in-memory proposal?'
+    );
+    try {
+        return await window.CbDialog.confirm(`${introMessage}\n\n${proceedPrompt}`, {
+            okText: t('modal.createProposal.walletNotConnected.confirm', 'Create'),
+            cancelText: t('modal.createProposal.walletNotConnected.cancel', 'Cancel')
         });
-
-        buttons.appendChild(cancelBtn);
-        buttons.appendChild(createBtn);
-        dialog.appendChild(message);
-        dialog.appendChild(buttons);
-        overlay.appendChild(dialog);
-        document.body.appendChild(overlay);
-    });
+    } finally {
+        setProposalModalDimmed(false);
+    }
 }
 
+// The shared dialog on the confirm rung, the failure reason set apart in its own box.
+// Resolves 'memory' or 'cancel' (Cancel, Escape, the backdrop).
 async function showOnchainMintFailedModal(reason) {
-    return new Promise((resolve) => {
-        const t = getProposalI18nHelper();
-        setProposalModalDimmed(true);
+    const t = getProposalI18nHelper();
+    setProposalModalDimmed(true);
 
-        const overlay = document.createElement('div');
-        overlay.className = 'cb-confirm-overlay';
-        overlay.style.position = 'fixed';
-        overlay.style.inset = '0';
-        overlay.style.zIndex = '50010';
-        overlay.style.background = 'rgba(15, 23, 42, 0.45)';
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
+    const message = document.createElement('p');
+    message.textContent = t('modal.createProposal.onchainMintFailed.message', 'On-chain mint failed for reason:');
+    const reasonBox = document.createElement('pre');
+    reasonBox.className = 'onchain-mint-failed__reason';
+    reasonBox.textContent = reason && reason.toString ? reason.toString() : t('modal.createProposal.onchainMintFailed.unknown', 'Unknown error');
 
-        const dialog = document.createElement('div');
-        dialog.className = 'cb-confirm-dialog';
-        dialog.style.maxWidth = '620px';
-        dialog.style.position = 'relative';
-        dialog.style.zIndex = '50011';
-
-        const message = document.createElement('div');
-        message.className = 'cb-confirm-message';
-        message.style.marginBottom = '16px';
-        message.textContent = t('modal.createProposal.onchainMintFailed.message', 'On-chain mint failed for reason:');
-
-        const reasonBox = document.createElement('div');
-        reasonBox.style.background = '#fff7ed';
-        reasonBox.style.border = '1px solid #fdba74';
-        reasonBox.style.color = '#7c2d12';
-        reasonBox.style.padding = '12px';
-        reasonBox.style.borderRadius = '6px';
-        reasonBox.style.fontFamily = 'monospace';
-        reasonBox.style.fontSize = '12px';
-        reasonBox.style.marginBottom = '18px';
-        reasonBox.textContent = reason && reason.toString ? reason.toString() : t('modal.createProposal.onchainMintFailed.unknown', 'Unknown error');
-
-        const buttons = document.createElement('div');
-        buttons.className = 'cb-confirm-buttons';
-        buttons.style.display = 'flex';
-        buttons.style.gap = '10px';
-        buttons.style.justifyContent = 'flex-end';
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'btn btn-secondary';
-        cancelBtn.textContent = t('modal.createProposal.onchainMintFailed.cancel', 'Cancel');
-
-        const createInMemoryBtn = document.createElement('button');
-        createInMemoryBtn.type = 'button';
-        createInMemoryBtn.className = 'btn btn-action';
-        createInMemoryBtn.textContent = t('modal.createProposal.onchainMintFailed.createInMemory', 'Create in memory');
-
-        function cleanup(result) {
-            if (overlay && overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
-            }
-            setProposalModalDimmed(false);
-            resolve(result);
-        }
-
-        cancelBtn.addEventListener('click', () => cleanup('cancel'));
-        createInMemoryBtn.addEventListener('click', () => cleanup('memory'));
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                cleanup('cancel');
-            }
-        });
-
-        buttons.appendChild(cancelBtn);
-        buttons.appendChild(createInMemoryBtn);
-        dialog.appendChild(message);
-        dialog.appendChild(reasonBox);
-        dialog.appendChild(buttons);
-        overlay.appendChild(dialog);
-        document.body.appendChild(overlay);
+    const dialogApi = window.CbDialog.open({
+        message: true,
+        size: 'md',
+        confirm: true,
+        role: 'alertdialog',
+        className: 'onchain-mint-failed',
+        body: [message, reasonBox],
+        actions: [
+            { id: 'cancel', value: 'cancel', label: t('modal.createProposal.onchainMintFailed.cancel', 'Cancel'), role: 'secondary' },
+            { id: 'memory', value: 'memory', label: t('modal.createProposal.onchainMintFailed.createInMemory', 'Create in memory'), role: 'primary' }
+        ]
     });
+    const result = dialogApi ? await dialogApi.closed : null;
+    setProposalModalDimmed(false);
+    return result === 'memory' ? 'memory' : 'cancel';
 }
 
 async function handleBlockchainSyncClick(event) {
@@ -1164,109 +1061,69 @@ function getExplorerBaseUrlForChain(chainId) {
     }
 }
 
+// The receipt after a proposal mint: the shared dialog (js/ui/dialogs.js) with the explorer link
+// and OK. However it is closed (OK, Escape, the close button) the create flow then finishes. The
+// overlay keeps the proposal-mint-success-modal id the tests address it by.
+let proposalMintSuccessDialog = null;
+
 function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) {
     try {
-        const existing = document.getElementById('proposal-mint-success-modal');
-        if (existing && existing.parentNode) {
-            existing.parentNode.removeChild(existing);
-        }
-
-        const overlay = document.createElement('div');
-        overlay.id = 'proposal-mint-success-modal';
-        overlay.style.position = 'fixed';
-        overlay.style.inset = '0';
-        overlay.style.background = 'rgba(0,0,0,0.45)';
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        overlay.style.zIndex = '12000';
-
-        const card = document.createElement('div');
-        card.style.background = '#fff';
-        card.style.borderRadius = '12px';
-        card.style.padding = '20px 24px';
-        card.style.maxWidth = '340px';
-        card.style.width = '90%';
-        card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
-        card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-
-        const title = document.createElement('h3');
-        title.textContent = 'Success!';
-        title.style.margin = '0 0 8px 0';
-        title.style.fontSize = '20px';
-        title.style.fontWeight = '700';
-        card.appendChild(title);
+        if (proposalMintSuccessDialog) proposalMintSuccessDialog.close();
 
         const body = document.createElement('p');
         const label = proposalId ? `Proposal ${proposalId}` : 'Proposal';
         body.textContent = `${label} has been minted!`;
-        body.style.margin = '0 0 12px 0';
-        body.style.fontSize = '14px';
-        card.appendChild(body);
-
-        const buttons = document.createElement('div');
-        buttons.style.display = 'flex';
-        buttons.style.flexDirection = 'column';
-        buttons.style.gap = '10px';
-        buttons.style.marginTop = '12px';
 
         const explorerBase = getExplorerBaseUrlForChain(chainId);
         const hasExplorer = explorerBase && txHash;
         const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
-        const viewBtn = document.createElement('button');
-        viewBtn.textContent = hasExplorer ? (isSolana ? 'View on Solana Explorer' : 'View on Etherscan') : 'View transaction';
-        viewBtn.style.padding = '10px 12px';
-        viewBtn.style.border = '1px solid #0d3b66';
-        viewBtn.style.borderRadius = '8px';
-        viewBtn.style.background = hasExplorer ? '#0d3b66' : '#cbd5e0';
-        viewBtn.style.color = '#fff';
-        viewBtn.style.cursor = hasExplorer ? 'pointer' : 'not-allowed';
-        viewBtn.disabled = !hasExplorer;
-        viewBtn.style.width = '100%';
-        if (hasExplorer) {
-            viewBtn.addEventListener('click', () => {
-                let url;
-                if (isSolana) {
-                    const cluster = chainId.replace('solana-', '');
-                    url = cluster === 'mainnet-beta'
-                        ? `${explorerBase}/tx/${txHash}`
-                        : `${explorerBase}/tx/${txHash}?cluster=${cluster}`;
-                } else {
-                    url = `${explorerBase}/tx/${txHash}`;
-                }
-                window.open(url, '_blank', 'noopener,noreferrer');
-            });
-        }
-
-        const okBtn = document.createElement('button');
-        okBtn.textContent = 'OK';
-        okBtn.style.padding = '10px 12px';
-        okBtn.style.border = 'none';
-        okBtn.style.borderRadius = '8px';
-        okBtn.style.background = '#0d3b66';
-        okBtn.style.color = '#fff';
-        okBtn.style.cursor = 'pointer';
-        okBtn.style.width = '100%';
-        okBtn.addEventListener('click', () => {
-            if (overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
+        const openExplorer = () => {
+            let url;
+            if (isSolana) {
+                const cluster = chainId.replace('solana-', '');
+                url = cluster === 'mainnet-beta'
+                    ? `${explorerBase}/tx/${txHash}`
+                    : `${explorerBase}/tx/${txHash}?cluster=${cluster}`;
+            } else {
+                url = `${explorerBase}/tx/${txHash}`;
             }
-            if (typeof onClose === 'function') {
-                try {
-                    onClose();
-                } catch (_) { }
-            } else if (proposalId && typeof showProposalDetailsModal === 'function') {
-                try {
-                    showProposalDetailsModal(proposalId);
-                } catch (_) { }
+            window.open(url, '_blank', 'noopener,noreferrer');
+        };
+
+        const dialogApi = window.CbDialog.open({
+            title: 'Success!',
+            size: 'sm',
+            top: true,
+            className: 'proposal-mint-success',
+            body,
+            stackActions: true,
+            actions: [
+                {
+                    id: 'view',
+                    label: hasExplorer ? (isSolana ? 'View on Solana Explorer' : 'View on Etherscan') : 'View transaction',
+                    role: 'secondary',
+                    disabled: !hasExplorer,
+                    keepOpen: true,
+                    onClick: openExplorer
+                },
+                { id: 'ok', label: 'OK', role: 'primary', autofocus: true }
+            ],
+            onClose: () => {
+                if (proposalMintSuccessDialog === dialogApi) proposalMintSuccessDialog = null;
+                if (typeof onClose === 'function') {
+                    try {
+                        onClose();
+                    } catch (_) { }
+                } else if (proposalId && typeof showProposalDetailsModal === 'function') {
+                    try {
+                        showProposalDetailsModal(proposalId);
+                    } catch (_) { }
+                }
             }
         });
-
-        buttons.appendChild(viewBtn);
-        buttons.appendChild(okBtn);
-        card.appendChild(buttons);
-        overlay.appendChild(card);
-        document.body.appendChild(overlay);
+        if (!dialogApi) return;
+        dialogApi.overlay.id = 'proposal-mint-success-modal';
+        proposalMintSuccessDialog = dialogApi;
     } catch (err) {
         console.warn('Failed to show proposal mint success modal:', err);
     }
@@ -1293,39 +1150,29 @@ function showMintedShareModal(proposal, mintedExplorerUrl) {
     const explorerUrl = mintedExplorerUrl || buildProposalNftExplorerUrl(proposal);
     const fallbackText = explorerUrl || tShare('noExplorer', 'Explorer link not available for this chain.');
 
+    // Laid out by css/modals.css (.minted-share-*); the input and buttons are the shared controls.
     const body = document.createElement('div');
-    body.style.display = 'flex';
-    body.style.flexDirection = 'column';
-    body.style.gap = '12px';
+    body.className = 'minted-share-body';
 
     const infoText = document.createElement('p');
     infoText.textContent = tProposal('panel.proposal.lifecycle.minted', 'Minted');
-    infoText.style.margin = '0';
     body.appendChild(infoText);
 
     const linkRow = document.createElement('div');
-    linkRow.style.display = 'flex';
-    linkRow.style.gap = '8px';
-    linkRow.style.alignItems = 'center';
+    linkRow.className = 'minted-share-link-row';
 
     const linkDisplay = document.createElement('input');
     linkDisplay.type = 'text';
     linkDisplay.readOnly = true;
     linkDisplay.value = fallbackText;
-    linkDisplay.style.flex = '1';
-    linkDisplay.style.padding = '8px 10px';
-    linkDisplay.style.border = '1px solid #d8ddf0';
-    linkDisplay.style.borderRadius = '8px';
-    linkDisplay.style.fontSize = '13px';
-    linkDisplay.style.background = '#f7f8fb';
-    linkDisplay.style.color = '#212744';
+    linkDisplay.className = 'minted-share-link';
+    linkDisplay.setAttribute('aria-label', tShare('copyUrlButton', 'Copy URL'));
     linkRow.appendChild(linkDisplay);
 
     const copyButton = document.createElement('button');
     copyButton.type = 'button';
-    copyButton.className = 'btn share-modal-secondary';
+    copyButton.className = 'btn';
     copyButton.textContent = tShare('copyUrlButton', 'Copy URL');
-    copyButton.style.whiteSpace = 'nowrap';
     copyButton.addEventListener('click', async () => {
         const value = linkDisplay.value;
         try {
@@ -1351,9 +1198,8 @@ function showMintedShareModal(proposal, mintedExplorerUrl) {
     if (explorerUrl) {
         const openButton = document.createElement('button');
         openButton.type = 'button';
-        openButton.className = 'btn share-modal-primary';
+        openButton.className = 'btn btn-primary';
         openButton.textContent = tShare('viewOnExplorer', 'View on Etherscan');
-        openButton.style.whiteSpace = 'nowrap';
         openButton.addEventListener('click', () => {
             window.open(explorerUrl, '_blank', 'noopener,noreferrer');
         });

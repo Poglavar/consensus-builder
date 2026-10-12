@@ -235,12 +235,12 @@ test.describe('Supporting pages @core', () => {
       const option = perspective.getByRole('button', { name: role });
       await option.click();
       await expect(page.locator('#canton-party')).toHaveValue(`${role}::fp`);
-      await expect(option).toHaveClass(/active/);
+      await expect(option).toHaveAttribute('aria-pressed', 'true');
     }
     const stranger = perspective.getByRole('button', { name: 'Stranger' });
     await stranger.click();
     await expect(page.locator('#canton-party')).toHaveValue('Stranger::fp');
-    await expect(stranger).toHaveClass(/active/);
+    await expect(stranger).toHaveAttribute('aria-pressed', 'true');
 
     await page.locator('#clear-parties-btn').click();
     await expect(page.locator('.canton-party-row')).toHaveCount(0);

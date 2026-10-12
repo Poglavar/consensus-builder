@@ -152,21 +152,16 @@ function initializeExpiryCountdown() {
                 expiryCountdownInterval = null;
             }
 
-            // Update the countdown display to show expired
+            // Update the countdown display to show expired (the look, and hiding the timer, is the
+            // expired class's: css/proposal-details.css).
             countdownEl.classList.add('expired');
-            countdownEl.style.background = '#f8d7da';
-            countdownEl.style.borderColor = '#f5c6cb';
             if (labelEl) {
-                labelEl.textContent = 'Proposal Expired';
-                labelEl.style.color = '#721c24';
-            }
-            if (timerEl) {
-                timerEl.style.display = 'none';
+                const t = getProposalI18nHelper();
+                labelEl.textContent = t('panel.proposal.expiry.expired', 'Proposal expired');
             }
             const iconEl = countdownEl.querySelector('i');
             if (iconEl) {
                 iconEl.className = 'fas fa-clock';
-                iconEl.style.color = '#721c24';
             }
 
             // Update proposal status in storage
@@ -186,15 +181,8 @@ function initializeExpiryCountdown() {
                 timerEl.textContent = formatRemainingTime(remaining);
             }
 
-            // Change color to red when less than 1 minute remaining
-            if (remaining < 60000) {
-                countdownEl.style.background = '#f8d7da';
-                countdownEl.style.borderColor = '#f5c6cb';
-                if (labelEl) labelEl.style.color = '#721c24';
-                if (timerEl) timerEl.style.color = '#721c24';
-                const iconEl = countdownEl.querySelector('i');
-                if (iconEl) iconEl.style.color = '#721c24';
-            }
+            // The danger tone in the last minute (is-urgent, css/proposal-details.css).
+            countdownEl.classList.toggle('is-urgent', remaining < 60000);
         }
     }
 

@@ -781,7 +781,7 @@
         return `
             <header>
                 <div><strong>${stationEditorText('title', 'Edit station geometry')}</strong><small>${spec?.label || stationEditorText('station', 'Station')}</small></div>
-                <button type="button" data-station-editor-action="cancel" aria-label="${stationEditorText('close', 'Close')}">×</button>
+                <button type="button" class="close-circle-btn" data-station-editor-action="cancel" aria-label="${stationEditorText('close', 'Close')}">×</button>
             </header>
             <div class="station-editor-body">
                 <p>${stationEditorText('fixedPosition', 'The station centre stays fixed. Rotate the station around it.')}</p>
@@ -794,7 +794,7 @@
             </div>
             <footer>
                 <span>${stationEditorText('hint', 'The map preview updates while you edit.')}</span>
-                <div><button type="button" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="is-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button></div>
+                <div><button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button></div>
             </footer>`;
     }
 
@@ -1131,7 +1131,7 @@
         const toolbar = global.document?.getElementById('station-placement-toolbar');
         if (toolbar) toolbar.hidden = true;
         global.transitStationPlacementMode = false;
-        global.document?.querySelectorAll?.('[data-station-type].is-active').forEach(button => button.classList.remove('is-active'));
+        global.document?.querySelectorAll?.('[data-station-type][aria-pressed="true"]').forEach(button => button.setAttribute('aria-pressed', 'false'));
     }
 
     function cancelTransitStationPlacement() {
@@ -1358,7 +1358,7 @@
         global.addEventListener('keydown', placement.onKey, true);
         try { global.map._container.style.cursor = 'crosshair'; } catch (_) { }
         global.document?.querySelectorAll?.(`[data-station-type="${type}"]`)
-            .forEach(button => button.classList.add('is-active'));
+            .forEach(button => button.setAttribute('aria-pressed', 'true'));
         if (type !== 'bus') {
             const activePlacement = placement;
             Promise.resolve(global.TransitAlignments?.ensureLoaded?.()).then(() => {

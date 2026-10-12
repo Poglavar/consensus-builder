@@ -5,7 +5,7 @@
     }
 
     const state = {
-        overlay: null,
+        dialog: null,
         listNode: null,
         statusNode: null,
         refreshNode: null,
@@ -125,7 +125,7 @@
         const button = document.getElementById('mintedProposalsButton');
         if (!button) return;
         const connected = isWalletConnected(getWalletState());
-        button.style.display = connected ? '' : 'none';
+        button.hidden = !connected;
     };
 
     const attachWalletObservers = () => {
@@ -360,118 +360,59 @@
     };
 
     const closeMintedProposalsModal = () => {
-        if (state.overlay && state.overlay.parentNode) {
-            state.overlay.parentNode.removeChild(state.overlay);
-        }
+        if (state.dialog) state.dialog.close();
     };
 
+    // The list is the shared dialog (js/ui/dialogs.js) with Refresh in its footer. The classes
+    // minted-proposals-overlay / -refresh / -close stay as hooks for scripts and tests.
     const ensureModal = () => {
-        if (state.overlay) return state.overlay;
-
-        const overlay = document.createElement('div');
-        overlay.className = 'minted-proposals-overlay';
-
-        const modal = document.createElement('div');
-        modal.className = 'minted-proposals-modal';
-        modal.setAttribute('role', 'dialog');
-        modal.setAttribute('aria-modal', 'true');
-
-        const header = document.createElement('div');
-        header.className = 'minted-proposals-header';
-
-        const title = document.createElement('div');
-        title.className = 'minted-proposals-title';
-        title.setAttribute('data-i18n-key', 'modal.mintedProposals.title');
-        title.textContent = t('modal.mintedProposals.title', 'Minted Proposals');
-
-        const actions = document.createElement('div');
-        actions.className = 'minted-proposals-actions';
-
-        const refreshBtn = document.createElement('button');
-        refreshBtn.type = 'button';
-        refreshBtn.className = 'btn btn-secondary minted-proposals-refresh';
-        refreshBtn.setAttribute('data-i18n-key', 'modal.mintedProposals.refresh');
-        refreshBtn.textContent = t('modal.mintedProposals.refresh', 'Refresh');
-        refreshBtn.addEventListener('click', () => {
-            openMintedProposalsModal();
-        });
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn close-circle-btn--lg minted-proposals-close';
-        closeBtn.setAttribute('aria-label', 'Close');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.addEventListener('click', closeMintedProposalsModal);
-
-        actions.appendChild(refreshBtn);
-        actions.appendChild(closeBtn);
-        header.appendChild(title);
-        header.appendChild(actions);
-
-        const body = document.createElement('div');
-        body.className = 'minted-proposals-body';
+        if (state.dialog) return state.dialog;
 
         const status = document.createElement('div');
         status.className = 'minted-proposals-status';
-        status.textContent = '';
+        status.setAttribute('role', 'status');
 
         const list = document.createElement('div');
         list.className = 'minted-proposals-list';
 
-        body.appendChild(status);
-        body.appendChild(list);
-        modal.appendChild(header);
-        modal.appendChild(body);
-        overlay.appendChild(modal);
-
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                closeMintedProposalsModal();
+        const dialogApi = globalScope.CbDialog.open({
+            title: t('modal.mintedProposals.title', 'Minted proposals'),
+            size: 'lg',
+            className: 'minted-proposals-modal',
+            overlayClassName: 'minted-proposals-overlay',
+            bodyClassName: 'minted-proposals-body',
+            body: [status, list],
+            actions: [{
+                id: 'refresh',
+                label: t('modal.mintedProposals.refresh', 'Refresh'),
+                role: 'secondary',
+                className: 'minted-proposals-refresh',
+                keepOpen: true,
+                onClick: () => { openMintedProposalsModal(); }
+            }],
+            onClose: () => {
+                if (state.dialog !== dialogApi) return;
+                state.dialog = null;
+                state.listNode = null;
+                state.statusNode = null;
+                state.refreshNode = null;
+                state.bodyNode = null;
             }
         });
+        const closeBtn = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+        if (closeBtn) closeBtn.classList.add('minted-proposals-close');
 
-        state.overlay = overlay;
+        state.dialog = dialogApi;
         state.listNode = list;
         state.statusNode = status;
-        state.refreshNode = refreshBtn;
-        state.bodyNode = body;
-
-        try {
-            if (globalScope.i18n && typeof globalScope.i18n.applyTranslations === 'function') {
-                globalScope.i18n.applyTranslations(overlay);
-            }
-        } catch (_) { /* ignore */ }
-
-        return overlay;
+        state.refreshNode = dialogApi.getActionButton('refresh');
+        state.bodyNode = dialogApi.body;
+        return dialogApi;
     };
 
+    // Opened from the list, so on the dialog-over-dialog rung. The header and footer keep the
+    // minted-metadata-header / -footer hooks the tests address them by.
     const showMetadataDialog = (entry) => {
-        const overlay = document.createElement('div');
-        overlay.className = 'minted-metadata-overlay';
-
-        const modal = document.createElement('div');
-        modal.className = 'minted-metadata-modal';
-        modal.setAttribute('role', 'dialog');
-        modal.setAttribute('aria-modal', 'true');
-
-        const header = document.createElement('div');
-        header.className = 'minted-metadata-header';
-
-        const title = document.createElement('h3');
-        title.textContent = t('modal.mintedProposals.metadataTitle', 'Proposal metadata');
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn close-circle-btn--lg';
-        closeBtn.innerHTML = '&times;';
-        closeBtn.addEventListener('click', () => overlay.remove());
-
-        header.appendChild(title);
-        header.appendChild(closeBtn);
-
-        const body = document.createElement('div');
-        body.className = 'minted-metadata-body';
-
         const source = document.createElement('div');
         source.className = 'minted-metadata-source';
         if (entry.metadataUrl) {
@@ -479,7 +420,8 @@
             const link = document.createElement('a');
             link.href = resolvedSource;
             link.target = '_blank';
-            link.rel = 'noreferrer noopener';
+            link.rel = 'noopener noreferrer';
+            link.className = 'cb-link cb-link--external';
             link.textContent = resolvedSource;
             source.appendChild(link);
         }
@@ -495,36 +437,18 @@
             pre.textContent = t('modal.mintedProposals.metadataUnavailable', 'Metadata is not available for this proposal.');
         }
 
-        const footer = document.createElement('div');
-        footer.className = 'minted-metadata-footer';
-        const okBtn = document.createElement('button');
-        okBtn.type = 'button';
-        okBtn.className = 'btn btn-action';
-        okBtn.textContent = t('modal.mintedProposals.ok', 'OK');
-        okBtn.addEventListener('click', () => overlay.remove());
-        footer.appendChild(okBtn);
-
-        body.appendChild(source);
-        body.appendChild(pre);
-        body.appendChild(footer);
-
-        modal.appendChild(header);
-        modal.appendChild(body);
-        overlay.appendChild(modal);
-
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                overlay.remove();
-            }
+        const dialogApi = globalScope.CbDialog.open({
+            title: t('modal.mintedProposals.metadataTitle', 'Proposal metadata'),
+            size: 'lg',
+            top: true,
+            className: 'minted-metadata-modal',
+            overlayClassName: 'minted-metadata-overlay',
+            bodyClassName: 'minted-metadata-body',
+            footerClassName: 'minted-metadata-footer',
+            body: [source, pre],
+            actions: [{ id: 'ok', label: t('modal.mintedProposals.ok', 'OK'), role: 'primary' }]
         });
-
-        try {
-            if (globalScope.i18n && typeof globalScope.i18n.applyTranslations === 'function') {
-                globalScope.i18n.applyTranslations(overlay);
-            }
-        } catch (_) { /* ignore */ }
-
-        document.body.appendChild(overlay);
+        if (dialogApi && dialogApi.header) dialogApi.header.classList.add('minted-metadata-header');
     };
 
     const renderList = (entries, chainId, contractAddress) => {
@@ -669,16 +593,17 @@
                 actions.appendChild(lensButton);
             }
 
+            // One row of small actions per card; no card claims the dialog's one primary.
             const detailsBtn = document.createElement('button');
             detailsBtn.type = 'button';
-            detailsBtn.className = 'btn btn-action minted-proposal-details-btn';
+            detailsBtn.className = 'btn btn-sm minted-proposal-details-btn';
             detailsBtn.textContent = t('modal.mintedProposals.detailsButton', 'Details');
             detailsBtn.addEventListener('click', () => openMintedProposalDetails(entry));
             actions.appendChild(detailsBtn);
 
             const metadataBtn = document.createElement('button');
             metadataBtn.type = 'button';
-            metadataBtn.className = 'btn btn-outline minted-proposal-metadata-btn';
+            metadataBtn.className = 'btn btn-sm minted-proposal-metadata-btn';
             metadataBtn.textContent = t('modal.mintedProposals.metadataButton', 'Metadata');
             metadataBtn.addEventListener('click', () => showMetadataDialog(entry));
 
@@ -688,9 +613,9 @@
             if (explorerUrl) {
                 const explorerLink = document.createElement('a');
                 explorerLink.href = explorerUrl;
-                explorerLink.className = 'btn btn-secondary';
+                explorerLink.className = 'btn btn-sm';
                 explorerLink.target = '_blank';
-                explorerLink.rel = 'noreferrer noopener';
+                explorerLink.rel = 'noopener noreferrer';
                 explorerLink.textContent = t('modal.mintedProposals.explorer', 'View on Explorer');
                 actions.appendChild(explorerLink);
             }
@@ -838,10 +763,7 @@
     const openMintedProposalsModal = async () => {
         if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
         const run = async () => {
-            const overlay = ensureModal();
-            if (!overlay.parentNode) {
-                document.body.appendChild(overlay);
-            }
+            ensureModal();
             if (state.listNode) {
                 state.listNode.innerHTML = '';
             }

@@ -529,28 +529,38 @@
         if (!address) return null;
         return el('button', {
             type: 'button',
-            class: 'tx-copy',
+            class: 'btn btn-quiet btn-sm btn-icon tx-copy',
             title: STRINGS.copy,
             'aria-label': `${STRINGS.copy} ${address}`,
             dataset: { copy: address }
-        }, '⧉');
+        }, el('i', { class: 'fa-regular fa-copy', 'aria-hidden': 'true' }));
     }
 
     function linkPair(links, labelPrefix) {
         const out = [];
         if (links.explorer) {
             out.push(el('a', {
-                class: 'tx-link', href: links.explorer, target: '_blank', rel: 'noopener',
+                class: 'cb-link cb-link--external tx-link', href: links.explorer, target: '_blank', rel: 'noopener noreferrer',
                 title: `${STRINGS.explorer}${labelPrefix ? ` — ${labelPrefix}` : ''}`
             }, STRINGS.explorer));
         }
         if (links.solscan) {
             out.push(el('a', {
-                class: 'tx-link', href: links.solscan, target: '_blank', rel: 'noopener',
+                class: 'cb-link cb-link--external tx-link', href: links.solscan, target: '_blank', rel: 'noopener noreferrer',
                 title: `${STRINGS.solscan}${labelPrefix ? ` — ${labelPrefix}` : ''}`
             }, STRINGS.solscan));
         }
         return out;
+    }
+
+    // Badges take the lifecycle colours: a confirmed transaction reads as executed, a failed one as
+    // expired; action names (code) get the applied tint so they stand apart from program names.
+    function statusBadgeClass(status) {
+        return `cb-badge ${status === 'failed' ? 'cb-badge--expired' : 'cb-badge--executed'}`;
+    }
+
+    function tagBadgeClass(kind) {
+        return kind === 'action' ? 'cb-badge cb-badge--applied tx-tag-action' : 'cb-badge';
     }
 
     function explorerConfig() {
@@ -627,11 +637,10 @@
         }
         const selected = state.filters[facet];
         names.forEach((name) => {
-            const on = selected.has(name);
             container.appendChild(el('button', {
                 type: 'button',
-                class: `tx-chip${on ? ' is-on' : ''}`,
-                'aria-pressed': on ? 'true' : 'false',
+                class: 'cb-segmented__option',
+                'aria-pressed': selected.has(name) ? 'true' : 'false',
                 dataset: { facet, value: name },
                 text: name
             }));
@@ -672,7 +681,7 @@
             el('span', { class: 'tx-ix-index', text: ix.indexLabel }),
             el('span', { class: 'tx-ix-program', title: ix.programAddress, text: ix.programLabel }),
             ix.programName ? el('code', { class: 'tx-ix-name', text: ix.programName }) : null,
-            ix.action ? el('span', { class: 'tx-ix-action', text: ix.action }) : null
+            ix.action ? el('span', { class: tagBadgeClass('action'), text: ix.action }) : null
         ]);
 
         const args = ix.args.length
@@ -741,14 +750,14 @@
             el('td', { class: 'tx-cell tx-cell-time', dataset: { label: STRINGS.colTime }, title: model.time.iso },
                 el('span', { class: 'tx-time', title: model.time.iso, text: model.time.local })),
             el('td', { class: 'tx-cell tx-cell-status', dataset: { label: STRINGS.colStatus } },
-                el('span', { class: `tx-status tx-status-${model.status}`, title: model.error || '', text: model.statusLabel })),
+                el('span', { class: statusBadgeClass(model.status), title: model.error || '', text: model.statusLabel })),
             el('td', { class: 'tx-cell tx-cell-summary', dataset: { label: STRINGS.colSummary } }, [
                 el('span', { class: 'tx-summary', text: model.summary }),
                 model.error ? el('span', { class: 'tx-row-error', text: model.error }) : null,
                 model.slot !== null ? el('span', { class: 'tx-slot', text: `slot ${model.slot}` }) : null
             ]),
             el('td', { class: 'tx-cell tx-cell-tags', dataset: { label: STRINGS.colTags } },
-                model.tags.map((tag) => el('span', { class: `tx-tag tx-tag-${tag.kind}`, text: tag.text }))),
+                model.tags.map((tag) => el('span', { class: tagBadgeClass(tag.kind), text: tag.text }))),
             el('td', { class: 'tx-cell tx-cell-amounts', dataset: { label: STRINGS.colAmounts } },
                 model.amounts.length ? model.amounts.map(amountCell) : [el('span', { class: 'tx-muted', text: '—' })]),
             el('td', { class: 'tx-cell tx-cell-payer', dataset: { label: STRINGS.colFeePayer } },
@@ -911,7 +920,7 @@
             renderTable();
         });
         dom.filters.addEventListener('click', (event) => {
-            const chip = event.target.closest('.tx-chip');
+            const chip = event.target.closest('button[data-facet]');
             if (!chip) return;
             const facet = chip.dataset.facet;
             const value = chip.dataset.value;

@@ -9,32 +9,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="css/tokens.css?v=2" />
+    <link rel="stylesheet" href="css/primitives.css?v=2" />
+    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
     <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="index.css" />
-    <link rel="stylesheet" href="css/howto.css" />
+    <link rel="stylesheet" href="css/howto.css?v=2" />
 </head>
 
-<body>
-    <div class="sidebar">
-        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
-        <h1>How to use</h1>
+<body class="cb-page">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1>How to use</h1></div>
+        <a class="cb-link cb-back-link" href="/?lang=en"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+        <nav class="cb-page-header__lang cb-segmented" aria-label="Language">
+            <a class="cb-segmented__option" href="kako-koristiti.html" hreflang="hr" lang="hr">HR</a>
+            <a class="cb-segmented__option" href="how-to-use.html" hreflang="en" lang="en" aria-current="page">EN</a>
+        </nav>
+    </header>
+    <nav class="sidebar" aria-label="Guide navigation">
         <div class="sidebar-links">
-            <a href="index.html?lang=en" class="back-link">
-                <i class="fas fa-arrow-left"></i>
-                Back to the app
-            </a>
-            <a href="#workflow" class="back-link"><i class="fas fa-route"></i> The workflow</a>
-            <a href="#palette" class="back-link"><i class="fas fa-shapes"></i> The “Build” palette</a>
-            <a href="#objects" class="back-link"><i class="fas fa-layer-group"></i> Proposals &amp; forks</a>
-            <a href="#views" class="back-link"><i class="fas fa-cube"></i> Views</a>
-            <a href="#sharing" class="back-link"><i class="fas fa-share-nodes"></i> Sharing</a>
-            <a href="roadmap.html" class="back-link"><i class="fas fa-compass"></i> Roadmap</a>
+            <a class="btn btn-quiet" href="#workflow"><i class="fa-solid fa-route" aria-hidden="true"></i>The workflow</a>
+            <a class="btn btn-quiet" href="#palette"><i class="fa-solid fa-shapes" aria-hidden="true"></i>The “Build” palette</a>
+            <a class="btn btn-quiet" href="#objects"><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Proposals &amp; forks</a>
+            <a class="btn btn-quiet" href="#views"><i class="fa-solid fa-cube" aria-hidden="true"></i>Views</a>
+            <a class="btn btn-quiet" href="#sharing"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i>Sharing</a>
+            <a class="btn btn-quiet" href="roadmap.html"><i class="fa-solid fa-compass" aria-hidden="true"></i>Roadmap</a>
         </div>
-        <div class="lang-switch">
-            <a href="kako-koristiti.html">HR</a>
-            <a href="how-to-use.html" class="is-current">EN</a>
-        </div>
-    </div>
+    </nav>
 
     <main class="main-content">
         <div class="container">
@@ -47,7 +48,7 @@
                         change on the map — for example, a block, park, road or ownership offer. Finishing the design
                         creates an applied local proposal that you can inspect, fork, compare and share.
                     </p>
-                    <a class="primary-link" href="index.html?lang=en"><i class="fas fa-map"></i> Open the map</a>
+                    <a class="btn btn-primary" href="index.html?lang=en"><i class="fa-solid fa-map" aria-hidden="true"></i>Open the map</a>
                 </div>
                 <img src="images/site-intro-parcels.webp"
                     alt="The same parcels before and after a proposed city block">
@@ -167,7 +168,7 @@
                     <li class="step">
                         <h3>Inspect and share the result</h3>
                         <p>
-                            Switch between 2D and <a href="how-to-use-views.html">3D</a>, or use realistic and walk
+                            Switch between 2D and <a class="cb-link" href="how-to-use-views.html">3D</a>, or use realistic and walk
                             views where the city supports them. Share one proposal from its details, or apply the set
                             you want and use <span class="ui-label">Share entire plan</span> to send the composition.
                         </p>
@@ -194,7 +195,7 @@
                             <tr class="is-grouped">
                                 <td><i class="fas fa-city"></i>Block</td>
                                 <td>Fills the block with buildings from an urban rule (buildable envelope, height,
-                                    setbacks). <a href="how-to-use-buildings.html">Buildings guide →</a></td>
+                                    setbacks). <a class="cb-link" href="how-to-use-buildings.html">Buildings guide →</a></td>
                             </tr>
                             <tr class="is-grouped">
                                 <td><i class="fas fa-grip-horizontal"></i>Row houses</td>
@@ -212,12 +213,12 @@
                             <tr>
                                 <td><i class="fas fa-vector-square"></i>Land readjustment</td>
                                 <td>Pools the selected parcels and re-divides them into a tidier layout.
-                                    <a href="how-to-use-reparcellization.html">Guide →</a></td>
+                                    <a class="cb-link" href="how-to-use-reparcellization.html">Guide →</a></td>
                             </tr>
                             <tr>
                                 <td><i class="fas fa-tree"></i>Park</td>
                                 <td>A park across the selected parcels, in one click. You add the furniture (trees,
-                                    benches, paths) afterwards. <a href="how-to-use-park-square.html">Guide →</a></td>
+                                    benches, paths) afterwards. <a class="cb-link" href="how-to-use-park-square.html">Guide →</a></td>
                             </tr>
                             <tr>
                                 <td><i class="fas fa-chess-board"></i>Square</td>
@@ -240,7 +241,7 @@
                     <i class="fas fa-road"></i>
                     <strong>Roads, tracks and stations share the Transport group.</strong> They sit outside the parcel
                     tools because they are drawn across the map and can cut through parcels.
-                    <a href="how-to-use-road.html">Roads and tracks guide →</a>
+                    <a class="cb-link" href="how-to-use-road.html">Roads and tracks guide →</a>
                 </div>
 
                 <div class="callout note">
@@ -324,7 +325,7 @@
                     </article>
                 </div>
                 <p style="margin-top:16px">
-                    <a href="how-to-use-views.html">The full guide to views and 3D →</a>
+                    <a class="cb-link" href="how-to-use-views.html">The full guide to views and 3D →</a>
                 </p>
             </section>
 

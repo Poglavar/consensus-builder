@@ -26,7 +26,7 @@
     function setDrawButtonActive(active) {
         const btn = document.getElementById('areaMonitorDrawButton');
         if (!btn) return;
-        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(Boolean(active)));
         // While freely drawing, grey out "Draw from plan"
         setDrawFromPlanEnabled(!active && isPlanLoaded());
     }
@@ -64,21 +64,19 @@
         const lblCancel = t('sidebar.areaMonitor.cancelButton') || 'Cancel';
         const lblCreate = t('sidebar.areaMonitor.createButton') || 'Create';
 
+        // Looks from css/map-shell.css (.area-monitor-creation-panel) and the shared controls.
         panel.innerHTML = `
-            <h3 id="am-creation-title">${escapeHtml(lblTitle)}</h3>
-            <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">${escapeHtml(lblName)}</label>
-                <input id="am-name" type="text" placeholder="${escapeAttr(lblPlaceholder)}" maxlength="100"
-                    style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px;box-sizing:border-box;" />
+            <h3 id="am-creation-title" class="area-monitor-creation-panel__title">${escapeHtml(lblTitle)}</h3>
+            <div class="area-monitor-creation-panel__field">
+                <label for="am-name" class="area-monitor-creation-panel__label">${escapeHtml(lblName)}</label>
+                <input id="am-name" class="area-monitor-creation-panel__input" type="text" placeholder="${escapeAttr(lblPlaceholder)}" maxlength="100" />
             </div>
-            <div style="margin-bottom:12px;font-size:13px;color:#555;">
-                <strong>${escapeHtml(lblParcels)}</strong>
+            <p class="area-monitor-creation-panel__parcels"><strong>${escapeHtml(lblParcels)}</strong></p>
+            <div class="cb-actions cb-actions--end area-monitor-creation-panel__actions">
+                <button type="button" id="am-cancel" class="btn">${escapeHtml(lblCancel)}</button>
+                <button type="button" id="am-create" class="btn btn-primary" ${createDisabled ? 'disabled' : ''}>${escapeHtml(lblCreate)}</button>
             </div>
-            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
-                <button id="am-cancel" style="padding:8px 16px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">${escapeHtml(lblCancel)}</button>
-                <button id="am-create" ${createDisabled ? 'disabled' : ''} style="padding:8px 16px;border:none;border-radius:6px;background:#2196F3;color:#fff;cursor:pointer;font-size:13px;font-weight:500;${createDisabled ? 'opacity:0.45;cursor:not-allowed;' : ''}">${escapeHtml(lblCreate)}</button>
-            </div>
-            <div id="am-error" style="color:#d32f2f;font-size:12px;margin-top:8px;display:none;"></div>
+            <p id="am-error" class="area-monitor-creation-panel__error" role="alert" hidden></p>
         `;
 
         panel.setAttribute('aria-labelledby', 'am-creation-title');
@@ -133,15 +131,13 @@
         const panel = document.getElementById('area-monitor-creation-panel');
         if (panel) panel.remove();
         document.body.classList.remove('area-monitor-creation-active');
-        const backdrop = document.getElementById('area-monitor-backdrop');
-        if (backdrop) backdrop.remove();
     }
 
     function showPanelError(msg) {
         const el = document.getElementById('am-error');
         if (el) {
             el.textContent = msg;
-            el.style.display = 'block';
+            el.hidden = false;
         }
     }
 
@@ -243,20 +239,27 @@
         return Array.isArray(payload?.monitors) ? payload.monitors : [];
     }
 
+    // One watched area: a selectable cb-option row (css/primitives.css).
     function createMonitorListItem(monitor) {
         const item = document.createElement('button');
         item.type = 'button';
-        item.className = 'area-monitor-list-item';
+        item.className = 'cb-option area-monitor-list-item';
+        const icon = document.createElement('i');
+        icon.className = 'cb-option__icon fa-solid fa-draw-polygon';
+        icon.setAttribute('aria-hidden', 'true');
+        const text = document.createElement('span');
+        text.className = 'cb-option__text';
         const name = document.createElement('span');
-        name.className = 'area-monitor-list-item__name';
+        name.className = 'cb-option__title area-monitor-list-item__name';
         name.textContent = monitor.name || `Area ${monitor.id}`;
         const meta = document.createElement('span');
-        meta.className = 'area-monitor-list-item__meta';
+        meta.className = 'cb-option__desc area-monitor-list-item__meta';
         const parcelText = t('proposals.autoName.parcels', { count: monitor.parcelCount })
             || `${monitor.parcelCount} parcels`;
         const createdLabel = formatMonitorDate(monitor.createdAt);
         meta.textContent = [parcelText, createdLabel].filter(Boolean).join(' · ');
-        item.append(name, meta);
+        text.append(name, meta);
+        item.append(icon, text);
         item.addEventListener('click', () => openMonitorFromList(monitor.id));
         return item;
     }
@@ -365,7 +368,7 @@
             toggleButton.setAttribute('aria-label', nextLabel);
             toggleButton.setAttribute('title', nextLabel);
             toggleButton.setAttribute('aria-expanded', minimized ? 'false' : 'true');
-            toggleButton.innerHTML = minimized ? '+' : '&#8722;';
+            toggleButton.innerHTML = `<i class="fa-solid ${minimized ? 'fa-plus' : 'fa-minus'}" aria-hidden="true"></i>`;
         }
     }
 
@@ -397,18 +400,18 @@
 
         const externalLinks = [];
         if (monitor.eojnUrl) {
-            externalLinks.push(`<a href="${escapeHtml(monitor.eojnUrl)}" target="_blank" rel="noopener">EOJN</a>`);
+            externalLinks.push(`<a class="cb-link cb-link--external" href="${escapeHtml(monitor.eojnUrl)}" target="_blank" rel="noopener noreferrer">EOJN</a>`);
         }
         if (monitor.skyscraperCityUrl) {
-            externalLinks.push(`<a href="${escapeHtml(monitor.skyscraperCityUrl)}" target="_blank" rel="noopener">SkyscraperCity</a>`);
+            externalLinks.push(`<a class="cb-link cb-link--external" href="${escapeHtml(monitor.skyscraperCityUrl)}" target="_blank" rel="noopener noreferrer">SkyscraperCity</a>`);
         }
 
         panel.innerHTML = `
             <div class="panel-header">
                 <h3>${escapeHtml(monitor.name)}</h3>
                 <div class="panel-header__actions">
-                    <button id="am-detail-minimize" type="button" class="close-circle-btn close-circle-btn--lg area-monitor-detail-toggle"
-                        aria-label="${escapeAttr(lblMinimize)}" title="${escapeAttr(lblMinimize)}" aria-controls="am-detail-body" aria-expanded="true">&#8722;</button>
+                    <button id="am-detail-minimize" type="button" class="btn btn-quiet btn-icon area-monitor-detail-toggle"
+                        aria-label="${escapeAttr(lblMinimize)}" title="${escapeAttr(lblMinimize)}" aria-controls="am-detail-body" aria-expanded="true"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
                     <button id="am-detail-close" type="button" class="close-circle-btn close-circle-btn--lg close-button"
                         aria-label="${escapeAttr(lblClose)}" title="${escapeAttr(lblClose)}">×</button>
                 </div>
@@ -422,12 +425,12 @@
                     </div>
                     ${formattedArea ? `<div class="area-monitor-detail-summary__area">${escapeHtml(lblMonitoredArea)}: ${escapeHtml(formattedArea)}</div>` : ''}
                 </div>
-                ${externalLinks.length ? `<div class="area-monitor-detail-links">${externalLinks.join('<span class="area-monitor-detail-links__sep">&middot;</span>')}</div>` : ''}
-                <div class="area-monitor-detail-actions">
-                    <button id="am-share" type="button" class="btn btn-secondary area-monitor-detail-button">
+                ${externalLinks.length ? `<div class="cb-link-row area-monitor-detail-links">${externalLinks.join('')}</div>` : ''}
+                <div class="cb-actions cb-actions--stack area-monitor-detail-actions">
+                    <button id="am-share" type="button" class="btn btn-sm">
                         ${escapeHtml(lblCopyLink)}
                     </button>
-                    <button id="am-list-others" type="button" class="btn btn-secondary area-monitor-detail-button">
+                    <button id="am-list-others" type="button" class="btn btn-sm">
                         ${escapeHtml(lblListOtherMonitors)}
                     </button>
                 </div>
@@ -498,11 +501,14 @@
         return CbFormat.formatDate(dateValue);
     }
 
+    // The "other monitors" list: the shared dialog (js/ui/dialogs.js). Its card keeps the
+    // area-monitor-list-modal id and its close button am-list-close, which the tests address.
+    let monitorListDialog = null;
+
     function removeMonitorListModal() {
-        const modal = document.getElementById('area-monitor-list-modal');
-        if (modal) { modal.__unregisterEscape?.(); modal.remove(); }
-        const backdrop = document.getElementById('area-monitor-list-backdrop');
-        if (backdrop) backdrop.remove();
+        const dialog = monitorListDialog;
+        monitorListDialog = null;
+        if (dialog) dialog.close();
     }
 
     function isMobileViewport() {
@@ -531,109 +537,78 @@
         const lblFilterPlaceholder = t('sidebar.areaMonitor.listFilterPlaceholder') || 'Filter by name';
         const lblFilterEmpty = t('sidebar.areaMonitor.listFilterEmpty') || 'No monitors match the filter.';
 
-        const backdrop = document.createElement('div');
-        backdrop.id = 'area-monitor-list-backdrop';
-        backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);z-index:9999;';
-        backdrop.addEventListener('click', removeMonitorListModal);
-        document.body.appendChild(backdrop);
+        // The title and filter stay at the top; only the list scrolls. The dialog keeps one height
+        // (css/area-monitor-list.css) so it does not move as the filter shortens the list.
+        const filterInput = document.createElement('input');
+        filterInput.id = 'am-list-filter';
+        filterInput.type = 'search';
+        filterInput.className = 'area-monitor-list-filter';
+        filterInput.autocomplete = 'off';
+        filterInput.placeholder = lblFilterPlaceholder;
+        filterInput.setAttribute('aria-label', lblFilterPlaceholder);
+        filterInput.hidden = true;
 
-        const modal = document.createElement('div');
-        modal.id = 'area-monitor-list-modal';
-        modal.setAttribute('role', 'dialog');
-        modal.setAttribute('aria-modal', 'true');
-        modal.setAttribute('aria-label', lblTitle);
-        // Flex column with a scrollable content region pins the title and filter
-        // input to the top; only the list shrinks/scrolls when there are many monitors.
-        // Fixed height (not max-height) keeps the modal centered in the same spot as
-        // items get filtered out — otherwise its center shifts as the box shrinks.
-        modal.style.cssText = `
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #fff; border-radius: 12px; padding: 22px; z-index: 10000;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            width: min(460px, calc(100vw - 32px));
-            height: min(70vh, 640px); display: flex; flex-direction: column;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        `;
-        modal.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-shrink:0;">
-                <h3 style="margin:0;font-size:18px;font-weight:600;">${escapeHtml(lblTitle)}</h3>
-                <button id="am-list-close" title="Close" style="background:none;border:none;cursor:pointer;font-size:20px;color:#999;padding:0;line-height:1;">&times;</button>
-            </div>
-            <input id="am-list-filter" type="text" autocomplete="off" placeholder="${escapeAttr(lblFilterPlaceholder)}"
-                style="display:none;width:100%;box-sizing:border-box;padding:8px 12px;margin-bottom:12px;
-                       border:1px solid #d9dee5;border-radius:8px;font-size:13px;outline:none;
-                       font-family:inherit;flex-shrink:0;" />
-            <div id="am-list-content" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;min-height:0;">
-                <div style="font-size:13px;color:#666;">${escapeHtml(lblLoading)}</div>
-            </div>
-        `;
+        const content = document.createElement('div');
+        content.id = 'am-list-content';
+        content.className = 'area-monitor-list-items';
+        renderInlineMonitorMessage(content, lblLoading);
 
-        document.body.appendChild(modal);
-        modal.__unregisterEscape = global.ModalEscape?.register(modal, removeMonitorListModal);
-
-        const closeButton = modal.querySelector('#am-list-close');
-        if (closeButton) {
-            closeButton.addEventListener('click', removeMonitorListModal);
-        }
-
-        const content = modal.querySelector('#am-list-content');
-        const filterInput = modal.querySelector('#am-list-filter');
+        const dialogApi = global.CbDialog.open({
+            title: lblTitle,
+            size: 'md',
+            className: 'area-monitor-list-modal',
+            bodyClassName: 'area-monitor-list-modal__body',
+            body: [filterInput, content],
+            onClose: () => { if (monitorListDialog === dialogApi) monitorListDialog = null; }
+        });
+        if (!dialogApi) return;
+        monitorListDialog = dialogApi;
+        dialogApi.dialog.id = 'area-monitor-list-modal';
+        const closeButton = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+        if (closeButton) closeButton.id = 'am-list-close';
 
         try {
             const monitors = await fetchAreaMonitorList();
-            if (!document.getElementById('area-monitor-list-modal') || !content) return;
+            if (monitorListDialog !== dialogApi) return;
 
-            content.innerHTML = '';
             if (!monitors.length) {
-                const empty = document.createElement('div');
-                empty.style.cssText = 'font-size:13px;color:#666;';
-                empty.textContent = lblEmpty;
-                content.appendChild(empty);
+                renderInlineMonitorMessage(content, lblEmpty);
                 return;
             }
 
-            // Show the filter input now that we have a non-empty list. The filter
-            // toggles each item's display via display:none so the per-item click
-            // listeners stay wired across filter passes.
-            if (filterInput) {
-                filterInput.style.display = '';
-                filterInput.focus();
-            }
+            // Show the filter now that there is a list to filter. Filtering hides rows with the
+            // hidden attribute, so the per-item click listeners stay wired across passes.
+            content.replaceChildren();
+            filterInput.hidden = false;
+            filterInput.focus();
 
             const itemRecords = [];
             const noMatchEl = document.createElement('div');
             noMatchEl.id = 'am-list-no-match';
-            noMatchEl.style.cssText = 'font-size:13px;color:#666;display:none;';
+            noMatchEl.className = 'area-monitor-list-message';
+            noMatchEl.hidden = true;
             noMatchEl.textContent = lblFilterEmpty;
 
             monitors.forEach(monitor => {
                 const item = createMonitorListItem(monitor);
-                item.style.cssText = `
-                    width:100%;box-sizing:border-box;text-align:left;padding:12px 14px;
-                    border:1px solid #d9dee5;border-radius:10px;background:#fff;cursor:pointer;
-                    display:flex;flex-direction:column;gap:4px;flex-shrink:0;
-                    font-family:inherit;
-                `;
                 content.appendChild(item);
                 itemRecords.push({ element: item, name: (monitor.name || `Area ${monitor.id}`).toLowerCase() });
             });
             content.appendChild(noMatchEl);
 
-            if (filterInput) {
-                filterInput.addEventListener('input', () => {
-                    const query = filterInput.value.trim().toLowerCase();
-                    let matchCount = 0;
-                    itemRecords.forEach(({ element, name }) => {
-                        const matches = !query || name.includes(query);
-                        element.style.display = matches ? '' : 'none';
-                        if (matches) matchCount += 1;
-                    });
-                    noMatchEl.style.display = matchCount === 0 ? '' : 'none';
+            filterInput.addEventListener('input', () => {
+                const query = filterInput.value.trim().toLowerCase();
+                let matchCount = 0;
+                itemRecords.forEach(({ element, name }) => {
+                    const matches = !query || name.includes(query);
+                    element.hidden = !matches;
+                    if (matches) matchCount += 1;
                 });
-            }
+                noMatchEl.hidden = matchCount > 0;
+            });
         } catch (error) {
-            if (!document.getElementById('area-monitor-list-modal') || !content) return;
-            content.innerHTML = `<div style="font-size:13px;color:#d32f2f;">${escapeHtml(lblError)}</div>`;
+            if (monitorListDialog !== dialogApi) return;
+            renderInlineMonitorMessage(content, lblError, 'error');
             console.error('Failed to load area monitor list:', error);
         }
     }
@@ -682,12 +657,11 @@
     let _planDataLoaded = false;
     function isPlanLoaded() { return _planDataLoaded; }
 
+    // A disabled .btn already reads as inert (css/primitives.css).
     function setDrawFromPlanEnabled(enabled) {
         const btn = document.getElementById('areaMonitorFromPlanButton');
         if (!btn) return;
         btn.disabled = !enabled;
-        btn.style.opacity = enabled ? '' : '0.4';
-        btn.style.cursor = enabled ? '' : 'not-allowed';
     }
 
     function setAmPlanToggleLoading(loading) {
@@ -708,10 +682,10 @@
             return;
         }
         const fromPlanBtn = document.getElementById('areaMonitorFromPlanButton');
-        if (fromPlanBtn) fromPlanBtn.classList.add('active');
+        if (fromPlanBtn) fromPlanBtn.setAttribute('aria-pressed', 'true');
         // Disable "Draw freely" while in paint mode
         const drawBtn = document.getElementById('areaMonitorDrawButton');
-        if (drawBtn) { drawBtn.disabled = true; drawBtn.style.opacity = '0.4'; drawBtn.style.cursor = 'not-allowed'; }
+        if (drawBtn) drawBtn.disabled = true;
         // Register before activate() — event may fire synchronously if plan is already loaded
         global.addEventListener('planVerticesReady', onPlanVerticesReady, { once: true });
         if (global.AreaMonitorPaint) global.AreaMonitorPaint.activate();
@@ -724,10 +698,10 @@
         global.removeEventListener('planVerticesReady', onPlanVerticesReady);
         if (global.AreaMonitorPaint) global.AreaMonitorPaint.deactivate();
         const fromPlanBtn = document.getElementById('areaMonitorFromPlanButton');
-        if (fromPlanBtn) fromPlanBtn.classList.remove('active');
+        if (fromPlanBtn) fromPlanBtn.setAttribute('aria-pressed', 'false');
         // Restore "Draw freely"
         const drawBtn = document.getElementById('areaMonitorDrawButton');
-        if (drawBtn) { drawBtn.disabled = false; drawBtn.style.opacity = ''; drawBtn.style.cursor = ''; }
+        if (drawBtn) drawBtn.disabled = false;
         clearStatus();
     }
 

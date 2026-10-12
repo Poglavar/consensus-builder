@@ -1,50 +1,51 @@
 /* ========== Road Analysis ========== */
 
-/* Add CSS for tabs in the Road Analysis panel */
-.tabs {
-    display: flex;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 15px;
-}
-
-.tab-btn {
-    background-color: transparent;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s;
-}
-
-.tab-btn:hover {
-    background-color: #f0f0f0;
-}
-
-.tab-btn.active {
-    border-bottom: 2px solid #007bff;
-    color: #007bff;
-    font-weight: bold;
+/* The Road Analysis panel's tabs are the shared cb-tabs (css/primitives.css); switchTab
+   (js/road-analysis.js) hides the other panel. */
+#road-analysis-panel .cb-tabs {
+    flex-shrink: 0; /* a scroll container: in the panel's flex column it would otherwise collapse */
+    margin-bottom: var(--cb-space-3);
 }
 
 .tab-content {
-    display: none;
     padding: 10px 0;
 }
 
-.tab-content.active {
-    display: block;
+/* Which analysis produced the segments, under the tabs. */
+.road-analysis-method {
+    margin: 10px 0;
+    font-size: var(--cb-text-md);
+}
+
+.road-analysis-method__osm {
+    color: var(--cb-primary);
+}
+
+.road-analysis-method__fallback {
+    color: var(--cb-text-muted);
 }
 
 /* Road Analysis Panel */
 #road-analysis-panel {
     position: absolute;
-    /* In the dock column between the chrome rows, one step above the parcel panel it is opened from. */
+    /* In the dock column between the chrome rows, one step above the parcel panel it is opened from.
+       A fixed height: its tabs (Segments / Visualization) and the segment list that arrives later
+       change what it shows, and the panel no longer grows or shrinks with them. */
     top: var(--map-shell-top-clearance);
     right: 10px;
     width: 350px;
-    max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
+    height: min(30rem, calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance)));
+    box-sizing: border-box;
     overflow-y: auto;
     z-index: calc(var(--cb-z-panel) + 10);
+}
+
+/* Opened from the parcel panel's Tools tab, it stops above that panel (half the map from the
+   bottom) instead of covering its header. */
+@media (min-width: 768px) {
+    #map-container:has(#parcel-info-panel.visible:not(.is-minimized)) #road-analysis-panel {
+        height: calc(50vh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - var(--cb-space-3));
+    }
 }
 
 .visualization-controls {
@@ -52,9 +53,7 @@
 }
 
 .action-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    margin-top: var(--cb-space-4);
 }
 
 /* Segment list styles */
@@ -64,21 +63,21 @@
 }
 
 .segment-item {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
+    background-color: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px;
 }
 
 .segment-item:hover {
-    background-color: #f0f0f0;
+    background-color: var(--cb-surface-3);
     cursor: pointer;
 }
 
 .segment-item.selected {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    border-color: var(--cb-primary);
+    box-shadow: 0 0 0 2px var(--cb-focus-ring);
 }
 
 .segment-header {
@@ -90,62 +89,4 @@
 
 .segment-metrics {
     margin-top: 8px;
-}
-
-/* Analyze Road button style */
-.analyze-button {
-    background-color: #a3a728;
-}
-
-.analyze-button:hover {
-    background-color: #218838;
-}
-
-/* Road Width Picker Modal styles */
-.roadwidth-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 8px;
-}
-
-.roadwidth-card {
-    border: 2px solid var(--cb-line);
-    border-radius: var(--cb-radius-md);
-    padding: 6px;
-    background: var(--cb-surface);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
-}
-
-.roadwidth-card:hover {
-    border-color: var(--cb-primary);
-    box-shadow: 0 2px 8px var(--cb-focus-ring);
-}
-
-.roadwidth-card.selected {
-    border-color: var(--cb-primary-hover);
-    box-shadow: 0 0 0 2px var(--cb-focus-ring) inset;
-}
-
-.roadwidth-thumb {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 2 / 1;
-    object-fit: contain;
-    border-radius: 4px;
-    background: var(--cb-surface-2);
-}
-
-.roadwidth-label {
-    margin-top: 6px;
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-}
-
-@media (max-width: 520px) {
-    .roadwidth-grid { grid-template-columns: repeat(2, 1fr); }
 }

@@ -126,7 +126,7 @@ test.describe('Supporting secondary controls @core', () => {
     await expect(cityToken.locator('[data-city-token-claim]')).toBeDisabled();
     await cityToken.locator('[data-city-token-register]').click();
     await expect(cityToken.locator('[data-city-token-register]')).toHaveClass(/city-token-registered-label/);
-    await expect(cityToken.locator('[data-city-token-register]')).toHaveText('🏅 Registered');
+    await expect(cityToken.locator('[data-city-token-register]')).toHaveText('Registered');
     await expect(cityToken.locator('[data-city-token-claim]')).toBeEnabled();
     await cityToken.locator('[data-city-token-claim]').click();
     await expect(cityToken.locator('[data-city-token-allotment]')).toHaveText(/0\.0+ CTY/);

@@ -29,11 +29,11 @@ test.describe('Editor button effects @features', () => {
     const explanation = page.locator('.share-modal-overlay');
     await expect(explanation).toBeVisible();
     await expect(explanation).toContainText(/Government|Institution|Company|Individual/i);
-    await explanation.locator('.share-modal-close').click();
+    await explanation.locator('.share-modal .close-circle-btn').click();
     await expect(explanation).toBeHidden();
     await page.locator('#road-acquire-difficulty-label .acquiring-difficulty-help-icon').click();
     await expect(explanation).toBeVisible();
-    await explanation.locator('.share-modal-primary').click();
+    await explanation.locator('.share-modal .btn-primary').click();
     await expect(explanation).toBeHidden();
     await page.locator('#road-info-panel .close-button').click();
   });

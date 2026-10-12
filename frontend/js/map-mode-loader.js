@@ -57,7 +57,7 @@
         for (const [mode, id] of [['2d', 'mode-2d-toggle'], ['model', 'mode-3d-toggle'], ['photo', 'mode-realistic-toggle']]) {
             const button = document.getElementById(id);
             if (!button) continue;
-            button.classList.toggle('active', mode === state.desired);
+            // The selected view is aria-pressed; the strip's tiles take their look from it.
             button.setAttribute('aria-pressed', String(mode === state.desired));
             button.classList.toggle('mode-btn-loading', mode === state.desired && state.pending);
         }

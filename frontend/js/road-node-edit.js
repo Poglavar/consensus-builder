@@ -705,8 +705,8 @@
                 midpoint.bindTooltip(editHint(
                     addDisabled ? 'panel.road.edgeActionsProtectedHint' : 'panel.road.edgeActionsHint',
                     addDisabled
-                        ? 'A node cannot be added on a ramp, tunnel, or grade-separated stretch · 🚜 Bulldoze this stretch'
-                        : '＋ Add a node · 🚜 Bulldoze this stretch'
+                        ? 'A node cannot be added on a ramp, tunnel, or grade-separated stretch · × Bulldoze this stretch'
+                        : '＋ Add a node · × Bulldoze this stretch'
                 ), { sticky: true, pane: 'road-node-handles' });
                 midpoint.on('click', (event) => {
                     try { global.L.DomEvent.stop(event.originalEvent || event); } catch (_) { }

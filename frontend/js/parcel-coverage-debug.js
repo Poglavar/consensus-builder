@@ -8,6 +8,7 @@
     let modalElement = null;
     let openButton = null;
     let closeButton = null;
+    let headerCloseButton = null;
     let refreshButton = null;
     let legendElement = null;
     let summaryElement = null;
@@ -41,10 +42,12 @@
         attribution: '© OpenStreetMap contributors'
     };
 
+    // #parcel-coverage-modal is the shared dialog's overlay (index.html); it is shown through [hidden].
     function cacheElements() {
         modalElement = document.getElementById('parcel-coverage-modal') || null;
         openButton = document.getElementById('showParcelCoverageButton') || null;
         closeButton = document.getElementById('parcel-coverage-close-btn') || null;
+        headerCloseButton = modalElement ? modalElement.querySelector('[data-parcel-coverage-close]') : null;
         refreshButton = document.getElementById('parcel-coverage-refresh-btn') || null;
         legendElement = document.getElementById('parcel-coverage-legend') || null;
         summaryElement = document.getElementById('parcel-coverage-summary') || null;
@@ -90,7 +93,7 @@
     }
 
     function isModalOpen() {
-        return !!modalElement && modalElement.style.display && modalElement.style.display !== 'none';
+        return !!modalElement && !modalElement.hidden;
     }
 
     function formatArea(areaSqm) {
@@ -380,7 +383,7 @@
         if (!modalElement) {
             return;
         }
-        modalElement.style.display = 'flex';
+        modalElement.hidden = false;
         modalElement.__unregisterEscape?.();
         modalElement.__unregisterEscape = window.ModalEscape?.register(modalElement, closeModal);
         attachGlobalListeners();
@@ -395,7 +398,7 @@
         if (!modalElement) {
             return;
         }
-        modalElement.style.display = 'none';
+        modalElement.hidden = true;
         modalElement.__unregisterEscape?.();
         modalElement.__unregisterEscape = null;
         detachGlobalListeners();
@@ -425,6 +428,10 @@
             closeButton.addEventListener('click', function () {
                 closeModal();
             });
+        }
+
+        if (headerCloseButton) {
+            headerCloseButton.addEventListener('click', closeModal);
         }
 
         if (refreshButton) {
